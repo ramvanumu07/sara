@@ -10,7 +10,9 @@ const dbPath = join(__dirname, '..', 'data', 'taskProgress.json')
 const defaultData = { 
   taskProgress: {},
   chatHistory: {},
-  lastActivity: {}
+  lastActivity: {},
+  phaseState: {},        // Track learning vs assignment phase
+  assignmentCount: {}    // Track completed assignments per subtopic
 }
 
 let db = null
@@ -40,6 +42,12 @@ export async function initTaskDb() {
     }
     if (!db.data.lastActivity) {
       db.data.lastActivity = {}
+    }
+    if (!db.data.phaseState) {
+      db.data.phaseState = {}
+    }
+    if (!db.data.assignmentCount) {
+      db.data.assignmentCount = {}
     }
     
     await db.write()
@@ -228,5 +236,79 @@ export async function clearChatHistory(studentId, topicId, subtopicId) {
   db.data.chatHistory[key] = []
   
   await db.write()
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PHASE TRACKING FUNCTIONS (Learning vs Assignment)
+// ═══════════════════════════════════════════════════════════════
+
+// Get current phase for a subtopic (returns 'learning' or 'assignment')
+export async function getPhase(studentId, topicId, subtopicId) {
+  if (!db) await initTaskDb()
+  
+  const key = getKey(studentId, topicId, subtopicId)
+  return db.data.phaseState[key] || 'learning'
+}
+
+// Set phase for a subtopic
+export async function setPhase(studentId, topicId, subtopicId, phase) {
+  if (!db) await initTaskDb()
+  
+  const key = getKey(studentId, topicId, subtopicId)
+  db.data.phaseState[key] = phase
+  db.data.lastActivity[key] = Date.now()
+  
+  await db.write()
+  return phase
+}
+
+// Get assignment count for a subtopic
+export async function getAssignmentCount(studentId, topicId, subtopicId) {
+  if (!db) await initTaskDb()
+  
+  const key = getKey(studentId, topicId, subtopicId)
+  return db.data.assignmentCount[key] || { completed: 0, total: 0 }
+}
+
+// Increment completed assignment count
+export async function incrementAssignmentCount(studentId, topicId, subtopicId) {
+  if (!db) await initTaskDb()
+  
+  const key = getKey(studentId, topicId, subtopicId)
+  
+  if (!db.data.assignmentCount[key]) {
+    db.data.assignmentCount[key] = { completed: 0, total: 0 }
+  }
+  
+  db.data.assignmentCount[key].completed += 1
+  db.data.assignmentCount[key].total += 1
+  db.data.lastActivity[key] = Date.now()
+  
+  await db.write()
+  return db.data.assignmentCount[key]
+}
+
+// Reset phase and assignment count (when restarting lesson)
+export async function resetPhaseState(studentId, topicId, subtopicId) {
+  if (!db) await initTaskDb()
+  
+  const key = getKey(studentId, topicId, subtopicId)
+  db.data.phaseState[key] = 'learning'
+  db.data.assignmentCount[key] = { completed: 0, total: 0 }
+  db.data.lastActivity[key] = Date.now()
+  
+  await db.write()
+}
+
+// Get full state for a subtopic (phase + assignments)
+export async function getSubtopicState(studentId, topicId, subtopicId) {
+  if (!db) await initTaskDb()
+  
+  const key = getKey(studentId, topicId, subtopicId)
+  
+  return {
+    phase: db.data.phaseState[key] || 'learning',
+    assignments: db.data.assignmentCount[key] || { completed: 0, total: 0 }
+  }
 }
 

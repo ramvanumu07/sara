@@ -9,12 +9,10 @@ export const curriculum = [
       {
         id: 'first-program',
         title: 'Your first program (console.log)',
-        learningPoints: [
-          'What is console.log and why we use it',
-          'Printing text and numbers',
-          'Printing multiple values',
-          'Using console.log for debugging'
-        ],
+        // Context for AI - NOT a script, just guidance
+        concepts: ['Output display', 'Basic syntax structure', 'Running JavaScript code'],
+        prerequisites: [],
+        teachingGoal: 'User understands WHY console.log exists and can confidently use it to see output',
         tasks: [
           'Print your name',
           'Print multiple lines of text',
@@ -26,11 +24,9 @@ export const curriculum = [
       {
         id: 'basic-output',
         title: 'Basic output and debugging',
-        learningPoints: [
-          'Different types of output',
-          'Tracing program flow',
-          'Error messages for debugging'
-        ],
+        concepts: ['Using output to understand code', 'Tracing execution', 'Finding bugs'],
+        prerequisites: ['console.log basics'],
+        teachingGoal: 'User can strategically place console.log to debug and trace their code',
         tasks: [
           'Print the result of different arithmetic operations',
           'Use console.log to trace program flow',
@@ -50,11 +46,9 @@ export const curriculum = [
       {
         id: 'const-declaration',
         title: 'Declaring values with const',
-        learningPoints: [
-          'What is const',
-          'When to use const',
-          'Const cannot be reassigned'
-        ],
+        concepts: ['Storing values', 'Immutability', 'Why const is preferred'],
+        prerequisites: ['console.log'],
+        teachingGoal: 'User understands const creates unchangeable storage and knows when to use it',
         tasks: [
           'Store your age in a constant and print it',
           'Store the value of PI and calculate circle area',
@@ -66,11 +60,9 @@ export const curriculum = [
       {
         id: 'let-declaration',
         title: 'When to use let',
-        learningPoints: [
-          'What is let',
-          'When to use let vs const',
-          'Mutable values'
-        ],
+        concepts: ['Mutable storage', 'When values need to change', 'let vs const decision'],
+        prerequisites: ['const basics'],
+        teachingGoal: 'User knows when let is necessary vs const, and defaults to const',
         tasks: [
           'Create a counter that changes value',
           'Store a temperature that updates',
@@ -81,12 +73,9 @@ export const curriculum = [
       {
         id: 'naming-conventions',
         title: 'Naming conventions and readability',
-        learningPoints: [
-          'Meaningful variable names',
-          'camelCase naming',
-          'Avoiding abbreviations',
-          'Named constants for magic numbers'
-        ],
+        concepts: ['Readable code', 'Self-documenting names', 'camelCase', 'Magic numbers'],
+        prerequisites: ['const and let'],
+        teachingGoal: 'User writes variable names that explain what they store without comments',
         tasks: [
           'Rename poorly named variables (x, y, temp1) to meaningful names',
           'Create constants for a person\'s details with proper naming',
@@ -108,12 +97,9 @@ export const curriculum = [
       {
         id: 'numbers-arithmetic',
         title: 'Numbers and basic arithmetic',
-        learningPoints: [
-          'Number type in JavaScript',
-          'Arithmetic operators (+, -, *, /)',
-          'Modulo operator (%)',
-          'Order of operations'
-        ],
+        concepts: ['Number type', 'Arithmetic operations', 'Order of operations', 'Modulo'],
+        prerequisites: ['Variables'],
+        teachingGoal: 'User can perform calculations and understands operator precedence',
         tasks: [
           'Perform addition, subtraction, multiplication, division',
           'Calculate the remainder using modulo operator',
@@ -130,13 +116,9 @@ export const curriculum = [
       {
         id: 'strings-operations',
         title: 'Strings and string operations',
-        learningPoints: [
-          'What are strings',
-          'String concatenation',
-          'String length',
-          'Accessing characters',
-          'Common string methods'
-        ],
+        concepts: ['Text data', 'String creation', 'Concatenation', 'String methods'],
+        prerequisites: ['Variables', 'console.log'],
+        teachingGoal: 'User can work with text data, combine strings, and use basic string methods',
         tasks: [
           'Concatenate first name and last name',
           'Create a greeting message with name',

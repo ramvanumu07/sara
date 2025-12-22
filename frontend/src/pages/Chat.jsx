@@ -4,15 +4,17 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useAuth } from '../contexts/AuthContext'
 import { getTopicById, getSubtopicById, calculateProgress } from '../data/curriculum'
 import axios from 'axios'
-import { 
-  ArrowLeft, 
-  Send, 
-  CheckCircle2, 
+import {
+  ArrowLeft,
+  Send,
+  CheckCircle2,
   Circle,
   RotateCcw,
   Menu,
   X,
-  HelpCircle
+  HelpCircle,
+  BookOpen,
+  Code2
 } from 'lucide-react'
 
 export default function Chat() {
@@ -25,7 +27,11 @@ export default function Chat() {
   const [showSidebar, setShowSidebar] = useState(false)
   const [lessonStarted, setLessonStarted] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
-  const [taskProgress, setTaskProgress] = useState({ current: 1, completed: 0, total: 0 })
+
+  // Phase tracking state
+  const [currentPhase, setCurrentPhase] = useState('learning')
+  const [assignmentCount, setAssignmentCount] = useState({ completed: 0, total: 0 })
+
   const messagesEndRef = useRef(null)
   const inputRef = useRef(null)
 
@@ -41,13 +47,6 @@ export default function Chat() {
   const nextSubtopic = topic?.subtopics?.[currentSubtopicIndex + 1]
   const prevSubtopic = topic?.subtopics?.[currentSubtopicIndex - 1]
 
-  // Initialize task progress from subtopic
-  useEffect(() => {
-    if (subtopic?.tasks) {
-      setTaskProgress(prev => ({ ...prev, total: subtopic.tasks.length }))
-    }
-  }, [subtopic])
-
   // Load existing chat history when subtopic changes
   useEffect(() => {
     if (subtopic && user?.studentId) {
@@ -59,11 +58,12 @@ export default function Chat() {
     setIsLoading(true)
     try {
       const response = await axios.get(`/api/chat/history/${user.studentId}/${topicId}/${subtopicId}`)
-      
+
       if (response.data.history && response.data.history.length > 0) {
         // Has existing history - resume session
         setMessages(response.data.history)
-        setTaskProgress(response.data.taskProgress)
+        setCurrentPhase(response.data.phase || 'learning')
+        setAssignmentCount(response.data.assignmentCount || { completed: 0, total: 0 })
         setLessonStarted(true)
       } else {
         // No history - start fresh lesson
@@ -88,7 +88,8 @@ export default function Chat() {
   const startLesson = async (isRestart = false) => {
     setLessonStarted(true)
     setMessages([])
-    setTaskProgress({ current: 1, completed: 0, total: subtopic?.tasks?.length || 0 })
+    setCurrentPhase('learning')
+    setAssignmentCount({ completed: 0, total: 0 })
     if (!isRestart) setIsLoading(true)
 
     try {
@@ -97,8 +98,14 @@ export default function Chat() {
         topicId,
         subtopicId,
         action: 'start_lesson',
+        // New flexible context format
+        concepts: subtopic?.concepts || [],
+        prerequisites: subtopic?.prerequisites || [],
+        teachingGoal: subtopic?.teachingGoal || '',
+        // Legacy format (backward compatibility)
         learningPoints: subtopic?.learningPoints || [],
-        tasks: subtopic?.tasks || []
+        tasks: subtopic?.tasks || [],
+        subtopicTitle: subtopic?.title
       })
 
       setMessages([{
@@ -107,8 +114,11 @@ export default function Chat() {
         timestamp: new Date().toISOString()
       }])
 
-      if (response.data.taskProgress) {
-        setTaskProgress(response.data.taskProgress)
+      if (response.data.phase) {
+        setCurrentPhase(response.data.phase)
+      }
+      if (response.data.assignmentCount) {
+        setAssignmentCount(response.data.assignmentCount)
       }
     } catch (error) {
       console.error('Failed to start lesson:', error)
@@ -121,13 +131,12 @@ export default function Chat() {
 
     setIsLoading(false)
   }
-  
+
   const restartLesson = () => {
     startLesson(true)
   }
 
   const getDefaultWelcomeMessage = () => {
-    // This is only shown when API fails - keep it simple
     return `Let's learn **${subtopic?.title}** together! I'll teach you step by step.
 
 (If you see this message, please refresh - the AI service is still starting up.)`
@@ -138,7 +147,7 @@ export default function Chat() {
 
     const userMessage = input.trim()
     setInput('')
-    
+
     setMessages(prev => [...prev, {
       role: 'user',
       content: userMessage,
@@ -154,19 +163,39 @@ export default function Chat() {
         subtopicId,
         message: userMessage,
         history: messages.filter(m => m.role !== 'system'),
+        // New flexible context format
+        concepts: subtopic?.concepts || [],
+        prerequisites: subtopic?.prerequisites || [],
+        teachingGoal: subtopic?.teachingGoal || '',
+        // Legacy format (backward compatibility)
         learningPoints: subtopic?.learningPoints || [],
-        tasks: subtopic?.tasks || []
+        tasks: subtopic?.tasks || [],
+        subtopicTitle: subtopic?.title
       })
 
-      // Update task progress
-      if (response.data.taskProgress) {
-        setTaskProgress(response.data.taskProgress)
+      // Handle phase change
+      if (response.data.phaseChanged) {
+        setCurrentPhase(response.data.phase)
+        // Show phase transition message
+        setMessages(prev => [...prev, {
+          role: 'system',
+          content: response.data.phase === 'assignment'
+            ? '🎯 **Moving to Assignment Phase!** Time to practice what you learned.'
+            : '📚 **Back to Learning Phase**',
+          timestamp: new Date().toISOString()
+        }])
+      }
 
-        // Show task completion message
-        if (response.data.taskProgress.justCompleted) {
+      // Update assignment count
+      if (response.data.assignmentCount) {
+        const prevCompleted = assignmentCount.completed
+        setAssignmentCount(response.data.assignmentCount)
+
+        // Show assignment completion message
+        if (response.data.assignmentCount.completed > prevCompleted) {
           setMessages(prev => [...prev, {
             role: 'system',
-            content: `✅ **Task ${response.data.taskProgress.justCompleted} Complete!** (${response.data.taskProgress.completed}/${response.data.taskProgress.total})`,
+            content: `✅ **Assignment ${response.data.assignmentCount.completed} Complete!**`,
             timestamp: new Date().toISOString()
           }])
         }
@@ -178,13 +207,13 @@ export default function Chat() {
         timestamp: new Date().toISOString()
       }])
 
-      // Auto-complete subtopic when all tasks done
+      // Auto-complete subtopic
       if (response.data.subtopicComplete && !isSubtopicCompleted(topicId, subtopicId)) {
         updateProgress(topicId, subtopicId, true)
         setTimeout(() => {
           setMessages(prev => [...prev, {
             role: 'system',
-            content: '🎉 **Lesson Complete!** All tasks finished. You\'ve mastered this topic!',
+            content: '🎉 **Subtopic Mastered!** You\'ve demonstrated real understanding and clean code skills!',
             timestamp: new Date().toISOString()
           }])
         }, 500)
@@ -244,7 +273,7 @@ export default function Chat() {
               <ArrowLeft className="w-4 h-4" />
               <span className="text-sm">Back</span>
             </button>
-            <button 
+            <button
               onClick={() => setShowSidebar(false)}
               className="lg:hidden p-1 hover:bg-[#e5e5e5] rounded"
             >
@@ -262,14 +291,13 @@ export default function Chat() {
             {topic.subtopics.map((sub) => {
               const completed = isSubtopicCompleted(topicId, sub.id)
               const isCurrent = sub.id === subtopicId
-              
+
               return (
                 <button
                   key={sub.id}
                   onClick={() => navigateToSubtopic(sub.id)}
-                  className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left text-sm transition-colors ${
-                    isCurrent ? 'bg-[#e5e5e5] text-[#0d0d0d]' : 'text-[#6e6e6e] hover:bg-[#e5e5e5]'
-                  }`}
+                  className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left text-sm transition-colors ${isCurrent ? 'bg-[#e5e5e5] text-[#0d0d0d]' : 'text-[#6e6e6e] hover:bg-[#e5e5e5]'
+                    }`}
                 >
                   {completed ? (
                     <CheckCircle2 className="w-4 h-4 text-[#0d0d0d] flex-shrink-0" />
@@ -303,7 +331,7 @@ export default function Chat() {
 
       {/* Overlay */}
       {showSidebar && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/20 z-40 lg:hidden"
           onClick={() => setShowSidebar(false)}
         />
@@ -313,15 +341,38 @@ export default function Chat() {
       <main className="flex-1 flex flex-col min-h-0">
         {/* Top Bar */}
         <header className="h-14 border-b border-[#e5e5e5] px-4 flex items-center gap-4">
-          <button 
+          <button
             onClick={() => setShowSidebar(true)}
             className="lg:hidden p-2 hover:bg-[#f5f5f5] rounded-lg"
           >
             <Menu className="w-5 h-5 text-[#0d0d0d]" />
           </button>
-          
+
           <div className="flex-1 min-w-0">
             <h1 className="text-[#0d0d0d] font-medium truncate">{subtopic.title}</h1>
+          </div>
+
+          {/* Phase Indicator */}
+          <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${currentPhase === 'learning'
+            ? 'bg-blue-50 text-blue-700 border border-blue-200'
+            : 'bg-amber-50 text-amber-700 border border-amber-200'
+            }`}>
+            {currentPhase === 'learning' ? (
+              <>
+                <BookOpen className="w-4 h-4" />
+                <span className="hidden sm:inline">Learning</span>
+              </>
+            ) : (
+              <>
+                <Code2 className="w-4 h-4" />
+                <span className="hidden sm:inline">Assignment</span>
+                {assignmentCount.completed > 0 && (
+                  <span className="bg-amber-200 text-amber-800 px-1.5 py-0.5 rounded text-xs">
+                    {assignmentCount.completed}
+                  </span>
+                )}
+              </>
+            )}
           </div>
 
           {/* Help Button */}
@@ -335,7 +386,7 @@ export default function Chat() {
               <HelpCircle className="w-4 h-4" />
               <span className="hidden sm:inline">How to run JS?</span>
             </button>
-            
+
             {/* Help Tooltip */}
             <AnimatePresence>
               {showHelp && (
@@ -383,14 +434,15 @@ export default function Chat() {
                   className={`mb-6 ${message.role === 'user' ? 'flex justify-end' : ''} ${message.role === 'system' ? 'flex justify-center' : ''}`}
                 >
                   {message.role === 'system' ? (
-                    <motion.div 
+                    <motion.div
                       initial={{ scale: 0.9 }}
                       animate={{ scale: 1 }}
-                      className={`px-4 py-3 rounded-xl text-center text-sm font-medium ${
-                        message.content.includes('Complete!') 
-                          ? 'bg-green-50 border border-green-200 text-green-800'
+                      className={`px-4 py-3 rounded-xl text-center text-sm font-medium ${message.content.includes('Complete') || message.content.includes('Mastered')
+                        ? 'bg-green-50 border border-green-200 text-green-800'
+                        : message.content.includes('Assignment Phase')
+                          ? 'bg-amber-50 border border-amber-200 text-amber-800'
                           : 'bg-blue-50 border border-blue-200 text-blue-800'
-                      }`}
+                        }`}
                     >
                       <MessageContent content={message.content} />
                     </motion.div>
@@ -398,17 +450,23 @@ export default function Chat() {
                     <div className={`${message.role === 'user' ? 'max-w-[80%]' : 'w-full'}`}>
                       {message.role === 'assistant' && (
                         <div className="flex items-center gap-2 mb-2">
-                          <div className="w-6 h-6 rounded-full bg-[#0d0d0d] flex items-center justify-center">
-                            <span className="text-white text-xs font-medium">AI</span>
+                          <div className={`w-6 h-6 rounded-full flex items-center justify-center ${currentPhase === 'learning' ? 'bg-blue-600' : 'bg-amber-600'
+                            }`}>
+                            {currentPhase === 'learning' ? (
+                              <BookOpen className="w-3 h-3 text-white" />
+                            ) : (
+                              <Code2 className="w-3 h-3 text-white" />
+                            )}
                           </div>
-                          <span className="text-sm text-[#6e6e6e]">Tutor</span>
+                          <span className="text-sm text-[#6e6e6e]">
+                            {currentPhase === 'learning' ? 'Mentor' : 'Reviewer'}
+                          </span>
                         </div>
                       )}
-                      <div className={`rounded-2xl px-4 py-3 ${
-                        message.role === 'user' 
-                          ? 'bg-[#0d0d0d] text-white' 
-                          : 'bg-white border border-[#e5e5e5] text-[#0d0d0d]'
-                      }`}>
+                      <div className={`rounded-2xl px-4 py-3 ${message.role === 'user'
+                        ? 'bg-[#0d0d0d] text-white'
+                        : 'bg-white border border-[#e5e5e5] text-[#0d0d0d]'
+                        }`}>
                         {message.role === 'user' ? (
                           <p className="whitespace-pre-wrap">{message.content}</p>
                         ) : (
@@ -428,8 +486,13 @@ export default function Chat() {
                 animate={{ opacity: 1 }}
                 className="flex items-center gap-2 mb-6"
               >
-                <div className="w-6 h-6 rounded-full bg-[#0d0d0d] flex items-center justify-center">
-                  <span className="text-white text-xs font-medium">AI</span>
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${currentPhase === 'learning' ? 'bg-blue-600' : 'bg-amber-600'
+                  }`}>
+                  {currentPhase === 'learning' ? (
+                    <BookOpen className="w-3 h-3 text-white" />
+                  ) : (
+                    <Code2 className="w-3 h-3 text-white" />
+                  )}
                 </div>
                 <div className="flex items-center gap-1">
                   <div className="w-2 h-2 bg-[#c5c5c5] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
@@ -453,7 +516,10 @@ export default function Chat() {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Type your code or answer..."
+                  placeholder={currentPhase === 'learning'
+                    ? "Share your thoughts or answer the question..."
+                    : "Paste your code here..."
+                  }
                   rows={1}
                   className="w-full bg-white border border-[#c5c5c5] rounded-xl py-3 px-4 text-[#0d0d0d] placeholder:text-[#8e8e8e] focus:outline-none focus:border-[#0d0d0d] focus:ring-1 focus:ring-[#0d0d0d] transition-colors resize-none"
                   style={{ minHeight: '48px', maxHeight: '200px' }}
