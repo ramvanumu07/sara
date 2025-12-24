@@ -591,15 +591,17 @@ export function getSubtopicById(topicId, subtopicId) {
   return topic?.subtopics.find(sub => sub.id === subtopicId)
 }
 
-export function calculateProgress(userProgress) {
+export function calculateProgress(userProgress = {}) {
   let totalSubtopics = 0
   let completedSubtopics = 0
   const byTopic = {}
 
   curriculum.forEach(topic => {
-    const topicCompleted = topic.subtopics.filter(sub =>
-      userProgress?.[topic.id]?.subtopics?.[sub.id]
-    ).length
+    // Count completed subtopics using new format: `${topicId}-${subtopicId}`: { status: 'completed' }
+    const topicCompleted = topic.subtopics.filter(sub => {
+      const key = `${topic.id}-${sub.id}`
+      return userProgress[key]?.status === 'completed'
+    }).length
 
     totalSubtopics += topic.subtopics.length
     completedSubtopics += topicCompleted
