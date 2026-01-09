@@ -1,15 +1,28 @@
 import axios from 'axios'
 
-// API configuration for different environments
-export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
-
-// Create axios instance with base URL
 const api = axios.create({
-  baseURL: API_URL,
-  timeout: 30000, // 30 second timeout
-  headers: {
-    'Content-Type': 'application/json'
-  }
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000'
 })
+
+// Add token to requests
+api.interceptors.request.use(config => {
+  const token = localStorage.getItem('devsprout_token')
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
+
+// Handle errors
+api.interceptors.response.use(
+  response => response,
+  error => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('devsprout_token')
+      window.location.href = '/login'
+    }
+    return Promise.reject(error)
+  }
+)
 
 export default api

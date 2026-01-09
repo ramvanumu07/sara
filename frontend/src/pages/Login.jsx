@@ -1,212 +1,234 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { Sprout, ArrowRight, AlertCircle, User, Lock, Mail, UserPlus } from 'lucide-react'
 
 export default function Login() {
   const [isRegister, setIsRegister] = useState(false)
   const [studentId, setStudentId] = useState('')
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const { login, register } = useAuth()
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = async (e) => {
+  const { login, register } = useAuth()
+  const navigate = useNavigate()
+
+  async function handleSubmit(e) {
     e.preventDefault()
     setError('')
     setSuccess('')
-    setIsLoading(true)
+    setLoading(true)
 
-    let result
-    if (isRegister) {
-      if (!name.trim()) {
-        setError('Name is required')
-        setIsLoading(false)
-        return
+    try {
+      if (isRegister) {
+        const result = await register(studentId, password, name)
+        if (result.success) {
+          setSuccess('Registration successful! Wait for admin to grant access.')
+          setIsRegister(false)
+          setPassword('')
+        } else {
+          setError(result.message)
+        }
+      } else {
+        const result = await login(studentId, password)
+        if (result.success) {
+          navigate('/dashboard')
+        } else {
+          setError(result.message)
+        }
       }
-      result = await register(studentId.trim(), password, name.trim(), email.trim())
-      if (result.success) {
-        setSuccess(result.message || 'Registration successful! Contact admin for access after payment.')
-      }
-    } else {
-      result = await login(studentId.trim(), password)
+    } catch (err) {
+      setError(err.response?.data?.message || 'Something went wrong')
     }
-    
-    if (!result.success) {
-      setError(result.error)
-    }
-    setIsLoading(false)
+    setLoading(false)
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="w-full max-w-sm"
-      >
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.3 }}
-            className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/25"
-          >
-            <Sprout className="w-10 h-10 text-white" />
-          </motion.div>
-          <h1 className="mt-4 text-2xl font-bold text-white">DevSprout</h1>
-          <p className="text-slate-400 text-sm mt-1">
-            {isRegister ? 'Create your account' : 'Welcome back'}
-          </p>
-        </div>
-
-        {/* Login/Register Form */}
-        <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl p-6">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Name Input (Register only) */}
-            {isRegister && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-              >
-                <label className="block text-sm text-slate-400 mb-1.5">Full Name</label>
-                <div className="relative">
-                  <UserPlus className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Your full name"
-                    className="w-full bg-slate-900/50 border border-slate-600 rounded-xl py-3 pl-10 pr-4 text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors"
-                  />
-                </div>
-              </motion.div>
-            )}
-
-            {/* Student ID Input */}
-            <div>
-              <label className="block text-sm text-slate-400 mb-1.5">Student ID</label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
-                <input
-                  type="text"
-                  value={studentId}
-                  onChange={(e) => setStudentId(e.target.value)}
-                  placeholder="e.g., john123"
-                  className="w-full bg-slate-900/50 border border-slate-600 rounded-xl py-3 pl-10 pr-4 text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors"
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Password Input */}
-            <div>
-              <label className="block text-sm text-slate-400 mb-1.5">Password</label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full bg-slate-900/50 border border-slate-600 rounded-xl py-3 pl-10 pr-4 text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors"
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Email Input (Register only, optional) */}
-            {isRegister && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-              >
-                <label className="block text-sm text-slate-400 mb-1.5">Email (optional)</label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="you@example.com"
-                    className="w-full bg-slate-900/50 border border-slate-600 rounded-xl py-3 pl-10 pr-4 text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-colors"
-                  />
-                </div>
-              </motion.div>
-            )}
-
-            {/* Success Message */}
-            {success && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex items-start gap-2 text-emerald-400 text-sm py-3 px-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg"
-              >
-                <Sprout className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                <span>{success}</span>
-              </motion.div>
-            )}
-
-            {/* Error Message */}
-            {error && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex items-center gap-2 text-red-400 text-sm py-2 px-3 bg-red-500/10 border border-red-500/20 rounded-lg"
-              >
-                <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                <span>{error}</span>
-              </motion.div>
-            )}
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-3 px-4 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-            >
-              {isLoading ? (
-                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : (
-                <>
-                  <span>{isRegister ? 'Create Account' : 'Sign In'}</span>
-                  <ArrowRight className="w-4 h-4" />
-                </>
-              )}
-            </button>
-          </form>
-
-          {/* Toggle Register/Login */}
-          <div className="mt-6 text-center">
-            <button
-              type="button"
-              onClick={() => {
-                setIsRegister(!isRegister)
-                setError('')
-                setSuccess('')
-              }}
-              className="text-slate-400 hover:text-white transition-colors text-sm"
-            >
-              {isRegister ? (
-                <>Already have an account? <span className="text-emerald-400">Sign in</span></>
-              ) : (
-                <>Don't have an account? <span className="text-emerald-400">Register</span></>
-              )}
-            </button>
+    <div style={styles.container}>
+      <div style={styles.card}>
+        <div style={styles.logoSection}>
+          <div style={styles.logo}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#10a37f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M2 17L12 22L22 17" stroke="#10a37f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M2 12L12 17L22 12" stroke="#10a37f" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
           </div>
+          <h1 style={styles.title}>Welcome to EduBridge</h1>
+          <p style={styles.subtitle}>{isRegister ? 'Create your account' : 'Log in to continue learning'}</p>
         </div>
 
-        {/* Payment Info */}
-        <div className="mt-6 text-center text-slate-500 text-xs">
-          <p>After registration, complete payment (₹200) and</p>
-          <p>contact admin to activate your access.</p>
-        </div>
-      </motion.div>
+        {error && <div style={styles.error}>{error}</div>}
+        {success && <div style={styles.success}>{success}</div>}
+
+        <form onSubmit={handleSubmit} style={styles.form}>
+          {isRegister && (
+            <div style={styles.inputGroup}>
+              <label style={styles.label}>Name</label>
+              <input
+                type="text"
+                value={name}
+                onChange={e => setName(e.target.value)}
+                style={styles.input}
+                placeholder="Enter your name"
+                required
+              />
+            </div>
+          )}
+
+          <div style={styles.inputGroup}>
+            <label style={styles.label}>Student ID</label>
+            <input
+              type="text"
+              value={studentId}
+              onChange={e => setStudentId(e.target.value)}
+              style={styles.input}
+              placeholder="Enter your student ID"
+              required
+            />
+          </div>
+
+          <div style={styles.inputGroup}>
+            <label style={styles.label}>Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              style={styles.input}
+              placeholder="Enter your password"
+              required
+            />
+          </div>
+
+          <button type="submit" style={styles.submitBtn} disabled={loading}>
+            {loading ? 'Please wait...' : (isRegister ? 'Create Account' : 'Continue')}
+          </button>
+        </form>
+
+        <p style={styles.switchText}>
+          {isRegister ? 'Already have an account?' : "Don't have an account?"}
+          <button
+            onClick={() => { setIsRegister(!isRegister); setError(''); setSuccess(''); }}
+            style={styles.switchBtn}
+          >
+            {isRegister ? 'Log in' : 'Sign up'}
+          </button>
+        </p>
+      </div>
     </div>
   )
+}
+
+const styles = {
+  container: {
+    minHeight: '100vh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '1rem',
+    background: '#f9fafb'
+  },
+  card: {
+    width: '100%',
+    maxWidth: '380px',
+    padding: '2rem',
+    background: 'white',
+    borderRadius: '16px',
+    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.06)'
+  },
+  logoSection: {
+    textAlign: 'center',
+    marginBottom: '1.75rem'
+  },
+  logo: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '52px',
+    height: '52px',
+    borderRadius: '14px',
+    background: '#f0fdf9',
+    marginBottom: '1rem'
+  },
+  title: {
+    fontSize: '1.35rem',
+    fontWeight: '600',
+    marginBottom: '0.25rem',
+    color: 'var(--text-primary)'
+  },
+  subtitle: {
+    color: 'var(--text-secondary)',
+    fontSize: '0.9rem'
+  },
+  form: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1rem'
+  },
+  inputGroup: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.4rem'
+  },
+  label: {
+    fontSize: '0.85rem',
+    fontWeight: '500',
+    color: 'var(--text-primary)'
+  },
+  input: {
+    width: '100%',
+    padding: '0.8rem 0.9rem',
+    background: 'white',
+    border: '1px solid var(--border-color)',
+    borderRadius: '10px',
+    color: 'var(--text-primary)',
+    fontSize: '0.95rem',
+    transition: 'border-color 0.2s'
+  },
+  submitBtn: {
+    width: '100%',
+    padding: '0.875rem',
+    background: 'var(--accent)',
+    color: 'white',
+    border: 'none',
+    borderRadius: '10px',
+    fontSize: '0.95rem',
+    fontWeight: '600',
+    marginTop: '0.5rem',
+    cursor: 'pointer',
+    transition: 'opacity 0.2s'
+  },
+  error: {
+    background: '#fef2f2',
+    border: '1px solid #fecaca',
+    color: '#dc2626',
+    padding: '0.75rem 1rem',
+    borderRadius: '10px',
+    marginBottom: '1rem',
+    fontSize: '0.875rem'
+  },
+  success: {
+    background: '#f0fdf4',
+    border: '1px solid #bbf7d0',
+    color: '#16a34a',
+    padding: '0.75rem 1rem',
+    borderRadius: '10px',
+    marginBottom: '1rem',
+    fontSize: '0.875rem'
+  },
+  switchText: {
+    marginTop: '1.5rem',
+    textAlign: 'center',
+    color: 'var(--text-secondary)',
+    fontSize: '0.875rem'
+  },
+  switchBtn: {
+    background: 'none',
+    border: 'none',
+    color: 'var(--accent)',
+    fontWeight: '600',
+    marginLeft: '0.4rem',
+    cursor: 'pointer'
+  }
 }

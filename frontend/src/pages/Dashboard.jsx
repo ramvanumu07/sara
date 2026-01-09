@@ -1,273 +1,379 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { curriculum, calculateProgress } from '../data/curriculum'
+import { courses } from '../data/curriculum'
 import api from '../config/api'
-import { 
-  ChevronRight, 
-  User, 
-  LogOut, 
-  CheckCircle2, 
-  Circle,
-  BookOpen,
-  Sprout,
-  Lock,
-  Crown,
-  AlertCircle
-} from 'lucide-react'
 
 export default function Dashboard() {
-  const { user, logout, hasAccess } = useAuth()
+  const { user, logout } = useAuth()
   const navigate = useNavigate()
-  const location = useLocation()
-  const [expandedTopics, setExpandedTopics] = useState([])
-  const [progressData, setProgressData] = useState({})
-  const [successMessage, setSuccessMessage] = useState(location.state?.message || null)
-  
-  const userHasAccess = hasAccess()
+  const [progress, setProgress] = useState({})
+  const [selectedCourse, setSelectedCourse] = useState(courses[0]?.id || null)
+  const [expandedTopic, setExpandedTopic] = useState(null)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [profileOpen, setProfileOpen] = useState(false)
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
 
-  // Load progress from server
+  const currentCourse = courses.find(c => c.id === selectedCourse)
+  const curriculum = currentCourse?.topics || []
+
   useEffect(() => {
-    const loadProgress = async () => {
-      try {
-        const response = await api.get('/api/progress')
-        if (response.data.success) {
-          setProgressData(response.data.progress || {})
-        }
-      } catch (err) {
-        console.log('Progress load failed:', err.message)
-      }
+    loadProgress()
+    const handleResize = () => setIsMobile(window.innerWidth <= 768)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  async function loadProgress() {
+    try {
+      const res = await api.get('/api/progress')
+      if (res.data.success) setProgress(res.data.progress)
+    } catch (err) {
+      console.error('Failed to load progress:', err)
     }
-
-    if (userHasAccess) {
-      loadProgress()
-    }
-  }, [userHasAccess])
-
-  // Clear success message after 5 seconds
-  useEffect(() => {
-    if (successMessage) {
-      const timer = setTimeout(() => setSuccessMessage(null), 5000)
-      return () => clearTimeout(timer)
-    }
-  }, [successMessage])
-
-  const progress = calculateProgress(progressData)
-
-  const toggleTopic = (topicId) => {
-    setExpandedTopics(prev => 
-      prev.includes(topicId) 
-        ? prev.filter(id => id !== topicId)
-        : [...prev, topicId]
-    )
   }
 
-  const isSubtopicCompleted = (topicId, subtopicId) => {
+  function getSubtopicStatus(topicId, subtopicId) {
     const key = `${topicId}-${subtopicId}`
-    return progressData[key]?.status === 'completed'
+    return progress[key]?.status || 'not_started'
   }
 
-  const isTopicCompleted = (topicId) => {
-    const topic = curriculum.find(t => t.id === topicId)
-    if (!topic) return false
-    return topic.subtopics.every(sub => isSubtopicCompleted(topicId, sub.id))
-  }
-
-  const handleStartSubtopic = (topicId, subtopicId) => {
-    if (!userHasAccess) {
-      return // Will show no access banner
-    }
+  function startLesson(topicId, subtopicId) {
+    setSidebarOpen(false)
     navigate(`/learn/${topicId}/${subtopicId}`)
   }
 
+  function getStats() {
+    let total = 0, completed = 0
+    curriculum.forEach(topic => {
+      topic.subtopics.forEach(sub => {
+        total++
+        if (getSubtopicStatus(topic.id, sub.id) === 'completed') completed++
+      })
+    })
+    return { total, completed, percent: total ? Math.round((completed / total) * 100) : 0 }
+  }
+
+  const stats = getStats()
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      {/* Header */}
-      <header className="h-16 border-b border-slate-700/50 px-4 flex items-center justify-between backdrop-blur bg-slate-900/50">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
-            <Sprout className="w-5 h-5 text-white" />
+    <div style={styles.container}>
+      {/* Mobile Header */}
+      {isMobile && (
+        <header style={styles.mobileHeader}>
+          <button onClick={() => setSidebarOpen(true)} style={styles.menuBtn}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M3 12h18M3 6h18M3 18h18" />
+            </svg>
+          </button>
+          <span style={styles.mobileTitle}>EduBridge</span>
+          <button onClick={() => setProfileOpen(!profileOpen)} style={styles.profileBtn}>
+            <div style={styles.mobileAvatar}>{user?.name?.charAt(0) || 'U'}</div>
+          </button>
+        </header>
+      )}
+
+      {/* Overlay */}
+      {isMobile && sidebarOpen && (
+        <div style={styles.overlay} onClick={() => setSidebarOpen(false)} />
+      )}
+
+      {/* Profile Dropdown Overlay */}
+      {profileOpen && (
+        <div style={styles.overlay} onClick={() => setProfileOpen(false)} />
+      )}
+
+      {/* Profile Dropdown */}
+      {profileOpen && (
+        <div style={{ ...styles.profileDropdown, ...(isMobile ? styles.profileDropdownMobile : {}) }}>
+          <div style={styles.profileHeader}>
+            <div style={styles.profileAvatar}>{user?.name?.charAt(0) || 'U'}</div>
+            <div style={styles.profileInfo}>
+              <span style={styles.profileName}>{user?.name}</span>
+              <span style={styles.profileId}>{user?.studentId}</span>
+            </div>
           </div>
-          <h1 className="text-lg font-semibold text-white">DevSprout</h1>
-        </div>
-          
-        <div className="flex items-center gap-3">
-          {/* Access Badge */}
-          {userHasAccess ? (
-            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/20 text-emerald-400 rounded-full text-sm">
-              <Crown className="w-4 h-4" />
-              <span>Active</span>
-            </div>
-          ) : (
-            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-amber-500/20 text-amber-400 rounded-full text-sm">
-              <Lock className="w-4 h-4" />
-              <span>Pending</span>
-            </div>
-          )}
-          
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center">
-              <User className="w-4 h-4 text-slate-300" />
-            </div>
-            <span className="text-sm text-slate-300 hidden sm:block">{user?.name || user?.studentId}</span>
-          </div>
-          <button
-            onClick={() => {
-              logout()
-              navigate('/login')
-            }}
-            className="p-2 hover:bg-slate-700/50 rounded-lg transition-colors"
-            title="Sign out"
-          >
-            <LogOut className="w-4 h-4 text-slate-400" />
+          <div style={styles.profileDivider} />
+          <button onClick={() => { logout(); setProfileOpen(false); }} style={styles.logoutBtn}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" />
+            </svg>
+            Log out
           </button>
         </div>
-      </header>
+      )}
 
-      {/* Main Content */}
-      <main className="max-w-2xl mx-auto p-6">
-        {/* Success Message */}
-        {successMessage && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            className="mb-6 p-4 bg-emerald-500/20 border border-emerald-500/30 rounded-xl text-emerald-400"
-          >
-            {successMessage}
-          </motion.div>
-        )}
+      {/* Sidebar - Courses List */}
+      <aside style={{
+        ...styles.sidebar,
+        ...(isMobile ? styles.sidebarMobile : {}),
+        ...(isMobile && sidebarOpen ? styles.sidebarMobileOpen : {})
+      }}>
+        <div style={styles.sidebarHeader}>
+          <div style={styles.logo}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#10a37f" strokeWidth="2" />
+              <path d="M2 17L12 22L22 17" stroke="#10a37f" strokeWidth="2" />
+              <path d="M2 12L12 17L22 12" stroke="#10a37f" strokeWidth="2" />
+            </svg>
+            <span style={styles.logoText}>EduBridge</span>
+          </div>
+          {isMobile && (
+            <button onClick={() => setSidebarOpen(false)} style={styles.closeBtn}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M18 6L6 18M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
 
-        {/* No Access Banner */}
-        {!userHasAccess && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-6 p-6 bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 rounded-2xl"
-          >
-            <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-xl bg-amber-500/20 flex items-center justify-center flex-shrink-0">
-                <AlertCircle className="w-6 h-6 text-amber-400" />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-lg font-semibold text-white mb-1">Access Pending</h3>
-                <p className="text-slate-400 text-sm mb-3">
-                  Your account is registered! To start learning:
-                </p>
-                <ol className="text-slate-400 text-sm space-y-1 mb-3">
-                  <li>1. Pay ₹200 (UPI/Bank Transfer)</li>
-                  <li>2. Send screenshot to admin with your ID: <span className="text-emerald-400 font-mono">{user?.studentId}</span></li>
-                  <li>3. Admin will activate your access</li>
-                </ol>
-                <p className="text-slate-500 text-xs">
-                  Contact: [Your contact info here]
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        )}
+        {/* Courses List */}
+        <nav style={styles.nav}>
+          <span style={styles.navLabel}>Courses</span>
+          {courses.map(course => (
+            <button
+              key={course.id}
+              style={{
+                ...styles.courseItem,
+                ...(selectedCourse === course.id ? styles.courseItemActive : {})
+              }}
+              onClick={() => { setSelectedCourse(course.id); setExpandedTopic(null); setSidebarOpen(false); }}
+            >
+              <span style={styles.courseTitle}>{course.title}</span>
+              {selectedCourse === course.id && (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M20 6L9 17l-5-5" />
+                </svg>
+              )}
+            </button>
+          ))}
+        </nav>
 
-        {/* Progress Bar (if has access) */}
-        {userHasAccess && (
-          <div className="mb-8">
-            <div className="flex justify-between text-sm text-slate-400 mb-2">
-              <span>Course Progress</span>
-              <span>{progress.overall}%</span>
-            </div>
-            <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
-              <motion.div
-                className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full"
-                initial={{ width: 0 }}
-                animate={{ width: `${progress.overall}%` }}
-                transition={{ duration: 0.5 }}
-              />
-            </div>
+        {/* Desktop Profile Button */}
+        {!isMobile && (
+          <div style={styles.sidebarFooter}>
+            <button onClick={() => setProfileOpen(!profileOpen)} style={styles.profileBtnDesktop}>
+              <div style={styles.avatar}>{user?.name?.charAt(0) || 'U'}</div>
+              <span style={styles.userNameText}>{user?.name}</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M6 9l6 6 6-6" />
+              </svg>
+            </button>
           </div>
         )}
+      </aside>
 
-        {/* Topics List */}
-        <div className="space-y-2">
-          {curriculum.map((topic, index) => {
-            const topicCompleted = isTopicCompleted(topic.id)
-            const topicProgress = progress.byTopic[topic.id] || { completed: 0, total: topic.subtopics.length }
-            const isExpanded = expandedTopics.includes(topic.id)
+      {/* Main - Topics List */}
+      <main style={{ ...styles.main, ...(isMobile ? { paddingTop: 72 } : {}) }}>
+        <div style={styles.content}>
+          {/* Header */}
+          <div style={styles.headerSection}>
+            <div style={styles.logoLarge}>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#10a37f" strokeWidth="2" />
+                <path d="M2 17L12 22L22 17" stroke="#10a37f" strokeWidth="2" />
+                <path d="M2 12L12 17L22 12" stroke="#10a37f" strokeWidth="2" />
+              </svg>
+            </div>
+            <h1 style={styles.title}>{currentCourse?.title}</h1>
+          </div>
 
-            return (
-              <motion.div
-                key={topic.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.03 }}
-                className="border border-slate-700/50 rounded-xl overflow-hidden bg-slate-800/30 backdrop-blur"
-              >
-                {/* Topic Header */}
-                <button
-                  onClick={() => toggleTopic(topic.id)}
-                  className={`w-full flex items-center gap-3 p-4 text-left transition-colors hover:bg-slate-700/30 ${topicCompleted ? 'bg-slate-700/20' : ''}`}
-                >
-                  <div className="w-10 h-10 rounded-lg bg-slate-700/50 flex items-center justify-center flex-shrink-0">
-                    <BookOpen className="w-5 h-5 text-slate-300" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-white">{topic.title}</p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    {userHasAccess && (
-                      <span className="text-sm text-slate-400">
-                        {topicProgress.completed}/{topicProgress.total}
-                      </span>
-                    )}
-                    {topicCompleted && (
-                      <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                    )}
-                    <ChevronRight className={`w-5 h-5 text-slate-500 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
-                  </div>
-                </button>
+          {/* Stats */}
+          <div style={styles.statsGrid}>
+            <div style={styles.statCard}>
+              <span style={styles.statNumber}>{stats.completed}</span>
+              <span style={styles.statLabel}>Completed</span>
+            </div>
+            <div style={styles.statCard}>
+              <span style={styles.statNumber}>{stats.total - stats.completed}</span>
+              <span style={styles.statLabel}>Remaining</span>
+            </div>
+            <div style={styles.statCard}>
+              <span style={styles.statNumber}>{stats.percent}%</span>
+              <span style={styles.statLabel}>Progress</span>
+            </div>
+          </div>
 
-                {/* Subtopics List */}
-                <AnimatePresence>
-                  {isExpanded && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="border-t border-slate-700/50 bg-slate-800/50">
-                        {topic.subtopics.map((subtopic) => {
-                          const completed = isSubtopicCompleted(topic.id, subtopic.id)
-                          
-                          return (
-                            <button
-                              key={subtopic.id}
-                              onClick={() => handleStartSubtopic(topic.id, subtopic.id)}
-                              disabled={!userHasAccess}
-                              className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-slate-700/30 transition-colors border-b border-slate-700/30 last:border-b-0 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              {completed ? (
-                                <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0" />
-                              ) : userHasAccess ? (
-                                <Circle className="w-5 h-5 text-slate-600 flex-shrink-0" />
-                              ) : (
-                                <Lock className="w-5 h-5 text-slate-600 flex-shrink-0" />
-                              )}
-                              <p className={`text-sm ${completed ? 'text-white' : 'text-slate-400'}`}>
-                                {subtopic.title}
-                              </p>
-                            </button>
-                          )
-                        })}
-                      </div>
-                    </motion.div>
+          {/* Topics List */}
+          <div style={styles.topicsSection}>
+            <span style={styles.topicsLabel}>Topics</span>
+            <div style={styles.topicsList}>
+              {curriculum.map(topic => (
+                <div key={topic.id} style={styles.topicCard}>
+                  <button
+                    style={{
+                      ...styles.topicHeader,
+                      ...(expandedTopic === topic.id ? styles.topicHeaderActive : {})
+                    }}
+                    onClick={() => setExpandedTopic(expandedTopic === topic.id ? null : topic.id)}
+                  >
+                    <span style={styles.topicTitle}>{topic.title}</span>
+                    <span style={styles.chevron}>{expandedTopic === topic.id ? '▼' : '▶'}</span>
+                  </button>
+
+                  {expandedTopic === topic.id && (
+                    <div style={styles.subtopicList}>
+                      {topic.subtopics.map(subtopic => {
+                        const status = getSubtopicStatus(topic.id, subtopic.id)
+                        return (
+                          <button
+                            key={subtopic.id}
+                            style={styles.subtopicItem}
+                            onClick={() => startLesson(topic.id, subtopic.id)}
+                          >
+                            <span style={{
+                              width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
+                              background: status === 'completed' ? '#10a37f' : status === 'in_progress' ? '#10a37f' : '#d1d5db'
+                            }} />
+                            <span style={styles.subtopicTitle}>{subtopic.title}</span>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: 'var(--text-muted)', flexShrink: 0 }}>
+                              <path d="M9 18l6-6-6-6" />
+                            </svg>
+                          </button>
+                        )
+                      })}
+                    </div>
                   )}
-                </AnimatePresence>
-              </motion.div>
-            )
-          })}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </main>
     </div>
   )
+}
+
+const styles = {
+  container: { display: 'flex', height: '100vh', overflow: 'hidden', position: 'relative' },
+
+  // Mobile
+  mobileHeader: {
+    position: 'fixed', top: 0, left: 0, right: 0, height: 56,
+    background: 'white', borderBottom: '1px solid var(--border-color)',
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '0 1rem', zIndex: 100
+  },
+  menuBtn: { padding: 8, background: 'transparent', border: 'none', color: 'var(--text-primary)' },
+  mobileTitle: { fontWeight: 600, fontSize: '1.1rem' },
+  profileBtn: { padding: 0, background: 'transparent', border: 'none' },
+  mobileAvatar: {
+    width: 32, height: 32, borderRadius: '50%', background: 'var(--accent)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    color: 'white', fontSize: '0.875rem', fontWeight: 600
+  },
+  overlay: { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 199 },
+
+  // Profile Dropdown
+  profileDropdown: {
+    position: 'fixed', bottom: 70, left: 16, width: 240,
+    background: 'white', borderRadius: 12, boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+    border: '1px solid var(--border-color)', zIndex: 300, overflow: 'hidden'
+  },
+  profileDropdownMobile: { bottom: 'auto', top: 64, left: 'auto', right: 16 },
+  profileHeader: { display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '1rem' },
+  profileAvatar: {
+    width: 40, height: 40, borderRadius: '50%', background: 'var(--accent)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    color: 'white', fontSize: '1rem', fontWeight: 600
+  },
+  profileInfo: { display: 'flex', flexDirection: 'column' },
+  profileName: { fontSize: '0.95rem', fontWeight: 600, color: 'var(--text-primary)' },
+  profileId: { fontSize: '0.8rem', color: 'var(--text-muted)' },
+  profileDivider: { height: 1, background: 'var(--border-color)' },
+  logoutBtn: {
+    width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem',
+    padding: '0.875rem 1rem', background: 'transparent', border: 'none',
+    color: '#dc2626', fontSize: '0.9rem', textAlign: 'left'
+  },
+
+  // Sidebar
+  sidebar: {
+    width: 260, background: 'var(--sidebar-bg)', display: 'flex',
+    flexDirection: 'column', borderRight: '1px solid var(--border-color)', flexShrink: 0
+  },
+  sidebarMobile: { position: 'fixed', left: '-100%', top: 0, bottom: 0, zIndex: 200, transition: 'left 0.3s ease' },
+  sidebarMobileOpen: { left: 0 },
+  sidebarHeader: {
+    padding: '1rem 1.25rem', borderBottom: '1px solid var(--border-color)',
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between'
+  },
+  logo: { display: 'flex', alignItems: 'center', gap: '0.75rem' },
+  logoText: { fontSize: '1.1rem', fontWeight: 600, color: 'var(--text-primary)' },
+  closeBtn: { padding: 4, background: 'transparent', border: 'none', color: 'var(--text-muted)' },
+
+  nav: { flex: 1, overflow: 'auto', padding: '0.75rem' },
+  navLabel: {
+    display: 'block', padding: '0.5rem 0.75rem', fontSize: '0.7rem',
+    color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600
+  },
+  courseItem: {
+    width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '0.75rem', background: 'transparent', border: 'none', borderRadius: 8,
+    color: 'var(--text-secondary)', fontSize: '0.9rem', textAlign: 'left', transition: 'all 0.15s'
+  },
+  courseItemActive: { background: '#f0fdf9', color: 'var(--accent)' },
+  courseTitle: { fontWeight: 500 },
+
+  sidebarFooter: { padding: '0.75rem', borderTop: '1px solid var(--border-color)' },
+  profileBtnDesktop: {
+    width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem',
+    padding: '0.75rem', background: 'transparent', border: '1px solid var(--border-color)',
+    borderRadius: 8, color: 'var(--text-primary)', fontSize: '0.9rem', textAlign: 'left'
+  },
+  avatar: {
+    width: 32, height: 32, borderRadius: '50%', background: 'var(--accent)',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    fontSize: '0.85rem', fontWeight: 600, color: 'white'
+  },
+  userNameText: { flex: 1, fontSize: '0.9rem', fontWeight: 500, color: 'var(--text-primary)' },
+
+  // Main
+  main: { flex: 1, overflow: 'auto', padding: '3rem 1.5rem', background: 'var(--main-bg)' },
+  content: { maxWidth: 600, margin: '0 auto' },
+
+  // Header
+  headerSection: { textAlign: 'center', marginBottom: '1.5rem' },
+  logoLarge: {
+    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+    width: 56, height: 56, borderRadius: 14, background: 'var(--sidebar-bg)',
+    border: '1px solid var(--border-color)', marginBottom: '0.875rem'
+  },
+  title: { fontSize: '1.25rem', fontWeight: 600, color: 'var(--text-primary)' },
+
+  // Stats
+  statsGrid: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem', marginBottom: '2rem' },
+  statCard: {
+    padding: '1.125rem 0.875rem', background: 'white', border: '1px solid var(--border-color)',
+    borderRadius: 10, display: 'flex', flexDirection: 'column', gap: '0.25rem', textAlign: 'center'
+  },
+  statNumber: { fontSize: '1.35rem', fontWeight: 700, color: 'var(--accent)' },
+  statLabel: { fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 500 },
+
+  // Topics
+  topicsSection: {},
+  topicsLabel: {
+    display: 'block', marginBottom: '0.75rem', fontSize: '0.75rem',
+    color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600
+  },
+  topicsList: { display: 'flex', flexDirection: 'column', gap: '0.5rem' },
+  topicCard: {
+    background: 'white', border: '1px solid var(--border-color)', borderRadius: 10, overflow: 'hidden'
+  },
+  topicHeader: {
+    width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '0.875rem 1rem', background: 'transparent', border: 'none',
+    color: 'var(--text-primary)', fontSize: '0.95rem', textAlign: 'left', transition: 'all 0.15s'
+  },
+  topicHeaderActive: { background: 'var(--sidebar-bg)' },
+  topicTitle: { fontWeight: 500 },
+  chevron: { fontSize: '0.6rem', color: 'var(--text-muted)' },
+
+  subtopicList: { borderTop: '1px solid var(--border-color)', padding: '0.5rem' },
+  subtopicItem: {
+    width: '100%', display: 'flex', alignItems: 'center', gap: '0.75rem',
+    padding: '0.625rem 0.75rem', background: 'transparent', border: 'none', borderRadius: 6,
+    color: 'var(--text-secondary)', fontSize: '0.875rem', textAlign: 'left', transition: 'all 0.15s'
+  },
+  subtopicTitle: { flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }
 }
