@@ -6,7 +6,7 @@ function captureConsoleLog(code) {
   const outputs = [];
   const originalLog = console.log;
   console.log = (...args) => outputs.push(args.join(' '));
-  
+
   try {
     const func = new Function(code);
     func();
@@ -14,7 +14,7 @@ function captureConsoleLog(code) {
     console.log = originalLog;
     throw error;
   }
-  
+
   console.log = originalLog;
   return outputs.join('\n');
 }
@@ -236,6 +236,7 @@ export const mathObjectTopicTests = {
 };
 
 export default mathObjectTopicTests;
+
 
 
 

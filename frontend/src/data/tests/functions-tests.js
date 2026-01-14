@@ -8,7 +8,7 @@
 // Execute user code and extract the defined function, then test with multiple inputs
 function testFunctionWithInputs(userCode, testCases) {
   const results = [];
-  
+
   for (const testCase of testCases) {
     try {
       // Execute user code in a controlled scope
@@ -17,24 +17,24 @@ function testFunctionWithInputs(userCode, testCases) {
         // Return all function definitions
         return { ${userCode.match(/function\s+(\w+)/g)?.map(m => m.split(' ')[1]).join(', ') || ''} };
       `);
-      
+
       const funcs = fn();
       const funcName = Object.keys(funcs)[0];
       const userFunction = funcs[funcName];
-      
+
       if (!userFunction) {
-        results.push({ 
-          input: testCase.input, 
-          expected: testCase.expectedOutput, 
+        results.push({
+          input: testCase.input,
+          expected: testCase.expectedOutput,
           actual: 'Function not defined',
-          passed: false 
+          passed: false
         });
         continue;
       }
-      
+
       const result = String(userFunction(...testCase.input));
       const passed = result === testCase.expectedOutput;
-      
+
       results.push({
         input: testCase.input,
         expected: testCase.expectedOutput,
@@ -50,7 +50,7 @@ function testFunctionWithInputs(userCode, testCases) {
       });
     }
   }
-  
+
   const allPassed = results.every(r => r.passed);
   return { passed: allPassed, results };
 }
@@ -67,7 +67,7 @@ export const task1 = {
     { input: [-5, -3], expectedOutput: '-8' },
     { input: [5, 0], expectedOutput: '5' }
   ],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     return testFunctionWithInputs(userCode, this.testCases);
   }
 };
@@ -84,7 +84,7 @@ export const task2 = {
     { input: [-7], expectedOutput: 'false' },
     { input: [1], expectedOutput: 'false' }
   ],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     return testFunctionWithInputs(userCode, this.testCases);
   }
 };
@@ -100,7 +100,7 @@ export const task3 = {
     { input: [-100], expectedOutput: '100' },
     { input: [-1], expectedOutput: '1' }
   ],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     return testFunctionWithInputs(userCode, this.testCases);
   }
 };
@@ -118,7 +118,7 @@ export const task4 = {
     { input: [7, 7, 7], expectedOutput: '7' },
     { input: [0, -5, 5], expectedOutput: '5' }
   ],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     return testFunctionWithInputs(userCode, this.testCases);
   }
 };
@@ -134,7 +134,7 @@ export const task5 = {
     { input: ['a'], expectedOutput: '1' },
     { input: ['hello world'], expectedOutput: '11' }
   ],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     return testFunctionWithInputs(userCode, this.testCases);
   }
 };
@@ -153,7 +153,7 @@ export const task6 = {
     { input: [8], expectedOutput: 'Invalid' },
     { input: [-1], expectedOutput: 'Invalid' }
   ],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     return testFunctionWithInputs(userCode, this.testCases);
   }
 };
@@ -170,7 +170,7 @@ export const task7 = {
     { input: [-10], expectedOutput: '14' },
     { input: [50], expectedOutput: '122' }
   ],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     return testFunctionWithInputs(userCode, this.testCases);
   }
 };
@@ -188,7 +188,7 @@ export const task8 = {
     { input: [7, 1], expectedOutput: 'true' },
     { input: [0, 5], expectedOutput: 'true' }
   ],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     return testFunctionWithInputs(userCode, this.testCases);
   }
 };
@@ -206,7 +206,7 @@ export const task9 = {
     { input: [1], expectedOutput: 'positive' },
     { input: [-1], expectedOutput: 'negative' }
   ],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     return testFunctionWithInputs(userCode, this.testCases);
   }
 };
@@ -224,7 +224,7 @@ export const task10 = {
     { input: [[0, 5, 0, 3]], expectedOutput: '8' },
     { input: [[]], expectedOutput: '0' }
   ],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     return testFunctionWithInputs(userCode, this.testCases);
   }
 };
@@ -242,7 +242,7 @@ export const task11 = {
     { input: [[3, 5, 2, 9]], expectedOutput: '9' },
     { input: [[0, -5, -3]], expectedOutput: '0' }
   ],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     return testFunctionWithInputs(userCode, this.testCases);
   }
 };
@@ -261,7 +261,7 @@ export const task12 = {
     { input: [[0, 1, 2], 0], expectedOutput: 'true' },
     { input: [[-1, 0, 1], -1], expectedOutput: 'true' }
   ],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     return testFunctionWithInputs(userCode, this.testCases);
   }
 };

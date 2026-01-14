@@ -24,7 +24,7 @@ export const errorHandlingTopicTests = {
             { input: [''], expectedOutput: 'null' },
             { input: ['null'], expectedOutput: 'null' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('str', `${code}\nreturn safeJsonParse(str);`);
@@ -67,7 +67,7 @@ export const errorHandlingTopicTests = {
             { input: [-10, 2], expectedOutput: '-5' },
             { input: [7, 2], expectedOutput: '3.5' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('a', 'b', `${code}\nreturn safeDivide(a, b);`);
@@ -110,7 +110,7 @@ export const errorHandlingTopicTests = {
             { input: [0], expectedOutput: '0' },
             { input: [150], expectedOutput: '150' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('age', `${code}\nreturn validateAge(age);`);
@@ -153,7 +153,7 @@ export const errorHandlingTopicTests = {
             { input: [{}, 'any.path'], expectedOutput: 'Property not found' },
             { input: [{ val: 0 }, 'val'], expectedOutput: '0' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('obj', 'path', `${code}\nreturn getNestedValue(obj, path);`);
@@ -195,7 +195,7 @@ export const errorHandlingTopicTests = {
             { input: ['3.14'], expectedOutput: '3' },
             { input: [''], expectedOutput: 'Error: Invalid number' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('str', `${code}\nreturn toInteger(str);`);
@@ -238,7 +238,7 @@ export const errorHandlingTopicTests = {
             { input: [['a', 'b'], 0], expectedOutput: 'a' },
             { input: [[], 0], expectedOutput: 'Error: Index out of bounds' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('arr', 'index', `${code}\nreturn safeGet(arr, index);`);
@@ -281,7 +281,7 @@ export const errorHandlingTopicTests = {
             { input: [undefined], expectedOutput: 'undefined' },
             { input: [[1, 2]], expectedOutput: 'object' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('val', `${code}\nreturn getType(val);`);
@@ -323,7 +323,7 @@ export const errorHandlingTopicTests = {
             { input: [2], expectedOutput: '1.4142135623730951' },
             { input: [1], expectedOutput: '1' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('n', `${code}\nreturn safeSqrt(n);`);
@@ -352,6 +352,7 @@ export const errorHandlingTopicTests = {
 };
 
 export default errorHandlingTopicTests;
+
 
 
 

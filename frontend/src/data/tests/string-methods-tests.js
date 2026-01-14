@@ -4,23 +4,23 @@
 
 function testFunctionWithInputs(userCode, testCases) {
   const results = [];
-  
+
   for (const testCase of testCases) {
     try {
       const fn = new Function(`
         ${userCode}
         return { ${userCode.match(/function\s+(\w+)/g)?.map(m => m.split(' ')[1]).join(', ') || ''} };
       `);
-      
+
       const funcs = fn();
       const funcName = Object.keys(funcs)[0];
       const userFunction = funcs[funcName];
-      
+
       if (!userFunction) {
         results.push({ input: testCase.input, expected: testCase.expectedOutput, actual: 'Function not defined', passed: false });
         continue;
       }
-      
+
       const result = String(userFunction(...testCase.input));
       const passed = result === testCase.expectedOutput;
       results.push({ input: testCase.input, expected: testCase.expectedOutput, actual: result, passed });
@@ -28,7 +28,7 @@ function testFunctionWithInputs(userCode, testCases) {
       results.push({ input: testCase.input, expected: testCase.expectedOutput, actual: `Error: ${error.message}`, passed: false });
     }
   }
-  
+
   return { passed: results.every(r => r.passed), results };
 }
 
@@ -49,7 +49,7 @@ export const stringManipulationsTopicTests = {
         { input: ['  '], expectedOutput: '' },
         { input: [''], expectedOutput: '' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'replace-spaces',
@@ -62,7 +62,7 @@ export const stringManipulationsTopicTests = {
         { input: ['nospace'], expectedOutput: 'nospace' },
         { input: [''], expectedOutput: '' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'repeat',
@@ -74,7 +74,7 @@ export const stringManipulationsTopicTests = {
         { input: ['hello', 1], expectedOutput: 'hello' },
         { input: ['x', 0], expectedOutput: '' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'pad-zeros',
@@ -87,7 +87,7 @@ export const stringManipulationsTopicTests = {
         { input: [0], expectedOutput: '00000' },
         { input: [999999], expectedOutput: '999999' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'title-case',
@@ -100,7 +100,7 @@ export const stringManipulationsTopicTests = {
         { input: ['a'], expectedOutput: 'A' },
         { input: [''], expectedOutput: '' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     }
   ]
 };
@@ -121,7 +121,7 @@ export const splitJoinTopicTests = {
         { input: ['single'], expectedOutput: 'single' },
         { input: [''], expectedOutput: '' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'join-words',
@@ -133,7 +133,7 @@ export const splitJoinTopicTests = {
         { input: [['single']], expectedOutput: 'single' },
         { input: [[]], expectedOutput: '' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'reverse-string',
@@ -146,7 +146,7 @@ export const splitJoinTopicTests = {
         { input: ['ab'], expectedOutput: 'ba' },
         { input: [''], expectedOutput: '' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'count-words',
@@ -158,7 +158,7 @@ export const splitJoinTopicTests = {
         { input: ['single'], expectedOutput: '1' },
         { input: [''], expectedOutput: '0' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'csv-to-pipe',
@@ -170,7 +170,7 @@ export const splitJoinTopicTests = {
         { input: ['single'], expectedOutput: 'single' },
         { input: [''], expectedOutput: '' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     }
   ]
 };
@@ -192,7 +192,7 @@ export const substringSliceTopicTests = {
         { input: ['a'], expectedOutput: 'a' },
         { input: [''], expectedOutput: '' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'last-3',
@@ -205,7 +205,7 @@ export const substringSliceTopicTests = {
         { input: ['a'], expectedOutput: 'a' },
         { input: [''], expectedOutput: '' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'remove-first-last',
@@ -218,7 +218,7 @@ export const substringSliceTopicTests = {
         { input: ['abc'], expectedOutput: 'b' },
         { input: ['a'], expectedOutput: '' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'substring-range',
@@ -230,7 +230,7 @@ export const substringSliceTopicTests = {
         { input: ['JavaScript', 4, 10], expectedOutput: 'Script' },
         { input: ['test', 1, 3], expectedOutput: 'es' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'middle-chars',
@@ -243,7 +243,7 @@ export const substringSliceTopicTests = {
         { input: ['ab'], expectedOutput: 'ab' },
         { input: ['abc'], expectedOutput: 'b' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     }
   ]
 };
@@ -265,7 +265,7 @@ export const stringSearchingTopicTests = {
         { input: ['', 'test'], expectedOutput: 'false' },
         { input: ['test', ''], expectedOutput: 'true' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'indexof',
@@ -278,7 +278,7 @@ export const stringSearchingTopicTests = {
         { input: ['banana', 'a'], expectedOutput: '1' },
         { input: ['', 'test'], expectedOutput: '-1' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'ends-with-js',
@@ -291,7 +291,7 @@ export const stringSearchingTopicTests = {
         { input: ['js'], expectedOutput: 'false' },
         { input: [''], expectedOutput: 'false' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'starts-with-https',
@@ -304,7 +304,7 @@ export const stringSearchingTopicTests = {
         { input: ['ftp://files.com'], expectedOutput: 'false' },
         { input: [''], expectedOutput: 'false' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'count-char',
@@ -317,7 +317,7 @@ export const stringSearchingTopicTests = {
         { input: ['aaa', 'a'], expectedOutput: '3' },
         { input: ['', 'a'], expectedOutput: '0' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'lastindexof',
@@ -330,7 +330,7 @@ export const stringSearchingTopicTests = {
         { input: ['test', 'x'], expectedOutput: '-1' },
         { input: ['', 'a'], expectedOutput: '-1' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     }
   ]
 };
@@ -341,6 +341,7 @@ export default {
   substringSliceTopicTests,
   stringSearchingTopicTests
 };
+
 
 
 

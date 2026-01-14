@@ -4,7 +4,7 @@
 
 function testFunctionWithInputs(userCode, testCases) {
   const results = [];
-  
+
   for (const testCase of testCases) {
     try {
       // For arrow functions, we need to handle both named and anonymous assignments
@@ -19,14 +19,14 @@ function testFunctionWithInputs(userCode, testCases) {
         }
         return null;
       `);
-      
+
       const userFunction = fn();
-      
+
       if (!userFunction) {
         results.push({ input: testCase.input, expected: testCase.expectedOutput, actual: 'Function not defined', passed: false });
         continue;
       }
-      
+
       const result = String(userFunction(...testCase.input));
       const passed = result === testCase.expectedOutput;
       results.push({ input: testCase.input, expected: testCase.expectedOutput, actual: result, passed });
@@ -34,7 +34,7 @@ function testFunctionWithInputs(userCode, testCases) {
       results.push({ input: testCase.input, expected: testCase.expectedOutput, actual: `Error: ${error.message}`, passed: false });
     }
   }
-  
+
   return { passed: results.every(r => r.passed), results };
 }
 
@@ -53,7 +53,7 @@ export const arrowFunctionsTopicTests = {
         { input: [-3], expectedOutput: '-6' },
         { input: [100], expectedOutput: '200' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'sum-two',
@@ -65,7 +65,7 @@ export const arrowFunctionsTopicTests = {
         { input: [-5, 5], expectedOutput: '0' },
         { input: [0, 0], expectedOutput: '0' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'no-params',
@@ -74,7 +74,7 @@ export const arrowFunctionsTopicTests = {
       testCases: [
         { input: [], expectedOutput: 'Hello, World!' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'return-object',
@@ -86,7 +86,7 @@ export const arrowFunctionsTopicTests = {
         { input: [0], expectedOutput: '{"original":0,"squared":0}' },
         { input: [-4], expectedOutput: '{"original":-4,"squared":16}' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'uppercase',
@@ -98,7 +98,7 @@ export const arrowFunctionsTopicTests = {
         { input: ['a'], expectedOutput: 'A' },
         { input: [''], expectedOutput: '' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'triple-with-map',
@@ -110,7 +110,7 @@ export const arrowFunctionsTopicTests = {
         { input: [[0, -1, 1]], expectedOutput: '0,-3,3' },
         { input: [[]], expectedOutput: '' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'filter-greater-5',
@@ -122,7 +122,7 @@ export const arrowFunctionsTopicTests = {
         { input: [[10, 20, 30]], expectedOutput: '10,20,30' },
         { input: [[]], expectedOutput: '' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'product-reduce',
@@ -134,7 +134,7 @@ export const arrowFunctionsTopicTests = {
         { input: [[10]], expectedOutput: '10' },
         { input: [[]], expectedOutput: '1' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'filter-sum-chain',
@@ -146,7 +146,7 @@ export const arrowFunctionsTopicTests = {
         { input: [[-1, -2, -3]], expectedOutput: '0' },
         { input: [[]], expectedOutput: '0' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'total-string-length',
@@ -159,7 +159,7 @@ export const arrowFunctionsTopicTests = {
         { input: [[]], expectedOutput: '0' },
         { input: [['', 'hi', '']], expectedOutput: '2' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'unique-values',
@@ -171,7 +171,7 @@ export const arrowFunctionsTopicTests = {
         { input: [[1, 2, 3]], expectedOutput: '1,2,3' },
         { input: [[]], expectedOutput: '' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     }
   ]
 };
@@ -183,6 +183,7 @@ export function runTaskTest(taskIndex, userCode) {
 }
 
 export default arrowFunctionsTopicTests;
+
 
 
 

@@ -9,22 +9,22 @@ export const jsonTopicTests = {
       {
         description: 'Create a function that converts an object to a JSON string',
         testCases: [
-          { input: [{name: 'Alice', age: 25}], expectedOutput: '{"name":"Alice","age":25}' },
-          { input: [{x: 1, y: 2}], expectedOutput: '{"x":1,"y":2}' },
+          { input: [{ name: 'Alice', age: 25 }], expectedOutput: '{"name":"Alice","age":25}' },
+          { input: [{ x: 1, y: 2 }], expectedOutput: '{"x":1,"y":2}' },
           { input: [{}], expectedOutput: '{}' },
-          { input: [{active: true}], expectedOutput: '{"active":true}' },
-          { input: [{items: [1, 2, 3]}], expectedOutput: '{"items":[1,2,3]}' }
+          { input: [{ active: true }], expectedOutput: '{"active":true}' },
+          { input: [{ items: [1, 2, 3] }], expectedOutput: '{"items":[1,2,3]}' }
         ],
         testFunction: (code) => {
           const results = [];
           const testCases = [
-            { input: [{name: 'Alice', age: 25}], expectedOutput: '{"name":"Alice","age":25}' },
-            { input: [{x: 1, y: 2}], expectedOutput: '{"x":1,"y":2}' },
+            { input: [{ name: 'Alice', age: 25 }], expectedOutput: '{"name":"Alice","age":25}' },
+            { input: [{ x: 1, y: 2 }], expectedOutput: '{"x":1,"y":2}' },
             { input: [{}], expectedOutput: '{}' },
-            { input: [{active: true}], expectedOutput: '{"active":true}' },
-            { input: [{items: [1, 2, 3]}], expectedOutput: '{"items":[1,2,3]}' }
+            { input: [{ active: true }], expectedOutput: '{"active":true}' },
+            { input: [{ items: [1, 2, 3] }], expectedOutput: '{"items":[1,2,3]}' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('obj', `
@@ -69,7 +69,7 @@ export const jsonTopicTests = {
             { input: ['{"data":null}', 'data'], expectedOutput: 'null' },
             { input: ['{"missing":"value"}', 'other'], expectedOutput: 'undefined' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('jsonStr', 'key', `
@@ -99,22 +99,22 @@ export const jsonTopicTests = {
       {
         description: 'Create a function that pretty prints an object as JSON with 2-space indentation (return the string)',
         testCases: [
-          { input: [{a: 1}], expectedOutput: '{\n  "a": 1\n}' },
-          { input: [{x: 1, y: 2}], expectedOutput: '{\n  "x": 1,\n  "y": 2\n}' },
+          { input: [{ a: 1 }], expectedOutput: '{\n  "a": 1\n}' },
+          { input: [{ x: 1, y: 2 }], expectedOutput: '{\n  "x": 1,\n  "y": 2\n}' },
           { input: [{}], expectedOutput: '{}' },
-          { input: [{name: "test"}], expectedOutput: '{\n  "name": "test"\n}' },
-          { input: [{arr: [1]}], expectedOutput: '{\n  "arr": [\n    1\n  ]\n}' }
+          { input: [{ name: "test" }], expectedOutput: '{\n  "name": "test"\n}' },
+          { input: [{ arr: [1] }], expectedOutput: '{\n  "arr": [\n    1\n  ]\n}' }
         ],
         testFunction: (code) => {
           const results = [];
           const testCases = [
-            { input: [{a: 1}], expectedOutput: '{\n  "a": 1\n}' },
-            { input: [{x: 1, y: 2}], expectedOutput: '{\n  "x": 1,\n  "y": 2\n}' },
+            { input: [{ a: 1 }], expectedOutput: '{\n  "a": 1\n}' },
+            { input: [{ x: 1, y: 2 }], expectedOutput: '{\n  "x": 1,\n  "y": 2\n}' },
             { input: [{}], expectedOutput: '{}' },
-            { input: [{name: "test"}], expectedOutput: '{\n  "name": "test"\n}' },
-            { input: [{arr: [1]}], expectedOutput: '{\n  "arr": [\n    1\n  ]\n}' }
+            { input: [{ name: "test" }], expectedOutput: '{\n  "name": "test"\n}' },
+            { input: [{ arr: [1] }], expectedOutput: '{\n  "arr": [\n    1\n  ]\n}' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('obj', `
@@ -144,22 +144,22 @@ export const jsonTopicTests = {
       {
         description: 'Create a function that deep clones an object using JSON methods',
         testCases: [
-          { input: [{a: 1, b: {c: 2}}], expectedOutput: 'true' },
-          { input: [{arr: [1, 2, 3]}], expectedOutput: 'true' },
-          { input: [{x: {y: {z: 1}}}], expectedOutput: 'true' },
+          { input: [{ a: 1, b: { c: 2 } }], expectedOutput: 'true' },
+          { input: [{ arr: [1, 2, 3] }], expectedOutput: 'true' },
+          { input: [{ x: { y: { z: 1 } } }], expectedOutput: 'true' },
           { input: [{}], expectedOutput: 'true' },
-          { input: [{data: [1, {nested: true}]}], expectedOutput: 'true' }
+          { input: [{ data: [1, { nested: true }] }], expectedOutput: 'true' }
         ],
         testFunction: (code) => {
           const results = [];
           const testCases = [
-            { input: [{a: 1, b: {c: 2}}], expectedOutput: 'true' },
-            { input: [{arr: [1, 2, 3]}], expectedOutput: 'true' },
-            { input: [{x: {y: {z: 1}}}], expectedOutput: 'true' },
+            { input: [{ a: 1, b: { c: 2 } }], expectedOutput: 'true' },
+            { input: [{ arr: [1, 2, 3] }], expectedOutput: 'true' },
+            { input: [{ x: { y: { z: 1 } } }], expectedOutput: 'true' },
             { input: [{}], expectedOutput: 'true' },
-            { input: [{data: [1, {nested: true}]}], expectedOutput: 'true' }
+            { input: [{ data: [1, { nested: true }] }], expectedOutput: 'true' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('obj', `
@@ -214,7 +214,7 @@ export const jsonTopicTests = {
             { input: ['{"x":1,"y":2}'], expectedOutput: '2' },
             { input: ['{"a":1,"b":2,"c":3,"d":4,"e":5}'], expectedOutput: '5' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('jsonStr', `
@@ -259,7 +259,7 @@ export const jsonTopicTests = {
             { input: ['[]'], expectedOutput: 'true' },
             { input: ['null'], expectedOutput: 'true' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('str', `
@@ -304,7 +304,7 @@ export const jsonTopicTests = {
             { input: ['{}', '{}'], expectedOutput: '{}' },
             { input: ['{"x":1,"y":2}', '{"z":3}'], expectedOutput: '{"x":1,"y":2,"z":3}' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('json1', 'json2', `
@@ -349,7 +349,7 @@ export const jsonTopicTests = {
             { input: ['{}'], expectedOutput: '' },
             { input: ['{"mixed":"text","number":42,"bool":true}'], expectedOutput: 'text' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('jsonStr', `
@@ -380,6 +380,7 @@ export const jsonTopicTests = {
 };
 
 export default jsonTopicTests;
+
 
 
 

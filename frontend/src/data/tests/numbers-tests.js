@@ -5,11 +5,11 @@
 function captureConsoleLog(userCode) {
   const outputs = [];
   const originalLog = console.log;
-  
+
   console.log = (...args) => {
     outputs.push(args.map(arg => String(arg)).join(' '));
   };
-  
+
   try {
     const fn = new Function(userCode);
     fn();
@@ -31,7 +31,7 @@ export const task1 = {
   taskIndex: 0,
   description: 'A rectangle has length 24 and width 15. Print its area on the first line and perimeter on the second line',
   expected: ['360', '78'],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     const result = captureConsoleLog(userCode);
     if (!result.success) {
       return { passed: false, error: result.error, expected: this.expected, actual: null };
@@ -46,7 +46,7 @@ export const task2 = {
   taskIndex: 1,
   description: 'Convert 185 minutes to hours and remaining minutes. Print hours on the first line, remaining minutes on the second line',
   expected: ['3', '5'],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     const result = captureConsoleLog(userCode);
     if (!result.success) {
       return { passed: false, error: result.error, expected: this.expected, actual: null };
@@ -61,7 +61,7 @@ export const task3 = {
   taskIndex: 2,
   description: 'Three test scores are 78, 85, and 92. Print their average',
   expected: ['85'],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     const result = captureConsoleLog(userCode);
     if (!result.success) {
       return { passed: false, error: result.error, expected: this.expected, actual: null };
@@ -76,7 +76,7 @@ export const task4 = {
   taskIndex: 3,
   description: 'An item costs 1250 with a 20% discount. Print the discount amount on the first line, final price on the second line',
   expected: ['250', '1000'],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     const result = captureConsoleLog(userCode);
     if (!result.success) {
       return { passed: false, error: result.error, expected: this.expected, actual: null };
@@ -91,7 +91,7 @@ export const task5 = {
   taskIndex: 4,
   description: 'Given the number 9472, print its last digit on the first line, and the number without the last digit on the second line',
   expected: ['2', '947'],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     const result = captureConsoleLog(userCode);
     if (!result.success) {
       return { passed: false, error: result.error, expected: this.expected, actual: null };
@@ -106,7 +106,7 @@ export const task6 = {
   taskIndex: 5,
   description: 'Convert 25 Celsius to Fahrenheit. Formula: (celsius × 9 / 5) + 32. Print the result',
   expected: ['77'],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     const result = captureConsoleLog(userCode);
     if (!result.success) {
       return { passed: false, error: result.error, expected: this.expected, actual: null };
@@ -121,7 +121,7 @@ export const task7 = {
   taskIndex: 6,
   description: 'Given two numbers 37 and 58, print their sum, difference, product, and quotient on separate lines',
   expected: ['95', '21', '2146', '1.5675675675675675'],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     const result = captureConsoleLog(userCode);
     if (!result.success) {
       return { passed: false, error: result.error, expected: this.expected, actual: null };
@@ -136,7 +136,7 @@ export const task8 = {
   taskIndex: 7,
   description: 'Convert 7384 seconds to hours, minutes, and remaining seconds. Print each on separate lines',
   expected: ['2', '3', '4'],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     const result = captureConsoleLog(userCode);
     if (!result.success) {
       return { passed: false, error: result.error, expected: this.expected, actual: null };

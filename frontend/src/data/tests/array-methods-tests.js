@@ -4,23 +4,23 @@
 
 function testFunctionWithInputs(userCode, testCases) {
   const results = [];
-  
+
   for (const testCase of testCases) {
     try {
       const fn = new Function(`
         ${userCode}
         return { ${userCode.match(/function\s+(\w+)/g)?.map(m => m.split(' ')[1]).join(', ') || ''} };
       `);
-      
+
       const funcs = fn();
       const funcName = Object.keys(funcs)[0];
       const userFunction = funcs[funcName];
-      
+
       if (!userFunction) {
         results.push({ input: testCase.input, expected: testCase.expectedOutput, actual: 'Function not defined', passed: false });
         continue;
       }
-      
+
       const result = String(userFunction(...testCase.input));
       const passed = result === testCase.expectedOutput;
       results.push({ input: testCase.input, expected: testCase.expectedOutput, actual: result, passed });
@@ -28,7 +28,7 @@ function testFunctionWithInputs(userCode, testCases) {
       results.push({ input: testCase.input, expected: testCase.expectedOutput, actual: `Error: ${error.message}`, passed: false });
     }
   }
-  
+
   return { passed: results.every(r => r.passed), results };
 }
 
@@ -48,7 +48,7 @@ export const forEachTopicTests = {
         { input: [[10]], expectedOutput: '10' },
         { input: [[]], expectedOutput: '' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'foreach-index',
@@ -59,7 +59,7 @@ export const forEachTopicTests = {
         { input: [[10, 20]], expectedOutput: '0: 10\n1: 20' },
         { input: [['only']], expectedOutput: '0: only' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'foreach-sum',
@@ -71,7 +71,7 @@ export const forEachTopicTests = {
         { input: [[100]], expectedOutput: '100' },
         { input: [[]], expectedOutput: '0' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'foreach-count',
@@ -83,7 +83,7 @@ export const forEachTopicTests = {
         { input: [[100, 200, 300]], expectedOutput: '3' },
         { input: [[]], expectedOutput: '0' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     }
   ]
 };
@@ -104,7 +104,7 @@ export const mapTopicTests = {
         { input: [[-2, 0, 2]], expectedOutput: '-4,0,4' },
         { input: [[]], expectedOutput: '' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'map-square',
@@ -116,7 +116,7 @@ export const mapTopicTests = {
         { input: [[-3, 0, 3]], expectedOutput: '9,0,9' },
         { input: [[]], expectedOutput: '' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'map-uppercase',
@@ -128,7 +128,7 @@ export const mapTopicTests = {
         { input: [['ABC']], expectedOutput: 'ABC' },
         { input: [[]], expectedOutput: '' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'map-lengths',
@@ -140,7 +140,7 @@ export const mapTopicTests = {
         { input: [['', 'test']], expectedOutput: '0,4' },
         { input: [[]], expectedOutput: '' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'map-even-odd',
@@ -152,7 +152,7 @@ export const mapTopicTests = {
         { input: [[0]], expectedOutput: 'even' },
         { input: [[]], expectedOutput: '' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     }
   ]
 };
@@ -173,7 +173,7 @@ export const filterTopicTests = {
         { input: [[1, 3, 5]], expectedOutput: '' },
         { input: [[]], expectedOutput: '' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'filter-threshold',
@@ -185,7 +185,7 @@ export const filterTopicTests = {
         { input: [[1, 2, 3], 10], expectedOutput: '' },
         { input: [[], 5], expectedOutput: '' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'filter-long-strings',
@@ -197,7 +197,7 @@ export const filterTopicTests = {
         { input: [['no', 'ok']], expectedOutput: '' },
         { input: [[]], expectedOutput: '' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'filter-positive',
@@ -209,7 +209,7 @@ export const filterTopicTests = {
         { input: [[-1, -2, -3]], expectedOutput: '' },
         { input: [[0]], expectedOutput: '' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'filter-divisible-2-3',
@@ -221,7 +221,7 @@ export const filterTopicTests = {
         { input: [[6, 12, 18, 24]], expectedOutput: '6,12,18,24' },
         { input: [[]], expectedOutput: '' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     }
   ]
 };
@@ -242,7 +242,7 @@ export const findTopicTests = {
         { input: [[1, 3, 5, 7]], expectedOutput: 'undefined' },
         { input: [[]], expectedOutput: 'undefined' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'findindex-negative',
@@ -254,7 +254,7 @@ export const findTopicTests = {
         { input: [[1, 2, 3]], expectedOutput: '-1' },
         { input: [[]], expectedOutput: '-1' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'find-greater-than',
@@ -266,7 +266,7 @@ export const findTopicTests = {
         { input: [[100, 200], 50], expectedOutput: '100' },
         { input: [[], 5], expectedOutput: 'undefined' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'findindex-starts-with-a',
@@ -278,7 +278,7 @@ export const findTopicTests = {
         { input: [['banana', 'cherry']], expectedOutput: '-1' },
         { input: [[]], expectedOutput: '-1' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     }
   ]
 };
@@ -299,7 +299,7 @@ export const someEveryTopicTests = {
         { input: [[-1]], expectedOutput: 'true' },
         { input: [[]], expectedOutput: 'false' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'every-positive',
@@ -311,7 +311,7 @@ export const someEveryTopicTests = {
         { input: [[0, 1, 2]], expectedOutput: 'false' },
         { input: [[]], expectedOutput: 'true' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'some-divisible-5',
@@ -323,7 +323,7 @@ export const someEveryTopicTests = {
         { input: [[5]], expectedOutput: 'true' },
         { input: [[]], expectedOutput: 'false' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'every-length-gt-2',
@@ -335,7 +335,7 @@ export const someEveryTopicTests = {
         { input: [['abc']], expectedOutput: 'true' },
         { input: [[]], expectedOutput: 'true' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'every-even',
@@ -347,7 +347,7 @@ export const someEveryTopicTests = {
         { input: [[0]], expectedOutput: 'true' },
         { input: [[]], expectedOutput: 'true' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     }
   ]
 };
@@ -368,7 +368,7 @@ export const reduceTopicTests = {
         { input: [[-5, 5]], expectedOutput: '0' },
         { input: [[]], expectedOutput: '0' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'reduce-product',
@@ -380,7 +380,7 @@ export const reduceTopicTests = {
         { input: [[10]], expectedOutput: '10' },
         { input: [[]], expectedOutput: '1' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'reduce-max',
@@ -392,7 +392,7 @@ export const reduceTopicTests = {
         { input: [[42]], expectedOutput: '42' },
         { input: [[5, 5, 5]], expectedOutput: '5' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'reduce-count-even',
@@ -404,7 +404,7 @@ export const reduceTopicTests = {
         { input: [[2, 4, 6]], expectedOutput: '3' },
         { input: [[]], expectedOutput: '0' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'reduce-join',
@@ -416,7 +416,7 @@ export const reduceTopicTests = {
         { input: [['single']], expectedOutput: 'single' },
         { input: [[]], expectedOutput: '' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'reduce-object',
@@ -428,7 +428,7 @@ export const reduceTopicTests = {
         { input: [[5]], expectedOutput: '{"sum":5,"count":1}' },
         { input: [[]], expectedOutput: '{"sum":0,"count":0}' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     }
   ]
 };
@@ -441,6 +441,7 @@ export default {
   someEveryTopicTests,
   reduceTopicTests
 };
+
 
 
 

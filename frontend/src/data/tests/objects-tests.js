@@ -4,23 +4,23 @@
 
 function testFunctionWithInputs(userCode, testCases) {
   const results = [];
-  
+
   for (const testCase of testCases) {
     try {
       const fn = new Function(`
         ${userCode}
         return { ${userCode.match(/function\s+(\w+)/g)?.map(m => m.split(' ')[1]).join(', ') || ''} };
       `);
-      
+
       const funcs = fn();
       const funcName = Object.keys(funcs)[0];
       const userFunction = funcs[funcName];
-      
+
       if (!userFunction) {
         results.push({ input: testCase.input, expected: testCase.expectedOutput, actual: 'Function not defined', passed: false });
         continue;
       }
-      
+
       const result = String(userFunction(...testCase.input));
       const passed = result === testCase.expectedOutput;
       results.push({ input: testCase.input, expected: testCase.expectedOutput, actual: result, passed });
@@ -28,7 +28,7 @@ function testFunctionWithInputs(userCode, testCases) {
       results.push({ input: testCase.input, expected: testCase.expectedOutput, actual: `Error: ${error.message}`, passed: false });
     }
   }
-  
+
   return { passed: results.every(r => r.passed), results };
 }
 
@@ -46,7 +46,7 @@ export const objectsTopicTests = {
         { input: [{ name: 'Bob', age: 30 }], expectedOutput: 'Hello, I am Bob and I am 30 years old' },
         { input: [{ name: 'Charlie', age: 0 }], expectedOutput: 'Hello, I am Charlie and I am 0 years old' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'bracket-access',
@@ -58,7 +58,7 @@ export const objectsTopicTests = {
         { input: [{ a: 1 }, 'b'], expectedOutput: 'undefined' },
         { input: [{}, 'any'], expectedOutput: 'undefined' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'count-properties',
@@ -70,7 +70,7 @@ export const objectsTopicTests = {
         { input: [{}], expectedOutput: '0' },
         { input: [{ x: 1, y: 2, z: 3, w: 4 }], expectedOutput: '4' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'get-keys',
@@ -82,7 +82,7 @@ export const objectsTopicTests = {
         { input: [{ single: 1 }], expectedOutput: 'single' },
         { input: [{}], expectedOutput: '' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'get-values',
@@ -94,7 +94,7 @@ export const objectsTopicTests = {
         { input: [{ single: 100 }], expectedOutput: '100' },
         { input: [{}], expectedOutput: '' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'has-key',
@@ -106,7 +106,7 @@ export const objectsTopicTests = {
         { input: [{}, 'any'], expectedOutput: 'false' },
         { input: [{ a: undefined }, 'a'], expectedOutput: 'true' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'sum-values',
@@ -118,7 +118,7 @@ export const objectsTopicTests = {
         { input: [{ p: -10, q: 10 }], expectedOutput: '0' },
         { input: [{}], expectedOutput: '0' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'nested-path',
@@ -130,7 +130,7 @@ export const objectsTopicTests = {
         { input: [{ x: 10 }, 'x'], expectedOutput: '10' },
         { input: [{ a: { b: 1 } }, 'a.c'], expectedOutput: 'undefined' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'double-values',
@@ -142,7 +142,7 @@ export const objectsTopicTests = {
         { input: [{ single: 50 }], expectedOutput: '{"single":100}' },
         { input: [{}], expectedOutput: '{}' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'filter-by-value',
@@ -154,7 +154,7 @@ export const objectsTopicTests = {
         { input: [{ a: 1, b: 2 }, 10], expectedOutput: '{}' },
         { input: [{}, 5], expectedOutput: '{}' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'merge-objects',
@@ -166,7 +166,7 @@ export const objectsTopicTests = {
         { input: [{}, { a: 1 }], expectedOutput: '{"a":1}' },
         { input: [{ a: 1 }, {}], expectedOutput: '{"a":1}' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'highest-score',
@@ -178,7 +178,7 @@ export const objectsTopicTests = {
         { input: [[{ name: 'A', score: 50 }, { name: 'B', score: 50 }]], expectedOutput: 'A' },
         { input: [[{ name: 'Low', score: 10 }, { name: 'High', score: 99 }]], expectedOutput: 'High' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     }
   ]
 };
@@ -190,6 +190,7 @@ export function runTaskTest(taskIndex, userCode) {
 }
 
 export default objectsTopicTests;
+
 
 
 

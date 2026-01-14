@@ -24,7 +24,7 @@ export const closuresTopicTests = {
             { input: [-5, 10], expectedOutput: '5' },
             { input: [100, 1], expectedOutput: '101' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('fixedNum', 'arg', `
@@ -70,7 +70,7 @@ export const closuresTopicTests = {
             { input: ['getValue'], expectedOutput: '0' },
             { input: ['increment', 'increment', 'increment', 'getValue'], expectedOutput: '3' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('operations', `
@@ -120,7 +120,7 @@ export const closuresTopicTests = {
             { input: [10, 10], expectedOutput: '100' },
             { input: [-2, 5], expectedOutput: '-10' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('mult', 'num', `
@@ -166,7 +166,7 @@ export const closuresTopicTests = {
             { input: ['Hey', 'Bob'], expectedOutput: 'Hey, Bob!' },
             { input: ['Greetings', 'Friend'], expectedOutput: 'Greetings, Friend!' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('prefix', 'name', `
@@ -212,7 +212,7 @@ export const closuresTopicTests = {
             { input: [0, 100, 100], expectedOutput: 'true' },
             { input: [-10, 10, 0], expectedOutput: 'true' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('min', 'max', 'num', `
@@ -258,7 +258,7 @@ export const closuresTopicTests = {
             { input: [[-5, 10]], expectedOutput: '5' },
             { input: [[0, 0, 0]], expectedOutput: '0' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('values', `
@@ -308,7 +308,7 @@ export const closuresTopicTests = {
             { input: [2], expectedOutput: '1,2' },
             { input: [4], expectedOutput: '1,2,3,4' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('count', `
@@ -358,7 +358,7 @@ export const closuresTopicTests = {
             { input: [-5, 5], expectedOutput: '0,0,0' },
             { input: [100, 1], expectedOutput: '101,101,101' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('a', 'b', `
@@ -394,6 +394,7 @@ export const closuresTopicTests = {
 };
 
 export default closuresTopicTests;
+
 
 
 

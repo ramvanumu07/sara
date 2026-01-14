@@ -5,11 +5,11 @@
 function captureConsoleLog(userCode) {
   const outputs = [];
   const originalLog = console.log;
-  
+
   console.log = (...args) => {
     outputs.push(args.map(arg => String(arg)).join(' '));
   };
-  
+
   try {
     const fn = new Function(userCode);
     fn();
@@ -31,7 +31,7 @@ export const task1 = {
   taskIndex: 0,
   description: 'Find the first number between 50 and 100 that is divisible by 7. Print it and stop searching',
   expected: ['56'],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     const result = captureConsoleLog(userCode);
     if (!result.success) {
       return { passed: false, error: result.error, expected: this.expected, actual: null };
@@ -46,7 +46,7 @@ export const task2 = {
   taskIndex: 1,
   description: 'Print numbers from 1 to 30, but skip all multiples of 4',
   expected: ['1', '2', '3', '5', '6', '7', '9', '10', '11', '13', '14', '15', '17', '18', '19', '21', '22', '23', '25', '26', '27', '29', '30'],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     const result = captureConsoleLog(userCode);
     if (!result.success) {
       return { passed: false, error: result.error, expected: this.expected, actual: null };
@@ -61,7 +61,7 @@ export const task3 = {
   taskIndex: 2,
   description: 'Add numbers starting from 1 until the sum exceeds 200. Print the final sum, then print how many numbers were added',
   expected: ['210', '20'],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     const result = captureConsoleLog(userCode);
     if (!result.success) {
       return { passed: false, error: result.error, expected: this.expected, actual: null };

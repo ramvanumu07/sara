@@ -5,11 +5,11 @@
 function captureConsoleLog(userCode) {
   const outputs = [];
   const originalLog = console.log;
-  
+
   console.log = (...args) => {
     outputs.push(args.map(arg => String(arg)).join(' '));
   };
-  
+
   try {
     const fn = new Function(userCode);
     fn();
@@ -31,7 +31,7 @@ export const task1 = {
   taskIndex: 0,
   description: 'Numbers are [10, 25, 8, 17, 42, 3]. Print the first element, last element, and total count on separate lines',
   expected: ['10', '3', '6'],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     const result = captureConsoleLog(userCode);
     if (!result.success) {
       return { passed: false, error: result.error, expected: this.expected, actual: null };
@@ -46,7 +46,7 @@ export const task2 = {
   taskIndex: 1,
   description: 'Numbers are [4, 9, 2, 7, 5, 1, 8, 3]. Calculate and print the sum of all elements',
   expected: ['39'],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     const result = captureConsoleLog(userCode);
     if (!result.success) {
       return { passed: false, error: result.error, expected: this.expected, actual: null };
@@ -61,7 +61,7 @@ export const task3 = {
   taskIndex: 2,
   description: 'Numbers are [23, 67, 12, 89, 45, 34, 91, 56]. Find and print the largest number',
   expected: ['91'],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     const result = captureConsoleLog(userCode);
     if (!result.success) {
       return { passed: false, error: result.error, expected: this.expected, actual: null };
@@ -76,7 +76,7 @@ export const task4 = {
   taskIndex: 3,
   description: 'Numbers are [3, 8, 12, 5, 17, 9, 14, 6, 11]. Count and print how many numbers are greater than 10',
   expected: ['4'],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     const result = captureConsoleLog(userCode);
     if (!result.success) {
       return { passed: false, error: result.error, expected: this.expected, actual: null };
@@ -91,7 +91,7 @@ export const task5 = {
   taskIndex: 4,
   description: 'Numbers are [7, 3, 9, 1, 5, 8, 2, 6, 4]. Find the smallest number and its position (index). Print the number first, then its index',
   expected: ['1', '3'],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     const result = captureConsoleLog(userCode);
     if (!result.success) {
       return { passed: false, error: result.error, expected: this.expected, actual: null };
@@ -106,7 +106,7 @@ export const task6 = {
   taskIndex: 5,
   description: 'Numbers are [15, 22, 8, 36, 14, 42, 19]. Calculate and print the average (sum divided by count)',
   expected: ['22.285714285714285'],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     const result = captureConsoleLog(userCode);
     if (!result.success) {
       return { passed: false, error: result.error, expected: this.expected, actual: null };
@@ -121,7 +121,7 @@ export const task7 = {
   taskIndex: 6,
   description: 'Numbers are [5, 12, 8, 19, 3, 15, 7, 22, 11]. Find the first number greater than 10 and print it. If none found, print -1',
   expected: ['12'],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     const result = captureConsoleLog(userCode);
     if (!result.success) {
       return { passed: false, error: result.error, expected: this.expected, actual: null };
@@ -136,7 +136,7 @@ export const task8 = {
   taskIndex: 7,
   description: 'Numbers are [4, 7, 2, 9, 1, 8, 5]. Print all elements in reverse order (last to first), each on a new line',
   expected: ['5', '8', '1', '9', '2', '7', '4'],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     const result = captureConsoleLog(userCode);
     if (!result.success) {
       return { passed: false, error: result.error, expected: this.expected, actual: null };
@@ -151,7 +151,7 @@ export const task9 = {
   taskIndex: 8,
   description: 'Numbers are [3, 7, 2, 8, 5, 9, 1, 6, 4]. Find both the largest and smallest numbers. Print the largest first, then the smallest, then their difference',
   expected: ['9', '1', '8'],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     const result = captureConsoleLog(userCode);
     if (!result.success) {
       return { passed: false, error: result.error, expected: this.expected, actual: null };
@@ -166,7 +166,7 @@ export const task10 = {
   taskIndex: 9,
   description: 'Numbers are [12, 5, 8, 19, 3, 15, 7, 22, 11, 6]. Count how many are even and how many are odd. Print even count first, then odd count',
   expected: ['5', '5'],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     const result = captureConsoleLog(userCode);
     if (!result.success) {
       return { passed: false, error: result.error, expected: this.expected, actual: null };
@@ -193,6 +193,7 @@ export const arraysTopicTests = {
 };
 
 export default arraysTopicTests;
+
 
 
 

@@ -5,11 +5,11 @@
 function captureConsoleLog(userCode) {
   const outputs = [];
   const originalLog = console.log;
-  
+
   console.log = (...args) => {
     outputs.push(args.map(arg => String(arg)).join(' '));
   };
-  
+
   try {
     const fn = new Function(userCode);
     fn();
@@ -31,7 +31,7 @@ export const task1 = {
   taskIndex: 0,
   description: 'A game score starts at 0. Player earns 100, then earns 50 more, then loses 30, then doubles their score. Print the final score',
   expected: ['240'],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     const result = captureConsoleLog(userCode);
     if (!result.success) {
       return { passed: false, error: result.error, expected: this.expected, actual: null };
@@ -46,7 +46,7 @@ export const task2 = {
   taskIndex: 1,
   description: 'Check loan eligibility. Age is 28, income is 55000, credit score is 720. Print whether each requirement passes, then whether ALL pass',
   expected: ['true', 'true', 'true', 'true'],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     const result = captureConsoleLog(userCode);
     if (!result.success) {
       return { passed: false, error: result.error, expected: this.expected, actual: null };
@@ -61,7 +61,7 @@ export const task3 = {
   taskIndex: 2,
   description: 'Movie ticket: customer age is 15. Print whether each discount applies (child, senior, regular)',
   expected: ['false', 'false', 'true'],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     const result = captureConsoleLog(userCode);
     if (!result.success) {
       return { passed: false, error: result.error, expected: this.expected, actual: null };
@@ -76,7 +76,7 @@ export const task4 = {
   taskIndex: 3,
   description: 'Analyze the number 156. Print whether positive, even, three-digit, and whether ALL are true',
   expected: ['true', 'true', 'true', 'true'],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     const result = captureConsoleLog(userCode);
     if (!result.success) {
       return { passed: false, error: result.error, expected: this.expected, actual: null };

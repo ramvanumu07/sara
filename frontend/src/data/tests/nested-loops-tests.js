@@ -5,11 +5,11 @@
 function captureConsoleLog(userCode) {
   const outputs = [];
   const originalLog = console.log;
-  
+
   console.log = (...args) => {
     outputs.push(args.map(arg => String(arg)).join(' '));
   };
-  
+
   try {
     const fn = new Function(userCode);
     fn();
@@ -37,7 +37,7 @@ export const task1 = {
     '4 8 12 16 20',
     '5 10 15 20 25'
   ],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     const result = captureConsoleLog(userCode);
     if (!result.success) {
       return { passed: false, error: result.error, expected: this.expected, actual: null };
@@ -52,7 +52,7 @@ export const task2 = {
   taskIndex: 1,
   description: 'Print a right triangle of asterisks with 5 rows. Row 1 has 1 star, row 2 has 2 stars, and so on',
   expected: ['*', '**', '***', '****', '*****'],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     const result = captureConsoleLog(userCode);
     if (!result.success) {
       return { passed: false, error: result.error, expected: this.expected, actual: null };
@@ -72,7 +72,7 @@ export const task3 = {
     '3 6 9 12 15 18',
     '4 8 12 16 20 24'
   ],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     const result = captureConsoleLog(userCode);
     if (!result.success) {
       return { passed: false, error: result.error, expected: this.expected, actual: null };
@@ -91,7 +91,7 @@ export const task4 = {
     '2,1', '2,2', '2,3', '2,4',
     '3,1', '3,2', '3,3', '3,4'
   ],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     const result = captureConsoleLog(userCode);
     if (!result.success) {
       return { passed: false, error: result.error, expected: this.expected, actual: null };

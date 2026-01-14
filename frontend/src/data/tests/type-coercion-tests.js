@@ -24,7 +24,7 @@ export const typeCoercionTopicTests = {
             { input: [undefined], expectedOutput: 'undefined' },
             { input: [[1, 2, 3]], expectedOutput: '1,2,3' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('value', `
@@ -69,7 +69,7 @@ export const typeCoercionTopicTests = {
             { input: [''], expectedOutput: '0' },
             { input: ['  42  '], expectedOutput: '42' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('str', `
@@ -114,7 +114,7 @@ export const typeCoercionTopicTests = {
             { input: ['hello'], expectedOutput: 'truthy' },
             { input: [1], expectedOutput: 'truthy' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('value', `
@@ -159,7 +159,7 @@ export const typeCoercionTopicTests = {
             { input: [true, 1], expectedOutput: 'false' },
             { input: ['hello', 'hello'], expectedOutput: 'true' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('a', 'b', `
@@ -204,7 +204,7 @@ export const typeCoercionTopicTests = {
             { input: ['', 5], expectedOutput: '5' },
             { input: [true, 1], expectedOutput: '2' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('a', 'b', `
@@ -249,7 +249,7 @@ export const typeCoercionTopicTests = {
             { input: ['3.14'], expectedOutput: '3' },
             { input: [''], expectedOutput: 'null' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('str', `
@@ -294,7 +294,7 @@ export const typeCoercionTopicTests = {
             { input: [[]], expectedOutput: '0' },
             { input: [['', 0, false, 'a']], expectedOutput: '1' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('arr', `
@@ -339,7 +339,7 @@ export const typeCoercionTopicTests = {
             { input: [''], expectedOutput: 'no' },
             { input: [null], expectedOutput: 'no' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('value', `
@@ -370,6 +370,7 @@ export const typeCoercionTopicTests = {
 };
 
 export default typeCoercionTopicTests;
+
 
 
 

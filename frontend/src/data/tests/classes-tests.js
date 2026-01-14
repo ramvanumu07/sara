@@ -24,7 +24,7 @@ export const classesTopicTests = {
             { input: [7, 4], expectedOutput: '28' },
             { input: [0, 5], expectedOutput: '0' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('w', 'h', `
@@ -70,7 +70,7 @@ export const classesTopicTests = {
             { input: [['increment', 'decrement', 'increment', 'getValue']], expectedOutput: '1' },
             { input: [['decrement', 'decrement', 'decrement', 'getValue']], expectedOutput: '-3' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('operations', `
@@ -120,7 +120,7 @@ export const classesTopicTests = {
             { input: [[['deposit', 200], ['deposit', 100], ['getBalance']]], expectedOutput: '300' },
             { input: [[['withdraw', 50], ['getBalance']]], expectedOutput: '0' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('operations', `
@@ -174,7 +174,7 @@ export const classesTopicTests = {
             { input: [[]], expectedOutput: '0' },
             { input: [['Single']], expectedOutput: '1' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               // Each test case needs fresh class definition to reset static count
@@ -226,7 +226,7 @@ export const classesTopicTests = {
             { input: [25], expectedOutput: '77' },
             { input: [37], expectedOutput: '98.6' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('celsius', `
@@ -272,7 +272,7 @@ export const classesTopicTests = {
             { input: ['Max', 'dog'], expectedOutput: 'Woof!' },
             { input: ['Pet', 'animal'], expectedOutput: '...' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('name', 'type', `
@@ -318,7 +318,7 @@ export const classesTopicTests = {
             { input: ['square', 10], expectedOutput: '100' },
             { input: ['circle', 0], expectedOutput: '0' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('type', 'size', `
@@ -370,7 +370,7 @@ export const classesTopicTests = {
             { input: [[['add', 'X'], ['add', 'Y'], ['remove', 'X'], ['getAll']]], expectedOutput: 'Y' },
             { input: [[['add', 'One'], ['getAll']]], expectedOutput: 'One' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('operations', `
@@ -410,6 +410,7 @@ export const classesTopicTests = {
 };
 
 export default classesTopicTests;
+
 
 
 

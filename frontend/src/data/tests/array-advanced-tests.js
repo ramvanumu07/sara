@@ -24,7 +24,7 @@ export const arrayAdvancedTests = {
             { input: [[2]], expectedOutput: '4' },
             { input: [[-2, -4, 0]], expectedOutput: '-12' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('arr', `${code}\nreturn sumEvenDoubled(arr);`);
@@ -66,7 +66,7 @@ export const arrayAdvancedTests = {
             { input: [[5]], expectedOutput: '6' },
             { input: [[0, 1, 2]], expectedOutput: '6' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('arr', `${code}\nreturn productPositiveIncremented(arr);`);
@@ -108,7 +108,7 @@ export const arrayAdvancedTests = {
             { input: [['hello', 'world']], expectedOutput: 'HELLO-WORLD' },
             { input: [['Test']], expectedOutput: 'TEST' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('arr', `${code}\nreturn filterUpperJoin(arr);`);
@@ -150,7 +150,7 @@ export const arrayAdvancedTests = {
             { input: [[[42]], 0, 0], expectedOutput: '42' },
             { input: [[[1, 2, 3, 4, 5]], 0, 4], expectedOutput: '5' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('matrix', 'row', 'col', `${code}\nreturn getElement(matrix, row, col);`);
@@ -192,7 +192,7 @@ export const arrayAdvancedTests = {
             { input: [[[1, -1], [2, -2]]], expectedOutput: '0' },
             { input: [[[-5, -3], [-2]]], expectedOutput: '-10' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('matrix', `${code}\nreturn sumMatrix(matrix);`);
@@ -234,7 +234,7 @@ export const arrayAdvancedTests = {
             { input: [[[1, [2, 3]], [4]]], expectedOutput: '1,2,3,4' },
             { input: [[['a'], ['b']]], expectedOutput: 'a,b' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('arr', `${code}\nreturn flattenArray(arr);`);
@@ -277,7 +277,7 @@ export const arrayAdvancedTests = {
             { input: [[[0, 1]]], expectedOutput: '0,1' },
             { input: [[[5]]], expectedOutput: '25' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('arr', `${code}\nreturn flatMapSquare(arr);`);
@@ -320,7 +320,7 @@ export const arrayAdvancedTests = {
             { input: [[[-1, -2], [-3, -4]]], expectedOutput: '0' },
             { input: [[[100]]], expectedOutput: '0' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('matrix', `${code}\nreturn maxSumRowIndex(matrix);`);
@@ -347,22 +347,22 @@ export const arrayAdvancedTests = {
       {
         description: 'Create a function that takes an array of objects with name and score properties, and returns the average score of entries with scores above 50',
         testCases: [
-          { input: [[{name: 'A', score: 60}, {name: 'B', score: 80}]], expectedOutput: '70' },  // Normal
-          { input: [[{name: 'A', score: 30}, {name: 'B', score: 40}]], expectedOutput: '0' },   // None above 50
+          { input: [[{ name: 'A', score: 60 }, { name: 'B', score: 80 }]], expectedOutput: '70' },  // Normal
+          { input: [[{ name: 'A', score: 30 }, { name: 'B', score: 40 }]], expectedOutput: '0' },   // None above 50
           { input: [[]], expectedOutput: '0' },                                                 // Empty array
-          { input: [[{name: 'Solo', score: 100}]], expectedOutput: '100' },                     // Single above 50
-          { input: [[{name: 'A', score: 51}, {name: 'B', score: 49}]], expectedOutput: '51' }   // Boundary (51 passes, 49 not)
+          { input: [[{ name: 'Solo', score: 100 }]], expectedOutput: '100' },                     // Single above 50
+          { input: [[{ name: 'A', score: 51 }, { name: 'B', score: 49 }]], expectedOutput: '51' }   // Boundary (51 passes, 49 not)
         ],
         testFunction: (code) => {
           const results = [];
           const testCases = [
-            { input: [[{name: 'A', score: 60}, {name: 'B', score: 80}]], expectedOutput: '70' },
-            { input: [[{name: 'A', score: 30}, {name: 'B', score: 40}]], expectedOutput: '0' },
+            { input: [[{ name: 'A', score: 60 }, { name: 'B', score: 80 }]], expectedOutput: '70' },
+            { input: [[{ name: 'A', score: 30 }, { name: 'B', score: 40 }]], expectedOutput: '0' },
             { input: [[]], expectedOutput: '0' },
-            { input: [[{name: 'Solo', score: 100}]], expectedOutput: '100' },
-            { input: [[{name: 'A', score: 51}, {name: 'B', score: 49}]], expectedOutput: '51' }
+            { input: [[{ name: 'Solo', score: 100 }]], expectedOutput: '100' },
+            { input: [[{ name: 'A', score: 51 }, { name: 'B', score: 49 }]], expectedOutput: '51' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('entries', `${code}\nreturn averageAbove50(entries);`);
@@ -404,7 +404,7 @@ export const arrayAdvancedTests = {
             { input: [[[0, 1], [1, 0]]], expectedOutput: '0,1|1,0' },
             { input: [[['a', 'b'], ['c', 'd']]], expectedOutput: 'a,c|b,d' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('matrix', `${code}\nreturn transpose(matrix);`);
@@ -447,7 +447,7 @@ export const arrayAdvancedTests = {
             { input: [['a', 'e', 'i']], expectedOutput: '3' },
             { input: [['Apple', 'UMBRELLA']], expectedOutput: '13' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('words', `${code}\nreturn vowelWordCharCount(words);`);

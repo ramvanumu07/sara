@@ -5,11 +5,11 @@
 function captureConsoleLog(userCode) {
   const outputs = [];
   const originalLog = console.log;
-  
+
   console.log = (...args) => {
     outputs.push(args.map(arg => String(arg)).join(' '));
   };
-  
+
   try {
     const fn = new Function(userCode);
     fn();
@@ -31,7 +31,7 @@ export const task1 = {
   taskIndex: 0,
   description: 'Print all even numbers from 2 to 20, each on a new line',
   expected: ['2', '4', '6', '8', '10', '12', '14', '16', '18', '20'],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     const result = captureConsoleLog(userCode);
     if (!result.success) {
       return { passed: false, error: result.error, expected: this.expected, actual: null };
@@ -46,7 +46,7 @@ export const task2 = {
   taskIndex: 1,
   description: 'Calculate and print 6 factorial (6! = 6 × 5 × 4 × 3 × 2 × 1)',
   expected: ['720'],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     const result = captureConsoleLog(userCode);
     if (!result.success) {
       return { passed: false, error: result.error, expected: this.expected, actual: null };
@@ -61,7 +61,7 @@ export const task3 = {
   taskIndex: 2,
   description: 'Print a countdown from 20 to 1, each number on a new line',
   expected: ['20', '19', '18', '17', '16', '15', '14', '13', '12', '11', '10', '9', '8', '7', '6', '5', '4', '3', '2', '1'],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     const result = captureConsoleLog(userCode);
     if (!result.success) {
       return { passed: false, error: result.error, expected: this.expected, actual: null };
@@ -76,7 +76,7 @@ export const task4 = {
   taskIndex: 3,
   description: 'Calculate and print the sum of all odd numbers from 1 to 100',
   expected: ['2500'],
-  testFunction: function(userCode) {
+  testFunction: function (userCode) {
     const result = captureConsoleLog(userCode);
     if (!result.success) {
       return { passed: false, error: result.error, expected: this.expected, actual: null };

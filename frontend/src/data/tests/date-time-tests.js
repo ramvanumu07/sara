@@ -24,7 +24,7 @@ export const dateTimeTopicTests = {
             { input: [1999, 10, 31], expectedOutput: '1999-10-31' },
             { input: [2024, 2, 29], expectedOutput: '2024-02-29' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('year', 'month', 'day', `
@@ -69,7 +69,7 @@ export const dateTimeTopicTests = {
             { input: ['2000-01-01'], expectedOutput: 'Saturday' },
             { input: ['2024-07-04'], expectedOutput: 'Thursday' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('dateStr', `
@@ -114,7 +114,7 @@ export const dateTimeTopicTests = {
             { input: ['2024-01-10', '2024-01-01'], expectedOutput: '9' },
             { input: ['2023-12-25', '2024-01-01'], expectedOutput: '7' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('date1', 'date2', `
@@ -159,7 +159,7 @@ export const dateTimeTopicTests = {
             { input: ['2024-02-28', 1], expectedOutput: '2024-02-29' },
             { input: ['2024-01-15', 0], expectedOutput: '2024-01-15' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('dateStr', 'days', `
@@ -204,7 +204,7 @@ export const dateTimeTopicTests = {
             { input: [1900], expectedOutput: 'false' },
             { input: [2020], expectedOutput: 'true' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('year', `
@@ -249,7 +249,7 @@ export const dateTimeTopicTests = {
             { input: [2024, 4], expectedOutput: '30' },
             { input: [2024, 12], expectedOutput: '31' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('year', 'month', `
@@ -294,7 +294,7 @@ export const dateTimeTopicTests = {
             { input: ['2020-01-01', '2020-01-01'], expectedOutput: '2020-01-01' },
             { input: ['1999-12-31', '2000-01-01'], expectedOutput: '1999-12-31' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('date1', 'date2', `
@@ -339,7 +339,7 @@ export const dateTimeTopicTests = {
             { input: ['2024-07-04'], expectedOutput: 'Day: 4, Month: 7, Year: 2024' },
             { input: ['2024-11-28'], expectedOutput: 'Day: 28, Month: 11, Year: 2024' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('dateStr', `
@@ -370,6 +370,7 @@ export const dateTimeTopicTests = {
 };
 
 export default dateTimeTopicTests;
+
 
 
 

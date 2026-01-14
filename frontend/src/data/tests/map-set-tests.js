@@ -24,7 +24,7 @@ export const mapSetTopicTests = {
             { input: [['a', 'b', 'c']], expectedOutput: 'a:1,b:1,c:1' },
             { input: [[]], expectedOutput: '' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('arr', `
@@ -70,7 +70,7 @@ export const mapSetTopicTests = {
             { input: [[]], expectedOutput: '' },
             { input: [['a', 'b', 'a']], expectedOutput: 'a,b' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('arr', `
@@ -115,7 +115,7 @@ export const mapSetTopicTests = {
             { input: [[1], [1]], expectedOutput: 'true' },
             { input: [['a', 'b'], ['b', 'c']], expectedOutput: 'true' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('arr1', 'arr2', `
@@ -160,7 +160,7 @@ export const mapSetTopicTests = {
             { input: [[], [1, 2]], expectedOutput: '' },
             { input: [[5], [5]], expectedOutput: '5' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('arr1', 'arr2', `
@@ -205,7 +205,7 @@ export const mapSetTopicTests = {
             { input: [[1, 2], []], expectedOutput: '1,2' },
             { input: [['a'], ['b']], expectedOutput: 'a,b' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('arr1', 'arr2', `
@@ -235,22 +235,22 @@ export const mapSetTopicTests = {
       {
         description: 'Create a function that groups an array of objects by a property value using a Map',
         testCases: [
-          { input: [[{type: 'a', val: 1}, {type: 'b', val: 2}, {type: 'a', val: 3}], 'type'], expectedOutput: 'a:2,b:1' },
-          { input: [[{cat: 'x', n: 1}], 'cat'], expectedOutput: 'x:1' },
+          { input: [[{ type: 'a', val: 1 }, { type: 'b', val: 2 }, { type: 'a', val: 3 }], 'type'], expectedOutput: 'a:2,b:1' },
+          { input: [[{ cat: 'x', n: 1 }], 'cat'], expectedOutput: 'x:1' },
           { input: [[], 'type'], expectedOutput: '' },
-          { input: [[{g: 1}, {g: 1}, {g: 2}], 'g'], expectedOutput: '1:2,2:1' },
-          { input: [[{k: 'a'}, {k: 'a'}, {k: 'a'}], 'k'], expectedOutput: 'a:3' }
+          { input: [[{ g: 1 }, { g: 1 }, { g: 2 }], 'g'], expectedOutput: '1:2,2:1' },
+          { input: [[{ k: 'a' }, { k: 'a' }, { k: 'a' }], 'k'], expectedOutput: 'a:3' }
         ],
         testFunction: (code) => {
           const results = [];
           const testCases = [
-            { input: [[{type: 'a', val: 1}, {type: 'b', val: 2}, {type: 'a', val: 3}], 'type'], expectedOutput: 'a:2,b:1' },
-            { input: [[{cat: 'x', n: 1}], 'cat'], expectedOutput: 'x:1' },
+            { input: [[{ type: 'a', val: 1 }, { type: 'b', val: 2 }, { type: 'a', val: 3 }], 'type'], expectedOutput: 'a:2,b:1' },
+            { input: [[{ cat: 'x', n: 1 }], 'cat'], expectedOutput: 'x:1' },
             { input: [[], 'type'], expectedOutput: '' },
-            { input: [[{g: 1}, {g: 1}, {g: 2}], 'g'], expectedOutput: '1:2,2:1' },
-            { input: [[{k: 'a'}, {k: 'a'}, {k: 'a'}], 'k'], expectedOutput: 'a:3' }
+            { input: [[{ g: 1 }, { g: 1 }, { g: 2 }], 'g'], expectedOutput: '1:2,2:1' },
+            { input: [[{ k: 'a' }, { k: 'a' }, { k: 'a' }], 'k'], expectedOutput: 'a:3' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('arr', 'prop', `
@@ -296,7 +296,7 @@ export const mapSetTopicTests = {
             { input: [[]], expectedOutput: 'null' },
             { input: [['a', 'b', 'c', 'a']], expectedOutput: 'a' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('arr', `
@@ -341,7 +341,7 @@ export const mapSetTopicTests = {
             { input: [[['b', 2], ['a', 1]]], expectedOutput: 'a:1,b:2' },
             { input: [[['x', 10], ['y', 20], ['w', 5]]], expectedOutput: 'w:5,x:10,y:20' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('entries', `
@@ -373,6 +373,7 @@ export const mapSetTopicTests = {
 };
 
 export default mapSetTopicTests;
+
 
 
 

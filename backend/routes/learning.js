@@ -13,6 +13,7 @@ import {
   getAllProgress
 } from '../services/supabase.js'
 import { getFormattedOutcomes, getOutcomes } from '../../frontend/src/data/curriculum.js'
+import { getNotes } from '../data/notes.js'
 
 const router = express.Router()
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -48,6 +49,103 @@ function rateLimitMiddleware(req, res, next) {
     })
   }
   next()
+}
+
+// ============ INPUT SANITIZATION ============
+const MAX_INPUT_LENGTH = {
+  message: 2000,
+  code: 50000,
+  topicId: 100,
+  subtopicId: 100,
+  title: 200
+}
+
+// Sanitize string input - remove potential XSS/injection
+function sanitizeString(str, maxLength = 1000) {
+  if (typeof str !== 'string') return ''
+  return str
+    .slice(0, maxLength)
+    .replace(/[<>]/g, '') // Remove HTML brackets
+    .trim()
+}
+
+// Sanitize ID (alphanumeric and hyphens only)
+function sanitizeId(id) {
+  if (typeof id !== 'string') return ''
+  return id.slice(0, 100).replace(/[^a-zA-Z0-9-_]/g, '')
+}
+
+// Validate request body against schema
+function validateBody(schema) {
+  return (req, res, next) => {
+    const errors = []
+
+    for (const [field, rules] of Object.entries(schema)) {
+      const value = req.body[field]
+
+      // Check required fields
+      if (rules.required && (value === undefined || value === null || value === '')) {
+        errors.push(`${field} is required`)
+        continue
+      }
+
+      // Skip validation if field is optional and not provided
+      if (value === undefined || value === null) continue
+
+      // Type validation
+      if (rules.type === 'string' && typeof value !== 'string') {
+        errors.push(`${field} must be a string`)
+      } else if (rules.type === 'number' && typeof value !== 'number') {
+        errors.push(`${field} must be a number`)
+      } else if (rules.type === 'array' && !Array.isArray(value)) {
+        errors.push(`${field} must be an array`)
+      }
+
+      // Length validation for strings
+      if (typeof value === 'string' && rules.maxLength && value.length > rules.maxLength) {
+        errors.push(`${field} exceeds maximum length of ${rules.maxLength}`)
+      }
+
+      // Sanitize the value
+      if (typeof value === 'string') {
+        if (rules.isId) {
+          req.body[field] = sanitizeId(value)
+        } else {
+          req.body[field] = sanitizeString(value, rules.maxLength || 1000)
+        }
+      }
+    }
+
+    if (errors.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors
+      })
+    }
+
+    next()
+  }
+}
+
+// Common validation schemas
+const schemas = {
+  sessionStart: {
+    topicId: { required: true, type: 'string', isId: true },
+    subtopicId: { required: true, type: 'string', isId: true },
+    subtopicTitle: { required: true, type: 'string', maxLength: MAX_INPUT_LENGTH.title }
+  },
+  sessionChat: {
+    topicId: { required: true, type: 'string', isId: true },
+    subtopicId: { required: true, type: 'string', isId: true },
+    message: { required: true, type: 'string', maxLength: MAX_INPUT_LENGTH.message },
+    subtopicTitle: { required: true, type: 'string', maxLength: MAX_INPUT_LENGTH.title }
+  },
+  codeExecution: {
+    topicId: { required: true, type: 'string', isId: true },
+    subtopicId: { required: true, type: 'string', isId: true },
+    code: { required: true, type: 'string', maxLength: MAX_INPUT_LENGTH.code }
+  }
 }
 
 // ============ GROQ CLIENT WITH TIMEOUT ============
@@ -119,27 +217,162 @@ function loadPrompt(name) {
 }
 
 // ============ CODE EXECUTION (SAFE) ============
+const EXECUTION_TIMEOUT = 5000 // 5 seconds max
+const MAX_OUTPUT_LENGTH = 10000 // 10KB max output
+const MAX_LOOP_ITERATIONS = 100000 // Prevent infinite loops
+
+// Dangerous patterns to block
+const DANGEROUS_PATTERNS = [
+  /process\./gi,
+  /require\s*\(/gi,
+  /import\s*\(/gi,
+  /eval\s*\(/gi,
+  /Function\s*\(/gi,
+  /fetch\s*\(/gi,
+  /XMLHttpRequest/gi,
+  /WebSocket/gi,
+  /__proto__/gi,
+  /constructor\s*\[/gi,
+  /globalThis/gi,
+  /Reflect\./gi,
+  /Proxy/gi
+]
+
+// Check for dangerous code patterns
+function validateCode(code) {
+  for (const pattern of DANGEROUS_PATTERNS) {
+    if (pattern.test(code)) {
+      return { valid: false, error: `Unsafe code pattern detected: ${pattern.source}` }
+    }
+  }
+
+  // Check for extremely long strings (potential DoS)
+  if (code.length > 50000) {
+    return { valid: false, error: 'Code too long (max 50KB)' }
+  }
+
+  return { valid: true }
+}
+
+// Inject loop protection into code
+function injectLoopProtection(code) {
+  let loopCounter = 0
+  const maxIterations = MAX_LOOP_ITERATIONS
+
+  // Add iteration counter to while loops
+  code = code.replace(
+    /while\s*\(([^)]+)\)\s*{/gi,
+    `while ($1) { if (++__loopCount > ${maxIterations}) throw new Error("Loop timeout: exceeded ${maxIterations} iterations");`
+  )
+
+  // Add iteration counter to for loops
+  code = code.replace(
+    /for\s*\(([^)]+)\)\s*{/gi,
+    `for ($1) { if (++__loopCount > ${maxIterations}) throw new Error("Loop timeout: exceeded ${maxIterations} iterations");`
+  )
+
+  // Wrap code with loop counter initialization
+  return `let __loopCount = 0;\n${code}`
+}
+
 function executeCode(code) {
   const logs = []
   let result = undefined
   let error = null
 
+  // Step 1: Validate code
+  const validation = validateCode(code)
+  if (!validation.valid) {
+    return {
+      output: `Security Error: ${validation.error}`,
+      logs: [`Security Error: ${validation.error}`],
+      error: validation.error,
+      success: false
+    }
+  }
+
   try {
-    // Create safe console mock
+    // Step 2: Inject loop protection
+    const protectedCode = injectLoopProtection(code)
+
+    // Step 3: Create safe console mock with output limiting
+    let totalOutput = 0
     const mockConsole = {
-      log: (...args) => logs.push(args.map(formatValue).join(' ')),
-      error: (...args) => logs.push('ERROR: ' + args.map(formatValue).join(' ')),
-      warn: (...args) => logs.push('WARN: ' + args.map(formatValue).join(' ')),
-      info: (...args) => logs.push('INFO: ' + args.map(formatValue).join(' '))
+      log: (...args) => {
+        const line = args.map(formatValue).join(' ')
+        totalOutput += line.length
+        if (totalOutput > MAX_OUTPUT_LENGTH) {
+          throw new Error('Output limit exceeded (max 10KB)')
+        }
+        logs.push(line)
+      },
+      error: (...args) => {
+        const line = 'ERROR: ' + args.map(formatValue).join(' ')
+        logs.push(line)
+      },
+      warn: (...args) => {
+        const line = 'WARN: ' + args.map(formatValue).join(' ')
+        logs.push(line)
+      },
+      info: (...args) => {
+        const line = 'INFO: ' + args.map(formatValue).join(' ')
+        logs.push(line)
+      }
     }
 
-    // Execute in isolated context
-    const fn = new Function('console', `
+    // Step 4: Create restricted sandbox with only safe globals
+    const safeGlobals = {
+      console: mockConsole,
+      Math: Math,
+      Date: Date,
+      Array: Array,
+      Object: Object,
+      String: String,
+      Number: Number,
+      Boolean: Boolean,
+      JSON: JSON,
+      Map: Map,
+      Set: Set,
+      RegExp: RegExp,
+      Error: Error,
+      TypeError: TypeError,
+      RangeError: RangeError,
+      parseInt: parseInt,
+      parseFloat: parseFloat,
+      isNaN: isNaN,
+      isFinite: isFinite,
+      undefined: undefined,
+      NaN: NaN,
+      Infinity: Infinity
+    }
+
+    // Step 5: Build safe function with timeout simulation
+    const startTime = Date.now()
+    const checkTimeout = () => {
+      if (Date.now() - startTime > EXECUTION_TIMEOUT) {
+        throw new Error(`Execution timeout: exceeded ${EXECUTION_TIMEOUT / 1000}s limit`)
+      }
+    }
+
+    // Add timeout check to sandbox
+    safeGlobals.__checkTimeout = checkTimeout
+
+    // Inject timeout checks into long-running operations
+    const timeoutProtectedCode = protectedCode.replace(
+      /if \(\+\+__loopCount/g,
+      '__checkTimeout(); if (++__loopCount'
+    )
+
+    // Step 6: Execute in isolated context
+    const globalNames = Object.keys(safeGlobals)
+    const globalValues = Object.values(safeGlobals)
+
+    const fn = new Function(...globalNames, `
       "use strict";
-      ${code}
+      ${timeoutProtectedCode}
     `)
 
-    result = fn(mockConsole)
+    result = fn(...globalValues)
   } catch (e) {
     error = e.message
     logs.push(`Error: ${e.message}`)
@@ -169,43 +402,68 @@ function formatValue(val) {
 // ============ AI RESPONSE PARSING ============
 function parseAIResponse(response) {
   if (!response) {
-    return { message: '', progress: null, isComplete: false }
+    return { message: '', progress: null, isComplete: false, moveNext: null }
   }
 
-  // Extract visible message (everything before <progress> tag)
-  let message = response.split('<progress>')[0].trim()
+  let message = response
 
-  // Also remove <complete> tag from visible message
-  message = message.split('<complete>')[0].trim()
+  // Extract [MOVE_NEXT: outcome_id] tag
+  let moveNext = null
+  const moveNextMatch = response.match(/\[MOVE_NEXT:\s*([^\]]+)\]/i)
+  if (moveNextMatch) {
+    moveNext = moveNextMatch[1].trim()
+    message = message.replace(moveNextMatch[0], '').trim()
+  }
 
-  // Extract progress JSON
+  // Legacy: Extract progress JSON if present
   let progress = null
   const progressMatch = response.match(/<progress>(.*?)<\/progress>/s)
   if (progressMatch) {
     try {
       progress = JSON.parse(progressMatch[1].trim())
+      message = message.split('<progress>')[0].trim()
     } catch (e) {
       console.warn('Failed to parse progress JSON:', e.message)
     }
   }
 
-  // Check if session is complete
+  // Legacy: Check if session is complete
   const isComplete = /<complete>\s*true\s*<\/complete>/i.test(response)
+  message = message.split('<complete>')[0].trim()
 
-  return { message, progress, isComplete }
+  return { message, progress, isComplete, moveNext }
 }
 
 // Build session prompt with outcomes injected
-function buildSessionPrompt(topicId, subtopicId) {
+function buildSessionPrompt(topicId, subtopicId, subtopicTitle, completedTopics = [], currentOutcomeIndex = 0) {
   const promptTemplate = loadPrompt('session-prompt')
-  const outcomes = getFormattedOutcomes(topicId, subtopicId)
+  const formattedOutcomes = getFormattedOutcomes(topicId, subtopicId)
+  const rawOutcomes = getOutcomes(topicId, subtopicId)
 
-  if (!outcomes) {
-    // Fallback if no outcomes defined for this subtopic
-    return promptTemplate.replace('{{OUTCOMES}}', 'Teach the core concepts of this topic thoroughly')
-  }
+  // Get current and next outcomes
+  const currentOutcome = rawOutcomes[currentOutcomeIndex]
+  const nextOutcome = rawOutcomes[currentOutcomeIndex + 1]
+  
+  const currentGoal = currentOutcome 
+    ? `${currentOutcome.id}: ${currentOutcome.teach}` 
+    : 'Complete the topic'
+  const nextGoal = nextOutcome 
+    ? `${nextOutcome.id}: ${nextOutcome.teach}` 
+    : 'Topic complete - ready for practice'
 
-  return promptTemplate.replace('{{OUTCOMES}}', outcomes)
+  const completedList = completedTopics
+    .map(t => `${t.topicId}/${t.subtopicId}`)
+    .slice(-10)
+    .join(', ') || 'None (first lesson)'
+
+  let prompt = promptTemplate
+    .replace('{{SUBTOPIC_TITLE}}', subtopicTitle || `${topicId}/${subtopicId}`)
+    .replace(/\{\{COMPLETED_TOPICS\}\}/g, completedList)
+    .replace('{{OUTCOMES}}', formattedOutcomes || 'Teach the core concepts of this topic thoroughly')
+    .replace('{{CURRENT_OUTCOME}}', currentGoal)
+    .replace('{{NEXT_OUTCOME}}', nextGoal)
+
+  return prompt
 }
 
 // ============ PREREQUISITES & CONTEXT ============
@@ -218,20 +476,6 @@ async function getCompletedTopics(userId) {
   } catch {
     return []
   }
-}
-
-function buildStudentContext(completedTopics, currentTopic, currentSubtopic) {
-  const completedList = completedTopics
-    .map(t => `${t.topicId}/${t.subtopicId}`)
-    .slice(-10) // Last 10 for context size
-    .join(', ')
-
-  return `
-STUDENT_CONTEXT:
-- Topics completed: ${completedList || 'None (first lesson)'}
-- Current topic: ${currentTopic}
-- Current subtopic: ${currentSubtopic}
-`
 }
 
 // ============ GET SESSION STATE ============
@@ -296,7 +540,7 @@ router.get('/state/:topicId/:subtopicId', authenticateToken, async (req, res) =>
 
 // ============ SESSION PHASE ============
 
-router.post('/session/start', authenticateToken, rateLimitMiddleware, async (req, res) => {
+router.post('/session/start', authenticateToken, rateLimitMiddleware, validateBody(schemas.sessionStart), async (req, res) => {
   try {
     const { topicId, subtopicId, subtopicTitle, assignments } = req.body
 
@@ -311,6 +555,7 @@ router.post('/session/start', authenticateToken, rateLimitMiddleware, async (req
       phase: 'session',
       concept_revealed: false,
       current_task: 0,
+      current_outcome_index: 0,
       total_tasks: taskList.length,
       status: 'in_progress',
       started_at: new Date().toISOString(),
@@ -319,19 +564,18 @@ router.post('/session/start', authenticateToken, rateLimitMiddleware, async (req
 
     // Get student context and build prompt with outcomes
     const completedTopics = await getCompletedTopics(req.user.userId)
-    const studentContext = buildStudentContext(completedTopics, topicId, subtopicTitle)
     const outcomes = getOutcomes(topicId, subtopicId)
 
-    const prompt = buildSessionPrompt(topicId, subtopicId) || getDefaultSessionPrompt()
+    const prompt = buildSessionPrompt(topicId, subtopicId, subtopicTitle, completedTopics) || getDefaultSessionPrompt()
 
     const messages = [
       {
         role: 'system',
-        content: prompt + '\n\n' + studentContext
+        content: prompt
       },
       {
         role: 'user',
-        content: `Teach me about: ${subtopicTitle}`
+        content: `Hi, I'm ready to learn!`
       }
     ]
 
@@ -363,30 +607,42 @@ router.post('/session/start', authenticateToken, rateLimitMiddleware, async (req
   }
 })
 
-router.post('/session/chat', authenticateToken, rateLimitMiddleware, async (req, res) => {
+router.post('/session/chat', authenticateToken, rateLimitMiddleware, validateBody(schemas.sessionChat), async (req, res) => {
   try {
     const { topicId, subtopicId, message, subtopicTitle } = req.body
 
     const history = await getChatHistory(req.user.userId, topicId, subtopicId)
     await saveChatMessage(req.user.userId, topicId, subtopicId, 'user', message, 'session')
 
+    // Get current progress to know which outcome we're on
+    const currentProgress = await getProgress(req.user.userId, topicId, subtopicId)
+    const currentOutcomeIndex = currentProgress?.current_outcome_index || 0
+
     const completedTopics = await getCompletedTopics(req.user.userId)
-    const studentContext = buildStudentContext(completedTopics, topicId, subtopicTitle)
     const outcomes = getOutcomes(topicId, subtopicId)
 
-    const prompt = buildSessionPrompt(topicId, subtopicId) || getDefaultSessionPrompt()
+    const prompt = buildSessionPrompt(topicId, subtopicId, subtopicTitle, completedTopics, currentOutcomeIndex) || getDefaultSessionPrompt()
 
     const messages = [
-      { role: 'system', content: prompt + '\n\n' + studentContext + `\n\nTOPIC: ${subtopicTitle}` },
+      { role: 'system', content: prompt },
       ...history.slice(-20).map(m => ({ role: m.role, content: m.content })),
       { role: 'user', content: message }
     ]
 
     const rawResponse = await callAI(messages, { maxTokens: 300 })
-    const { message: aiMessage, progress, isComplete } = parseAIResponse(rawResponse)
+    const { message: aiMessage, progress, isComplete, moveNext } = parseAIResponse(rawResponse)
 
-    // Check for playground readiness - either AI signals complete or uses trigger phrases
-    const readyForPlaytime = isComplete || /playground|ready to practice|let's try it|head to the playground|time to experiment|🎯/i.test(aiMessage || '')
+    // If AI signals to move to next outcome, update progress
+    if (moveNext) {
+      const newIndex = currentOutcomeIndex + 1
+      await upsertProgress(req.user.userId, topicId, subtopicId, {
+        current_outcome_index: newIndex
+      })
+    }
+
+    // Check for playground readiness - all outcomes complete or AI signals
+    const allOutcomesComplete = moveNext && (currentOutcomeIndex + 1 >= outcomes.length)
+    const readyForPlaytime = isComplete || allOutcomesComplete || /playground|ready to practice|let's try it|head to the playground|time to experiment|🎯/i.test(aiMessage || '')
 
     await saveChatMessage(req.user.userId, topicId, subtopicId, 'assistant', aiMessage || 'Let me think about that...', 'session')
 
@@ -397,7 +653,8 @@ router.post('/session/chat', authenticateToken, rateLimitMiddleware, async (req,
       readyForPlaytime,
       outcomes: outcomes || [],
       progress: progress,
-      isComplete
+      currentOutcomeIndex: moveNext ? currentOutcomeIndex + 1 : currentOutcomeIndex,
+      isComplete: allOutcomesComplete || isComplete
     })
   } catch (error) {
     console.error('Session chat error:', error)
@@ -452,7 +709,7 @@ When you feel confident, click "Ready for Assignments" to test your skills!`
   }
 })
 
-router.post('/playtime/execute', authenticateToken, async (req, res) => {
+router.post('/playtime/execute', authenticateToken, validateBody(schemas.codeExecution), async (req, res) => {
   try {
     const { code } = req.body
 
@@ -571,7 +828,7 @@ router.post('/assignment/start', authenticateToken, async (req, res) => {
 })
 
 // Execute code in assignment (for testing before submit)
-router.post('/assignment/run', authenticateToken, async (req, res) => {
+router.post('/assignment/run', authenticateToken, validateBody(schemas.codeExecution), async (req, res) => {
   try {
     const { code } = req.body
 
@@ -644,7 +901,7 @@ Be encouraging. Keep it under 3 sentences.`
   }
 })
 
-router.post('/assignment/submit', authenticateToken, async (req, res) => {
+router.post('/assignment/submit', authenticateToken, validateBody(schemas.codeExecution), async (req, res) => {
   try {
     const { topicId, subtopicId, code, assignmentIndex } = req.body
 
@@ -914,5 +1171,23 @@ function getDefaultFeedback() {
     suggestions: ['Keep practicing!']
   }
 }
+
+// ============ NOTES ENDPOINT ============
+// Fetch notes for a specific subtopic (loaded on demand to reduce bundle size)
+router.get('/notes/:topicId/:subtopicId', authenticateToken, (req, res) => {
+  try {
+    const { topicId, subtopicId } = req.params
+    const notes = getNotes(topicId, subtopicId)
+
+    if (notes) {
+      res.json({ success: true, notes })
+    } else {
+      res.json({ success: true, notes: null, message: 'No notes available for this topic' })
+    }
+  } catch (error) {
+    console.error('Error fetching notes:', error)
+    res.status(500).json({ success: false, message: 'Failed to fetch notes' })
+  }
+})
 
 export default router

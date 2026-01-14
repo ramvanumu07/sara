@@ -24,7 +24,7 @@ export const regexTopicTests = {
             { input: ['0'], expectedOutput: 'true' },
             { input: ['12 34'], expectedOutput: 'false' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('str', `
@@ -69,7 +69,7 @@ export const regexTopicTests = {
             { input: ['', 'a'], expectedOutput: '0' },
             { input: ['AaAaA', 'a'], expectedOutput: '5' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('str', 'pattern', `
@@ -114,7 +114,7 @@ export const regexTopicTests = {
             { input: ['   '], expectedOutput: '-' },
             { input: ['hello'], expectedOutput: 'hello' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('str', `
@@ -159,7 +159,7 @@ export const regexTopicTests = {
             { input: ['a1b2c3'], expectedOutput: '1,2,3' },
             { input: ['100'], expectedOutput: '100' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('str', `
@@ -204,7 +204,7 @@ export const regexTopicTests = {
             { input: ['a@b.c'], expectedOutput: 'true' },
             { input: ['@test.com'], expectedOutput: 'false' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('str', `
@@ -249,7 +249,7 @@ export const regexTopicTests = {
             { input: ['A'], expectedOutput: 'true' },
             { input: [''], expectedOutput: 'false' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('str', `
@@ -294,7 +294,7 @@ export const regexTopicTests = {
             { input: [''], expectedOutput: '' },
             { input: ['aEiOu'], expectedOutput: '*****' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('str', `
@@ -339,7 +339,7 @@ export const regexTopicTests = {
             { input: ['ABC'], expectedOutput: 'ABC' },
             { input: ['aA bB cC'], expectedOutput: '' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('str', `
@@ -370,6 +370,7 @@ export const regexTopicTests = {
 };
 
 export default regexTopicTests;
+
 
 
 

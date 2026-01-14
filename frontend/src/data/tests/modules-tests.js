@@ -24,7 +24,7 @@ export const modulesTopicTests = {
             { input: [['increment', 'decrement', 'increment', 'getValue']], expectedOutput: '1' },
             { input: [['increment', 'increment', 'increment', 'decrement', 'getValue']], expectedOutput: '2' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('operations', `
@@ -73,7 +73,7 @@ export const modulesTopicTests = {
             { input: [[['getResult']]], expectedOutput: '0' },
             { input: [[['subtract', 5], ['getResult']]], expectedOutput: '-5' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('operations', `
@@ -126,7 +126,7 @@ export const modulesTopicTests = {
             { input: [[['getName']]], expectedOutput: '' },
             { input: [[['setName', 'Test'], ['setName', 'Final'], ['getName']]], expectedOutput: 'Final' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('operations', `
@@ -179,7 +179,7 @@ export const modulesTopicTests = {
             { input: [[['log', 'a'], ['log', 'b'], ['getAll']]], expectedOutput: '[LOG] a,[LOG] b' },
             { input: [[['warn', 'x'], ['error', 'y'], ['log', 'z'], ['getAll']]], expectedOutput: '[WARN] x,[ERROR] y,[LOG] z' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('operations', `
@@ -232,7 +232,7 @@ export const modulesTopicTests = {
             { input: [[['set', 'a', 1], ['clear'], ['get', 'a']]], expectedOutput: 'undefined' },
             { input: [[['get', 'missing']]], expectedOutput: 'undefined' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('operations', `
@@ -282,7 +282,7 @@ export const modulesTopicTests = {
             { input: [['reset', 'getNextId']], expectedOutput: '1' },
             { input: [['getNextId', 'getNextId', 'getNextId', 'getNextId', 'getNextId']], expectedOutput: '1,2,3,4,5' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('operations', `
@@ -334,7 +334,7 @@ export const modulesTopicTests = {
             { input: ['isNumber', 'abc'], expectedOutput: 'false' },
             { input: ['isEmpty', ''], expectedOutput: 'true' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('method', 'value', `
@@ -379,7 +379,7 @@ export const modulesTopicTests = {
             { input: [[['dequeue']]], expectedOutput: 'undefined' },
             { input: [[['enqueue', 'a'], ['enqueue', 'b'], ['dequeue'], ['dequeue'], ['size']]], expectedOutput: '0' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('operations', `
@@ -418,6 +418,7 @@ export const modulesTopicTests = {
 };
 
 export default modulesTopicTests;
+
 
 
 

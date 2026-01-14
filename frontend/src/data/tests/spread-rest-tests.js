@@ -24,7 +24,7 @@ export const spreadRestTopicTests = {
             { input: [['a', 'b'], null], expectedOutput: 'a,b,' },
             { input: [[true, false], 0], expectedOutput: 'true,false,0' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('arr', 'element', `${code}\nreturn addElement(arr, element);`);
@@ -67,7 +67,7 @@ export const spreadRestTopicTests = {
             { input: [[], []], expectedOutput: '' },
             { input: [[-1, 0], [1]], expectedOutput: '-1,0,1' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('arr1', 'arr2', `${code}\nreturn mergeArrays(arr1, arr2);`);
@@ -110,7 +110,7 @@ export const spreadRestTopicTests = {
             { input: [[0, -1, 1]], expectedOutput: '1' },
             { input: [[7, 7, 7]], expectedOutput: '7' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('arr', `${code}\nreturn findMax(arr);`);
@@ -137,26 +137,26 @@ export const spreadRestTopicTests = {
       {
         description: 'Create a function that takes an object and a key-value pair, and returns a new object with the property added or updated (without modifying the original)',
         testCases: [
-          { input: [{name: 'John'}, 'age', 25], expectedOutput: '{"name":"John","age":25}' },  // Add new property
-          { input: [{x: 10}, 'x', 20], expectedOutput: '{"x":20}' },                           // Override existing
+          { input: [{ name: 'John' }, 'age', 25], expectedOutput: '{"name":"John","age":25}' },  // Add new property
+          { input: [{ x: 10 }, 'x', 20], expectedOutput: '{"x":20}' },                           // Override existing
           { input: [{}, 'key', 'value'], expectedOutput: '{"key":"value"}' },                  // Empty object
-          { input: [{a: 1}, 'b', null], expectedOutput: '{"a":1,"b":null}' },                  // Add null value
-          { input: [{a: 1}, 'b', 0], expectedOutput: '{"a":1,"b":0}' }                         // Add zero (falsy)
+          { input: [{ a: 1 }, 'b', null], expectedOutput: '{"a":1,"b":null}' },                  // Add null value
+          { input: [{ a: 1 }, 'b', 0], expectedOutput: '{"a":1,"b":0}' }                         // Add zero (falsy)
         ],
         testFunction: (code) => {
           const results = [];
           const testCases = [
-            { input: [{name: 'John'}, 'age', 25], expectedOutput: '{"name":"John","age":25}' },
-            { input: [{x: 10}, 'x', 20], expectedOutput: '{"x":20}' },
+            { input: [{ name: 'John' }, 'age', 25], expectedOutput: '{"name":"John","age":25}' },
+            { input: [{ x: 10 }, 'x', 20], expectedOutput: '{"x":20}' },
             { input: [{}, 'key', 'value'], expectedOutput: '{"key":"value"}' },
-            { input: [{a: 1}, 'b', null], expectedOutput: '{"a":1,"b":null}' },
-            { input: [{a: 1}, 'b', 0], expectedOutput: '{"a":1,"b":0}' }
+            { input: [{ a: 1 }, 'b', null], expectedOutput: '{"a":1,"b":null}' },
+            { input: [{ a: 1 }, 'b', 0], expectedOutput: '{"a":1,"b":0}' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('obj', 'key', 'value', `${code}\nreturn setProperty(obj, key, value);`);
-              const result = JSON.stringify(func({...input[0]}, input[1], input[2]));
+              const result = JSON.stringify(func({ ...input[0] }, input[1], input[2]));
               results.push({
                 input: `${JSON.stringify(input[0])}, "${input[1]}", ${JSON.stringify(input[2])}`,
                 expectedOutput,
@@ -179,26 +179,26 @@ export const spreadRestTopicTests = {
       {
         description: 'Create a function that takes two objects and returns a new object with all properties from both (second object properties override first if keys match)',
         testCases: [
-          { input: [{a: 1}, {b: 2}], expectedOutput: '{"a":1,"b":2}' },                        // No overlap
-          { input: [{a: 1, b: 2}, {b: 99}], expectedOutput: '{"a":1,"b":99}' },                // Override
-          { input: [{}, {a: 1}], expectedOutput: '{"a":1}' },                                  // First empty
-          { input: [{a: 1}, {}], expectedOutput: '{"a":1}' },                                  // Second empty
+          { input: [{ a: 1 }, { b: 2 }], expectedOutput: '{"a":1,"b":2}' },                        // No overlap
+          { input: [{ a: 1, b: 2 }, { b: 99 }], expectedOutput: '{"a":1,"b":99}' },                // Override
+          { input: [{}, { a: 1 }], expectedOutput: '{"a":1}' },                                  // First empty
+          { input: [{ a: 1 }, {}], expectedOutput: '{"a":1}' },                                  // Second empty
           { input: [{}, {}], expectedOutput: '{}' }                                            // Both empty
         ],
         testFunction: (code) => {
           const results = [];
           const testCases = [
-            { input: [{a: 1}, {b: 2}], expectedOutput: '{"a":1,"b":2}' },
-            { input: [{a: 1, b: 2}, {b: 99}], expectedOutput: '{"a":1,"b":99}' },
-            { input: [{}, {a: 1}], expectedOutput: '{"a":1}' },
-            { input: [{a: 1}, {}], expectedOutput: '{"a":1}' },
+            { input: [{ a: 1 }, { b: 2 }], expectedOutput: '{"a":1,"b":2}' },
+            { input: [{ a: 1, b: 2 }, { b: 99 }], expectedOutput: '{"a":1,"b":99}' },
+            { input: [{}, { a: 1 }], expectedOutput: '{"a":1}' },
+            { input: [{ a: 1 }, {}], expectedOutput: '{"a":1}' },
             { input: [{}, {}], expectedOutput: '{}' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('obj1', 'obj2', `${code}\nreturn mergeObjects(obj1, obj2);`);
-              const result = JSON.stringify(func({...input[0]}, {...input[1]}));
+              const result = JSON.stringify(func({ ...input[0] }, { ...input[1] }));
               results.push({
                 input: `${JSON.stringify(input[0])}, ${JSON.stringify(input[1])}`,
                 expectedOutput,
@@ -236,7 +236,7 @@ export const spreadRestTopicTests = {
             { input: [-5, 5], expectedOutput: '0' },
             { input: [0, 0, 0], expectedOutput: '0' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function(`${code}\nreturn sumAll(${input.join(', ')});`);
@@ -278,7 +278,7 @@ export const spreadRestTopicTests = {
             { input: [null, undefined, 0, '', false], expectedOutput: '5' },
             { input: ['a', 'b'], expectedOutput: '2' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const inputStr = input.map(v => {
@@ -326,7 +326,7 @@ export const spreadRestTopicTests = {
             { input: [-1, 3, 4], expectedOutput: '-3,-4' },
             { input: [10, 0], expectedOutput: '0' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function(`${code}\nreturn multiplyAll(${input.join(', ')});`);
@@ -369,7 +369,7 @@ export const spreadRestTopicTests = {
             { input: ['First', 'Last'], expectedOutput: 'First Last' },
             { input: ['X', 'M1', 'M2', 'M3', 'Y'], expectedOutput: 'X M1 M2 M3 Y' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const inputStr = input.map(v => `"${v}"`).join(', ');
@@ -412,7 +412,7 @@ export const spreadRestTopicTests = {
             { input: [[1, 2, 1]], expectedOutput: '1,2,1 | 1,2,1' },
             { input: [[-1, 0, 1]], expectedOutput: '-1,0,1 | 1,0,-1' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('arr', `${code}\nreturn cloneAndReverse(arr);`);
@@ -454,7 +454,7 @@ export const spreadRestTopicTests = {
             { input: [[-10, -5, -1]], expectedOutput: '{"min":-10,"max":-1,"sum":-16}' },
             { input: [[0, 0, 0]], expectedOutput: '{"min":0,"max":0,"sum":0}' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('arr', `${code}\nreturn arrayStats(arr);`);

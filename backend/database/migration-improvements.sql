@@ -38,3 +38,4 @@ CREATE INDEX IF NOT EXISTS idx_progress_user_status ON progress(user_id, status)
 
 
 
+

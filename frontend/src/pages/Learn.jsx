@@ -15,39 +15,39 @@ const PHASES = {
 }
 
 // Local storage keys
-const getStorageKey = (topicId, subtopicId, key) => 
+const getStorageKey = (topicId, subtopicId, key) =>
   `edubridge_${topicId}_${subtopicId}_${key}`
 
 export default function Learn() {
   const { topicId, subtopicId } = useParams()
   const navigate = useNavigate()
-  
+
   // Core state
   const [phase, setPhase] = useState(PHASES.SESSION)
   const [loading, setLoading] = useState(true)
   const [sending, setSending] = useState(false)
   const [error, setError] = useState(null)
   const [retrying, setRetrying] = useState(false)
-  
+
   // Chat state
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
   const messagesEndRef = useRef(null)
   const inputRef = useRef(null)
-  
+
   // Session phase
   const [conceptRevealed, setConceptRevealed] = useState(false)
   const [readyForPlaytime, setReadyForPlaytime] = useState(false)
   const [outcomes, setOutcomes] = useState([])
   const [coveredOutcomes, setCoveredOutcomes] = useState([])
-  
+
   // PlayTime state
   const [terminalHistory, setTerminalHistory] = useState([])
   const [playtimeMessages, setPlaytimeMessages] = useState([])
   const [playtimeInput, setPlaytimeInput] = useState('')
   const [currentCode, setCurrentCode] = useState('')
   const [showMobileChat, setShowMobileChat] = useState(false)
-  
+
   // Assignment state
   const [assignments, setAssignments] = useState([])
   const [currentAssignment, setCurrentAssignment] = useState(0)
@@ -57,16 +57,21 @@ export default function Learn() {
   const [elapsedTime, setElapsedTime] = useState(0)
   const [codeOutput, setCodeOutput] = useState('')
   const [codeError, setCodeError] = useState(false)
-  
+
   // Hints state
   const [showHintPanel, setShowHintPanel] = useState(false)
   const [currentHint, setCurrentHint] = useState('')
   const [hintsUsed, setHintsUsed] = useState(0)
   const [hintLoading, setHintLoading] = useState(false)
-  
+
   // Feedback state
   const [feedback, setFeedback] = useState(null)
   const [feedbackLoading, setFeedbackLoading] = useState(false)
+
+  // Notes state (loaded on demand from backend)
+  const [notes, setNotes] = useState(null)
+  const [notesLoading, setNotesLoading] = useState(false)
+  const [showNotes, setShowNotes] = useState(false)
 
   // Responsive
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
@@ -106,6 +111,22 @@ export default function Learn() {
     return () => window.removeEventListener('resize', handleResize)
   }, [topicId, subtopicId])
 
+  // Load notes on demand when entering playtime
+  async function fetchNotes() {
+    if (notes || notesLoading) return
+    setNotesLoading(true)
+    try {
+      const res = await api.get(`/api/learn/notes/${topicId}/${subtopicId}`)
+      if (res.data.success && res.data.notes) {
+        setNotes(res.data.notes)
+      }
+    } catch (err) {
+      console.error('Failed to fetch notes:', err)
+    } finally {
+      setNotesLoading(false)
+    }
+  }
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, playtimeMessages])
@@ -131,7 +152,7 @@ export default function Learn() {
       const saveTimer = setTimeout(() => {
         saveCodeLocally(currentCode, 'playtime')
         // Also save to server (debounced)
-        api.post('/api/learn/playtime/save', { topicId, subtopicId, code: currentCode }).catch(() => {})
+        api.post('/api/learn/playtime/save', { topicId, subtopicId, code: currentCode }).catch(() => { })
       }, 2000)
       return () => clearTimeout(saveTimer)
     }
@@ -149,23 +170,23 @@ export default function Learn() {
   // API call with retry
   async function apiCall(method, url, data, options = {}) {
     const { retries = 2, showError = true } = options
-    
+
     for (let attempt = 0; attempt <= retries; attempt++) {
       try {
         setError(null)
-        const response = method === 'get' 
+        const response = method === 'get'
           ? await api.get(url)
           : await api.post(url, data)
         return response
       } catch (err) {
         console.error(`API call attempt ${attempt + 1} failed:`, err)
-        
+
         if (attempt === retries) {
           const errorMsg = err.response?.data?.message || 'Something went wrong. Please try again.'
           if (showError) setError(errorMsg)
           throw err
         }
-        
+
         // Wait before retry
         await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)))
       }
@@ -177,7 +198,7 @@ export default function Learn() {
     setError(null)
     try {
       const res = await apiCall('get', `/api/learn/state/${topicId}/${subtopicId}`)
-      
+
       if (res.data.success) {
         if (!res.data.exists) {
           await startSession()
@@ -189,13 +210,13 @@ export default function Learn() {
           setMessages(res.data.messages || [])
           setAssignments(res.data.assignments || [])
           setHintsUsed(res.data.hintsUsed || 0)
-          
+
           // Load saved code from server or localStorage
           const serverCode = res.data.savedCode
           const localCode = loadLocalCode(res.data.phase === PHASES.ASSIGNMENT ? 'assignment' : 'playtime')
           setCurrentCode(serverCode || localCode)
           setAssignmentCode(serverCode || localCode)
-          
+
           // If in assignment phase, start timer
           if (res.data.phase === PHASES.ASSIGNMENT) {
             setAssignmentStartTime(Date.now())
@@ -226,17 +247,17 @@ export default function Learn() {
   async function startSession() {
     try {
       // Handle empty assignments
-      const taskList = subtopic?.tasks && subtopic.tasks.length > 0 
-        ? subtopic.tasks 
+      const taskList = subtopic?.tasks && subtopic.tasks.length > 0
+        ? subtopic.tasks
         : ['Practice the concept with a simple example']
-      
+
       const res = await apiCall('post', '/api/learn/session/start', {
         topicId,
         subtopicId,
         subtopicTitle: subtopic.title,
         assignments: taskList
       })
-      
+
       if (res.data.success) {
         setPhase(PHASES.SESSION)
         const newMessages = [{ role: 'assistant', content: res.data.message }]
@@ -244,7 +265,7 @@ export default function Learn() {
         setConceptRevealed(false)
         setReadyForPlaytime(false)
         setTotalAssignments(taskList.length)
-        
+
         // Set outcomes for tracking
         if (res.data.outcomes) {
           setOutcomes(res.data.outcomes)
@@ -252,15 +273,15 @@ export default function Learn() {
         if (res.data.progress?.covered) {
           setCoveredOutcomes(res.data.progress.covered)
         }
-        
+
         // Save to localStorage for recovery
         localStorage.setItem(getStorageKey(topicId, subtopicId, 'messages'), JSON.stringify(newMessages))
       }
     } catch (error) {
       console.error('Failed to start session:', error)
-      setMessages([{ 
-        role: 'assistant', 
-        content: 'Sorry, there was an error starting the session. Please try again.' 
+      setMessages([{
+        role: 'assistant',
+        content: 'Sorry, there was an error starting the session. Please try again.'
       }])
     }
   }
@@ -283,13 +304,13 @@ export default function Learn() {
         message: userMessage,
         subtopicTitle: subtopic.title
       })
-      
+
       if (res.data.success) {
         const updatedMessages = [...newMessages, { role: 'assistant', content: res.data.response }]
         setMessages(updatedMessages)
         setConceptRevealed(res.data.conceptRevealed)
         setReadyForPlaytime(res.data.readyForPlaytime || res.data.isComplete)
-        
+
         // Update outcomes progress
         if (res.data.outcomes) {
           setOutcomes(res.data.outcomes)
@@ -297,14 +318,14 @@ export default function Learn() {
         if (res.data.progress?.covered) {
           setCoveredOutcomes(res.data.progress.covered)
         }
-        
+
         // Save to localStorage
         localStorage.setItem(getStorageKey(topicId, subtopicId, 'messages'), JSON.stringify(updatedMessages))
       }
     } catch {
-      setMessages([...newMessages, { 
-        role: 'assistant', 
-        content: 'Sorry, something went wrong. Please try again.' 
+      setMessages([...newMessages, {
+        role: 'assistant',
+        content: 'Sorry, something went wrong. Please try again.'
       }])
     }
     setSending(false)
@@ -313,18 +334,20 @@ export default function Learn() {
   async function enterPlaytime() {
     setLoading(true)
     setError(null)
+    // Fetch notes in parallel with starting playtime
+    fetchNotes()
     try {
       const res = await apiCall('post', '/api/learn/playtime/start', {
         topicId,
         subtopicId,
         subtopicTitle: subtopic.title
       })
-      
+
       if (res.data.success) {
         setPhase(PHASES.PLAYTIME)
         setPlaytimeMessages([{ role: 'assistant', content: res.data.message }])
         setTerminalHistory(res.data.terminalHistory || [])
-        
+
         // Load saved code
         const serverCode = res.data.savedCode
         const localCode = loadLocalCode('playtime')
@@ -368,14 +391,14 @@ export default function Learn() {
         subtopicTitle: subtopic.title,
         currentCode
       })
-      
+
       if (res.data.success) {
         setPlaytimeMessages(prev => [...prev, { role: 'assistant', content: res.data.response }])
       }
     } catch {
-      setPlaytimeMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: 'Sorry, something went wrong. Please try again.' 
+      setPlaytimeMessages(prev => [...prev, {
+        role: 'assistant',
+        content: 'Sorry, something went wrong. Please try again.'
       }])
     }
     setSending(false)
@@ -385,16 +408,16 @@ export default function Learn() {
     setLoading(true)
     setError(null)
     try {
-      const taskList = subtopic?.tasks && subtopic.tasks.length > 0 
-        ? subtopic.tasks 
+      const taskList = subtopic?.tasks && subtopic.tasks.length > 0
+        ? subtopic.tasks
         : ['Practice the concept with a simple example']
-      
+
       const res = await apiCall('post', '/api/learn/assignment/start', {
         topicId,
         subtopicId,
         assignments: taskList
       })
-      
+
       if (res.data.success) {
         setPhase(PHASES.ASSIGNMENT)
         setCurrentAssignment(res.data.currentAssignment)
@@ -416,14 +439,14 @@ export default function Learn() {
 
   async function runAssignmentCode() {
     if (!assignmentCode.trim()) return
-    
+
     try {
       const res = await api.post('/api/learn/assignment/run', {
         topicId,
         subtopicId,
         code: assignmentCode
       })
-      
+
       setCodeOutput(res.data.output)
       setCodeError(res.data.isError)
     } catch {
@@ -434,10 +457,10 @@ export default function Learn() {
 
   async function getHint() {
     if (hintLoading) return
-    
+
     setHintLoading(true)
     setShowHintPanel(true)
-    
+
     try {
       const res = await apiCall('post', '/api/learn/assignment/hint', {
         topicId,
@@ -446,7 +469,7 @@ export default function Learn() {
         currentCode: assignmentCode,
         hintLevel: hintsUsed + 1
       })
-      
+
       if (res.data.success) {
         setCurrentHint(res.data.hint)
         setHintsUsed(res.data.hintsUsed)
@@ -468,7 +491,7 @@ export default function Learn() {
         code: assignmentCode,
         assignmentIndex: currentAssignment
       })
-      
+
       if (res.data.success) {
         setPhase(PHASES.FEEDBACK)
         await generateFeedback()
@@ -489,7 +512,7 @@ export default function Learn() {
         subtopicTitle: subtopic.title,
         assignmentTitle: subtopic?.tasks?.[currentAssignment] || 'Assignment'
       })
-      
+
       if (res.data.success) {
         setFeedback(res.data.feedback)
       }
@@ -512,7 +535,7 @@ export default function Learn() {
         topicId,
         subtopicId
       })
-      
+
       if (res.data.success) {
         if (res.data.completed) {
           setPhase(PHASES.COMPLETED)
@@ -597,7 +620,7 @@ export default function Learn() {
             {Object.values(PHASES).filter(p => p !== 'completed').map((p, i) => (
               <div key={p} style={{
                 ...styles.phaseDot,
-                background: phase === p ? '#10a37f' : 
+                background: phase === p ? '#10a37f' :
                   Object.values(PHASES).indexOf(phase) > i ? '#a8e6cf' : '#e5e7eb'
               }}>
                 {i + 1}
@@ -618,39 +641,6 @@ export default function Learn() {
       {/* SESSION PHASE */}
       {phase === PHASES.SESSION && (
         <div style={styles.sessionContainer}>
-          {/* Outcomes Progress Bar */}
-          {outcomes.length > 0 && (
-            <div style={styles.outcomesProgress}>
-              <div style={styles.progressHeader}>
-                <span style={styles.progressLabel}>Learning Progress</span>
-                <span style={styles.progressCount}>
-                  {coveredOutcomes.length}/{outcomes.length}
-                </span>
-              </div>
-              <div style={styles.progressBar}>
-                <div 
-                  style={{
-                    ...styles.progressFill,
-                    width: `${(coveredOutcomes.length / outcomes.length) * 100}%`
-                  }}
-                />
-              </div>
-              <div style={styles.outcomesList}>
-                {outcomes.map((outcome, i) => (
-                  <span 
-                    key={i} 
-                    style={{
-                      ...styles.outcomeChip,
-                      ...(coveredOutcomes.includes(outcome) ? styles.outcomeComplete : {})
-                    }}
-                  >
-                    {coveredOutcomes.includes(outcome) ? '✓' : '○'} {outcome.replace(/_/g, ' ')}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-
           <div style={styles.messagesArea}>
             {messages.map((msg, i) => (
               <div key={i} style={styles.messageRow}>
@@ -719,7 +709,7 @@ export default function Learn() {
           {/* Mobile toggle */}
           {isMobile && (
             <div style={styles.mobileToggle}>
-              <button 
+              <button
                 onClick={() => setShowMobileChat(false)}
                 style={{
                   ...styles.mobileToggleBtn,
@@ -729,7 +719,7 @@ export default function Learn() {
               >
                 💻 Terminal
               </button>
-              <button 
+              <button
                 onClick={() => setShowMobileChat(true)}
                 style={{
                   ...styles.mobileToggleBtn,
@@ -747,13 +737,13 @@ export default function Learn() {
             ...styles.playtimeLeft,
             display: isMobile && showMobileChat ? 'none' : 'flex'
           }}>
-            <Terminal 
-              onExecute={executeCode} 
+            <Terminal
+              onExecute={executeCode}
               history={terminalHistory}
               initialCode={currentCode}
             />
           </div>
-          
+
           {/* Chat Panel */}
           <div style={{
             ...styles.playtimeRight,
@@ -763,8 +753,37 @@ export default function Learn() {
           }}>
             <div style={styles.playtimeHeader}>
               <span>💬 AI Assistant</span>
+              <button
+                onClick={() => setShowNotes(!showNotes)}
+                style={{
+                  ...styles.notesToggleBtn,
+                  background: showNotes ? '#10a37f' : 'transparent'
+                }}
+                title="View Notes"
+              >
+                📝 {notesLoading ? '...' : 'Notes'}
+              </button>
             </div>
-            
+
+            {/* Notes Panel */}
+            {showNotes && (
+              <div style={styles.notesPanel}>
+                <div style={styles.notesPanelHeader}>
+                  <span>📝 Quick Reference</span>
+                  <button onClick={() => setShowNotes(false)} style={styles.notesPanelClose}>×</button>
+                </div>
+                <div style={styles.notesPanelContent}>
+                  {notesLoading ? (
+                    <div style={styles.notesLoading}>Loading notes...</div>
+                  ) : notes ? (
+                    <ReactMarkdown>{notes}</ReactMarkdown>
+                  ) : (
+                    <p style={styles.noNotes}>No notes available for this topic.</p>
+                  )}
+                </div>
+              </div>
+            )}
+
             <div style={styles.playtimeMessages}>
               {playtimeMessages.map((msg, i) => (
                 <div key={i} style={{
@@ -856,7 +875,7 @@ export default function Learn() {
             {Array.from({ length: totalAssignments }).map((_, i) => (
               <div key={i} style={{
                 ...styles.progressDot,
-                background: i < currentAssignment ? '#10a37f' : 
+                background: i < currentAssignment ? '#10a37f' :
                   i === currentAssignment ? '#fbbf24' : '#e5e7eb'
               }} />
             ))}
@@ -887,15 +906,15 @@ export default function Learn() {
           )}
 
           <div style={styles.assignmentActions}>
-            <button 
+            <button
               onClick={runAssignmentCode}
               disabled={!assignmentCode.trim()}
               style={styles.runBtn}
             >
               ▶ Run Code
             </button>
-            <button 
-              onClick={submitAssignment} 
+            <button
+              onClick={submitAssignment}
               disabled={!assignmentCode.trim()}
               style={{
                 ...styles.submitBtn,
@@ -931,7 +950,7 @@ export default function Learn() {
                 <div style={styles.testResults}>
                   <div style={{
                     ...styles.testScore,
-                    background: feedback.testResults.passed === feedback.testResults.total 
+                    background: feedback.testResults.passed === feedback.testResults.total
                       ? '#d1fae5' : '#fef3c7'
                   }}>
                     <span style={styles.testScoreNumber}>
@@ -939,7 +958,7 @@ export default function Learn() {
                     </span>
                     <span style={styles.testScoreLabel}>Tests Passed</span>
                   </div>
-                  
+
                   {feedback.testResults.failedTests?.length > 0 && (
                     <div style={styles.failedTests}>
                       <span style={styles.failedTestsTitle}>Failed Tests:</span>
@@ -988,7 +1007,7 @@ export default function Learn() {
               <div style={styles.feedbackSection}>
                 <h3 style={styles.sectionTitle}>💬 Review</h3>
                 <p style={styles.reviewText}>{feedback.review}</p>
-                
+
                 {feedback.suggestions?.length > 0 && (
                   <div style={styles.suggestions}>
                     <span style={styles.suggestionsTitle}>Suggestions:</span>
@@ -1002,8 +1021,8 @@ export default function Learn() {
               </div>
 
               <button onClick={continueToNext} style={styles.continueBtn}>
-                {currentAssignment + 1 < totalAssignments 
-                  ? 'Continue to Next Assignment →' 
+                {currentAssignment + 1 < totalAssignments
+                  ? 'Continue to Next Assignment →'
                   : 'Complete Lesson 🎉'}
               </button>
             </>
@@ -1125,66 +1144,6 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     overflow: 'hidden'
-  },
-  
-  // Outcomes Progress
-  outcomesProgress: {
-    padding: '12px 20px',
-    background: 'linear-gradient(to right, #f0fdf4, #ecfdf5)',
-    borderBottom: '1px solid #d1fae5',
-    maxWidth: 800,
-    margin: '0 auto',
-    width: '100%'
-  },
-  progressHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8
-  },
-  progressLabel: {
-    fontSize: '0.8rem',
-    fontWeight: 600,
-    color: '#047857',
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em'
-  },
-  progressCount: {
-    fontSize: '0.85rem',
-    fontWeight: 700,
-    color: '#059669'
-  },
-  progressBar: {
-    height: 6,
-    background: '#d1fae5',
-    borderRadius: 3,
-    overflow: 'hidden',
-    marginBottom: 10
-  },
-  progressFill: {
-    height: '100%',
-    background: 'linear-gradient(90deg, #10b981, #059669)',
-    borderRadius: 3,
-    transition: 'width 0.5s ease'
-  },
-  outcomesList: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: 6
-  },
-  outcomeChip: {
-    fontSize: '0.7rem',
-    padding: '3px 8px',
-    background: 'white',
-    border: '1px solid #d1fae5',
-    borderRadius: 12,
-    color: '#6b7280',
-    whiteSpace: 'nowrap'
-  },
-  outcomeComplete: {
-    background: '#10b981',
-    border: '1px solid #059669',
-    color: 'white'
   },
 
   messagesArea: {
@@ -1314,13 +1273,69 @@ const styles = {
     borderLeft: '1px solid #e5e7eb',
     display: 'flex',
     flexDirection: 'column',
-    background: 'white'
+    background: 'white',
+    position: 'relative'
   },
   playtimeHeader: {
     padding: '12px 16px',
     borderBottom: '1px solid #e5e7eb',
     fontSize: '0.9rem',
-    fontWeight: 600
+    fontWeight: 600,
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  notesToggleBtn: {
+    padding: '4px 10px',
+    border: '1px solid #e5e7eb',
+    borderRadius: 6,
+    fontSize: '0.75rem',
+    cursor: 'pointer',
+    color: '#374151',
+    transition: 'all 0.2s'
+  },
+  notesPanel: {
+    position: 'absolute',
+    top: 48,
+    left: 0,
+    right: 0,
+    bottom: 120,
+    background: 'white',
+    borderBottom: '1px solid #e5e7eb',
+    zIndex: 10,
+    display: 'flex',
+    flexDirection: 'column'
+  },
+  notesPanelHeader: {
+    padding: '10px 16px',
+    borderBottom: '1px solid #e5e7eb',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    fontWeight: 600,
+    fontSize: '0.85rem'
+  },
+  notesPanelClose: {
+    background: 'none',
+    border: 'none',
+    fontSize: '1.2rem',
+    cursor: 'pointer',
+    color: '#6b7280'
+  },
+  notesPanelContent: {
+    flex: 1,
+    overflow: 'auto',
+    padding: '16px',
+    fontSize: '0.85rem',
+    lineHeight: 1.6
+  },
+  notesLoading: {
+    color: '#6b7280',
+    fontStyle: 'italic'
+  },
+  noNotes: {
+    color: '#6b7280',
+    fontStyle: 'italic'
   },
   playtimeMessages: {
     flex: 1,

@@ -4,23 +4,23 @@
 
 function testFunctionWithInputs(userCode, testCases) {
   const results = [];
-  
+
   for (const testCase of testCases) {
     try {
       const fn = new Function(`
         ${userCode}
         return { ${userCode.match(/function\s+(\w+)/g)?.map(m => m.split(' ')[1]).join(', ') || ''} };
       `);
-      
+
       const funcs = fn();
       const funcName = Object.keys(funcs)[0];
       const userFunction = funcs[funcName];
-      
+
       if (!userFunction) {
         results.push({ input: testCase.input, expected: testCase.expectedOutput, actual: 'Function not defined', passed: false });
         continue;
       }
-      
+
       const result = String(userFunction(...testCase.input));
       const passed = result === testCase.expectedOutput;
       results.push({ input: testCase.input, expected: testCase.expectedOutput, actual: result, passed });
@@ -28,7 +28,7 @@ function testFunctionWithInputs(userCode, testCases) {
       results.push({ input: testCase.input, expected: testCase.expectedOutput, actual: `Error: ${error.message}`, passed: false });
     }
   }
-  
+
   return { passed: results.every(r => r.passed), results };
 }
 
@@ -47,7 +47,7 @@ export const destructuringTopicTests = {
         { input: [[10, 20]], expectedOutput: '10, 20' },
         { input: [['only', 'two']], expectedOutput: 'only, two' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'array-skip-second',
@@ -59,7 +59,7 @@ export const destructuringTopicTests = {
         { input: [[10, 20, 30]], expectedOutput: '10, 30' },
         { input: [['x', 'skip', 'z']], expectedOutput: 'x, z' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'array-rest',
@@ -71,7 +71,7 @@ export const destructuringTopicTests = {
         { input: [[10]], expectedOutput: 'first: 10, remaining: 0' },
         { input: [[1, 2]], expectedOutput: 'first: 1, remaining: 1' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'object-basic',
@@ -82,7 +82,7 @@ export const destructuringTopicTests = {
         { input: [{ name: 'Bob', age: 30 }], expectedOutput: 'Name: Bob, Age: 30' },
         { input: [{ name: 'Charlie', age: 0 }], expectedOutput: 'Name: Charlie, Age: 0' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'object-rename',
@@ -93,7 +93,7 @@ export const destructuringTopicTests = {
         { input: [{ name: 'Bob' }], expectedOutput: 'User: Bob' },
         { input: [{ name: 'Admin' }], expectedOutput: 'User: Admin' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'object-defaults',
@@ -105,7 +105,7 @@ export const destructuringTopicTests = {
         { input: [{ name: 'Charlie', country: 'UK' }], expectedOutput: 'Name: Charlie, Country: UK' },
         { input: [{ name: 'David', country: undefined }], expectedOutput: 'Name: David, Country: Unknown' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'nested-destructuring',
@@ -116,7 +116,7 @@ export const destructuringTopicTests = {
         { input: [{ user: { name: 'Bob', address: { city: 'LA' } } }], expectedOutput: 'Name: Bob, City: LA' },
         { input: [{ user: { name: 'Charlie', address: { city: 'Chicago' } } }], expectedOutput: 'Name: Charlie, City: Chicago' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'param-destructuring',
@@ -128,7 +128,7 @@ export const destructuringTopicTests = {
         { input: [{ x: -5, y: 5 }], expectedOutput: '0' },
         { input: [{ x: 0, y: 0 }], expectedOutput: '0' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'swap-values',
@@ -140,7 +140,7 @@ export const destructuringTopicTests = {
         { input: [[10, 20]], expectedOutput: '20, 10' },
         { input: [['first', 'second']], expectedOutput: 'second, first' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'array-of-objects',
@@ -152,7 +152,7 @@ export const destructuringTopicTests = {
         { input: [[{ x: 0, y: 0 }, { x: 5, y: 5 }]], expectedOutput: 'sumX: 5, sumY: 5' },
         { input: [[{ x: -1, y: 1 }, { x: 1, y: -1 }]], expectedOutput: 'sumX: 0, sumY: 0' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     },
     {
       id: 'mixed-array',
@@ -164,7 +164,7 @@ export const destructuringTopicTests = {
         { input: [['Charlie', 100]], expectedOutput: 'Name: Charlie, Average: 100' },
         { input: [['David', 60, 70, 80, 90]], expectedOutput: 'Name: David, Average: 75' }
       ],
-      testFunction: function(userCode) { return testFunctionWithInputs(userCode, this.testCases); }
+      testFunction: function (userCode) { return testFunctionWithInputs(userCode, this.testCases); }
     }
   ]
 };
@@ -176,6 +176,7 @@ export function runTaskTest(taskIndex, userCode) {
 }
 
 export default destructuringTopicTests;
+
 
 
 

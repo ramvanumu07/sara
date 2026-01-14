@@ -24,7 +24,7 @@ export const recursionTopicTests = {
             { input: [10], expectedOutput: '55' },
             { input: [100], expectedOutput: '5050' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('n', `${code}\nreturn sumToN(n);`);
@@ -66,7 +66,7 @@ export const recursionTopicTests = {
             { input: [7], expectedOutput: '5040' },
             { input: [3], expectedOutput: '6' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('n', `${code}\nreturn factorial(n);`);
@@ -108,7 +108,7 @@ export const recursionTopicTests = {
             { input: [10], expectedOutput: '55' },
             { input: [2], expectedOutput: '1' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('n', `${code}\nreturn fibonacci(n);`);
@@ -150,7 +150,7 @@ export const recursionTopicTests = {
             { input: [[-1, 0, 1]], expectedOutput: '0' },
             { input: [[10, 20, 30]], expectedOutput: '60' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('arr', `${code}\nreturn sumArray(arr);`);
@@ -192,7 +192,7 @@ export const recursionTopicTests = {
             { input: [[7, 7, 7], 7], expectedOutput: '3' },
             { input: [[1], 1], expectedOutput: '1' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('arr', 'val', `${code}\nreturn countOccurrences(arr, val);`);
@@ -234,7 +234,7 @@ export const recursionTopicTests = {
             { input: ['ab'], expectedOutput: 'ba' },
             { input: ['12345'], expectedOutput: '54321' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('str', `${code}\nreturn reverseString(str);`);
@@ -276,7 +276,7 @@ export const recursionTopicTests = {
             { input: ['a'], expectedOutput: 'true' },
             { input: ['abba'], expectedOutput: 'true' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('str', `${code}\nreturn isPalindrome(str);`);
@@ -318,7 +318,7 @@ export const recursionTopicTests = {
             { input: [[10, 10, 10]], expectedOutput: '10' },
             { input: [[1, 100, 50]], expectedOutput: '100' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('arr', `${code}\nreturn findMax(arr);`);
@@ -360,7 +360,7 @@ export const recursionTopicTests = {
             { input: [10, 2], expectedOutput: '100' },
             { input: [2, 10], expectedOutput: '1024' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('base', 'exp', `${code}\nreturn power(base, exp);`);
@@ -402,7 +402,7 @@ export const recursionTopicTests = {
             { input: [[[1]]], expectedOutput: '1' },
             { input: [[1, 2, 3]], expectedOutput: '1,2,3' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function('arr', `${code}\nreturn flatten(arr);`);
@@ -431,6 +431,7 @@ export const recursionTopicTests = {
 };
 
 export default recursionTopicTests;
+
 
 
 

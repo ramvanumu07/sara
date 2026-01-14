@@ -151,33 +151,33 @@ export const topicTests = {
 
 // ============ GET TEST FOR SPECIFIC TASK ============
 export function getTaskTest(topicId, subtopicId, taskIndex) {
-    const topic = topicTests[topicId];
-    if (!topic) return null;
+  const topic = topicTests[topicId];
+  if (!topic) return null;
 
-    const subtopic = topic[subtopicId];
-    if (!subtopic) return null;
+  const subtopic = topic[subtopicId];
+  if (!subtopic) return null;
 
-    return subtopic.tasks[taskIndex] || null;
+  return subtopic.tasks[taskIndex] || null;
 }
 
 // ============ RUN TEST FOR SPECIFIC TASK ============
 export function runTest(topicId, subtopicId, taskIndex, userCode) {
-    const taskTest = getTaskTest(topicId, subtopicId, taskIndex);
-    if (!taskTest) {
-        return { error: 'Task test not found', passed: false };
-    }
-    return taskTest.testFunction(userCode);
+  const taskTest = getTaskTest(topicId, subtopicId, taskIndex);
+  if (!taskTest) {
+    return { error: 'Task test not found', passed: false };
+  }
+  return taskTest.testFunction(userCode);
 }
 
 // ============ GET ALL TASKS FOR A SUBTOPIC ============
 export function getSubtopicTasks(topicId, subtopicId) {
-    const topic = topicTests[topicId];
-    if (!topic) return [];
+  const topic = topicTests[topicId];
+  if (!topic) return [];
 
-    const subtopic = topic[subtopicId];
-    if (!subtopic) return [];
+  const subtopic = topic[subtopicId];
+  if (!subtopic) return [];
 
-    return subtopic.tasks;
+  return subtopic.tasks;
 }
 
 export default topicTests;

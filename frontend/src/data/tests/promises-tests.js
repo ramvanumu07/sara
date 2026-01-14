@@ -24,10 +24,10 @@ export const promisesTopicTests = {
             { input: [100], expectedOutput: '200' },
             { input: [0.5], expectedOutput: '1' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
-              const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+              const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
               const func = new AsyncFunction('num', `${code}\nreturn await doubleAsync(num);`);
               const result = String(await func(input[0]));
               results.push({
@@ -67,10 +67,10 @@ export const promisesTopicTests = {
             { input: [1], expectedOutput: 'resolved: 1' },
             { input: [100], expectedOutput: 'resolved: 100' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
-              const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+              const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
               const func = new AsyncFunction('num', `
                 ${code}
                 try {
@@ -118,10 +118,10 @@ export const promisesTopicTests = {
             { input: ['test'], expectedOutput: 'resolved: TEST' },
             { input: [''], expectedOutput: 'rejected: Too short' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
-              const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+              const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
               const func = new AsyncFunction('str', `
                 ${code}
                 try {
@@ -169,10 +169,10 @@ export const promisesTopicTests = {
             { input: [10], expectedOutput: '30' },
             { input: [1], expectedOutput: '12' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
-              const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+              const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
               const func = new AsyncFunction('num', `${code}\nreturn await chainedOperation(num);`);
               const result = String(await func(input[0]));
               results.push({
@@ -212,10 +212,10 @@ export const promisesTopicTests = {
             { input: [-2], expectedOutput: 'resolved: even' },
             { input: [1], expectedOutput: 'rejected: odd' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
-              const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+              const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
               const func = new AsyncFunction('num', `
                 ${code}
                 try {
@@ -263,10 +263,10 @@ export const promisesTopicTests = {
             { input: [[-1, 1]], expectedOutput: '0' },
             { input: [[5, 5, 5, 5]], expectedOutput: '20' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
-              const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+              const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
               const func = new AsyncFunction('arr', `${code}\nreturn await sumArray(arr);`);
               const result = String(await func([...input[0]]));
               results.push({
@@ -306,10 +306,10 @@ export const promisesTopicTests = {
             { input: [[-1, 0, 1]], expectedOutput: '-2,0,2' },
             { input: [[]], expectedOutput: '' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
-              const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+              const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
               const func = new AsyncFunction('arr', `${code}\nreturn await doubleAll(arr);`);
               const result = await func([...input[0]]);
               const resultStr = Array.isArray(result) ? result.join(',') : String(result);
@@ -350,10 +350,10 @@ export const promisesTopicTests = {
             { input: [-5], expectedOutput: 'rejected: Not positive' },
             { input: [50], expectedOutput: 'Result: 100' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
-              const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+              const AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
               const func = new AsyncFunction('num', `
                 ${code}
                 try {
@@ -387,6 +387,7 @@ export const promisesTopicTests = {
 };
 
 export default promisesTopicTests;
+
 
 
 

@@ -24,7 +24,7 @@ export const asyncBasicsTopicTests = {
             { input: [100], expectedOutput: '200' },
             { input: [0.5], expectedOutput: '1' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               let callbackResult = null;
@@ -69,7 +69,7 @@ export const asyncBasicsTopicTests = {
             { input: [-2, 3], expectedOutput: '{"sum":1,"difference":-5,"product":-6}' },
             { input: [1, 1], expectedOutput: '{"sum":2,"difference":0,"product":1}' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               let callbackResult = null;
@@ -114,7 +114,7 @@ export const asyncBasicsTopicTests = {
             { input: [[]], expectedOutput: '' },
             { input: [[-2, -1, 0, 1, 2]], expectedOutput: '-2,0,2' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               let callbackResult = null;
@@ -159,7 +159,7 @@ export const asyncBasicsTopicTests = {
             { input: ['a'], expectedOutput: 'success: A' },
             { input: ['  '], expectedOutput: 'success:   ' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               let result = '';
@@ -204,7 +204,7 @@ export const asyncBasicsTopicTests = {
             { input: [[2, 2, 2]], expectedOutput: '{"min":2,"max":2,"avg":2}' },
             { input: [[1, 100]], expectedOutput: '{"min":1,"max":100,"avg":50.5}' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               let callbackResult = null;
@@ -249,7 +249,7 @@ export const asyncBasicsTopicTests = {
             { input: [0, 'double'], expectedOutput: '0' },
             { input: [-3, 'square'], expectedOutput: '9' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               let callbackResult = null;
@@ -294,7 +294,7 @@ export const asyncBasicsTopicTests = {
             { input: [[]], expectedOutput: '' },
             { input: [['B', 'a', 'C']], expectedOutput: 'B,C,a' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               let callbackResult = null;
@@ -331,7 +331,7 @@ export const asyncBasicsTopicTests = {
           const testCases = [
             { input: [], expectedOutput: 'A,C,B' }
           ];
-          
+
           for (const { input, expectedOutput } of testCases) {
             try {
               const func = new Function(`${code}\nreturn getExecutionOrder();`);
@@ -359,6 +359,7 @@ export const asyncBasicsTopicTests = {
 };
 
 export default asyncBasicsTopicTests;
+
 
 
 
