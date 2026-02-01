@@ -1,4 +1,23 @@
 :root {
+    /* Sara Color Scheme - GPT Style */
+    --sara-primary: #10a37f;
+    --sara-primary-light: #1a9c87;
+    --sara-primary-dark: #0d8a6c;
+    --sara-secondary: #10a37f;
+    --sara-accent: #10a37f;
+    --sara-background: #ffffff;
+    --sara-surface: #f9f9f9;
+    --sara-card: #ffffff;
+    --sara-text-primary: #1a1a1a;
+    --sara-text-secondary: #5a5a5a;
+    --sara-text-muted: #8e8e8e;
+    --sara-border: #e5e5e5;
+    --sara-error: #ef4444;
+    --sara-success: #10a37f;
+    --gradient-primary: #10a37f;
+    --shadow-glow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    
+    /* Legacy compatibility (GPT style) */
     --sidebar-bg: #f9f9f9;
     --main-bg: #ffffff;
     --input-bg: #f4f4f4;
@@ -19,7 +38,7 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
     background: var(--main-bg);
     color: var(--text-primary);
     min-height: 100vh;

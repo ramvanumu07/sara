@@ -1,6 +1,7 @@
 import express from 'express'
 import { authenticateToken } from './auth.js'
-import { getAllProgress } from '../services/supabase.js'
+import { getAllProgress } from '../services/database.js'
+import { handleErrorResponse } from '../utils/responses.js'
 
 const router = express.Router()
 
@@ -8,11 +9,11 @@ const router = express.Router()
 router.get('/', authenticateToken, async (req, res) => {
   try {
     const progress = await getAllProgress(req.user.userId)
-    
+
     // Convert to frontend format
     const formatted = {}
     for (const p of progress) {
-      const key = `${p.topic_id}-${p.subtopic_id}`
+      const key = p.topic_id
       formatted[key] = {
         status: p.status,
         phase: p.phase || 'session',
@@ -21,11 +22,10 @@ router.get('/', authenticateToken, async (req, res) => {
         completedAt: p.completed_at
       }
     }
-    
+
     res.json({ success: true, progress: formatted })
   } catch (error) {
-    console.error('Get progress error:', error)
-    res.status(500).json({ success: false, message: 'Failed to get progress' })
+    handleErrorResponse(res, error, 'get progress')
   }
 })
 

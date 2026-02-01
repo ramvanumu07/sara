@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Registration</title>
+</head>
+<body>
+    <h1>Debug Registration Test</h1>
+    <button onclick="testRegistration()">Test Registration</button>
+    <div id="result"></div>
+
+    <script>
+        async function testRegistration() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = 'Testing...';
+
+            try {
+                const response = await fetch('http://localhost:3001/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        studentId: 'debuguser123',
+                        password: 'debugpass123',
+                        name: 'Debug User'
+                    })
+                });
+
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `
+                    <h3>Response Status: ${response.status}</h3>
+                    <h3>Response Data:</h3>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+
+                console.log('Registration response:', data);
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <h3>Error:</h3>
+                    <pre>${error.message}</pre>
+                `;
+                console.error('Registration error:', error);
+            }
+        }
+    </script>
+</body>
+</html>

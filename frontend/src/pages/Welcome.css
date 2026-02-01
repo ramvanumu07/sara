@@ -1,0 +1,393 @@
+/**
+ * Welcome Page Styles - Sara Learning Platform
+ * Clean, GPT-style design with Sara branding
+ */
+
+/* ============================================================================
+   GLOBAL STYLES & VARIABLES
+   ============================================================================ */
+
+:root {
+  --sara-primary: #10a37f;
+  --sara-primary-hover: #0d8a6c;
+  --sara-background: #ffffff;
+  --sara-surface: #f9f9f9;
+  --sara-text-primary: #1a1a1a;
+  --sara-text-secondary: #5a5a5a;
+  --sara-text-muted: #8e8e8e;
+  --sara-border: #e5e5e5;
+  --sara-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --sara-shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* ============================================================================
+   WELCOME CONTAINER & LAYOUT
+   ============================================================================ */
+
+.welcome-container {
+  min-height: 100vh;
+  background: var(--sara-background);
+  color: var(--sara-text-primary);
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ============================================================================
+   HEADER
+   ============================================================================ */
+
+.welcome-header {
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--sara-border);
+  background: var(--sara-background);
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo-sara {
+  font-family: 'Outfit', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--sara-primary);
+  letter-spacing: -0.02em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logo-sara:hover {
+  color: var(--sara-primary-hover);
+}
+
+.header-nav {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.nav-link {
+  color: var(--sara-text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+  color: var(--sara-text-primary);
+  background: var(--sara-surface);
+}
+
+.nav-link-primary {
+  background: var(--sara-primary);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+}
+
+.nav-link-primary:hover {
+  background: var(--sara-primary-hover);
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: var(--sara-shadow-hover);
+}
+
+/* ============================================================================
+   MAIN CONTENT
+   ============================================================================ */
+
+.welcome-main {
+  padding: 4rem 2rem;
+}
+
+.hero-content {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s ease-out;
+}
+
+.hero-content.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================================================
+   BRAND SECTION
+   ============================================================================ */
+
+.brand-section {
+  margin-bottom: 3rem;
+}
+
+.brand-name {
+  margin: 0 0 1rem 0;
+  line-height: 1;
+}
+
+.sara-text {
+  font-family: 'Outfit', serif;
+  font-size: clamp(3rem, 8vw, 5rem);
+  font-weight: 700;
+  color: var(--sara-primary);
+  letter-spacing: -0.02em;
+}
+
+.brand-tagline {
+  font-size: 1.25rem;
+  color: var(--sara-text-secondary);
+  font-weight: 400;
+  margin: 0;
+}
+
+/* ============================================================================
+   VALUE SECTION
+   ============================================================================ */
+
+.value-section {
+  margin-bottom: 3rem;
+}
+
+.value-text {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--sara-text-secondary);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ============================================================================
+   FEATURES GRID
+   ============================================================================ */
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.feature-card {
+  background: var(--sara-surface);
+  border: 1px solid var(--sara-border);
+  border-radius: 0.75rem;
+  padding: 2rem;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--sara-shadow-hover);
+  border-color: var(--sara-primary);
+}
+
+.feature-icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.feature-card h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem 0;
+  color: var(--sara-text-primary);
+}
+
+.feature-card p {
+  color: var(--sara-text-secondary);
+  line-height: 1.5;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* ============================================================================
+   CALL TO ACTION
+   ============================================================================ */
+
+.cta-section {
+  text-align: center;
+}
+
+.cta-button {
+  background: var(--sara-primary);
+  border: none;
+  color: white;
+  font-size: 1.125rem;
+  font-weight: 600;
+  padding: 1rem 2rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 0.75rem;
+  box-shadow: var(--sara-shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.button-glow {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.cta-button:hover {
+  background: var(--sara-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--sara-shadow-hover);
+}
+
+.cta-button:hover .button-glow {
+  left: 100%;
+}
+
+.cta-button:active {
+  transform: translateY(0);
+}
+
+.cta-subtitle {
+  color: var(--sara-text-muted);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* ============================================================================
+   FOOTER
+   ============================================================================ */
+
+.welcome-footer {
+  padding: 2rem 0;
+  border-top: 1px solid var(--sara-border);
+  background: var(--sara-surface);
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.footer-content p {
+  color: var(--sara-text-muted);
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.footer-links {
+  display: flex;
+  gap: 2rem;
+}
+
+.footer-links a {
+  color: var(--sara-text-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.2s ease;
+}
+
+.footer-links a:hover {
+  color: var(--sara-text-secondary);
+}
+
+/* ============================================================================
+   RESPONSIVE DESIGN
+   ============================================================================ */
+
+@media (max-width: 768px) {
+  .header-content {
+    padding: 0 1rem;
+  }
+  
+  .header-nav {
+    gap: 0.5rem;
+  }
+  
+  .nav-link-primary {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .welcome-main {
+    padding: 2rem 1rem;
+  }
+  
+  .brand-tagline {
+    font-size: 1.125rem;
+  }
+  
+  .value-text {
+    font-size: 1rem;
+  }
+  
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .feature-card {
+    padding: 1.5rem;
+  }
+  
+  .cta-button {
+    font-size: 1rem;
+    padding: 0.875rem 1.75rem;
+  }
+  
+  .footer-content {
+    flex-direction: column;
+    text-align: center;
+    padding: 0 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-sara {
+    font-size: 1.5rem;
+  }
+  
+  .nav-link {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .sara-text {
+    font-size: clamp(2.5rem, 12vw, 4rem);
+  }
+  
+  .brand-tagline {
+    font-size: 1rem;
+  }
+  
+  .value-text {
+    font-size: 0.95rem;
+  }
+}
+
+/* Remove all animated background and floating elements */
+.animated-background,
+.floating-shapes,
+.floating-code {
+  display: none;
+}

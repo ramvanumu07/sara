@@ -1,1767 +1,2201 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import ReactMarkdown from 'react-markdown'
-import { courses } from '../data/curriculum'
-import api from '../config/api'
-import Terminal from '../components/Terminal'
-import CodeEditor from '../components/CodeEditor'
+import { learning, chat } from '../config/api'
 
-const PHASES = {
-  SESSION: 'session',
-  PLAYTIME: 'playtime',
-  ASSIGNMENT: 'assignment',
-  FEEDBACK: 'feedback',
-  COMPLETED: 'completed'
+// Component to render message content with proper code block formatting
+const MessageContent = ({ content, role }) => {
+  const renderContent = (text) => {
+    // First handle code blocks (```javascript ... ```)
+    const codeBlockParts = text.split(/(```[\s\S]*?```)/g)
+
+    return codeBlockParts.map((part, blockIndex) => {
+      if (part.startsWith('```') && part.endsWith('```')) {
+        // Extract language and code
+        const lines = part.slice(3, -3).split('\n')
+        const language = lines[0].trim()
+        const code = lines.slice(1).join('\n').trim()
+
+        return (
+          <div key={blockIndex} className="code-block" style={{
+            backgroundColor: '#1e1e1e',
+            border: '1px solid #333',
+            borderRadius: '6px',
+            padding: '12px',
+            margin: '8px 0',
+            fontFamily: 'Monaco, Consolas, "SF Mono", "Courier New", monospace',
+            fontSize: '0.85rem',
+            overflowX: 'auto',
+            overflowY: 'hidden',
+            boxShadow: '0 1px 4px rgba(0, 0, 0, 0.1)',
+            maxWidth: '100%',
+            WebkitOverflowScrolling: 'touch'
+          }}>
+            {language && (
+              <div style={{
+                fontSize: '0.7rem',
+                color: '#888',
+                marginBottom: '8px',
+                fontWeight: '600',
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px'
+              }}>
+                {language}
+              </div>
+            )}
+            <pre style={{
+              margin: 0,
+              whiteSpace: 'pre',
+              color: '#f8f8f2',
+              lineHeight: '1.3',
+              minWidth: 'max-content',
+              overflow: 'visible'
+            }}>
+              {code}
+            </pre>
+          </div>
+        )
+      } else {
+        // Handle inline code (`code`) and regular text
+        const inlineCodeParts = part.split(/(`[^`]+`)/g)
+
+        return inlineCodeParts.map((inlinePart, inlineIndex) => {
+          if (inlinePart.startsWith('`') && inlinePart.endsWith('`')) {
+            // Inline code
+            const code = inlinePart.slice(1, -1)
+            return (
+              <code key={`${blockIndex}-${inlineIndex}`} style={{
+                backgroundColor: '#f1f3f4',
+                color: '#d73a49',
+                padding: '2px 6px',
+                borderRadius: '4px',
+                fontFamily: 'Monaco, Consolas, "SF Mono", "Courier New", monospace',
+                fontSize: '0.9em',
+                fontWeight: '600'
+              }}>
+                {code}
+              </code>
+            )
+          } else {
+            // Regular text with line breaks preserved
+            return (
+              <span key={`${blockIndex}-${inlineIndex}`} style={{ whiteSpace: 'pre-wrap' }}>
+                {inlinePart}
+              </span>
+            )
+          }
+        })
+      }
+    })
+  }
+
+  return <div>{renderContent(content)}</div>
 }
 
-// Local storage keys
-const getStorageKey = (topicId, subtopicId, key) =>
-  `edubridge_${topicId}_${subtopicId}_${key}`
-
-export default function Learn() {
-  const { topicId, subtopicId } = useParams()
+const Learn = () => {
+  const { topicId } = useParams()
   const navigate = useNavigate()
-
-  // Core state
-  const [phase, setPhase] = useState(PHASES.SESSION)
+  const [topic, setTopic] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [sending, setSending] = useState(false)
   const [error, setError] = useState(null)
-  const [retrying, setRetrying] = useState(false)
 
   // Chat state
   const [messages, setMessages] = useState([])
-  const [input, setInput] = useState('')
+  const [currentMessage, setCurrentMessage] = useState('')
+  const [isTyping, setIsTyping] = useState(false)
+  const [sessionStarted, setSessionStarted] = useState(false)
+  const [chatError, setChatError] = useState(null)
+  const [historyChecked, setHistoryChecked] = useState(false)
+  const [sessionComplete, setSessionComplete] = useState(false)
+  const [currentPhase, setCurrentPhase] = useState('session') // 'session', 'playtime', 'assignment', 'feedback'
+  const [phaseProgress, setPhaseProgress] = useState({
+    session: false,
+    playtime: false,
+    assignment: false,
+    feedback: false
+  })
+  const [currentAssignment, setCurrentAssignment] = useState(null)
+  const [userCode, setUserCode] = useState('') // Empty - placeholder will show
+  const [lastExecutionState, setLastExecutionState] = useState(null)
+  const [currentAssignmentIndex, setCurrentAssignmentIndex] = useState(0)
+  const [assignmentSubmitted, setAssignmentSubmitted] = useState(false)
+  const [assignmentFeedback, setAssignmentFeedback] = useState(null)
+  const [testResults, setTestResults] = useState(null)
+
   const messagesEndRef = useRef(null)
   const inputRef = useRef(null)
 
-  // Session phase
-  const [conceptRevealed, setConceptRevealed] = useState(false)
-  const [readyForPlaytime, setReadyForPlaytime] = useState(false)
-  const [outcomes, setOutcomes] = useState([])
-  const [coveredOutcomes, setCoveredOutcomes] = useState([])
-
-  // PlayTime state
-  const [terminalHistory, setTerminalHistory] = useState([])
-  const [playtimeMessages, setPlaytimeMessages] = useState([])
-  const [playtimeInput, setPlaytimeInput] = useState('')
-  const [currentCode, setCurrentCode] = useState('')
-  const [showMobileChat, setShowMobileChat] = useState(false)
-
-  // Assignment state
-  const [assignments, setAssignments] = useState([])
-  const [currentAssignment, setCurrentAssignment] = useState(0)
-  const [totalAssignments, setTotalAssignments] = useState(0)
-  const [assignmentCode, setAssignmentCode] = useState('')
-  const [assignmentStartTime, setAssignmentStartTime] = useState(null)
-  const [elapsedTime, setElapsedTime] = useState(0)
-  const [codeOutput, setCodeOutput] = useState('')
-  const [codeError, setCodeError] = useState(false)
-
-  // Hints state
-  const [showHintPanel, setShowHintPanel] = useState(false)
-  const [currentHint, setCurrentHint] = useState('')
-  const [hintsUsed, setHintsUsed] = useState(0)
-  const [hintLoading, setHintLoading] = useState(false)
-
-  // Feedback state
-  const [feedback, setFeedback] = useState(null)
-  const [feedbackLoading, setFeedbackLoading] = useState(false)
-
-  // Notes state (loaded on demand from backend)
-  const [notes, setNotes] = useState(null)
-  const [notesLoading, setNotesLoading] = useState(false)
-  const [showNotes, setShowNotes] = useState(false)
-
-  // Responsive
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768)
-
-  // Find subtopic
-  let subtopic = null, topic = null
-  for (const course of courses) {
-    for (const t of course.topics) {
-      if (t.id === topicId) {
-        topic = t
-        subtopic = t.subtopics.find(s => s.id === subtopicId)
-        break
-      }
+  // Phase management helpers
+  const getPhaseIcon = (phase) => {
+    switch(phase) {
+      case 'session': return '📚 Learning'
+      case 'playtime': return '🎮 Playtime'
+      case 'assignment': return '📝 Assignment'
+      case 'feedback': return '📊 Feedback'
+      default: return ''
     }
-    if (subtopic) break
   }
 
-  // Auto-save code to localStorage
-  const saveCodeLocally = useCallback((code, type = 'playtime') => {
-    if (topicId && subtopicId) {
-      localStorage.setItem(getStorageKey(topicId, subtopicId, `${type}_code`), code)
-    }
-  }, [topicId, subtopicId])
+  const getNextPhase = (currentPhase) => {
+    const phases = ['session', 'playtime', 'assignment', 'feedback']
+    const currentIndex = phases.indexOf(currentPhase)
+    return currentIndex < phases.length - 1 ? phases[currentIndex + 1] : null
+  }
 
-  // Load code from localStorage
-  const loadLocalCode = useCallback((type = 'playtime') => {
-    if (topicId && subtopicId) {
-      return localStorage.getItem(getStorageKey(topicId, subtopicId, `${type}_code`)) || ''
+  const canAdvanceToPhase = (phase) => {
+    switch(phase) {
+      case 'session': return true
+      case 'playtime': return phaseProgress.session || sessionComplete
+      case 'assignment': return phaseProgress.playtime
+      case 'feedback': return phaseProgress.assignment
+      default: return false
     }
-    return ''
-  }, [topicId, subtopicId])
+  }
 
   useEffect(() => {
-    if (subtopic) loadState()
-    const handleResize = () => setIsMobile(window.innerWidth <= 768)
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [topicId, subtopicId])
+    loadTopic()
+  }, [topicId])
 
-  // Load notes on demand when entering playtime
-  async function fetchNotes() {
-    if (notes || notesLoading) return
-    setNotesLoading(true)
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages])
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  const loadTopic = async () => {
     try {
-      const res = await api.get(`/api/learn/notes/${topicId}/${subtopicId}`)
-      if (res.data.success && res.data.notes) {
-        setNotes(res.data.notes)
+      setLoading(true)
+      setError(null)
+
+      console.log('🔄 Loading topic:', topicId)
+
+      // Get topic and history in parallel
+      const [topicResponse, historyResponse] = await Promise.all([
+        learning.getTopic(topicId),
+        chat.getHistory(topicId)
+      ])
+
+      console.log('📡 Topic API response:', topicResponse.data)
+      console.log('📡 History API response:', historyResponse.data)
+
+      if (topicResponse.data.success) {
+        const topicData = topicResponse.data.data.topic
+        setTopic(topicData)
+        console.log('✅ Topic loaded successfully:', topicData.title)
+
+        // Check if we have existing conversation history
+        if (historyResponse.data.success && historyResponse.data.data.messages && historyResponse.data.data.messages.length > 0) {
+          console.log('✅ Found existing conversation with', historyResponse.data.data.messages.length, 'messages')
+
+          // Auto-resume session with existing messages
+          const existingMessages = historyResponse.data.data.messages
+          setMessages(existingMessages)
+          setSessionStarted(true)
+
+          // Check if any message contains the completion signal
+          const hasCompletionSignal = existingMessages.some(msg => 
+            msg.role === 'assistant' && 
+            (msg.content.includes('SESSION_COMPLETE_SIGNAL') || 
+             (msg.content.includes('🏆') && msg.content.includes('Congratulations')))
+          )
+          
+          if (hasCompletionSignal) {
+            console.log('🎉 Detected completed session from history')
+            setSessionComplete(true)
+          }
+
+          console.log('🚀 Auto-resumed session - NO WELCOME MESSAGE SENT')
+
+          // Focus on input after loading
+          setTimeout(() => {
+            inputRef.current?.focus()
+          }, 500)
+        } else {
+          console.log('📭 No existing conversation - showing overview')
+        }
+
+        setHistoryChecked(true)
+      } else {
+        console.log('❌ API returned error:', topicResponse.data)
+        setError(topicResponse.data.message || 'Topic not found')
       }
     } catch (err) {
-      console.error('Failed to fetch notes:', err)
-    } finally {
-      setNotesLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages, playtimeMessages])
-
-  useEffect(() => {
-    if (!sending) inputRef.current?.focus()
-  }, [sending, phase])
-
-  // Timer for assignments
-  useEffect(() => {
-    let interval
-    if (phase === PHASES.ASSIGNMENT && assignmentStartTime) {
-      interval = setInterval(() => {
-        setElapsedTime(Math.floor((Date.now() - assignmentStartTime) / 1000))
-      }, 1000)
-    }
-    return () => clearInterval(interval)
-  }, [phase, assignmentStartTime])
-
-  // Auto-save code periodically
-  useEffect(() => {
-    if (phase === PHASES.PLAYTIME && currentCode) {
-      const saveTimer = setTimeout(() => {
-        saveCodeLocally(currentCode, 'playtime')
-        // Also save to server (debounced)
-        api.post('/api/learn/playtime/save', { topicId, subtopicId, code: currentCode }).catch(() => { })
-      }, 2000)
-      return () => clearTimeout(saveTimer)
-    }
-  }, [currentCode, phase, topicId, subtopicId, saveCodeLocally])
-
-  useEffect(() => {
-    if (phase === PHASES.ASSIGNMENT && assignmentCode) {
-      const saveTimer = setTimeout(() => {
-        saveCodeLocally(assignmentCode, 'assignment')
-      }, 1000)
-      return () => clearTimeout(saveTimer)
-    }
-  }, [assignmentCode, phase, saveCodeLocally])
-
-  // API call with retry
-  async function apiCall(method, url, data, options = {}) {
-    const { retries = 2, showError = true } = options
-
-    for (let attempt = 0; attempt <= retries; attempt++) {
-      try {
-        setError(null)
-        const response = method === 'get'
-          ? await api.get(url)
-          : await api.post(url, data)
-        return response
-      } catch (err) {
-        console.error(`API call attempt ${attempt + 1} failed:`, err)
-
-        if (attempt === retries) {
-          const errorMsg = err.response?.data?.message || 'Something went wrong. Please try again.'
-          if (showError) setError(errorMsg)
-          throw err
-        }
-
-        // Wait before retry
-        await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)))
-      }
-    }
-  }
-
-  async function loadState() {
-    setLoading(true)
-    setError(null)
-    try {
-      const res = await apiCall('get', `/api/learn/state/${topicId}/${subtopicId}`)
-
-      if (res.data.success) {
-        if (!res.data.exists) {
-          await startSession()
-        } else {
-          setPhase(res.data.phase)
-          setConceptRevealed(res.data.conceptRevealed)
-          setCurrentAssignment(res.data.currentAssignment)
-          setTotalAssignments(res.data.totalAssignments)
-          setMessages(res.data.messages || [])
-          setAssignments(res.data.assignments || [])
-          setHintsUsed(res.data.hintsUsed || 0)
-
-          // Load saved code from server or localStorage
-          const serverCode = res.data.savedCode
-          const localCode = loadLocalCode(res.data.phase === PHASES.ASSIGNMENT ? 'assignment' : 'playtime')
-          setCurrentCode(serverCode || localCode)
-          setAssignmentCode(serverCode || localCode)
-
-          // If in assignment phase, start timer
-          if (res.data.phase === PHASES.ASSIGNMENT) {
-            setAssignmentStartTime(Date.now())
-          }
-        }
-      } else {
-        await startSession()
-      }
-    } catch (error) {
-      console.error('Failed to load state:', error)
-      // Try to recover from localStorage
-      const localMessages = localStorage.getItem(getStorageKey(topicId, subtopicId, 'messages'))
-      if (localMessages) {
-        try {
-          setMessages(JSON.parse(localMessages))
-          setPhase(PHASES.SESSION)
-        } catch {
-          await startSession()
-        }
-      } else {
-        await startSession()
-      }
+      console.error('❌ Error loading topic:', err)
+      setError(err.response?.data?.message || 'Failed to load topic')
     } finally {
       setLoading(false)
     }
   }
 
-  async function startSession() {
+
+  const handleBackToDashboard = () => {
+    navigate('/dashboard')
+  }
+
+  const startSession = async () => {
     try {
-      // Handle empty assignments
-      const taskList = subtopic?.tasks && subtopic.tasks.length > 0
-        ? subtopic.tasks
-        : ['Practice the concept with a simple example']
+      console.log('🚀 Manual session start triggered for topic:', topicId)
 
-      const res = await apiCall('post', '/api/learn/session/start', {
-        topicId,
-        subtopicId,
-        subtopicTitle: subtopic.title,
-        assignments: taskList
-      })
-
-      if (res.data.success) {
-        setPhase(PHASES.SESSION)
-        const newMessages = [{ role: 'assistant', content: res.data.message }]
-        setMessages(newMessages)
-        setConceptRevealed(false)
-        setReadyForPlaytime(false)
-        setTotalAssignments(taskList.length)
-
-        // Set outcomes for tracking
-        if (res.data.outcomes) {
-          setOutcomes(res.data.outcomes)
-        }
-        if (res.data.progress?.covered) {
-          setCoveredOutcomes(res.data.progress.covered)
-        }
-
-        // Save to localStorage for recovery
-        localStorage.setItem(getStorageKey(topicId, subtopicId, 'messages'), JSON.stringify(newMessages))
+      // Prevent starting if we already have messages or haven't checked history yet
+      if (!historyChecked) {
+        console.log('⚠️ Cannot start session - history not checked yet')
+        return
       }
-    } catch (error) {
-      console.error('Failed to start session:', error)
-      setMessages([{
-        role: 'assistant',
-        content: 'Sorry, there was an error starting the session. Please try again.'
-      }])
-    }
-  }
 
-  async function sendSessionMessage(e) {
-    e?.preventDefault()
-    if (!input.trim() || sending) return
-
-    const userMessage = input.trim()
-    setInput('')
-    const newMessages = [...messages, { role: 'user', content: userMessage }]
-    setMessages(newMessages)
-    setSending(true)
-    setError(null)
-
-    try {
-      const res = await apiCall('post', '/api/learn/session/chat', {
-        topicId,
-        subtopicId,
-        message: userMessage,
-        subtopicTitle: subtopic.title
-      })
-
-      if (res.data.success) {
-        const updatedMessages = [...newMessages, { role: 'assistant', content: res.data.response }]
-        setMessages(updatedMessages)
-        setConceptRevealed(res.data.conceptRevealed)
-        setReadyForPlaytime(res.data.readyForPlaytime || res.data.isComplete)
-
-        // Update outcomes progress
-        if (res.data.outcomes) {
-          setOutcomes(res.data.outcomes)
-        }
-        if (res.data.progress?.covered) {
-          setCoveredOutcomes(res.data.progress.covered)
-        }
-
-        // Save to localStorage
-        localStorage.setItem(getStorageKey(topicId, subtopicId, 'messages'), JSON.stringify(updatedMessages))
+      if (messages.length > 0) {
+        console.log('⚠️ Cannot start session - messages already exist:', messages.length)
+        setSessionStarted(true) // Just show the chat interface
+        return
       }
-    } catch {
-      setMessages([...newMessages, {
-        role: 'assistant',
-        content: 'Sorry, something went wrong. Please try again.'
-      }])
-    }
-    setSending(false)
-  }
 
-  async function enterPlaytime() {
-    setLoading(true)
-    setError(null)
-    // Fetch notes in parallel with starting playtime
-    fetchNotes()
-    try {
-      const res = await apiCall('post', '/api/learn/playtime/start', {
-        topicId,
-        subtopicId,
-        subtopicTitle: subtopic.title
-      })
+      setIsTyping(true)
+      setChatError(null)
 
-      if (res.data.success) {
-        setPhase(PHASES.PLAYTIME)
-        setPlaytimeMessages([{ role: 'assistant', content: res.data.message }])
-        setTerminalHistory(res.data.terminalHistory || [])
+      // Start with a welcome message
+      const welcomeMessage = "Hello! I'm ready to start learning about " + topic.title + ". Let's begin!"
 
-        // Load saved code
-        const serverCode = res.data.savedCode
-        const localCode = loadLocalCode('playtime')
-        setCurrentCode(serverCode || localCode)
+      console.log('📤 Sending welcome message:', welcomeMessage)
+
+      const response = await learning.sessionChat(topicId, welcomeMessage)
+
+      console.log('📥 Session response:', response.data)
+
+      if (response.data.success) {
+        const aiResponse = response.data.data.response
+
+        console.log('🤖 AI Response received:', aiResponse)
+
+        // Add user message and AI response
+        setMessages([
+          { role: 'user', content: welcomeMessage, timestamp: new Date() },
+          { role: 'assistant', content: aiResponse, timestamp: new Date() }
+        ])
+
+        setSessionStarted(true)
+
+        // Focus on input after starting session
+        setTimeout(() => {
+          inputRef.current?.focus()
+        }, 500)
+      } else {
+        setChatError(response.data.message || 'Failed to start session')
       }
-    } catch (error) {
-      console.error('Failed to enter playtime:', error)
-    }
-    setLoading(false)
-  }
-
-  async function executeCode(code) {
-    try {
-      const res = await api.post('/api/learn/playtime/execute', {
-        topicId,
-        subtopicId,
-        code
-      })
-      setCurrentCode(code)
-      saveCodeLocally(code, 'playtime')
-      return { output: res.data.output, isError: res.data.isError }
-    } catch {
-      return { output: 'Execution failed. Please try again.', isError: true }
+    } catch (err) {
+      console.error('❌ Error starting session:', err)
+      setChatError(err.response?.data?.message || 'Failed to start session')
+    } finally {
+      setIsTyping(false)
     }
   }
 
-  async function sendPlaytimeMessage(e) {
-    e?.preventDefault()
-    if (!playtimeInput.trim() || sending) return
+  const sendMessage = async () => {
+    if (!currentMessage.trim() || isTyping) return
 
-    const userMessage = playtimeInput.trim()
-    setPlaytimeInput('')
-    setPlaytimeMessages(prev => [...prev, { role: 'user', content: userMessage }])
-    setSending(true)
+    const userMessage = currentMessage.trim()
+    setCurrentMessage('')
+    setIsTyping(true)
+    setChatError(null)
+
+    // Add user message immediately
+    const newUserMessage = { role: 'user', content: userMessage, timestamp: new Date() }
+    setMessages(prev => [...prev, newUserMessage])
 
     try {
-      const res = await apiCall('post', '/api/learn/playtime/chat', {
-        topicId,
-        subtopicId,
-        message: userMessage,
-        subtopicTitle: subtopic.title,
-        currentCode
-      })
+      console.log('Sending message:', userMessage)
 
-      if (res.data.success) {
-        setPlaytimeMessages(prev => [...prev, { role: 'assistant', content: res.data.response }])
+      let response
+      switch (currentPhase) {
+        case 'session':
+          response = await learning.sessionChat(topicId, userMessage)
+          break
+        case 'playtime':
+          response = await learning.playtimeChat(topicId, userMessage)
+          break
+        case 'assignment':
+          // For assignment phase, treat messages as hints requests
+          response = await learning.getHint(topicId, currentAssignment, userCode)
+          break
+        case 'feedback':
+          // Feedback phase is read-only, no new messages
+          setChatError('Feedback phase is complete. Use phase navigation to continue.')
+          return
+        default:
+          response = await learning.sessionChat(topicId, userMessage)
       }
-    } catch {
-      setPlaytimeMessages(prev => [...prev, {
-        role: 'assistant',
-        content: 'Sorry, something went wrong. Please try again.'
-      }])
-    }
-    setSending(false)
-  }
 
-  async function startAssignments() {
-    setLoading(true)
-    setError(null)
-    try {
-      const taskList = subtopic?.tasks && subtopic.tasks.length > 0
-        ? subtopic.tasks
-        : ['Practice the concept with a simple example']
+      console.log('Chat response:', response)
 
-      const res = await apiCall('post', '/api/learn/assignment/start', {
-        topicId,
-        subtopicId,
-        assignments: taskList
-      })
+      if (response.data.success) {
+        const aiResponse = response.data.data.response
+        const isComplete = response.data.data.sessionComplete
 
-      if (res.data.success) {
-        setPhase(PHASES.ASSIGNMENT)
-        setCurrentAssignment(res.data.currentAssignment)
-        setTotalAssignments(res.data.totalAssignments)
-        setAssignmentStartTime(Date.now())
-        setElapsedTime(0)
-        setAssignmentCode(loadLocalCode('assignment'))
-        setCodeOutput('')
-        setCodeError(false)
-        setHintsUsed(0)
-        setCurrentHint('')
-        setShowHintPanel(false)
-      }
-    } catch (error) {
-      console.error('Failed to start assignments:', error)
-    }
-    setLoading(false)
-  }
+        console.log('🔍 Frontend Completion Debug:')
+        console.log('   - AI Response received:', aiResponse?.substring(0, 200) + '...')
+        console.log('   - Session Complete flag:', isComplete)
+        console.log('   - Full response data:', response.data.data)
 
-  async function runAssignmentCode() {
-    if (!assignmentCode.trim()) return
+        // Add AI response
+        const newAiMessage = { role: 'assistant', content: aiResponse, timestamp: new Date() }
+        setMessages(prev => [...prev, newAiMessage])
 
-    try {
-      const res = await api.post('/api/learn/assignment/run', {
-        topicId,
-        subtopicId,
-        code: assignmentCode
-      })
-
-      setCodeOutput(res.data.output)
-      setCodeError(res.data.isError)
-    } catch {
-      setCodeOutput('Execution failed. Please try again.')
-      setCodeError(true)
-    }
-  }
-
-  async function getHint() {
-    if (hintLoading) return
-
-    setHintLoading(true)
-    setShowHintPanel(true)
-
-    try {
-      const res = await apiCall('post', '/api/learn/assignment/hint', {
-        topicId,
-        subtopicId,
-        assignmentTitle: subtopic?.tasks?.[currentAssignment] || 'Current assignment',
-        currentCode: assignmentCode,
-        hintLevel: hintsUsed + 1
-      })
-
-      if (res.data.success) {
-        setCurrentHint(res.data.hint)
-        setHintsUsed(res.data.hintsUsed)
-      }
-    } catch (error) {
-      setCurrentHint('Could not get hint. Please try again.')
-    }
-    setHintLoading(false)
-  }
-
-  async function submitAssignment() {
-    if (!assignmentCode.trim()) return
-    setLoading(true)
-
-    try {
-      const res = await apiCall('post', '/api/learn/assignment/submit', {
-        topicId,
-        subtopicId,
-        code: assignmentCode,
-        assignmentIndex: currentAssignment
-      })
-
-      if (res.data.success) {
-        setPhase(PHASES.FEEDBACK)
-        await generateFeedback()
-      }
-    } catch (error) {
-      console.error('Failed to submit:', error)
-    }
-    setLoading(false)
-  }
-
-  async function generateFeedback() {
-    setFeedbackLoading(true)
-    try {
-      const res = await apiCall('post', '/api/learn/feedback/generate', {
-        topicId,
-        subtopicId,
-        assignmentIndex: currentAssignment,
-        subtopicTitle: subtopic.title,
-        assignmentTitle: subtopic?.tasks?.[currentAssignment] || 'Assignment'
-      })
-
-      if (res.data.success) {
-        setFeedback(res.data.feedback)
-      }
-    } catch (error) {
-      console.error('Failed to generate feedback:', error)
-      setFeedback({
-        testResults: { passed: 0, total: 1, failedTests: [] },
-        codeQuality: {},
-        review: 'Could not generate feedback. Please try again.',
-        suggestions: []
-      })
-    }
-    setFeedbackLoading(false)
-  }
-
-  async function continueToNext() {
-    setLoading(true)
-    try {
-      const res = await apiCall('post', '/api/learn/feedback/continue', {
-        topicId,
-        subtopicId
-      })
-
-      if (res.data.success) {
-        if (res.data.completed) {
-          setPhase(PHASES.COMPLETED)
-          // Clear local storage for this lesson
-          localStorage.removeItem(getStorageKey(topicId, subtopicId, 'assignment_code'))
-          localStorage.removeItem(getStorageKey(topicId, subtopicId, 'playtime_code'))
+        // Check if current phase is complete
+        if (isComplete) {
+          console.log(`🎉 ${currentPhase} phase completed!`)
+          setPhaseProgress(prev => ({
+            ...prev,
+            [currentPhase]: true
+          }))
+          
+          if (currentPhase === 'session') {
+            setSessionComplete(true)
+          }
         } else {
-          setPhase(PHASES.ASSIGNMENT)
-          setCurrentAssignment(res.data.currentAssignment)
-          setAssignmentStartTime(Date.now())
-          setElapsedTime(0)
-          setAssignmentCode('')
-          setCodeOutput('')
-          setCodeError(false)
-          setFeedback(null)
-          setHintsUsed(0)
-          setCurrentHint('')
-          setShowHintPanel(false)
+          console.log(`📚 ${currentPhase} phase still in progress...`)
         }
+      } else {
+        setChatError(response.data.message || 'Failed to send message')
       }
-    } catch (error) {
-      console.error('Failed to continue:', error)
+    } catch (err) {
+      console.error('Error sending message:', err)
+      setChatError(err.response?.data?.message || 'Failed to send message')
+    } finally {
+      setIsTyping(false)
     }
-    setLoading(false)
   }
 
-  function formatTime(seconds) {
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return `${mins}:${secs.toString().padStart(2, '0')}`
+  const sendPlaytimeMessage = async (message) => {
+    setIsTyping(true)
+    setChatError(null)
+
+    try {
+      console.log('🎮 Sending playtime message:', message)
+
+      const response = await learning.playtimeChat(topicId, message)
+
+      if (response.data.success) {
+        const aiResponse = response.data.data.response
+
+        // Add both user and AI messages
+        const userMessage = { role: 'user', content: message, timestamp: new Date() }
+        const aiMessage = { role: 'assistant', content: aiResponse, timestamp: new Date() }
+        
+        setMessages([userMessage, aiMessage])
+      } else {
+        setChatError(response.data.message || 'Failed to start playtime')
+      }
+    } catch (err) {
+      console.error('Error starting playtime:', err)
+      setChatError(err.response?.data?.message || 'Failed to start playtime')
+    } finally {
+      setIsTyping(false)
+    }
   }
 
-  async function retryLastAction() {
-    setRetrying(true)
-    setError(null)
-    await loadState()
-    setRetrying(false)
+  const handlePhaseChange = async (newPhase) => {
+    console.log(`🔄 Changing phase from ${currentPhase} to ${newPhase}`)
+    
+    setCurrentPhase(newPhase)
+    setMessages([])
+    setCurrentMessage('')
+    setChatError(null)
+
+    // Initialize the new phase
+    switch (newPhase) {
+      case 'session':
+        // Load session history or start fresh
+        try {
+          const historyResponse = await learning.getHistory(topicId)
+          if (historyResponse.data.success && historyResponse.data.data.messages?.length > 0) {
+            setMessages(historyResponse.data.data.messages)
+          }
+        } catch (err) {
+          console.error('Error loading session history:', err)
+        }
+        break
+
+      case 'playtime':
+        // Initialize playtime - clean code playground (no welcome message needed)
+        setMessages([]) // Clear any previous messages
+        setUserCode('') // Empty code area - placeholder will show
+        setLastExecutionState(null) // Clear execution state
+        
+        // Clear output and AI analysis areas
+        setTimeout(() => {
+          const outputDiv = document.getElementById('terminal-output')
+          const aiDiv = document.getElementById('ai-analysis')
+          if (outputDiv) {
+            outputDiv.innerHTML = '<pre style="margin: 0; color: #6b7280; font-family: Monaco, monospace;">Click "Run" to execute your code</pre>'
+          }
+          if (aiDiv) {
+            aiDiv.innerHTML = '<div style="color: #6b7280; font-style: italic;">Write some code and run it to get AI analysis</div>'
+          }
+        }, 100)
+        break
+
+      case 'assignment':
+        // Initialize assignment phase - load first assignment
+        if (topic?.tasks && topic.tasks.length > 0) {
+          setCurrentAssignment(topic.tasks[0])
+          setCurrentAssignmentIndex(0)
+          setUserCode('')
+          setAssignmentSubmitted(false)
+          setAssignmentFeedback(null)
+          setTestResults(null)
+          setLastExecutionState(null)
+        }
+        break
+
+      case 'feedback':
+        await initializeFeedbackPhase()
+        break
+    }
   }
 
-  if (!subtopic) {
-    return (
-      <div style={styles.errorContainer}>
-        <p>Lesson not found</p>
-        <button onClick={() => navigate('/dashboard')} style={styles.backLink}>Go back</button>
-      </div>
-    )
+  const initializeAssignmentPhase = async () => {
+    try {
+      setIsTyping(true)
+      
+      // Get assignment for this topic
+      const assignment = topic?.tasks?.[0] || {
+        description: `Create a console.log program that demonstrates all the concepts you learned in ${topic?.title}`,
+        testCases: []
+      }
+      
+      setCurrentAssignment(assignment)
+      
+      // Add assignment introduction message
+      const assignmentMessage = {
+        role: 'assistant',
+        content: `📝 **Assignment Time!**\n\n**Your Task:** ${assignment.description}\n\nWrite your code below and I'll help you if you get stuck. When you're ready, submit your solution for feedback!`,
+        timestamp: new Date()
+      }
+      
+      setMessages([assignmentMessage])
+    } catch (err) {
+      console.error('Error initializing assignment:', err)
+      setChatError('Failed to load assignment')
+    } finally {
+      setIsTyping(false)
+    }
+  }
+
+  const initializeFeedbackPhase = async () => {
+    if (!userCode || !currentAssignment) {
+      setChatError('Please complete the assignment first')
+      return
+    }
+
+    try {
+      setIsTyping(true)
+      
+      const response = await learning.getFeedback(topicId, userCode, currentAssignment)
+      
+      if (response.data.success) {
+        const feedbackMessage = {
+          role: 'assistant',
+          content: `📊 **Code Feedback**\n\n${response.data.data.feedback}`,
+          timestamp: new Date()
+        }
+        
+        setMessages([feedbackMessage])
+        
+        // Mark feedback phase as complete
+        setPhaseProgress(prev => ({
+          ...prev,
+          feedback: true
+        }))
+      } else {
+        setChatError('Failed to get feedback')
+      }
+    } catch (err) {
+      console.error('Error getting feedback:', err)
+      setChatError('Failed to get feedback')
+    } finally {
+      setIsTyping(false)
+    }
+  }
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      sendMessage()
+    }
   }
 
   if (loading) {
     return (
-      <div style={styles.loadingContainer}>
-        <div style={styles.loadingSpinner} />
-        <span>Loading...</span>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
+        flexDirection: 'column',
+        gap: '16px'
+      }}>
+        <div style={{
+          width: '32px',
+          height: '32px',
+          border: '3px solid #f3f4f6',
+          borderTop: '3px solid #10a37f',
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite'
+        }}></div>
+        <p>Loading topic...</p>
+        <style>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
+      </div>
+    )
+  }
+
+  if (error || !topic) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '100vh',
+        flexDirection: 'column',
+        gap: '16px',
+        textAlign: 'center',
+        padding: '24px'
+      }}>
+        <h2 style={{ color: '#dc2626', marginBottom: '8px' }}>Topic Not Found</h2>
+        <p style={{ color: '#6b7280', marginBottom: '24px' }}>
+          {error || 'The requested topic could not be found.'}
+        </p>
+        <button
+          onClick={handleBackToDashboard}
+          style={{
+            padding: '12px 24px',
+            backgroundColor: '#10a37f',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontSize: '1rem',
+            fontWeight: '600'
+          }}
+        >
+          Back to Dashboard
+        </button>
       </div>
     )
   }
 
   return (
-    <div style={styles.container}>
-      {/* Error Banner */}
-      {error && (
-        <div style={styles.errorBanner}>
-          <span>{error}</span>
-          <button onClick={retryLastAction} disabled={retrying} style={styles.retryButton}>
-            {retrying ? 'Retrying...' : 'Retry'}
-          </button>
-        </div>
-      )}
-
-      {/* Header */}
-      <header style={styles.header}>
-        <button onClick={() => navigate('/dashboard')} style={styles.backBtn}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M19 12H5M12 19l-7-7 7-7" />
-          </svg>
-          {!isMobile && <span>Dashboard</span>}
-        </button>
-
-        <div style={styles.headerCenter}>
-          <span style={styles.headerTitle}>{subtopic.title}</span>
-          <div style={styles.phaseIndicator}>
-            {Object.values(PHASES).filter(p => p !== 'completed').map((p, i) => (
-              <div key={p} style={{
-                ...styles.phaseDot,
-                background: phase === p ? '#10a37f' :
-                  Object.values(PHASES).indexOf(phase) > i ? '#a8e6cf' : '#e5e7eb'
-              }}>
-                {i + 1}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div style={styles.phaseLabel}>
-          {phase === PHASES.SESSION && '📖 Session'}
-          {phase === PHASES.PLAYTIME && '🎮 PlayTime'}
-          {phase === PHASES.ASSIGNMENT && `📝 ${currentAssignment + 1}/${totalAssignments}`}
-          {phase === PHASES.FEEDBACK && '✨ Feedback'}
-          {phase === PHASES.COMPLETED && '🎉 Complete'}
-        </div>
-      </header>
-
-      {/* SESSION PHASE */}
-      {phase === PHASES.SESSION && (
-        <div style={styles.sessionContainer}>
-          <div style={styles.messagesArea}>
-            {messages.map((msg, i) => (
-              <div key={i} style={styles.messageRow}>
-                <div style={{
-                  ...styles.avatar,
-                  background: msg.role === 'user' ? '#e5e7eb' : '#d1fae5'
-                }}>
-                  {msg.role === 'user' ? 'Y' : '🌱'}
-                </div>
-                <div style={styles.messageContent}>
-                  <span style={styles.messageRole}>
-                    {msg.role === 'user' ? 'You' : 'EduBridge'}
-                  </span>
-                  <div style={styles.messageText}>
-                    <ReactMarkdown>{msg.content}</ReactMarkdown>
-                  </div>
-                </div>
-              </div>
-            ))}
-            {sending && (
-              <div style={styles.messageRow}>
-                <div style={{ ...styles.avatar, background: '#d1fae5' }}>🌱</div>
-                <div style={styles.typingDots}>
-                  <span /><span /><span />
-                </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
-
-          {readyForPlaytime && (
-            <div style={styles.transitionBanner}>
-              <span>🎮 Ready for hands-on practice?</span>
-              <button onClick={enterPlaytime} style={styles.transitionBtn}>
-                Enter PlayTime
-              </button>
-            </div>
-          )}
-
-          <form onSubmit={sendSessionMessage} style={styles.inputForm}>
-            <textarea
-              ref={inputRef}
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && !e.shiftKey && sendSessionMessage(e)}
-              placeholder="Type your message..."
-              style={styles.textInput}
-              rows={1}
-              disabled={sending}
-            />
-            <button type="submit" disabled={!input.trim() || sending} style={styles.sendBtn}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13" stroke="currentColor" strokeWidth="2" />
+    <div style={{
+      height: '100vh',
+      backgroundColor: sessionStarted ? '#ffffff' : '#f9fafb',
+      fontFamily: 'Outfit, sans-serif',
+      display: 'flex',
+      flexDirection: 'column',
+      overflow: 'hidden'
+    }}>
+      {/* Header - Only show when NOT in chat mode */}
+      {!sessionStarted && (
+        <header style={{
+          backgroundColor: '#ffffff',
+          borderBottom: '1px solid #e5e7eb',
+          padding: '16px 24px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexShrink: 0
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <button
+              onClick={handleBackToDashboard}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: '8px',
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                color: '#6b7280',
+                transition: 'background-color 0.2s'
+              }}
+              onMouseEnter={(e) => e.target.style.backgroundColor = '#f3f4f6'}
+              onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="m15 18-6-6 6-6" />
               </svg>
             </button>
-          </form>
-        </div>
+            <h1 style={{
+              fontSize: '1.5rem',
+              fontWeight: '700',
+              color: '#10a37f',
+              margin: 0
+            }}>
+              Sara
+            </h1>
+          </div>
+          <h2 style={{
+            fontSize: '1.25rem',
+            fontWeight: '600',
+            color: '#111827',
+            margin: 0
+          }}>
+            {topic.title}
+          </h2>
+        </header>
       )}
 
-      {/* PLAYTIME PHASE */}
-      {phase === PHASES.PLAYTIME && (
-        <div style={{
-          ...styles.playtimeContainer,
-          flexDirection: isMobile ? 'column' : 'row'
+      {/* Chat Header - Only show when IN chat mode */}
+      {sessionStarted && (
+        <header style={{
+          backgroundColor: '#ffffff',
+          borderBottom: '1px solid #e5e7eb',
+          padding: '12px 24px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexShrink: 0,
+          position: 'sticky',
+          top: 0,
+          zIndex: 10
         }}>
-          {/* Mobile toggle */}
-          {isMobile && (
-            <div style={styles.mobileToggle}>
-              <button
-                onClick={() => setShowMobileChat(false)}
-                style={{
-                  ...styles.mobileToggleBtn,
-                  background: !showMobileChat ? '#10a37f' : '#f3f4f6',
-                  color: !showMobileChat ? 'white' : '#374151'
-                }}
-              >
-                💻 Terminal
-              </button>
-              <button
-                onClick={() => setShowMobileChat(true)}
-                style={{
-                  ...styles.mobileToggleBtn,
-                  background: showMobileChat ? '#10a37f' : '#f3f4f6',
-                  color: showMobileChat ? 'white' : '#374151'
-                }}
-              >
-                💬 AI Help
-              </button>
-            </div>
-          )}
-
-          {/* Terminal */}
-          <div style={{
-            ...styles.playtimeLeft,
-            display: isMobile && showMobileChat ? 'none' : 'flex'
-          }}>
-            <Terminal
-              onExecute={executeCode}
-              history={terminalHistory}
-              initialCode={currentCode}
-            />
-          </div>
-
-          {/* Chat Panel */}
-          <div style={{
-            ...styles.playtimeRight,
-            display: isMobile && !showMobileChat ? 'none' : 'flex',
-            width: isMobile ? '100%' : 360,
-            borderLeft: isMobile ? 'none' : '1px solid #e5e7eb'
-          }}>
-            <div style={styles.playtimeHeader}>
-              <span>💬 AI Assistant</span>
-              <button
-                onClick={() => setShowNotes(!showNotes)}
-                style={{
-                  ...styles.notesToggleBtn,
-                  background: showNotes ? '#10a37f' : 'transparent'
-                }}
-                title="View Notes"
-              >
-                📝 {notesLoading ? '...' : 'Notes'}
-              </button>
-            </div>
-
-            {/* Notes Panel */}
-            {showNotes && (
-              <div style={styles.notesPanel}>
-                <div style={styles.notesPanelHeader}>
-                  <span>📝 Quick Reference</span>
-                  <button onClick={() => setShowNotes(false)} style={styles.notesPanelClose}>×</button>
-                </div>
-                <div style={styles.notesPanelContent}>
-                  {notesLoading ? (
-                    <div style={styles.notesLoading}>Loading notes...</div>
-                  ) : notes ? (
-                    <ReactMarkdown>{notes}</ReactMarkdown>
-                  ) : (
-                    <p style={styles.noNotes}>No notes available for this topic.</p>
-                  )}
-                </div>
-              </div>
-            )}
-
-            <div style={styles.playtimeMessages}>
-              {playtimeMessages.map((msg, i) => (
-                <div key={i} style={{
-                  ...styles.playtimeMessage,
-                  alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
-                  background: msg.role === 'user' ? '#e5e7eb' : '#d1fae5'
-                }}>
-                  <ReactMarkdown>{msg.content}</ReactMarkdown>
-                </div>
-              ))}
-              {sending && (
-                <div style={{ ...styles.playtimeMessage, background: '#d1fae5', alignSelf: 'flex-start' }}>
-                  <div style={styles.typingDots}><span /><span /><span /></div>
-                </div>
-              )}
-              <div ref={messagesEndRef} />
-            </div>
-
-            <form onSubmit={sendPlaytimeMessage} style={styles.playtimeInputForm}>
-              <input
-                value={playtimeInput}
-                onChange={e => setPlaytimeInput(e.target.value)}
-                placeholder="Ask about your code..."
-                style={styles.playtimeInput}
-                disabled={sending}
-              />
-              <button type="submit" disabled={!playtimeInput.trim() || sending} style={styles.playtimeSendBtn}>
-                →
-              </button>
-            </form>
-
-            <button onClick={startAssignments} style={styles.readyBtn}>
-              Ready for Assignments →
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <button
+              onClick={handleBackToDashboard}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: '6px',
+                borderRadius: '6px',
+                display: 'flex',
+                alignItems: 'center',
+                color: '#6b7280',
+                transition: 'background-color 0.2s'
+              }}
+              onMouseEnter={(e) => e.target.style.backgroundColor = '#f3f4f6'}
+              onMouseLeave={(e) => e.target.style.backgroundColor = 'transparent'}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="m15 18-6-6 6-6" />
+              </svg>
             </button>
+            <h1 style={{
+              fontSize: '1.2rem',
+              fontWeight: '700',
+              color: '#10a37f',
+              margin: 0
+            }}>
+              Sara
+            </h1>
           </div>
-        </div>
-      )}
-
-      {/* ASSIGNMENT PHASE */}
-      {phase === PHASES.ASSIGNMENT && (
-        <div style={styles.assignmentContainer}>
-          <div style={styles.assignmentHeader}>
-            <div style={styles.assignmentInfo}>
-              <span style={styles.assignmentNumber}>Assignment {currentAssignment + 1} of {totalAssignments}</span>
-              <h2 style={styles.assignmentTitle}>
-                {subtopic?.tasks?.[currentAssignment] || 'Complete the task'}
-              </h2>
-            </div>
-            <div style={styles.headerActions}>
-              <button onClick={getHint} disabled={hintLoading} style={styles.hintButton}>
-                💡 Hint {hintsUsed > 0 && `(${hintsUsed})`}
-              </button>
-              <div style={styles.timerBox}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M12 6v6l4 2" />
-                </svg>
-                <span style={styles.timerText}>{formatTime(elapsedTime)}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Hint Panel */}
-          {showHintPanel && (
-            <div style={styles.hintPanel}>
-              <div style={styles.hintHeader}>
-                <span>💡 Hint (Level {Math.min(hintsUsed, 3)})</span>
-                <button onClick={() => setShowHintPanel(false)} style={styles.hintCloseBtn}>×</button>
-              </div>
-              <div style={styles.hintContent}>
-                {hintLoading ? (
-                  <div style={styles.hintLoading}>
-                    <div style={styles.loadingSpinner} />
-                    <span>Getting hint...</span>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+            <h2 style={{
+              fontSize: '1rem',
+              fontWeight: '600',
+              color: '#111827',
+              margin: 0
+            }}>
+              {topic.title} {getPhaseIcon(currentPhase)}
+            </h2>
+            
+              {/* Single Action Button */}
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                {currentPhase === 'session' && (
+                  <button
+                    onClick={() => {
+                      if (sessionComplete) {
+                        handlePhaseChange('playtime')
+                      }
+                    }}
+                    disabled={!sessionComplete}
+                    style={{
+                      backgroundColor: sessionComplete ? '#10a37f' : '#e5e7eb',
+                      color: sessionComplete ? 'white' : '#9ca3af',
+                      border: 'none',
+                      borderRadius: '6px',
+                      padding: '8px 16px',
+                      fontSize: '0.875rem',
+                      fontWeight: '600',
+                      cursor: sessionComplete ? 'pointer' : 'not-allowed',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      transition: 'all 0.2s ease',
+                      opacity: sessionComplete ? 1 : 0.5
+                    }}
+                    title={sessionComplete ? 'Start practicing in playground' : 'Complete all session outcomes first'}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polygon points="5,3 19,12 5,21"/>
+                    </svg>
+                    Play
+                  </button>
+                )}
+                
+                {currentPhase === 'playtime' && (
+                  <button
+                    onClick={() => {
+                      handlePhaseChange('assignment')
+                    }}
+                    style={{
+                      backgroundColor: '#10a37f',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '6px',
+                      padding: '8px 16px',
+                      fontSize: '0.875rem',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      transition: 'all 0.2s ease'
+                    }}
+                    title="Start coding assignments"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <polyline points="16,18 22,12 16,6"/>
+                      <polyline points="8,6 2,12 8,18"/>
+                    </svg>
+                    Code
+                  </button>
+                )}
+                
+                {currentPhase === 'assignment' && (
+                  <div style={{
+                    fontSize: '0.875rem',
+                    color: '#6b7280',
+                    fontWeight: '500'
+                  }}>
+                    Assignment {currentAssignmentIndex + 1} of {topic?.tasks?.length || 0}
                   </div>
-                ) : (
-                  <p>{currentHint}</p>
                 )}
               </div>
-              {hintsUsed < 3 && !hintLoading && (
-                <button onClick={getHint} style={styles.moreHintBtn}>
-                  Get More Help →
-                </button>
-              )}
-            </div>
-          )}
-
-          <div style={styles.assignmentProgress}>
-            {Array.from({ length: totalAssignments }).map((_, i) => (
-              <div key={i} style={{
-                ...styles.progressDot,
-                background: i < currentAssignment ? '#10a37f' :
-                  i === currentAssignment ? '#fbbf24' : '#e5e7eb'
-              }} />
-            ))}
           </div>
-
-          <div style={styles.codeEditorContainer}>
-            <CodeEditor
-              value={assignmentCode}
-              onChange={setAssignmentCode}
-              height="250px"
-              placeholder="// Write your JavaScript code here..."
-              showRunButton={true}
-              onRun={runAssignmentCode}
-            />
-          </div>
-
-          {/* Output Panel */}
-          {codeOutput && (
-            <div style={{
-              ...styles.outputPanel,
-              borderColor: codeError ? '#ef4444' : '#10a37f'
-            }}>
-              <div style={styles.outputHeader}>
-                <span>{codeError ? '❌ Error' : '✅ Output'}</span>
-              </div>
-              <pre style={styles.outputContent}>{codeOutput}</pre>
-            </div>
-          )}
-
-          <div style={styles.assignmentActions}>
-            <button
-              onClick={runAssignmentCode}
-              disabled={!assignmentCode.trim()}
-              style={styles.runBtn}
-            >
-              ▶ Run Code
-            </button>
-            <button
-              onClick={submitAssignment}
-              disabled={!assignmentCode.trim()}
-              style={{
-                ...styles.submitBtn,
-                opacity: !assignmentCode.trim() ? 0.5 : 1
-              }}
-            >
-              Submit Assignment
-            </button>
-          </div>
-        </div>
+        </header>
       )}
 
-      {/* FEEDBACK PHASE */}
-      {phase === PHASES.FEEDBACK && (
-        <div style={styles.feedbackContainer}>
-          {feedbackLoading ? (
-            <div style={styles.feedbackLoading}>
-              <div style={styles.loadingSpinner} />
-              <span>Analyzing your code...</span>
-            </div>
-          ) : feedback && (
-            <>
-              <div style={styles.feedbackHeader}>
-                <h2>Assignment {currentAssignment + 1} Feedback</h2>
-                <span style={styles.timeTaken}>
-                  Time: {formatTime(elapsedTime)} | Hints: {hintsUsed}
-                </span>
-              </div>
+      {/* Main Content */}
+      <main style={{
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%',
+        height: '100%',
+        padding: sessionStarted ? '0' : '24px',
+        maxWidth: sessionStarted ? 'none' : '1000px',
+        margin: sessionStarted ? '0' : '0 auto',
+        overflow: 'hidden'
+      }}>
+        
+        {/* Professional Code Playground */}
+        {currentPhase === 'playtime' ? (
+          <div style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            height: '100%',
+            backgroundColor: '#ffffff',
+            color: '#111827',
+            overflow: 'hidden' // Prevent double scrollbars
+          }}>
 
-              {/* Test Results */}
-              <div style={styles.feedbackSection}>
-                <h3 style={styles.sectionTitle}>🧪 Test Results</h3>
-                <div style={styles.testResults}>
+            {/* Main Content Area */}
+            <div className="playground-main-content" style={{
+              flex: 1,
+              display: 'flex',
+              height: 'calc(100vh - 200px)',
+              minHeight: '500px',
+              overflow: 'auto' // Allow scrolling of the entire playground
+            }}>
+              {/* Left Panel - Code Editor */}
+              <div className="playground-left-panel" style={{
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                borderRight: '1px solid #404040',
+                minWidth: '0' // Important for flex overflow
+              }}>
+                {/* Editor Header */}
+                <div className="playground-editor-header" style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '8px 16px',
+                  backgroundColor: '#f9fafb',
+                  borderBottom: '1px solid #e5e7eb',
+                  fontSize: '0.8rem',
+                  color: '#6b7280'
+                }}>
                   <div style={{
-                    ...styles.testScore,
-                    background: feedback.testResults.passed === feedback.testResults.total
-                      ? '#d1fae5' : '#fef3c7'
+                    padding: '4px 12px',
+                    backgroundColor: '#ffffff',
+                    borderRadius: '4px 4px 0 0',
+                    borderBottom: '2px solid #10a37f',
+                    color: '#111827',
+                    fontWeight: '500'
                   }}>
-                    <span style={styles.testScoreNumber}>
-                      {feedback.testResults.passed}/{feedback.testResults.total}
-                    </span>
-                    <span style={styles.testScoreLabel}>Tests Passed</span>
+                    playground.js
+                  </div>
+                </div>
+
+                {/* Code Editor with Line Numbers */}
+                <div style={{
+                  flex: 1,
+                  display: 'flex',
+                  backgroundColor: '#1e1e1e',
+                  overflow: 'hidden'
+                }}>
+                  {/* Line Numbers */}
+                  <div className="playground-line-numbers" style={{
+                    width: '50px',
+                    backgroundColor: '#f9fafb',
+                    borderRight: '1px solid #e5e7eb',
+                    padding: '16px 8px',
+                    fontSize: '0.8rem',
+                    color: '#9ca3af',
+                    fontFamily: 'Monaco, Consolas, "SF Mono", "Courier New", monospace',
+                    lineHeight: '1.4',
+                    textAlign: 'right',
+                    userSelect: 'none',
+                    overflow: 'hidden'
+                  }}>
+                    {userCode.split('\n').map((_, index) => (
+                      <div key={index} style={{ height: '19.6px' }}>
+                        {index + 1}
+                      </div>
+                    ))}
                   </div>
 
-                  {feedback.testResults.failedTests?.length > 0 && (
-                    <div style={styles.failedTests}>
-                      <span style={styles.failedTestsTitle}>Failed Tests:</span>
-                      {feedback.testResults.failedTests.map((test, i) => (
-                        <div key={i} style={styles.failedTest}>
-                          <span style={styles.testName}>❌ {test.name}</span>
-                          <span style={styles.testDetail}>Expected: {test.expected}</span>
-                          <span style={styles.testDetail}>Got: {test.actual}</span>
+                  {/* Code Input */}
+                  <textarea
+                    className="playground-textarea"
+                    value={userCode}
+                    onChange={(e) => setUserCode(e.target.value)}
+                    placeholder="// Write your JavaScript code here..."
+                    style={{
+                      flex: 1,
+                      border: 'none',
+                      outline: 'none',
+                      resize: 'none',
+                      padding: '16px',
+                      backgroundColor: '#ffffff',
+                      color: '#111827',
+                      fontSize: '0.875rem',
+                      fontFamily: 'Monaco, Consolas, "SF Mono", "Courier New", monospace',
+                      lineHeight: '1.4',
+                      whiteSpace: 'pre',
+                      overflowWrap: 'normal',
+                      overflowX: 'auto',
+                      overflowY: 'auto',
+                      tabSize: 2
+                    }}
+                    spellCheck={false}
+                  />
+                </div>
+
+                {/* Editor Footer with Actions */}
+                <div className="playground-footer" style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '8px 16px',
+                  backgroundColor: '#f9fafb',
+                  borderTop: '1px solid #e5e7eb',
+                  fontSize: '0.75rem',
+                  color: '#6b7280'
+                }}>
+                  <div style={{ display: 'flex', gap: '12px' }}>
+                    <span>JavaScript</span>
+                    <span>UTF-8</span>
+                    <span>LF</span>
+                  </div>
+                  <div className="playground-footer-actions" style={{ display: 'flex', gap: '8px' }}>
+                    <button
+                      onClick={() => {
+                        // Execute code and update output
+                        const outputDiv = document.getElementById('terminal-output')
+                        const aiDiv = document.getElementById('ai-analysis')
+                        if (!outputDiv) return
+
+                        try {
+                          // Clear previous output
+                          outputDiv.innerHTML = ''
+                          
+                          // Create execution environment
+                          const outputs = []
+                          const originalConsoleLog = console.log
+                          console.log = (...args) => {
+                            outputs.push(args.map(arg => String(arg)).join(' '))
+                          }
+                          
+                          try {
+                            // Execute code
+                            eval(userCode)
+                            console.log = originalConsoleLog
+                            
+                            // Display output
+                            const outputText = outputs.length > 0 ? outputs.join('\n') : 'No output'
+                            outputDiv.innerHTML = `<pre style="margin: 0; color: #10a37f; font-family: Monaco, monospace; line-height: 1.4; white-space: pre-wrap; word-break: break-word;">${outputText}</pre>`
+                            
+                            // Enable AI analysis button and clear previous analysis
+                            if (aiDiv) {
+                              aiDiv.innerHTML = '<div style="color: #6b7280; font-style: italic;">Click "Explain Code" to get AI analysis of your code and output</div>'
+                            }
+                            // Store execution state for AI analysis
+                            setLastExecutionState({
+                              code: userCode,
+                              output: outputText,
+                              hasError: false
+                            })
+                            
+                          } catch (executionError) {
+                            console.log = originalConsoleLog
+                            
+                            // Format error message
+                            let errorMessage = `${executionError.name}: ${executionError.message}`
+                            outputDiv.innerHTML = `<pre style="margin: 0; color: #dc2626; font-family: Monaco, monospace; line-height: 1.4; white-space: pre-wrap; word-break: break-word;">${errorMessage}</pre>`
+                            
+                            // Enable AI analysis for errors too
+                            if (aiDiv) {
+                              aiDiv.innerHTML = '<div style="color: #6b7280; font-style: italic;">Click "Explain Code" to get help with this error</div>'
+                            }
+                            // Store execution state for AI analysis
+                            setLastExecutionState({
+                              code: userCode,
+                              output: errorMessage,
+                              hasError: true
+                            })
+                          }
+                          
+                        } catch (generalError) {
+                          outputDiv.innerHTML = `<pre style="margin: 0; color: #dc2626; font-family: Monaco, monospace;">Unexpected error: ${generalError.message}</pre>`
+                          setLastExecutionState({
+                            code: userCode,
+                            output: `Unexpected error: ${generalError.message}`,
+                            hasError: true
+                          })
+                        }
+                      }}
+                      disabled={!userCode.trim()}
+                      style={{
+                        backgroundColor: !userCode.trim() ? '#e5e7eb' : '#10a37f',
+                        color: !userCode.trim() ? '#9ca3af' : 'white',
+                        border: 'none',
+                        borderRadius: '6px',
+                        padding: '6px 12px',
+                        fontSize: '0.75rem',
+                        fontWeight: '500',
+                        cursor: !userCode.trim() ? 'not-allowed' : 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px'
+                      }}
+                    >
+                      Run
+                    </button>
+                    <button
+                      onClick={() => {
+                        setUserCode('') // Empty code area - placeholder will show
+                        const outputDiv = document.getElementById('terminal-output')
+                        const aiDiv = document.getElementById('ai-analysis')
+                        if (outputDiv) {
+                          outputDiv.innerHTML = '<pre style="margin: 0; color: #6b7280; font-family: Monaco, monospace;">Click "Run" to execute your code</pre>'
+                        }
+                        if (aiDiv) {
+                          aiDiv.innerHTML = '<div style="color: #6b7280; font-style: italic;">Write some code and run it to get AI analysis</div>'
+                        }
+                        // Clear execution state
+                        setLastExecutionState(null)
+                      }}
+                      style={{
+                        backgroundColor: '#6b7280',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '6px',
+                        padding: '6px 12px',
+                        fontSize: '0.75rem',
+                        fontWeight: '500',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Reset
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Panel - Output & AI */}
+              <div className="playground-right-panel" style={{
+                width: '45%',
+                display: 'flex',
+                flexDirection: 'column',
+                backgroundColor: '#ffffff'
+              }}>
+                {/* Terminal Output */}
+                <div style={{
+                  height: '50%', // Fixed height instead of flex: 1
+                  display: 'flex',
+                  flexDirection: 'column',
+                  borderBottom: '1px solid #e5e7eb'
+                }}>
+                  <div className="playground-output-header" style={{
+                    padding: '8px 16px',
+                    backgroundColor: '#f9fafb',
+                    borderBottom: '1px solid #e5e7eb',
+                    fontSize: '0.8rem',
+                    color: '#374151',
+                    fontWeight: '500'
+                  }}>
+                    Terminal Output
+                  </div>
+                  <div
+                    id="terminal-output"
+                    className="playground-output"
+                    style={{
+                      flex: 1,
+                      padding: '16px',
+                      backgroundColor: '#f8fafc',
+                      color: '#10a37f',
+                      fontFamily: 'Monaco, Consolas, "SF Mono", "Courier New", monospace',
+                      fontSize: '0.875rem',
+                      overflow: 'auto',
+                      height: 'calc(100% - 40px)', // Fixed height minus header
+                      maxWidth: '100%', // Prevent width expansion
+                      wordBreak: 'break-word' // Handle long lines
+                    }}
+                  >
+                    <pre style={{ margin: 0, color: '#6b7280' }}>Click "Run" to execute your code</pre>
+                  </div>
+                </div>
+
+                {/* AI Analysis Panel */}
+                <div style={{
+                  height: '50%', // Fixed height instead of flex: 1
+                  display: 'flex',
+                  flexDirection: 'column'
+                }}>
+                  <div className="playground-ai-header" style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '8px 16px',
+                    backgroundColor: '#f9fafb',
+                    borderBottom: '1px solid #e5e7eb',
+                    fontSize: '0.8rem',
+                    color: '#374151'
+                  }}>
+                    <span style={{ fontWeight: '500' }}>AI Code Analysis</span>
+                    <button
+                      onClick={async () => {
+                        const aiDiv = document.getElementById('ai-analysis')
+                        if (!aiDiv || !lastExecutionState) return
+
+                        const { code, output, hasError } = lastExecutionState
+                        
+                        // Show loading
+                        aiDiv.innerHTML = '<div style="color: #6b7280; font-style: italic;">Analyzing your code...</div>'
+                        
+                        try {
+                          // Simulate AI analysis (replace with actual API call)
+                          await new Promise(resolve => setTimeout(resolve, 1500))
+                          
+                          // Generate analysis based on code and output
+                          let analysis = `**Code Analysis:**\n\n`
+                          
+                          if (hasError) {
+                            analysis += `**Error Analysis:**\n`
+                            analysis += `Your code encountered an error: ${output}\n\n`
+                            analysis += `**Common fixes:**\n`
+                            analysis += `- Check for typos in function names\n`
+                            analysis += `- Ensure parentheses are balanced\n`
+                            analysis += `- Make sure variables are defined\n`
+                            analysis += `- End statements with semicolons\n\n`
+                          } else {
+                            if (code.includes('console.log')) {
+                              analysis += `Great! You're using console.log() to display output.\n\n`
+                              
+                              const logMatches = code.match(/console\.log\([^)]+\)/g)
+                              if (logMatches) {
+                                analysis += `**What your code does:**\n`
+                                logMatches.forEach((match, index) => {
+                                  analysis += `${index + 1}. ${match} - Prints the value to the terminal\n`
+                                })
+                                analysis += `\n`
+                              }
+                            }
+                            
+                            if (output !== 'No output') {
+                              analysis += `**Output Explanation:**\n`
+                              analysis += `Your code successfully executed and produced:\n${output}\n\n`
+                            }
+                          }
+                          
+                          analysis += `**Try Next:**\n`
+                          analysis += `- Experiment with different data types\n`
+                          analysis += `- Try mathematical expressions\n`
+                          analysis += `- Combine strings with variables`
+                          
+                          aiDiv.innerHTML = `<div style="color: #111827; line-height: 1.5; white-space: pre-wrap;">${analysis}</div>`
+                          
+                        } catch (error) {
+                          aiDiv.innerHTML = '<div style="color: #dc2626;">Failed to analyze code. Please try again.</div>'
+                        }
+                      }}
+                      disabled={!lastExecutionState}
+                      style={{
+                        backgroundColor: lastExecutionState ? '#10a37f' : '#e5e7eb',
+                        color: lastExecutionState ? 'white' : '#9ca3af',
+                        border: 'none',
+                        borderRadius: '6px',
+                        padding: '4px 8px',
+                        fontSize: '0.7rem',
+                        fontWeight: '500',
+                        cursor: lastExecutionState ? 'pointer' : 'not-allowed'
+                      }}
+                    >
+                      Explain Code
+                    </button>
+                  </div>
+                  <div
+                    id="ai-analysis"
+                    className="playground-ai-content"
+                    style={{
+                      flex: 1,
+                      padding: '16px',
+                      backgroundColor: '#ffffff',
+                      color: '#111827',
+                      fontSize: '0.8rem',
+                      overflow: 'auto',
+                      lineHeight: '1.5',
+                      height: 'calc(100% - 40px)', // Fixed height minus header
+                      maxWidth: '100%', // Prevent width expansion
+                      wordBreak: 'break-word' // Handle long content
+                    }}
+                  >
+                    <div style={{ color: '#6b7280', fontStyle: 'italic' }}>
+                      Write some code and run it to get AI analysis
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : currentPhase === 'assignment' ? (
+          // Professional Assignment Interface
+          <div style={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            height: '100%',
+            backgroundColor: '#ffffff',
+            color: '#111827',
+            overflow: 'hidden'
+          }}>
+            {/* Main Assignment Area */}
+            <div className="assignment-main-content" style={{
+              flex: 1,
+              display: 'flex',
+              height: 'calc(100vh - 200px)',
+              minHeight: '500px',
+              overflow: 'auto'
+            }}>
+              {/* Left Panel - Assignment Details & Code Editor */}
+              <div className="assignment-left-panel" style={{
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                borderRight: '1px solid #e5e7eb',
+                minWidth: '0'
+              }}>
+                {/* Assignment Header */}
+                <div className="assignment-header" style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '16px 24px',
+                  backgroundColor: '#f7f7f8',
+                  borderBottom: '1px solid #e5e7eb',
+                  fontSize: '1rem',
+                  fontWeight: '600'
+                }}>
+                  <div style={{ color: '#111827' }}>
+                    Assignment {currentAssignmentIndex + 1} of {topic?.tasks?.length || 0}
+                  </div>
+                  <div style={{ 
+                    fontSize: '0.875rem', 
+                    color: '#6b7280',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}>
+                    <span>{topic?.title}</span>
+                  </div>
+                </div>
+
+                {/* Assignment Question */}
+                <div style={{
+                  padding: '20px 24px',
+                  backgroundColor: '#f8fafc',
+                  borderBottom: '1px solid #e5e7eb'
+                }}>
+                  <h3 style={{
+                    margin: '0 0 12px 0',
+                    fontSize: '1.1rem',
+                    fontWeight: '600',
+                    color: '#111827'
+                  }}>
+                    Task:
+                  </h3>
+                  <p style={{
+                    margin: '0 0 16px 0',
+                    fontSize: '0.95rem',
+                    color: '#374151',
+                    lineHeight: '1.5'
+                  }}>
+                    {currentAssignment?.description}
+                  </p>
+                  
+                  {/* Test Cases */}
+                  {currentAssignment?.testCases && currentAssignment.testCases.length > 0 && (
+                    <div>
+                      <h4 style={{
+                        margin: '0 0 8px 0',
+                        fontSize: '0.9rem',
+                        fontWeight: '600',
+                        color: '#374151'
+                      }}>
+                        Expected Output:
+                      </h4>
+                      {currentAssignment.testCases.map((testCase, index) => (
+                        <div key={index} style={{
+                          padding: '8px 12px',
+                          backgroundColor: '#ffffff',
+                          border: '1px solid #e5e7eb',
+                          borderRadius: '6px',
+                          marginBottom: '8px',
+                          fontFamily: 'Monaco, Consolas, "SF Mono", "Courier New", monospace',
+                          fontSize: '0.85rem',
+                          color: '#10a37f'
+                        }}>
+                          {testCase.expectedOutput}
                         </div>
                       ))}
                     </div>
                   )}
                 </div>
-              </div>
 
-              {/* Code Quality Checklist */}
-              <div style={styles.feedbackSection}>
-                <h3 style={styles.sectionTitle}>✅ Code Quality</h3>
+                {/* Code Editor */}
                 <div style={{
-                  ...styles.checklist,
-                  gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)'
+                  flex: 1,
+                  display: 'flex',
+                  flexDirection: 'column'
                 }}>
-                  {[
-                    { key: 'codeReadability', label: 'Code Readability' },
-                    { key: 'usesConstOverLet', label: 'Uses const over let' },
-                    { key: 'meaningfulNames', label: 'Meaningful variable names' },
-                    { key: 'noRedundantCode', label: 'No redundant code' },
-                    { key: 'properIndentation', label: 'Proper indentation' },
-                    { key: 'followsConventions', label: 'Follows conventions' },
-                    { key: 'optimalSolution', label: 'Optimal solution' }
-                  ].map(item => (
-                    <div key={item.key} style={styles.checklistItem}>
-                      <span style={{
-                        ...styles.checkIcon,
-                        color: feedback.codeQuality[item.key] ? '#10a37f' : '#ef4444'
-                      }}>
-                        {feedback.codeQuality[item.key] ? '✓' : '✗'}
-                      </span>
-                      <span>{item.label}</span>
+                  {/* Editor Header */}
+                  <div className="assignment-editor-header" style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '8px 16px',
+                    backgroundColor: '#f9fafb',
+                    borderBottom: '1px solid #e5e7eb',
+                    fontSize: '0.8rem',
+                    color: '#6b7280'
+                  }}>
+                    <div style={{
+                      padding: '4px 12px',
+                      backgroundColor: '#ffffff',
+                      borderRadius: '4px 4px 0 0',
+                      borderBottom: '2px solid #10a37f',
+                      color: '#111827',
+                      fontWeight: '500'
+                    }}>
+                      solution.js
                     </div>
-                  ))}
+                  </div>
+
+                  {/* Code Editor Area */}
+                  <div style={{
+                    flex: 1,
+                    display: 'flex',
+                    backgroundColor: '#ffffff',
+                    overflow: 'hidden'
+                  }}>
+                    {/* Line Numbers */}
+                    <div className="assignment-line-numbers" style={{
+                      width: '50px',
+                      backgroundColor: '#f9fafb',
+                      borderRight: '1px solid #e5e7eb',
+                      padding: '16px 8px',
+                      fontSize: '0.8rem',
+                      color: '#9ca3af',
+                      fontFamily: 'Monaco, Consolas, "SF Mono", "Courier New", monospace',
+                      lineHeight: '1.4',
+                      textAlign: 'right',
+                      userSelect: 'none',
+                      overflow: 'hidden'
+                    }}>
+                      {userCode.split('\n').map((_, index) => (
+                        <div key={index} style={{ height: '19.6px' }}>
+                          {index + 1}
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Code Input */}
+                    <textarea
+                      className="assignment-textarea"
+                      value={userCode}
+                      onChange={(e) => setUserCode(e.target.value)}
+                      placeholder="// Write your solution here..."
+                      style={{
+                        flex: 1,
+                        border: 'none',
+                        outline: 'none',
+                        resize: 'none',
+                        padding: '16px',
+                        backgroundColor: '#ffffff',
+                        color: '#111827',
+                        fontSize: '0.875rem',
+                        fontFamily: 'Monaco, Consolas, "SF Mono", "Courier New", monospace',
+                        lineHeight: '1.4',
+                        whiteSpace: 'pre',
+                        overflowWrap: 'normal',
+                        overflowX: 'auto',
+                        overflowY: 'auto',
+                        tabSize: 2
+                      }}
+                      spellCheck={false}
+                    />
+                  </div>
+
+                  {/* Editor Footer with Actions */}
+                  <div className="assignment-footer" style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '8px 16px',
+                    backgroundColor: '#f9fafb',
+                    borderTop: '1px solid #e5e7eb',
+                    fontSize: '0.75rem',
+                    color: '#6b7280'
+                  }}>
+                    <div style={{ display: 'flex', gap: '12px' }}>
+                      <span>JavaScript</span>
+                      <span>UTF-8</span>
+                      <span>LF</span>
+                    </div>
+                    <div className="assignment-footer-actions" style={{ display: 'flex', gap: '8px' }}>
+                      <button
+                        onClick={() => {
+                          // Execute code and show output
+                          const outputDiv = document.getElementById('assignment-output')
+                          if (!outputDiv) return
+
+                          try {
+                            const outputs = []
+                            const originalConsoleLog = console.log
+                            console.log = (...args) => {
+                              outputs.push(args.map(arg => String(arg)).join(' '))
+                            }
+                            
+                            try {
+                              eval(userCode)
+                              console.log = originalConsoleLog
+                              
+                              const outputText = outputs.length > 0 ? outputs.join('\n') : 'No output'
+                              outputDiv.innerHTML = `<pre style="margin: 0; color: #10a37f; font-family: Monaco, monospace; line-height: 1.4; white-space: pre-wrap; word-break: break-word;">${outputText}</pre>`
+                              
+                              // Store execution state
+                              setLastExecutionState({
+                                code: userCode,
+                                output: outputText,
+                                hasError: false
+                              })
+                              
+                            } catch (executionError) {
+                              console.log = originalConsoleLog
+                              
+                              let errorMessage = `${executionError.name}: ${executionError.message}`
+                              outputDiv.innerHTML = `<pre style="margin: 0; color: #dc2626; font-family: Monaco, monospace; line-height: 1.4; white-space: pre-wrap; word-break: break-word;">${errorMessage}</pre>`
+                              
+                              setLastExecutionState({
+                                code: userCode,
+                                output: errorMessage,
+                                hasError: true
+                              })
+                            }
+                            
+                          } catch (generalError) {
+                            outputDiv.innerHTML = `<pre style="margin: 0; color: #dc2626; font-family: Monaco, monospace;">Unexpected error: ${generalError.message}</pre>`
+                            setLastExecutionState({
+                              code: userCode,
+                              output: `Unexpected error: ${generalError.message}`,
+                              hasError: true
+                            })
+                          }
+                        }}
+                        disabled={!userCode.trim()}
+                        style={{
+                          backgroundColor: !userCode.trim() ? '#e5e7eb' : '#10a37f',
+                          color: !userCode.trim() ? '#9ca3af' : 'white',
+                          border: 'none',
+                          borderRadius: '6px',
+                          padding: '6px 12px',
+                          fontSize: '0.75rem',
+                          fontWeight: '500',
+                          cursor: !userCode.trim() ? 'not-allowed' : 'pointer'
+                        }}
+                      >
+                        Run
+                      </button>
+                      <button
+                        onClick={async () => {
+                          if (!userCode.trim() || !currentAssignment) return
+                          
+                          // Run tests and submit assignment
+                          const outputDiv = document.getElementById('assignment-output')
+                          const reviewDiv = document.getElementById('assignment-review')
+                          
+                          // Execute code and validate against test cases
+                          try {
+                            const outputs = []
+                            const originalConsoleLog = console.log
+                            console.log = (...args) => {
+                              outputs.push(args.map(arg => String(arg)).join(' '))
+                            }
+                            
+                            eval(userCode)
+                            console.log = originalConsoleLog
+                            
+                            const userOutput = outputs.join('\n')
+                            const testResults = currentAssignment.testCases.map(testCase => ({
+                              expected: testCase.expectedOutput,
+                              actual: userOutput,
+                              passed: userOutput === testCase.expectedOutput
+                            }))
+                            
+                            const allPassed = testResults.every(result => result.passed)
+                            setTestResults(testResults)
+                            setAssignmentSubmitted(true)
+                            
+                            // Show test results in output
+                            if (outputDiv) {
+                              const resultColor = allPassed ? '#10a37f' : '#dc2626'
+                              outputDiv.innerHTML = `<pre style="margin: 0; color: ${resultColor}; font-family: Monaco, monospace; line-height: 1.4;">Output: ${userOutput}\n\nTest Result: ${allPassed ? 'PASSED ✓' : 'FAILED ✗'}</pre>`
+                            }
+                            
+                            // Generate AI review
+                            if (reviewDiv) {
+                              reviewDiv.innerHTML = '<div style="color: #6b7280; font-style: italic;">Generating code review...</div>'
+                              
+                              setTimeout(() => {
+                                let review = `**Code Review:**\n\n`
+                                
+                                if (allPassed) {
+                                  review += `🎉 **Excellent work!** Your solution passes all test cases.\n\n`
+                                  review += `**What you did well:**\n`
+                                  review += `- Correct logic implementation\n`
+                                  review += `- Proper syntax usage\n`
+                                  review += `- Expected output achieved\n\n`
+                                  review += `**Professional Tips:**\n`
+                                  review += `- Consider code readability\n`
+                                  review += `- Think about edge cases\n`
+                                  review += `- Practice different approaches\n\n`
+                                  review += `Ready for the next challenge!`
+                                } else {
+                                  review += `**Almost there!** Let's improve your solution.\n\n`
+                                  review += `**Issues found:**\n`
+                                  testResults.forEach((result, index) => {
+                                    if (!result.passed) {
+                                      review += `- Expected: "${result.expected}", Got: "${result.actual}"\n`
+                                    }
+                                  })
+                                  review += `\n**Suggestions:**\n`
+                                  review += `- Check your console.log statement\n`
+                                  review += `- Verify the exact output format\n`
+                                  review += `- Test with the expected values\n\n`
+                                  review += `Try again - you're on the right track!`
+                                }
+                                
+                                reviewDiv.innerHTML = `<div style="color: #111827; line-height: 1.5; white-space: pre-wrap;">${review}</div>`
+                              }, 1000)
+                            }
+                            
+                          } catch (error) {
+                            setTestResults([{ passed: false, error: error.message }])
+                            setAssignmentSubmitted(true)
+                            
+                            if (outputDiv) {
+                              outputDiv.innerHTML = `<pre style="margin: 0; color: #dc2626; font-family: Monaco, monospace;">Error: ${error.message}\n\nTest Result: FAILED ✗</pre>`
+                            }
+                            
+                            if (reviewDiv) {
+                              reviewDiv.innerHTML = `<div style="color: #111827; line-height: 1.5;">**Code Review:**\n\nThere's a syntax or runtime error in your code. Please fix the error and try again.\n\n**Error:** ${error.message}</div>`
+                            }
+                          }
+                        }}
+                        disabled={!userCode.trim()}
+                        style={{
+                          backgroundColor: !userCode.trim() ? '#e5e7eb' : '#f59e0b',
+                          color: !userCode.trim() ? '#9ca3af' : 'white',
+                          border: 'none',
+                          borderRadius: '6px',
+                          padding: '6px 12px',
+                          fontSize: '0.75rem',
+                          fontWeight: '500',
+                          cursor: !userCode.trim() ? 'not-allowed' : 'pointer'
+                        }}
+                      >
+                        Submit
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {/* AI Review */}
-              <div style={styles.feedbackSection}>
-                <h3 style={styles.sectionTitle}>💬 Review</h3>
-                <p style={styles.reviewText}>{feedback.review}</p>
-
-                {feedback.suggestions?.length > 0 && (
-                  <div style={styles.suggestions}>
-                    <span style={styles.suggestionsTitle}>Suggestions:</span>
-                    <ul style={styles.suggestionsList}>
-                      {feedback.suggestions.map((s, i) => (
-                        <li key={i}>{s}</li>
-                      ))}
-                    </ul>
+              {/* Right Panel - Output & Review */}
+              <div className="assignment-right-panel" style={{
+                width: '45%',
+                display: 'flex',
+                flexDirection: 'column',
+                backgroundColor: '#ffffff'
+              }}>
+                {/* Output Panel */}
+                <div style={{
+                  height: '50%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  borderBottom: '1px solid #e5e7eb'
+                }}>
+                  <div className="assignment-output-header" style={{
+                    padding: '8px 16px',
+                    backgroundColor: '#f9fafb',
+                    borderBottom: '1px solid #e5e7eb',
+                    fontSize: '0.8rem',
+                    color: '#374151',
+                    fontWeight: '500'
+                  }}>
+                    Test Output
                   </div>
-                )}
+                  <div
+                    id="assignment-output"
+                    className="assignment-output"
+                    style={{
+                      flex: 1,
+                      padding: '16px',
+                      backgroundColor: '#f8fafc',
+                      color: '#10a37f',
+                      fontFamily: 'Monaco, Consolas, "SF Mono", "Courier New", monospace',
+                      fontSize: '0.875rem',
+                      overflow: 'auto',
+                      height: 'calc(100% - 40px)',
+                      maxWidth: '100%',
+                      wordBreak: 'break-word'
+                    }}
+                  >
+                    <pre style={{ margin: 0, color: '#6b7280' }}>Click "Run" to test your code</pre>
+                  </div>
+                </div>
+
+                {/* Review Panel */}
+                <div style={{
+                  height: '50%',
+                  display: 'flex',
+                  flexDirection: 'column'
+                }}>
+                  <div className="assignment-review-header" style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '8px 16px',
+                    backgroundColor: '#f9fafb',
+                    borderBottom: '1px solid #e5e7eb',
+                    fontSize: '0.8rem',
+                    color: '#374151'
+                  }}>
+                    <span style={{ fontWeight: '500' }}>Code Review & Feedback</span>
+                    {assignmentSubmitted && testResults && testResults.every(r => r.passed) && (
+                      <button
+                        onClick={() => {
+                          const nextIndex = currentAssignmentIndex + 1
+                          if (nextIndex < (topic?.tasks?.length || 0)) {
+                            // Move to next assignment
+                            setCurrentAssignmentIndex(nextIndex)
+                            setCurrentAssignment(topic.tasks[nextIndex])
+                            setUserCode('')
+                            setAssignmentSubmitted(false)
+                            setAssignmentFeedback(null)
+                            setTestResults(null)
+                            setLastExecutionState(null)
+                            
+                            // Clear output and review
+                            const outputDiv = document.getElementById('assignment-output')
+                            const reviewDiv = document.getElementById('assignment-review')
+                            if (outputDiv) {
+                              outputDiv.innerHTML = '<pre style="margin: 0; color: #6b7280; font-family: Monaco, monospace;">Click "Run" to test your code</pre>'
+                            }
+                            if (reviewDiv) {
+                              reviewDiv.innerHTML = '<div style="color: #6b7280; font-style: italic;">Submit your code to get feedback</div>'
+                            }
+                          } else {
+                            // All assignments completed - mark topic as completed
+                            setPhaseProgress(prev => ({
+                              ...prev,
+                              assignment: true,
+                              feedback: true // Since we combined them
+                            }))
+                            // Could navigate to next topic or show completion message
+                            alert('🎉 All assignments completed! Topic mastered!')
+                          }
+                        }}
+                        style={{
+                          backgroundColor: '#10a37f',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '6px',
+                          padding: '4px 8px',
+                          fontSize: '0.7rem',
+                          fontWeight: '500',
+                          cursor: 'pointer'
+                        }}
+                      >
+                        {currentAssignmentIndex + 1 < (topic?.tasks?.length || 0) ? 'Next Assignment' : 'Complete Topic'}
+                      </button>
+                    )}
+                  </div>
+                  <div
+                    id="assignment-review"
+                    className="assignment-review"
+                    style={{
+                      flex: 1,
+                      padding: '16px',
+                      backgroundColor: '#ffffff',
+                      color: '#111827',
+                      fontSize: '0.8rem',
+                      overflow: 'auto',
+                      lineHeight: '1.5',
+                      height: 'calc(100% - 40px)',
+                      maxWidth: '100%',
+                      wordBreak: 'break-word'
+                    }}
+                  >
+                    <div style={{ color: '#6b7280', fontStyle: 'italic' }}>
+                      Submit your code to get feedback
+                    </div>
+                  </div>
+                </div>
               </div>
+            </div>
+          </div>
+        ) : (
+          // Regular Learning Interface (Session/Feedback)
+          <>
+        {!sessionStarted ? (
+          // Topic Overview - Only show if no existing history
+          <div style={{
+            backgroundColor: '#ffffff',
+            border: '1px solid #e5e7eb',
+            borderRadius: '12px',
+            padding: '32px',
+            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+            maxWidth: '800px',
+            margin: '0 auto'
+          }}>
+            <h3 style={{
+              fontSize: '1.5rem',
+              fontWeight: '700',
+              color: '#111827',
+              marginBottom: '16px'
+            }}>
+              {topic.title}
+            </h3>
 
-              <button onClick={continueToNext} style={styles.continueBtn}>
-                {currentAssignment + 1 < totalAssignments
-                  ? 'Continue to Next Assignment →'
-                  : 'Complete Lesson 🎉'}
-              </button>
-            </>
-          )}
-        </div>
-      )}
+            <div style={{ marginBottom: '24px' }}>
+              <h4 style={{
+                fontSize: '1.125rem',
+                fontWeight: '600',
+                color: '#111827',
+                marginBottom: '12px'
+              }}>
+                Learning Objectives:
+              </h4>
+              <ul style={{ paddingLeft: '20px', color: '#6b7280' }}>
+                {topic.outcomes?.map((outcome, index) => (
+                  <li key={index} style={{ marginBottom: '8px' }}>
+                    {outcome}
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-      {/* COMPLETED PHASE */}
-      {phase === PHASES.COMPLETED && (
-        <div style={styles.completedContainer}>
-          <div style={styles.completedContent}>
-            <span style={styles.completedEmoji}>🎉</span>
-            <h2 style={styles.completedTitle}>Congratulations!</h2>
-            <p style={styles.completedText}>
-              You've completed all assignments for "{subtopic.title}"
-            </p>
-            <button onClick={() => navigate('/dashboard')} style={styles.backToDashboardBtn}>
-              Back to Dashboard
+            <div style={{
+              backgroundColor: '#f0f9ff',
+              border: '1px solid #bae6fd',
+              borderRadius: '8px',
+              padding: '16px',
+              marginBottom: '24px'
+            }}>
+              <p style={{
+                color: '#0c4a6e',
+                margin: 0,
+                fontSize: '0.875rem'
+              }}>
+                💡 Ready to start your personalized learning session with Sara?
+                This topic contains {topic.tasks?.length || 0} practice tasks that we'll work through together.
+              </p>
+            </div>
+
+            {chatError && (
+              <div style={{
+                backgroundColor: '#fef2f2',
+                border: '1px solid #fecaca',
+                borderRadius: '8px',
+                padding: '16px',
+                marginBottom: '24px'
+              }}>
+                <p style={{
+                  color: '#dc2626',
+                  margin: 0,
+                  fontSize: '0.875rem'
+                }}>
+                  ❌ {chatError}
+                </p>
+              </div>
+            )}
+
+            <button
+              onClick={startSession}
+              disabled={isTyping || !historyChecked}
+              style={{
+                padding: '16px 32px',
+                backgroundColor: isTyping ? '#9ca3af' : '#10a37f',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: isTyping ? 'not-allowed' : 'pointer',
+                fontSize: '1.1rem',
+                fontWeight: '600',
+                width: '100%',
+                transition: 'background-color 0.2s',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px'
+              }}
+            >
+              {isTyping ? (
+                <>
+                  <div style={{
+                    width: '16px',
+                    height: '16px',
+                    border: '2px solid #ffffff',
+                    borderTop: '2px solid transparent',
+                    borderRadius: '50%',
+                    animation: 'spin 1s linear infinite'
+                  }}></div>
+                  Starting Session...
+                </>
+              ) : (
+                <>
+                  🚀 Continue Learning with Sara
+                </>
+              )}
             </button>
           </div>
-        </div>
-      )}
+        ) : (
+          // Chat Interface - Full Screen (NO CONTAINER)
+          <>
+            {/* Chat Messages - Full Screen */}
+            <div className="chat-messages" style={{
+              flex: 1,
+              overflowY: 'auto',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '12px',
+              padding: '24px 32px',
+              backgroundColor: '#ffffff',
+              WebkitOverflowScrolling: 'touch'
+            }}>
+              {messages.map((message, index) => (
+                <div key={index} style={{
+                  display: 'flex',
+                  justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start',
+                  width: '100%',
+                  maxWidth: '1000px',
+                  margin: '0 auto'
+                }}>
+                  <div className={`message-bubble ${message.role === 'user' ? 'user-message' : ''}`} style={{
+                    maxWidth: message.role === 'user' ? '70%' : '85%',
+                    padding: '12px 16px',
+                    borderRadius: message.role === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
+                    backgroundColor: message.role === 'user' ? '#10a37f' : '#f8f9fa',
+                    border: message.role === 'assistant' ? '1px solid #e9ecef' : 'none',
+                    color: message.role === 'user' ? 'white' : '#212529',
+                    fontSize: '0.95rem',
+                    lineHeight: '1.5',
+                    boxShadow: message.role === 'user' ? '0 2px 6px rgba(16, 163, 127, 0.2)' : '0 1px 3px rgba(0, 0, 0, 0.1)',
+                    position: 'relative',
+                    wordBreak: 'break-word'
+                  }}>
+                    {message.role === 'assistant' && (
+                      <div style={{
+                        fontSize: '0.75rem',
+                        opacity: 0.7,
+                        marginBottom: '4px',
+                        fontWeight: '600',
+                        color: '#10a37f'
+                      }}>
+                        Sara
+                      </div>
+                    )}
+                    <MessageContent content={message.content} role={message.role} />
+                  </div>
+                </div>
+              ))}
+
+              {isTyping && (
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'flex-start',
+                  width: '100%',
+                  maxWidth: '1000px',
+                  margin: '0 auto'
+                }}>
+                  <div style={{
+                    maxWidth: '85%',
+                    padding: '12px 16px',
+                    borderRadius: '16px 16px 16px 4px',
+                    backgroundColor: '#f8f9fa',
+                    border: '1px solid #e9ecef',
+                    color: '#212529',
+                    fontSize: '0.95rem',
+                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+                  }}>
+                    <div style={{
+                      fontSize: '0.75rem',
+                      opacity: 0.7,
+                      marginBottom: '4px',
+                      fontWeight: '600',
+                      color: '#10a37f'
+                    }}>
+                      Sara
+                    </div>
+                    <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                      <div style={{ width: '8px', height: '8px', backgroundColor: '#10a37f', borderRadius: '50%', animation: 'pulse 1.5s infinite' }}></div>
+                      <div style={{ width: '8px', height: '8px', backgroundColor: '#10a37f', borderRadius: '50%', animation: 'pulse 1.5s infinite 0.2s' }}></div>
+                      <div style={{ width: '8px', height: '8px', backgroundColor: '#10a37f', borderRadius: '50%', animation: 'pulse 1.5s infinite 0.4s' }}></div>
+                      <span style={{ marginLeft: '8px', fontSize: '0.9rem', color: '#6c757d' }}>Sara is thinking...</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Chat Error */}
+            {chatError && (
+              <div style={{
+                padding: '16px 32px',
+                backgroundColor: '#fef2f2',
+                borderTop: '1px solid #fecaca',
+                color: '#dc2626',
+                fontSize: '1rem',
+                textAlign: 'center'
+              }}>
+                ❌ {chatError}
+              </div>
+            )}
+
+            {/* Chat Input - Full Width */}
+            <div className="chat-input-container" style={{
+              padding: '16px 32px 24px',
+              borderTop: '1px solid #e5e7eb',
+              backgroundColor: '#ffffff',
+              flexShrink: 0
+            }}>
+              <div style={{
+                display: 'flex',
+                gap: '16px',
+                alignItems: 'flex-end',
+                maxWidth: '1000px',
+                margin: '0 auto',
+                width: '100%'
+              }}>
+                <textarea
+                  ref={inputRef}
+                  value={currentMessage}
+                  onChange={(e) => setCurrentMessage(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder="Type your message"
+                  disabled={isTyping}
+                  className="chat-input"
+                  style={{
+                    flex: 1,
+                    padding: '12px 16px',
+                    border: '2px solid #e5e7eb',
+                    borderRadius: '10px',
+                    fontSize: '0.95rem',
+                    fontFamily: 'inherit',
+                    resize: 'none',
+                    minHeight: '44px',
+                    maxHeight: '120px',
+                    backgroundColor: isTyping ? '#f9fafb' : 'white',
+                    color: isTyping ? '#9ca3af' : '#111827',
+                    outline: 'none',
+                    transition: 'border-color 0.2s',
+                    borderColor: currentMessage.trim() ? '#10a37f' : '#e5e7eb'
+                  }}
+                  rows="1"
+                />
+                <button
+                  onClick={sendMessage}
+                  disabled={!currentMessage.trim() || isTyping}
+                  className="send-button"
+                  style={{
+                    padding: '12px 20px',
+                    backgroundColor: (!currentMessage.trim() || isTyping) ? '#d1d5db' : '#10a37f',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '10px',
+                    cursor: (!currentMessage.trim() || isTyping) ? 'not-allowed' : 'pointer',
+                    fontSize: '0.95rem',
+                    fontWeight: '600',
+                    transition: 'all 0.2s',
+                    minWidth: '80px',
+                    height: '44px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: (!currentMessage.trim() || isTyping) ? 'none' : '0 1px 4px rgba(16, 163, 127, 0.3)'
+                  }}
+                >
+                  Send
+                </button>
+              </div>
+            </div>
+          </>
+        )}
+        </>
+        )}
+      </main>
+
+      {/* CSS Animations and Mobile Styles */}
+      <style>{`
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        
+        /* Code Playground & Assignment Responsive Styles */
+        @media (max-width: 768px) {
+          /* Mobile: Stack panels vertically */
+          .playground-main-content,
+          .assignment-main-content {
+            flex-direction: column !important;
+            height: auto !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+          }
+          
+          .playground-left-panel,
+          .assignment-left-panel {
+            border-right: none !important;
+            border-bottom: 1px solid #e5e7eb !important;
+            min-height: 300px !important;
+          }
+          
+          .playground-right-panel,
+          .assignment-right-panel {
+            width: 100% !important;
+            min-height: 400px !important;
+            max-height: 500px !important;
+          }
+          
+          .playground-right-panel > div,
+          .assignment-right-panel > div {
+            height: 50% !important;
+            max-height: 250px !important;
+          }
+          
+          /* Enable scrolling to access all sections on mobile */
+          .playground-main-content,
+          .assignment-main-content {
+            max-height: calc(100vh - 100px) !important;
+            overflow-y: auto !important;
+            scroll-behavior: smooth !important;
+            -webkit-overflow-scrolling: touch !important;
+          }
+          
+          .playground-header,
+          .assignment-header {
+            padding: 8px 12px !important;
+            font-size: 0.8rem !important;
+          }
+          
+          .playground-editor-header,
+          .assignment-editor-header {
+            padding: 6px 12px !important;
+          }
+          
+          .playground-line-numbers,
+          .assignment-line-numbers {
+            width: 40px !important;
+            padding: 12px 4px !important;
+            font-size: 0.7rem !important;
+          }
+          
+          .playground-textarea,
+          .assignment-textarea {
+            padding: 12px !important;
+            font-size: 0.8rem !important;
+          }
+          
+          .playground-footer,
+          .assignment-footer {
+            padding: 6px 12px !important;
+            font-size: 0.7rem !important;
+          }
+          
+          .playground-footer button,
+          .assignment-footer button {
+            padding: 4px 8px !important;
+            font-size: 0.7rem !important;
+          }
+          
+          .playground-output-header,
+          .playground-ai-header,
+          .assignment-output-header,
+          .assignment-review-header {
+            padding: 6px 12px !important;
+            font-size: 0.75rem !important;
+          }
+          
+          .playground-output,
+          .playground-ai-content,
+          .assignment-output,
+          .assignment-review {
+            padding: 12px !important;
+            font-size: 0.8rem !important;
+            min-height: 120px !important;
+            max-height: 200px !important;
+            overflow-y: auto !important;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          /* Small mobile adjustments */
+          .playground-header {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 8px !important;
+          }
+          
+          .playground-header-dots {
+            align-self: center !important;
+          }
+          
+          .playground-line-numbers {
+            width: 35px !important;
+            font-size: 0.65rem !important;
+          }
+          
+          .playground-textarea {
+            font-size: 0.75rem !important;
+          }
+          
+          .playground-footer {
+            flex-direction: column !important;
+            gap: 8px !important;
+            align-items: flex-start !important;
+          }
+          
+          .playground-footer-actions {
+            display: flex !important;
+            gap: 6px !important;
+            width: 100% !important;
+            justify-content: space-between !important;
+          }
+          
+          /* Enable smooth scrolling for small screens */
+          .playground-main-content,
+          .assignment-main-content {
+            scroll-behavior: smooth !important;
+            -webkit-overflow-scrolling: touch !important;
+          }
+          
+          /* Ensure sections are accessible via scroll */
+          .playground-left-panel,
+          .playground-right-panel,
+          .assignment-left-panel,
+          .assignment-right-panel {
+            scroll-margin-top: 20px !important;
+          }
+        }
+        @keyframes pulse {
+          0%, 100% { opacity: 0.4; }
+          50% { opacity: 1; }
+        }
+        
+        /* Mobile-specific styles */
+        @media (max-width: 768px) {
+          /* Chat container padding */
+          .chat-messages {
+            padding: 16px !important;
+            gap: 16px !important;
+          }
+          
+          /* Code blocks - horizontal scroll like ChatGPT */
+          .code-block {
+            font-size: 0.8rem !important;
+            padding: 14px !important;
+            margin: 10px 0 !important;
+            border-radius: 6px !important;
+          }
+          
+          .code-block pre {
+            font-size: 0.8rem !important;
+            line-height: 1.3 !important;
+          }
+          
+          /* Message bubbles - larger on mobile for touch */
+          .message-bubble {
+            max-width: 95% !important;
+            padding: 16px 18px !important;
+            font-size: 1rem !important;
+            line-height: 1.6 !important;
+          }
+          
+          .user-message {
+            max-width: 85% !important;
+          }
+          
+          /* Input area */
+          .chat-input {
+            padding: 12px 16px !important;
+            font-size: 1rem !important;
+            min-height: 44px !important;
+          }
+          
+          .send-button {
+            padding: 12px 18px !important;
+            min-width: 70px !important;
+            height: 44px !important;
+            font-size: 0.9rem !important;
+          }
+          
+          /* Chat input container */
+          .chat-input-container {
+            padding: 16px 16px 24px !important;
+            gap: 12px !important;
+          }
+        }
+      `}</style>
     </div>
   )
 }
 
-const styles = {
-  container: {
-    height: '100vh',
-    display: 'flex',
-    flexDirection: 'column',
-    background: '#fafafa'
-  },
-
-  // Error Banner
-  errorBanner: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: '12px 16px',
-    background: '#fef2f2',
-    borderBottom: '1px solid #fecaca',
-    color: '#dc2626'
-  },
-  retryButton: {
-    padding: '6px 16px',
-    background: '#dc2626',
-    border: 'none',
-    borderRadius: 6,
-    color: 'white',
-    fontSize: '0.85rem',
-    fontWeight: 500,
-    cursor: 'pointer'
-  },
-
-  // Header
-  header: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: '12px 16px',
-    background: 'white',
-    borderBottom: '1px solid #e5e7eb',
-    flexShrink: 0
-  },
-  backBtn: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 6,
-    padding: '8px 12px',
-    background: '#f3f4f6',
-    border: 'none',
-    borderRadius: 8,
-    color: '#374151',
-    fontSize: '0.875rem',
-    fontWeight: 500,
-    cursor: 'pointer'
-  },
-  headerCenter: {
-    textAlign: 'center'
-  },
-  headerTitle: {
-    display: 'block',
-    fontSize: '1rem',
-    fontWeight: 600,
-    color: '#111'
-  },
-  phaseIndicator: {
-    display: 'flex',
-    gap: 8,
-    marginTop: 8,
-    justifyContent: 'center'
-  },
-  phaseDot: {
-    width: 24,
-    height: 24,
-    borderRadius: '50%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: '0.7rem',
-    fontWeight: 600,
-    color: 'white'
-  },
-  phaseLabel: {
-    fontSize: '0.875rem',
-    fontWeight: 500,
-    color: '#6b7280'
-  },
-  headerActions: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 12
-  },
-
-  // Session Phase
-  sessionContainer: {
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    overflow: 'hidden'
-  },
-
-  messagesArea: {
-    flex: 1,
-    overflow: 'auto',
-    padding: 20,
-    maxWidth: 800,
-    margin: '0 auto',
-    width: '100%'
-  },
-  messageRow: {
-    display: 'flex',
-    gap: 12,
-    marginBottom: 16
-  },
-  avatar: {
-    width: 36,
-    height: 36,
-    borderRadius: '50%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: '0.875rem',
-    fontWeight: 600,
-    flexShrink: 0
-  },
-  messageContent: {
-    flex: 1
-  },
-  messageRole: {
-    display: 'block',
-    fontSize: '0.85rem',
-    fontWeight: 600,
-    marginBottom: 4,
-    color: '#111'
-  },
-  messageText: {
-    fontSize: '0.925rem',
-    lineHeight: 1.6,
-    color: '#374151'
-  },
-  typingDots: {
-    display: 'flex',
-    gap: 4,
-    padding: '8px 0'
-  },
-  transitionBanner: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 16,
-    padding: 16,
-    background: '#d1fae5',
-    borderTop: '1px solid #a7f3d0'
-  },
-  transitionBtn: {
-    padding: '10px 24px',
-    background: '#10a37f',
-    border: 'none',
-    borderRadius: 8,
-    color: 'white',
-    fontSize: '0.9rem',
-    fontWeight: 600,
-    cursor: 'pointer'
-  },
-  inputForm: {
-    display: 'flex',
-    gap: 8,
-    padding: 16,
-    background: 'white',
-    borderTop: '1px solid #e5e7eb',
-    maxWidth: 800,
-    margin: '0 auto',
-    width: '100%'
-  },
-  textInput: {
-    flex: 1,
-    padding: '12px 16px',
-    border: '1px solid #e5e7eb',
-    borderRadius: 12,
-    fontSize: '0.925rem',
-    resize: 'none',
-    outline: 'none',
-    fontFamily: 'inherit'
-  },
-  sendBtn: {
-    padding: '12px 16px',
-    background: '#10a37f',
-    border: 'none',
-    borderRadius: 12,
-    color: 'white',
-    cursor: 'pointer'
-  },
-
-  // Mobile Toggle
-  mobileToggle: {
-    display: 'flex',
-    padding: 8,
-    gap: 8,
-    background: 'white',
-    borderBottom: '1px solid #e5e7eb'
-  },
-  mobileToggleBtn: {
-    flex: 1,
-    padding: '10px 16px',
-    border: 'none',
-    borderRadius: 8,
-    fontSize: '0.9rem',
-    fontWeight: 500,
-    cursor: 'pointer'
-  },
-
-  // PlayTime Phase
-  playtimeContainer: {
-    flex: 1,
-    display: 'flex',
-    overflow: 'hidden'
-  },
-  playtimeLeft: {
-    flex: 1,
-    padding: 16,
-    overflow: 'hidden',
-    display: 'flex'
-  },
-  playtimeRight: {
-    width: 360,
-    borderLeft: '1px solid #e5e7eb',
-    display: 'flex',
-    flexDirection: 'column',
-    background: 'white',
-    position: 'relative'
-  },
-  playtimeHeader: {
-    padding: '12px 16px',
-    borderBottom: '1px solid #e5e7eb',
-    fontSize: '0.9rem',
-    fontWeight: 600,
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center'
-  },
-  notesToggleBtn: {
-    padding: '4px 10px',
-    border: '1px solid #e5e7eb',
-    borderRadius: 6,
-    fontSize: '0.75rem',
-    cursor: 'pointer',
-    color: '#374151',
-    transition: 'all 0.2s'
-  },
-  notesPanel: {
-    position: 'absolute',
-    top: 48,
-    left: 0,
-    right: 0,
-    bottom: 120,
-    background: 'white',
-    borderBottom: '1px solid #e5e7eb',
-    zIndex: 10,
-    display: 'flex',
-    flexDirection: 'column'
-  },
-  notesPanelHeader: {
-    padding: '10px 16px',
-    borderBottom: '1px solid #e5e7eb',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    fontWeight: 600,
-    fontSize: '0.85rem'
-  },
-  notesPanelClose: {
-    background: 'none',
-    border: 'none',
-    fontSize: '1.2rem',
-    cursor: 'pointer',
-    color: '#6b7280'
-  },
-  notesPanelContent: {
-    flex: 1,
-    overflow: 'auto',
-    padding: '16px',
-    fontSize: '0.85rem',
-    lineHeight: 1.6
-  },
-  notesLoading: {
-    color: '#6b7280',
-    fontStyle: 'italic'
-  },
-  noNotes: {
-    color: '#6b7280',
-    fontStyle: 'italic'
-  },
-  playtimeMessages: {
-    flex: 1,
-    overflow: 'auto',
-    padding: 12,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 8
-  },
-  playtimeMessage: {
-    padding: '10px 14px',
-    borderRadius: 12,
-    maxWidth: '85%',
-    fontSize: '0.875rem',
-    lineHeight: 1.5
-  },
-  playtimeInputForm: {
-    display: 'flex',
-    gap: 8,
-    padding: 12,
-    borderTop: '1px solid #e5e7eb'
-  },
-  playtimeInput: {
-    flex: 1,
-    padding: '10px 14px',
-    border: '1px solid #e5e7eb',
-    borderRadius: 20,
-    fontSize: '0.875rem',
-    outline: 'none'
-  },
-  playtimeSendBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: '50%',
-    background: '#10a37f',
-    border: 'none',
-    color: 'white',
-    fontSize: '1.1rem',
-    cursor: 'pointer'
-  },
-  readyBtn: {
-    margin: 12,
-    padding: '14px 20px',
-    background: '#10a37f',
-    border: 'none',
-    borderRadius: 10,
-    color: 'white',
-    fontSize: '0.9rem',
-    fontWeight: 600,
-    cursor: 'pointer'
-  },
-
-  // Assignment Phase
-  assignmentContainer: {
-    flex: 1,
-    padding: 24,
-    maxWidth: 900,
-    margin: '0 auto',
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    overflow: 'auto'
-  },
-  assignmentHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 20,
-    flexWrap: 'wrap',
-    gap: 12
-  },
-  assignmentInfo: {
-    flex: 1
-  },
-  assignmentNumber: {
-    fontSize: '0.8rem',
-    color: '#6b7280',
-    textTransform: 'uppercase',
-    letterSpacing: '0.05em'
-  },
-  assignmentTitle: {
-    fontSize: '1.5rem',
-    fontWeight: 700,
-    color: '#111',
-    marginTop: 4
-  },
-  hintButton: {
-    padding: '8px 16px',
-    background: '#fef3c7',
-    border: '1px solid #fcd34d',
-    borderRadius: 8,
-    color: '#92400e',
-    fontSize: '0.85rem',
-    fontWeight: 500,
-    cursor: 'pointer'
-  },
-  timerBox: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 8,
-    padding: '10px 16px',
-    background: 'white',
-    border: '1px solid #e5e7eb',
-    borderRadius: 10
-  },
-  timerText: {
-    fontSize: '1.1rem',
-    fontWeight: 600,
-    fontFamily: 'monospace'
-  },
-
-  // Hint Panel
-  hintPanel: {
-    background: '#fffbeb',
-    border: '1px solid #fcd34d',
-    borderRadius: 12,
-    marginBottom: 20,
-    overflow: 'hidden'
-  },
-  hintHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '12px 16px',
-    background: '#fef3c7',
-    borderBottom: '1px solid #fcd34d'
-  },
-  hintCloseBtn: {
-    width: 24,
-    height: 24,
-    border: 'none',
-    background: 'none',
-    fontSize: '1.2rem',
-    cursor: 'pointer',
-    color: '#92400e'
-  },
-  hintContent: {
-    padding: 16
-  },
-  hintLoading: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 8
-  },
-  moreHintBtn: {
-    display: 'block',
-    width: '100%',
-    padding: '12px 16px',
-    background: 'none',
-    border: 'none',
-    borderTop: '1px solid #fcd34d',
-    color: '#92400e',
-    fontSize: '0.85rem',
-    fontWeight: 500,
-    cursor: 'pointer',
-    textAlign: 'center'
-  },
-
-  assignmentProgress: {
-    display: 'flex',
-    gap: 6,
-    marginBottom: 20
-  },
-  progressDot: {
-    flex: 1,
-    height: 4,
-    borderRadius: 2
-  },
-  codeEditorContainer: {
-    marginBottom: 16
-  },
-
-  // Output Panel
-  outputPanel: {
-    background: '#1e1e1e',
-    borderRadius: 8,
-    marginBottom: 16,
-    border: '2px solid',
-    overflow: 'hidden'
-  },
-  outputHeader: {
-    padding: '8px 12px',
-    background: '#2d2d2d',
-    fontSize: '0.8rem',
-    color: '#888'
-  },
-  outputContent: {
-    padding: 12,
-    margin: 0,
-    color: '#d4d4d4',
-    fontSize: '0.85rem',
-    fontFamily: "'SF Mono', Monaco, 'Courier New', monospace",
-    whiteSpace: 'pre-wrap',
-    maxHeight: 150,
-    overflow: 'auto'
-  },
-
-  assignmentActions: {
-    display: 'flex',
-    gap: 12,
-    justifyContent: 'flex-end'
-  },
-  runBtn: {
-    padding: '14px 24px',
-    background: '#374151',
-    border: 'none',
-    borderRadius: 10,
-    color: 'white',
-    fontSize: '0.95rem',
-    fontWeight: 500,
-    cursor: 'pointer'
-  },
-  submitBtn: {
-    padding: '14px 32px',
-    background: '#10a37f',
-    border: 'none',
-    borderRadius: 10,
-    color: 'white',
-    fontSize: '0.95rem',
-    fontWeight: 600,
-    cursor: 'pointer'
-  },
-
-  // Feedback Phase
-  feedbackContainer: {
-    flex: 1,
-    overflow: 'auto',
-    padding: 24,
-    maxWidth: 800,
-    margin: '0 auto',
-    width: '100%'
-  },
-  feedbackLoading: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100%',
-    gap: 16,
-    color: '#6b7280'
-  },
-  feedbackHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 24,
-    flexWrap: 'wrap',
-    gap: 12
-  },
-  timeTaken: {
-    fontSize: '0.9rem',
-    color: '#6b7280'
-  },
-  feedbackSection: {
-    background: 'white',
-    borderRadius: 12,
-    padding: 20,
-    marginBottom: 16,
-    border: '1px solid #e5e7eb'
-  },
-  sectionTitle: {
-    fontSize: '1rem',
-    fontWeight: 600,
-    marginBottom: 16
-  },
-  testResults: {
-    display: 'flex',
-    gap: 20,
-    flexWrap: 'wrap'
-  },
-  testScore: {
-    padding: 20,
-    borderRadius: 10,
-    textAlign: 'center',
-    minWidth: 100
-  },
-  testScoreNumber: {
-    display: 'block',
-    fontSize: '2rem',
-    fontWeight: 700
-  },
-  testScoreLabel: {
-    fontSize: '0.8rem',
-    color: '#6b7280'
-  },
-  failedTests: {
-    flex: 1
-  },
-  failedTestsTitle: {
-    fontSize: '0.85rem',
-    fontWeight: 600,
-    display: 'block',
-    marginBottom: 8
-  },
-  failedTest: {
-    padding: 10,
-    background: '#fef2f2',
-    borderRadius: 6,
-    marginBottom: 8
-  },
-  testName: {
-    display: 'block',
-    fontWeight: 500,
-    marginBottom: 4
-  },
-  testDetail: {
-    display: 'block',
-    fontSize: '0.8rem',
-    color: '#6b7280'
-  },
-  checklist: {
-    display: 'grid',
-    gap: 12
-  },
-  checklistItem: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: 10,
-    padding: 10,
-    background: '#f9fafb',
-    borderRadius: 8
-  },
-  checkIcon: {
-    fontSize: '1.1rem',
-    fontWeight: 700
-  },
-  reviewText: {
-    lineHeight: 1.7,
-    color: '#374151'
-  },
-  suggestions: {
-    marginTop: 16,
-    padding: 16,
-    background: '#fffbeb',
-    borderRadius: 8
-  },
-  suggestionsTitle: {
-    fontWeight: 600,
-    marginBottom: 8,
-    display: 'block'
-  },
-  suggestionsList: {
-    marginLeft: 20,
-    lineHeight: 1.8
-  },
-  continueBtn: {
-    width: '100%',
-    padding: '16px 32px',
-    background: '#10a37f',
-    border: 'none',
-    borderRadius: 12,
-    color: 'white',
-    fontSize: '1rem',
-    fontWeight: 600,
-    cursor: 'pointer',
-    marginTop: 8
-  },
-
-  // Completed Phase
-  completedContainer: {
-    flex: 1,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  completedContent: {
-    textAlign: 'center',
-    padding: 40
-  },
-  completedEmoji: {
-    fontSize: '4rem',
-    marginBottom: 16,
-    display: 'block'
-  },
-  completedTitle: {
-    fontSize: '2rem',
-    fontWeight: 700,
-    marginBottom: 8
-  },
-  completedText: {
-    color: '#6b7280',
-    marginBottom: 32
-  },
-  backToDashboardBtn: {
-    padding: '14px 32px',
-    background: '#10a37f',
-    border: 'none',
-    borderRadius: 10,
-    color: 'white',
-    fontSize: '1rem',
-    fontWeight: 600,
-    cursor: 'pointer'
-  },
-
-  // Shared
-  loadingContainer: {
-    height: '100vh',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 16,
-    color: '#6b7280'
-  },
-  loadingSpinner: {
-    width: 32,
-    height: 32,
-    border: '3px solid #e5e7eb',
-    borderTopColor: '#10a37f',
-    borderRadius: '50%',
-    animation: 'spin 1s linear infinite'
-  },
-  errorContainer: {
-    height: '100vh',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 16
-  },
-  backLink: {
-    color: '#10a37f',
-    background: 'none',
-    border: 'none',
-    cursor: 'pointer',
-    fontSize: '0.95rem',
-    fontWeight: 500
-  }
-}
+export default Learn
