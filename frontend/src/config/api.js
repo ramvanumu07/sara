@@ -92,12 +92,22 @@ export const learning = {
   startPlaytime: (topicId) => 
     api.post('/learn/playtime/start', { topicId }),
 
+  completePlaytime: (topicId) => 
+    api.post('/learn/playtime/complete', { topicId }),
+
   playtimeChat: (topicId, message) => 
     api.post('/chat/playtime', { topicId, message }),
 
   // Assignments
   startAssignments: (topicId) => 
     api.post('/learn/assignment/start', { topicId }),
+
+  completeAssignment: (topicId, assignmentIndex, code) => 
+    api.post('/learn/assignment/complete', { topicId, assignmentIndex, code }),
+
+  // Code execution
+  executeCode: (code, topicId, assignmentIndex = null) => 
+    api.post('/learn/execute', { code, topicId, assignmentIndex }),
 
   getHint: (topicId, assignment, userCode = '') => 
     api.post('/chat/assignment/hint', { topicId, assignment, userCode }),
@@ -112,8 +122,15 @@ export const learning = {
 
 // Progress API
 export const progress = {
-  getAll: () => api.get('/learn/progress'),
-  getSummary: () => api.get('/learn/progress/summary')
+  getAll: () => api.get('/learn/progress', { 
+    params: { _t: Date.now() } // Cache busting
+  }),
+  getSummary: () => api.get('/learn/progress/summary'),
+  getRecent: (days = 7) => api.get(`/learn/progress/recent?days=${days}`),
+  resetAll: () => api.delete('/learn/debug/reset-progress'),
+  clearCache: () => api.post('/learn/debug/clear-cache'),
+  debugAllSources: () => api.get('/learn/debug/all-data-sources'),
+  debugTopic: (topicId) => api.get(`/learn/debug/progress/${topicId}`)
 }
 
 // Chat History API
@@ -216,6 +233,12 @@ export const cachedRequest = async (key, apiCall, ttl = CACHE_TTL) => {
 // Clear cache
 export const clearCache = () => {
   cache.clear()
+  console.log('🧹 Frontend cache cleared')
+}
+
+// Make clearCache available globally for debugging
+if (typeof window !== 'undefined') {
+  window.clearCache = clearCache
 }
 
 // ============ PERFORMANCE MONITORING ============

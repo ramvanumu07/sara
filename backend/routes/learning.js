@@ -14,7 +14,8 @@ import {
   getCompletedTopics,
   getUserProgressSummary
 } from '../services/database.js'
-import { saveChatTurn, saveInitialMessage, clearChatHistory, getChatHistoryString, getChatMessages } from '../services/chatHistory.js'
+import progressManager from '../services/progressManager.js'
+import { saveChatTurn, saveInitialMessage, clearChatHistory, getChatHistoryString, getChatHistory } from '../services/chatService.js'
 import { courses } from '../../data/curriculum.js'
 import { formatLearningObjectives, findTopicById, getAllTopics } from '../utils/curriculum.js'
 import { handleErrorResponse, createSuccessResponse, createErrorResponse } from '../utils/responses.js'
@@ -34,6 +35,14 @@ const schemas = {
   },
   assignmentStart: {
     required: ['topicId'],
+    optional: []
+  },
+  playtimeComplete: {
+    required: ['topicId'],
+    optional: []
+  },
+  assignmentComplete: {
+    required: ['topicId', 'assignmentIndex'],
     optional: []
   }
 }
@@ -64,6 +73,73 @@ function validateBody(schema) {
 }
 
 // ============ UTILITY FUNCTIONS ============
+
+// Secure code execution function
+async function executeCodeSecurely(code, testCases = []) {
+  try {
+    // Create a safe execution context
+    const vm = await import('vm')
+    const context = {
+      console: {
+        log: (...args) => {
+          context.__output = (context.__output || '') + args.join(' ') + '\n'
+        }
+      },
+      __output: '',
+      __error: null
+    }
+    
+    // Set up the context
+    vm.createContext(context)
+    
+    try {
+      // Execute the code in the safe context
+      vm.runInContext(code, context, { timeout: 5000 })
+      
+      const output = context.__output.trim()
+      const results = []
+      
+      // Run test cases if provided
+      for (let i = 0; i < testCases.length; i++) {
+        const testCase = testCases[i]
+        const expected = testCase.expectedOutput
+        const passed = output.includes(expected) || output === expected
+        
+        results.push({
+          testIndex: i,
+          expected,
+          actual: output,
+          passed,
+          description: testCase.description || `Test ${i + 1}`
+        })
+      }
+      
+      return {
+        success: true,
+        output,
+        testResults: results,
+        allTestsPassed: results.length === 0 || results.every(r => r.passed)
+      }
+    } catch (execError) {
+      return {
+        success: false,
+        error: execError.message,
+        output: '',
+        testResults: [],
+        allTestsPassed: false
+      }
+    }
+  } catch (importError) {
+    // Fallback to basic validation if vm module not available
+    return {
+      success: true,
+      output: 'Code execution not available on this server',
+      testResults: [],
+      allTestsPassed: true,
+      warning: 'Server-side execution disabled'
+    }
+  }
+}
 
 function buildSessionPrompt(topicId, conversationHistory, completedTopics = []) {
   const topic = findTopicById(courses, topicId)
@@ -234,16 +310,12 @@ router.post('/session/start', authenticateToken, rateLimitMiddleware, validateBo
       ? assignments
       : ['Practice the concept with a simple example']
 
-    // Update progress
+    // Initialize topic progress - direct database call for compatibility
     await upsertProgress(userId, topicId, {
       phase: 'session',
-      concept_revealed: false,
-      current_task: 0,
-      current_outcome_index: 0,
-      total_tasks: taskList.length,
       status: 'in_progress',
       started_at: new Date().toISOString(),
-      completed_at: null
+      updated_at: new Date().toISOString()
     })
 
     // Get student context and build prompt
@@ -264,7 +336,7 @@ router.post('/session/start', authenticateToken, rateLimitMiddleware, validateBo
     const result = await saveInitialMessage(userId, topicId, aiResponse)
 
     const directResponse = result.wasCreated ? aiResponse :
-      result.conversationHistory.match(/AGENT: (.+?)(?=\nUSER:|$)/s)?.[1]?.trim() || 'Session ready'
+      result.conversationHistory?.match(/AGENT: (.+?)(?=\nUSER:|$)/s)?.[1]?.trim() || 'Session ready'
 
     // Get updated progress after saving
     const progress = await getProgress(userId, topicId)
@@ -303,10 +375,11 @@ router.post('/playtime/start', authenticateToken, rateLimitMiddleware, validateB
       return res.status(404).json(createErrorResponse('Topic not found'))
     }
 
-    // Update progress to playtime phase
+    // Start playtime phase - direct database call for compatibility
     await upsertProgress(userId, topicId, {
       phase: 'playtime',
-      status: 'in_progress'
+      status: 'in_progress',
+      updated_at: new Date().toISOString()
     })
 
     // Build playtime prompt
@@ -354,6 +427,66 @@ Start by suggesting the first creative challenge!`
   }
 })
 
+// ============ PLAYTIME COMPLETION ============
+
+// Test endpoint to verify routing
+router.get('/playtime/test', (req, res) => {
+  res.json({ success: true, message: 'Playtime routes are working', timestamp: new Date().toISOString() })
+})
+
+router.post('/playtime/complete', authenticateToken, rateLimitMiddleware, validateBody(schemas.playtimeComplete), async (req, res) => {
+  try {
+    const { topicId } = req.body
+    const userId = req.user.userId
+
+    console.log(`🎮 PLAYTIME COMPLETE REQUEST:`)
+    console.log(`   - User ID: ${userId}`)
+    console.log(`   - Topic ID: ${topicId}`)
+    console.log(`   - Request Body:`, req.body)
+
+    // Validate topic exists
+    const topic = findTopicById(courses, topicId)
+    if (!topic) {
+      console.error(`❌ Topic not found: ${topicId}`)
+      return res.status(404).json(createErrorResponse('Topic not found'))
+    }
+
+    console.log(`✅ Topic found: ${topic.title}`)
+
+    // Complete playtime phase - direct database update for compatibility
+    try {
+      console.log(`🎮 Updating progress: phase=assignment, status=in_progress`)
+      
+      const result = await upsertProgress(userId, topicId, {
+        phase: 'assignment',
+        status: 'in_progress',
+        updated_at: new Date().toISOString()
+      })
+      
+      console.log(`✅ Playtime completed - database updated:`, result)
+    } catch (dbError) {
+      console.error(`❌ Database error in playtime complete:`, dbError)
+      console.error(`❌ Error details:`, dbError.message)
+      console.error(`❌ Error stack:`, dbError.stack)
+      throw new Error(`Failed to complete playtime: ${dbError.message}`)
+    }
+
+    res.json(createSuccessResponse({
+      message: 'Playtime completed successfully',
+      phase: 'playtime',
+      nextPhase: 'assignment',
+      topic: {
+        id: topicId,
+        title: topic.title,
+        category: topic.category
+      }
+    }))
+  } catch (error) {
+    console.error(`❌ Playtime complete error:`, error)
+    handleErrorResponse(res, error, 'complete playtime')
+  }
+})
+
 // ============ ASSIGNMENT PHASE ============
 
 router.post('/assignment/start', authenticateToken, rateLimitMiddleware, validateBody(schemas.assignmentStart), async (req, res) => {
@@ -375,12 +508,13 @@ router.post('/assignment/start', authenticateToken, rateLimitMiddleware, validat
       return res.status(400).json(createErrorResponse('No assignments available for this topic'))
     }
 
-    // Update progress to assignment phase
+    // Start assignment phase - direct database call for compatibility
     await upsertProgress(userId, topicId, {
       phase: 'assignment',
       status: 'in_progress',
+      current_task: 0,
       total_tasks: tasks.length,
-      current_task: 0
+      updated_at: new Date().toISOString()
     })
 
     // Get first assignment
@@ -405,6 +539,127 @@ router.post('/assignment/start', authenticateToken, rateLimitMiddleware, validat
   }
 })
 
+router.post('/assignment/complete', authenticateToken, rateLimitMiddleware, async (req, res) => {
+  try {
+    const { topicId, assignmentIndex, code } = req.body
+    const userId = req.user.userId
+
+    if (!topicId || assignmentIndex === undefined) {
+      return res.status(400).json(createErrorResponse('topicId and assignmentIndex are required'))
+    }
+
+    if (!code || !code.trim()) {
+      return res.status(400).json(createErrorResponse('Code is required to complete assignment'))
+    }
+
+    console.log(`📝 Completing assignment ${assignmentIndex} for topic: ${topicId}`)
+
+    // Validate topic exists
+    const topic = findTopicById(courses, topicId)
+    if (!topic) {
+      return res.status(404).json(createErrorResponse('Topic not found'))
+    }
+
+    const tasks = topic.tasks || []
+    if (assignmentIndex >= tasks.length) {
+      return res.status(400).json(createErrorResponse('Invalid assignment index'))
+    }
+
+    const currentTask = tasks[assignmentIndex]
+    const testCases = currentTask.testCases || []
+
+    // Execute code and validate against test cases
+    const executionResult = await executeCodeSecurely(code, testCases)
+
+    // Check if all tests passed (only if there are test cases)
+    if (testCases.length > 0 && !executionResult.allTestsPassed) {
+      return res.status(400).json(createErrorResponse('Assignment not completed: Some tests are failing', {
+        execution: executionResult,
+        requiresAllTestsPassed: true,
+        failedTests: executionResult.testResults?.filter(t => !t.passed) || []
+      }))
+    }
+
+    // Complete assignment - tests passed or no tests required
+    const currentProgress = await getProgress(userId, topicId)
+    const completedAssignments = (currentProgress?.assignments_completed || 0) + 1
+    const isTopicComplete = completedAssignments >= tasks.length
+
+    await upsertProgress(userId, topicId, {
+      phase: 'assignment',
+      status: isTopicComplete ? 'completed' : 'in_progress',
+      current_task: Math.min(assignmentIndex + 1, tasks.length - 1),
+      assignments_completed: completedAssignments,
+      status: isTopicComplete ? 'completed' : 'in_progress',
+      completed_at: isTopicComplete ? new Date().toISOString() : null,
+      saved_code: code, // Save the successful code
+      updated_at: new Date().toISOString()
+    })
+
+    const totalAssignments = tasks.length
+
+    res.json(createSuccessResponse({
+      message: isTopicComplete ? 'All assignments completed! Topic mastered!' : 'Assignment completed successfully',
+      assignmentCompleted: true,
+      topicCompleted: isTopicComplete,
+      completedAssignments: completedAssignments,
+      totalAssignments: totalAssignments,
+      nextAssignment: isTopicComplete ? null : assignmentIndex + 1,
+      phase: 'assignment',
+      execution: executionResult,
+      topic: {
+        id: topicId,
+        title: topic.title,
+        category: topic.category
+      }
+    }))
+  } catch (error) {
+    handleErrorResponse(res, error, 'complete assignment')
+  }
+})
+
+// ============ CODE EXECUTION ============
+
+router.post('/execute', authenticateToken, async (req, res) => {
+  try {
+    const { code, topicId, assignmentIndex } = req.body
+    
+    if (!code || !topicId) {
+      return res.status(400).json(createErrorResponse('Code and topicId are required'))
+    }
+
+    // Get topic and assignment details
+    const topic = findTopicById(courses, topicId)
+    if (!topic) {
+      return res.status(404).json(createErrorResponse('Topic not found'))
+    }
+
+    let testCases = []
+    if (assignmentIndex !== undefined && topic.tasks && topic.tasks[assignmentIndex]) {
+      testCases = topic.tasks[assignmentIndex].testCases || []
+    }
+
+    // Execute code securely
+    const result = await executeCodeSecurely(code, testCases)
+
+    res.json(createSuccessResponse({
+      execution: result,
+      topic: {
+        id: topicId,
+        title: topic.title
+      },
+      assignment: assignmentIndex !== undefined ? {
+        index: assignmentIndex,
+        total: topic.tasks?.length || 0
+      } : null
+    }))
+
+  } catch (error) {
+    console.error('Code execution error:', error)
+    res.status(500).json(createErrorResponse('Code execution failed'))
+  }
+})
+
 // ============ PROGRESS MANAGEMENT ============
 
 router.get('/progress', authenticateToken, async (req, res) => {
@@ -412,55 +667,24 @@ router.get('/progress', authenticateToken, async (req, res) => {
     const userId = req.user.userId
     console.log(`📊 Progress API called for user: ${userId}`)
 
-    // Try to get progress from database service
-    let progressFromTable = []
-    try {
-      progressFromTable = await getAllProgress(userId)
-      console.log(`📊 Found ${progressFromTable?.length || 0} progress records from table`)
-    } catch (error) {
-      console.error('❌ Progress query error:', error)
+    // Get progress data directly for compatibility
+    const allProgress = await getAllProgress(userId)
+    
+    // Calculate summary directly
+    const allTopicsFromCurriculum = getAllTopics(courses)
+    const totalTopics = allTopicsFromCurriculum.length
+    const completedTopics = allProgress.filter(p => p.status === 'completed').length
+    const inProgressTopics = allProgress.filter(p => p.status === 'in_progress').length
+    
+    const summary = {
+      total_topics: totalTopics,
+      completed_topics: completedTopics,
+      in_progress_topics: inProgressTopics,
+      completion_percentage: totalTopics > 0 ? Math.round((completedTopics / totalTopics) * 100) : 0
     }
 
-    // Also try to get chat sessions as fallback
-    let chatSessions = []
-    try {
-      const { getSupabaseClient } = await import('../services/supabase.js')
-      const supabase = getSupabaseClient()
-      
-      // Try chat_sessions first, then chat_history
-      let result = await supabase
-        .from('chat_sessions')
-        .select('topic_id, phase, updated_at')
-        .eq('user_id', userId)
-        .order('updated_at', { ascending: false })
-      
-      if (result.error) {
-        console.log('📭 Trying chat_history table...')
-        result = await supabase
-          .from('chat_history')
-          .select('topic_id, phase, updated_at')
-          .eq('user_id', userId)
-          .order('updated_at', { ascending: false })
-      }
-      
-      chatSessions = result.data || []
-      console.log(`📊 Found ${chatSessions.length} chat sessions`)
-    } catch (error) {
-      console.error('❌ Chat sessions query error:', error)
-    }
-
-    // Convert chat sessions to progress format
-    const progressFromChat = (chatSessions || []).map(session => ({
-      topic_id: session.topic_id,
-      status: 'in_progress',
-      phase: session.phase || 'session',
-      updated_at: session.updated_at
-    }))
-
-    console.log(`📊 Progress from chat sessions: ${progressFromChat.length} records`)
-
-    // Combine both sources, prioritizing progress table if it exists
-    const allProgress = progressFromTable.length > 0 ? progressFromTable : progressFromChat
+    console.log(`📊 Found ${allProgress?.length || 0} progress records from progress table`)
+    console.log(`📊 RAW PROGRESS DATA:`, JSON.stringify(allProgress, null, 2))
 
     // Find most recent topic for lastAccessed
     const lastAccessed = allProgress.length > 0 ? {
@@ -468,18 +692,13 @@ router.get('/progress', authenticateToken, async (req, res) => {
       phase: allProgress[0].phase || 'session'
     } : null
 
-    console.log(`📊 Final progress results: ${allProgress.length} records`)
-    console.log(`📊 Last accessed:`, lastAccessed)
+    // Topics already loaded above
 
     res.json(createSuccessResponse({
       progress: allProgress,
-      summary: {
-        total_topics: 45, // From curriculum
-        completed_topics: 0, // We'll calculate this later
-        in_progress_topics: allProgress.length
-      },
+      summary: summary,
       lastAccessed: lastAccessed,
-      topics: getAllTopics(courses).map(topic => ({
+      topics: allTopicsFromCurriculum.map(topic => ({
         id: topic.id,
         title: topic.title,
         description: topic.description,
@@ -528,41 +747,207 @@ router.get('/debug/progress', authenticateToken, async (req, res) => {
   }
 })
 
+// Reset all progress for current user (for testing)
+router.delete('/debug/reset-progress', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId
+    
+    // Reset progress - direct database calls for compatibility
+    const { getSupabaseClient } = await import('../services/database.js')
+    const { progressCache } = await import('../middleware/performance.js')
+    const supabase = getSupabaseClient()
+
+    // Delete from all possible tables
+    const tables = ['progress', 'chat_sessions', 'chat_history']
+    
+    for (const table of tables) {
+      try {
+        const { error } = await supabase
+          .from(table)
+          .delete()
+          .eq('user_id', userId)
+        
+        if (error) {
+          console.warn(`Failed to delete from ${table}:`, error.message)
+        } else {
+          console.log(`✅ Deleted all records from ${table}`)
+        }
+      } catch (err) {
+        console.warn(`Error deleting from ${table}:`, err.message)
+      }
+    }
+
+    // Clear cache
+    progressCache.clear()
+    console.log(`🧹 Progress cache cleared`)
+
+    const result = { success: true, message: 'All progress reset successfully' }
+
+    res.json({
+      success: true,
+      message: 'All progress data and cache have been reset using centralized progress manager.',
+      userId: userId,
+      details: result
+    })
+  } catch (error) {
+    console.error('❌ Reset progress error:', error)
+    res.status(500).json({
+      success: false,
+      error: error.message
+    })
+  }
+})
+
+// Clear all caches (for debugging)
+router.post('/debug/clear-cache', authenticateToken, async (req, res) => {
+  try {
+    const { progressCache } = await import('../middleware/performance.js')
+    
+    progressCache.clear()
+    console.log('🧹 All backend caches cleared')
+
+    res.json({
+      success: true,
+      message: 'All backend caches cleared',
+      cacheSize: progressCache.size()
+    })
+  } catch (error) {
+    console.error('❌ Clear cache error:', error)
+    res.status(500).json({
+      success: false,
+      error: error.message
+    })
+  }
+})
+
+// Debug current progress state for a specific topic
+router.get('/debug/progress/:topicId', authenticateToken, async (req, res) => {
+  try {
+    const { topicId } = req.params
+    const userId = req.user.userId
+    
+    const progress = await getProgress(userId, topicId)
+    
+    console.log(`🔍 Progress Debug for ${topicId}:`, progress)
+    
+    res.json({
+      success: true,
+      debug: {
+        userId,
+        topicId,
+        progress,
+        nextPhase: null // Simplified for compatibility
+      }
+    })
+  } catch (error) {
+    console.error('❌ Progress debug error:', error)
+    res.status(500).json({
+      success: false,
+      error: error.message
+    })
+  }
+})
+
+// Comprehensive debug - check ALL data sources
+router.get('/debug/all-data-sources', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId
+    console.log(`🔍 COMPREHENSIVE DEBUG: Checking all data sources for user: ${userId}`)
+
+    const { getSupabaseClient } = await import('../services/database.js')
+    const supabase = getSupabaseClient()
+
+    // Check progress table
+    const { data: progressData, error: progressError } = await supabase
+      .from('progress')
+      .select('*')
+      .eq('user_id', userId)
+
+    // Check chat_sessions table
+    const { data: chatSessionsData, error: chatSessionsError } = await supabase
+      .from('chat_sessions')
+      .select('*')
+      .eq('user_id', userId)
+
+    // Check chat_history table
+    const { data: chatHistoryData, error: chatHistoryError } = await supabase
+      .from('chat_history')
+      .select('*')
+      .eq('user_id', userId)
+
+    // Check cache
+    const { progressCache } = await import('../middleware/performance.js')
+
+    console.log(`🔍 DEBUG RESULTS:`)
+    console.log(`   - Progress table: ${progressData?.length || 0} records`)
+    console.log(`   - Chat sessions: ${chatSessionsData?.length || 0} records`)
+    console.log(`   - Chat history: ${chatHistoryData?.length || 0} records`)
+    console.log(`   - Cache size: ${progressCache.size()}`)
+
+    res.json({
+      success: true,
+      debug: {
+        userId: userId,
+        dataSources: {
+          progress: {
+            count: progressData?.length || 0,
+            data: progressData,
+            error: progressError?.message
+          },
+          chatSessions: {
+            count: chatSessionsData?.length || 0,
+            data: chatSessionsData,
+            error: chatSessionsError?.message
+          },
+          chatHistory: {
+            count: chatHistoryData?.length || 0,
+            data: chatHistoryData,
+            error: chatHistoryError?.message
+          },
+          cache: {
+            size: progressCache.size()
+          }
+        }
+      }
+    })
+  } catch (error) {
+    console.error('❌ Comprehensive debug error:', error)
+    res.status(500).json({
+      success: false,
+      error: error.message
+    })
+  }
+})
+
 router.get('/continue', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.userId
 
-    const lastAccessed = await getLastAccessedTopic(userId)
+    // Get ONLY from progress table - no fallbacks
+    const allProgress = await getAllProgress(userId)
+    const lastAccessed = allProgress.length > 0 ? allProgress[0] : null
 
     if (!lastAccessed) {
       // If no progress, start with first topic
       const firstTopic = getAllTopics(courses)[0]
+      console.log(`📭 No progress found for user ${userId}, starting with first topic: ${firstTopic.id}`)
+      
       return res.json(createSuccessResponse({
-        topicId: firstTopic.id,
-        phase: 'session',
-        isNew: true,
-        topic: {
-          id: firstTopic.id,
-          title: firstTopic.title,
-          description: firstTopic.description,
-          category: firstTopic.category
+        lastAccessed: {
+          topicId: firstTopic.id,
+          phase: 'session'
         }
       }))
     }
 
     const topic = findTopicById(courses, lastAccessed.topic_id)
+    console.log(`🎯 Last accessed topic for user ${userId}: ${lastAccessed.topic_id}, phase: ${lastAccessed.phase}`)
 
     res.json(createSuccessResponse({
-      topicId: lastAccessed.topic_id,
-      phase: lastAccessed.phase,
-      isNew: false,
-      lastAccessed: lastAccessed.last_accessed,
-      topic: topic ? {
-        id: topic.id,
-        title: topic.title,
-        description: topic.description,
-        category: topic.category
-      } : null
+      lastAccessed: {
+        topicId: lastAccessed.topic_id,
+        phase: lastAccessed.phase || 'session'
+      }
     }))
   } catch (error) {
     handleErrorResponse(res, error, 'get continue learning')

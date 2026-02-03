@@ -6,10 +6,11 @@
 import express from 'express'
 import { authenticateToken } from './auth.js'
 import { callAI } from '../services/ai.js'
-import { getChatHistory, saveChatTurn, saveInitialMessage, getLastMessages, parseHistoryToMessages } from '../services/chatService.js'
+import { getChatHistory, saveChatTurn, saveInitialMessage, getLastMessages, parseHistoryToMessages, clearChatHistory, getChatHistoryString } from '../services/chatService.js'
 import { courses } from '../../data/curriculum.js'
 import { formatLearningObjectives, findTopicById } from '../utils/curriculum.js'
 import { getCompletedTopics, upsertProgress } from '../services/database.js'
+import progressManager from '../services/progressManager.js'
 import { handleErrorResponse, createSuccessResponse, createErrorResponse } from '../utils/responses.js'
 import { rateLimitMiddleware } from '../middleware/rateLimiting.js'
 
@@ -218,26 +219,17 @@ router.post('/session', authenticateToken, rateLimitMiddleware, async (req, res)
     console.log('   - Is Complete:', isSessionComplete)
     console.log('   - AI Response preview:', aiResponse?.substring(0, 400) + '...')
     
-    // Update progress to track that user is actively learning this topic
+    // Update progress - direct database call for compatibility
     try {
-      const progressUpdate = {
-        status: isSessionComplete ? 'completed' : 'in_progress',
-        phase: isSessionComplete ? 'playtime' : 'session',
-        updated_at: new Date().toISOString()
-      }
-      
       if (isSessionComplete) {
-        progressUpdate.completed_at = new Date().toISOString()
+        await upsertProgress(userId, topicId, {
+          phase: 'playtime',  // Move to playtime phase
+          status: 'completed', // Session is completed
+          updated_at: new Date().toISOString()
+        })
+        console.log(`🎉 Session completed! User moved to playtime phase for topic: ${topicId}`)
       }
-      
-      await upsertProgress(userId, topicId, progressUpdate)
-      
-      const statusMsg = isSessionComplete ? 'completed/playtime' : 'in_progress/session'
-      console.log(`📊 Progress updated: User ${userId}, Topic ${topicId} -> ${statusMsg}`)
-      
-      if (isSessionComplete) {
-        console.log(`🎉 Session completed! User can now access playtime for topic: ${topicId}`)
-      }
+      // If session not complete, progress is already tracked from session start
     } catch (progressError) {
       console.error('❌ Failed to update progress:', progressError)
       console.error('❌ Progress error details:', progressError.message)
@@ -247,7 +239,7 @@ router.post('/session', authenticateToken, rateLimitMiddleware, async (req, res)
     console.log(`✅ Session chat: User ${userId}, Topic ${topicId}, Topic: "${topic.title}"`)
 
     // Get updated conversation history
-    const updatedConversation = await getChatHistory(userId, topicId)
+    const updatedConversation = await getChatHistoryString(userId, topicId)
     const messageCount = updatedConversation.split(/(?=AGENT:|USER:)/).filter(msg => msg.trim()).length
 
     // Debug: Log what we're sending to frontend
@@ -264,8 +256,9 @@ router.post('/session', authenticateToken, rateLimitMiddleware, async (req, res)
       response: cleanedResponse,
       messageCount: messageCount,
       conversationHistory: updatedConversation,
-      phase: isSessionComplete ? 'playtime' : 'session',
+      phase: 'session', // Always return 'session' for this endpoint
       sessionComplete: isSessionComplete,
+      nextPhase: isSessionComplete ? 'playtime' : null, // Indicate what phase comes next
       topic: {
         id: topicId,
         title: topic.title,

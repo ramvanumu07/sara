@@ -11467,6 +11467,12 @@ export const courses = [
         ]
       }
     ]
+  },
+  {
+    id: 'python',
+    title: 'Python',
+    description: 'Master python from fundamentals to advanced concepts',
+    topics: []
   }
 ];
 

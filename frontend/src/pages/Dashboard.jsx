@@ -1,12 +1,18 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback, useMemo, useRef, lazy, Suspense } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { learning, progress } from '../config/api'
+import { useCache } from '../hooks/useCache'
+import { useTouchGestures } from '../hooks/useTouchGestures'
+import ErrorBoundary from '../components/ErrorBoundary'
+import { RecentActivity, ComponentLoader } from '../components/LazyComponents'
 import './Dashboard.css'
 
 const Dashboard = () => {
   const navigate = useNavigate()
   const { user, logout } = useAuth()
+  
+  // Production: Debug logs removed for performance
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -16,10 +22,25 @@ const Dashboard = () => {
   const [progressSummary, setProgressSummary] = useState({})
   const [lastAccessed, setLastAccessed] = useState(null)
   const [showMobileMenu, setShowMobileMenu] = useState(false)
+  const dashboardRef = useRef(null)
 
-  useEffect(() => {
-    loadDashboardData()
-  }, [])
+  // Add touch gestures for mobile navigation
+  useTouchGestures(dashboardRef, {
+    onSwipeRight: () => {
+      if (window.innerWidth <= 768 && !showMobileMenu) {
+        setShowMobileMenu(true)
+      }
+    },
+    onSwipeLeft: () => {
+      if (window.innerWidth <= 768 && showMobileMenu) {
+        setShowMobileMenu(false)
+      }
+    },
+    swipeThreshold: 100,
+    preventDefault: false
+  })
+
+  // Data loading now handled by useCache hooks
 
   // Handle ESC key to close mobile menu
   useEffect(() => {
@@ -47,53 +68,63 @@ const Dashboard = () => {
     }
   }, [showMobileMenu])
 
-  const loadDashboardData = async () => {
-    try {
-      setLoading(true)
-      setError(null)
+  // Use cached data for better performance
+  const { data: progressData, loading: progressLoading, error: progressError } = useCache(
+    `progress-${user?.id}`,
+    () => progress.getAll(),
+    { ttl: 2 * 60 * 1000 } // 2 minutes cache
+  )
 
-      console.log('🔄 Loading dashboard data...')
+  const { data: continueData, loading: continueLoading } = useCache(
+    `continue-${user?.id}`,
+    () => learning.getContinueLearning(),
+    { ttl: 1 * 60 * 1000 } // 1 minute cache
+  )
 
-      const [progressRes, continueRes, coursesRes] = await Promise.all([
-        progress.getAll(),
-        learning.getContinueLearning(),
-        learning.getCourses()
-      ])
+  const { data: coursesData, loading: coursesLoading } = useCache(
+    'courses',
+    () => learning.getCourses(),
+    { ttl: 10 * 60 * 1000 } // 10 minutes cache (courses change rarely)
+  )
 
-      console.log('📡 Raw API responses:')
-      console.log('Progress API:', progressRes)
-      console.log('Continue API:', continueRes)
-      console.log('Courses API:', coursesRes)
-
-      if (progressRes.data.success) {
-        const progressData = progressRes.data.data.progress || []
-        setUserProgress(progressData)
-        setProgressSummary(progressRes.data.data.summary || {})
-        console.log('📊 User progress loaded:', progressData.length, 'topics')
-        console.log('📊 Progress data:', progressData)
-        console.log('📊 Full API response:', progressRes.data)
-      } else {
-        console.log('❌ Progress API failed:', progressRes.data)
-      }
-
-      if (continueRes.data.success && continueRes.data.data.lastAccessed) {
-        setLastAccessed(continueRes.data.data.lastAccessed)
-        console.log('🎯 Last accessed:', continueRes.data.data.lastAccessed)
-      } else {
-        console.log('📭 No last accessed data found')
-      }
-
-      if (coursesRes.data.success) {
-        setCourses(coursesRes.data.data.courses || [])
-      }
-
-    } catch (err) {
-      console.error('Dashboard load error:', err)
-      setError('Failed to load dashboard. Please refresh the page.')
-    } finally {
-      setLoading(false)
+  // Process cached data with useEffect
+  useEffect(() => {
+    if (progressData?.data?.success) {
+      const progress = progressData.data.data.progress || []
+      setUserProgress(progress)
+      setProgressSummary(progressData.data.data.summary || {})
     }
-  }
+  }, [progressData])
+
+  useEffect(() => {
+    if (continueData?.data?.success && continueData.data.data.lastAccessed) {
+      setLastAccessed(continueData.data.data.lastAccessed)
+    }
+  }, [continueData])
+
+  useEffect(() => {
+    if (coursesData?.data?.success) {
+      const courses = coursesData.data.data.courses || []
+      setCourses(courses)
+    }
+  }, [coursesData])
+
+  // Update loading and error states
+  useEffect(() => {
+    const isLoading = progressLoading || continueLoading || coursesLoading
+    setLoading(isLoading)
+    
+    if (progressError) {
+      setError('Failed to load dashboard data. Please try again.')
+    } else {
+      setError(null)
+    }
+  }, [progressLoading, continueLoading, coursesLoading, progressError])
+
+  // Legacy function for retry (now just refreshes cache)
+  const loadDashboardData = useCallback(() => {
+    window.location.reload()
+  }, [])
 
   const updateProgressForCourse = (courseId) => {
     const courseTopics = courses.find(c => c.id === courseId)?.topics || []
@@ -101,15 +132,19 @@ const Dashboard = () => {
       courseTopics.some(topic => topic.id === p.topic_id)
     )
 
-    // Only count topics as completed if they've finished ALL phases (status = 'completed' AND phase = 'completed')
+    // Calculate progress for the selected course
+
+    // CORRECTED LOGIC: Only count topics as completed if topic_completed = true
     const completed = courseProgress.filter(p =>
-      p.status === 'completed' && p.phase === 'completed'
+      p.topic_completed === true
     ).length
 
-    // Count topics that are started but not fully completed
+    // CORRECTED LOGIC: Count topics that are started but not fully completed
     const inProgress = courseProgress.filter(p =>
-      p.status === 'in_progress' || (p.status === 'completed' && p.phase !== 'completed')
+      p.topic_completed !== true  // Any topic that exists but isn't fully completed
     ).length
+
+    // Progress calculation complete
 
     const total = courseTopics.length
     const percentage = total > 0 ? Math.round((completed / total) * 100) : 0
@@ -123,29 +158,85 @@ const Dashboard = () => {
   }
 
   const handleContinueLearning = () => {
-    // Priority 1: Use lastAccessed if available
-    if (lastAccessed) {
-      console.log('🎯 Continuing from last accessed:', lastAccessed)
-      navigate(`/learn/${lastAccessed.topicId}`)
-      return
-    }
+    // Smart continue learning logic
 
-    // Priority 2: Find the most recent in-progress topic
-    const inProgressTopic = userProgress
-      .filter(p => p.status === 'in_progress' || (p.status === 'completed' && p.phase !== 'completed'))
+    // Find the most recent topic with progress
+    const recentTopic = userProgress
       .sort((a, b) => new Date(b.updated_at || 0) - new Date(a.updated_at || 0))[0]
 
-    if (inProgressTopic) {
-      console.log('🎯 Continuing most recent in-progress topic:', inProgressTopic.topic_id)
-      navigate(`/learn/${inProgressTopic.topic_id}`)
+    if (recentTopic) {
+      const topicId = recentTopic.topic_id
+      const phase = recentTopic.phase
+      const status = recentTopic.status
+      const currentAssignment = recentTopic.current_assignment || 0
+      const topicCompleted = recentTopic.topic_completed
+
+      // Continue from most recent topic
+
+      // If topic is completed, find next topic
+      if (topicCompleted === true || (status === 'completed' && phase === 'assignment')) {
+        const selectedCourseData = courses.find(c => c.id === selectedCourse)
+        const currentTopicIndex = selectedCourseData?.topics?.findIndex(t => t.id === topicId)
+        
+        if (currentTopicIndex !== -1 && currentTopicIndex < (selectedCourseData?.topics?.length - 1)) {
+          // Move to next topic's session phase
+          const nextTopic = selectedCourseData.topics[currentTopicIndex + 1]
+          // Move to next topic
+          navigate(`/learn/${nextTopic.id}`)
+          return
+        } else {
+          // Course completed or no more topics
+          // Course completed, restart from beginning
+          navigate(`/learn/${selectedCourseData?.topics?.[0]?.id}`)
+          return
+        }
+      }
+
+      // CORRECTED: Smart phase detection using phase-specific completion flags
+      let targetPhase = 'session'
+      let targetUrl = `/learn/${topicId}`
+
+      // Determine target phase based on current progress
+
+      // SIMPLIFIED LOGIC: Use phase + status for compatibility with current schema
+      if (phase === 'session' && status === 'completed') {
+        // Session completed → Go to playtime
+        targetPhase = 'playtime'
+        targetUrl = `/learn/${topicId}?phase=playtime`
+        // Session completed, move to playtime
+      } else if (phase === 'playtime' && status === 'in_progress') {
+        // User is in playtime → Continue playtime
+        targetPhase = 'playtime'
+        targetUrl = `/learn/${topicId}?phase=playtime`
+        // Continue playtime phase
+      } else if (phase === 'assignment') {
+        // User is in assignments → Continue assignment
+        targetPhase = 'assignment'
+        targetUrl = `/learn/${topicId}?phase=assignment`
+        // Continue assignments phase
+      } else if (phase === 'session' && status === 'in_progress') {
+        // Session in progress → Continue session
+        targetPhase = 'session'
+        targetUrl = `/learn/${topicId}`
+        // Continue session phase
+      } else {
+        // Default fallback
+        targetPhase = phase || 'session'
+        targetUrl = phase === 'playtime' ? `/learn/${topicId}?phase=playtime` : 
+                   phase === 'assignment' ? `/learn/${topicId}?phase=assignment` : 
+                   `/learn/${topicId}`
+        // Continue current phase
+      }
+
+      navigate(targetUrl)
       return
     }
 
-    // Priority 3: Start with first topic of selected course
+    // No progress found - start with first topic of selected course
     const selectedCourseData = courses.find(c => c.id === selectedCourse)
     const firstTopic = selectedCourseData?.topics?.[0]
     if (firstTopic) {
-      console.log('🎯 Starting with first topic of course:', firstTopic.id)
+      // No progress found, start with first topic
       navigate(`/learn/${firstTopic.id}`)
     }
   }
@@ -179,14 +270,14 @@ const Dashboard = () => {
     const topicProgress = userProgress.find(p => p.topic_id === topicId)
     if (!topicProgress) return 'not_started'
 
-    // Only consider fully completed if both status and phase are 'completed'
-    if (topicProgress.status === 'completed' && topicProgress.phase === 'completed') {
+    // Only consider fully completed if topic_completed is true
+    if (topicProgress.status === 'completed' && topicProgress.topic_completed === true) {
       return 'completed'
     }
 
     // If started but not fully completed, show as in_progress
     if (topicProgress.status === 'in_progress' ||
-      (topicProgress.status === 'completed' && topicProgress.phase !== 'completed')) {
+      (topicProgress.status === 'completed' && topicProgress.topic_completed !== true)) {
       return 'in_progress'
     }
 
@@ -222,13 +313,14 @@ const Dashboard = () => {
   const selectedCourseData = courses.find(c => c.id === selectedCourse)
   const currentProgressSummary = updateProgressForCourse(selectedCourse)
 
-  // Only show topics that are FULLY completed (all 4 phases: session, playtime, assignment, feedback)
+  // Only show topics that are FULLY completed (topic_completed = true)
   const completedTopics = userProgress.filter(p =>
-    p.status === 'completed' && p.phase === 'completed'
+    p.status === 'completed' && p.topic_completed === true
   )
 
   return (
-    <div className={`dashboard ${showMobileMenu ? 'mobile-menu-open' : ''}`}>
+    <ErrorBoundary>
+      <div ref={dashboardRef} className={`dashboard ${showMobileMenu ? 'mobile-menu-open' : ''}`}>
       {/* Mobile Menu Toggle */}
       <button
         className="mobile-menu-toggle"
@@ -367,6 +459,11 @@ const Dashboard = () => {
           )}
         </div>
 
+        {/* Recent Activity */}
+        <Suspense fallback={<ComponentLoader height="300px" text="Loading recent activity..." />}>
+          <RecentActivity userId={user?.id} />
+        </Suspense>
+
         {/* Completed Topics */}
         {completedTopics.length > 0 && (
           <div className="completed-section">
@@ -395,6 +492,7 @@ const Dashboard = () => {
 
       </div>
     </div>
+    </ErrorBoundary>
   )
 }
 

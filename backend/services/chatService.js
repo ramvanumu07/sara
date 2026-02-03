@@ -1,7 +1,6 @@
 /**
  * Chat Service - Sara Learning Platform
- * Industry-level chat storage using simple string format
- * Format: "AGENT: message\nUSER: message\nAGENT: message\n"
+ * Industry-level chat storage with structured JSON format
  */
 
 import { createClient } from '@supabase/supabase-js'
@@ -18,278 +17,303 @@ function getSupabaseClient() {
   return createClient(supabaseUrl, supabaseKey, {
     db: { schema: 'public' },
     auth: { autoRefreshToken: false, persistSession: false },
-    global: { headers: { 'x-application-name': 'sara-chat' } }
+    global: { headers: { 'x-application-name': 'sara-chat-v2' } }
   })
 }
 
-// ============ CORE CHAT FUNCTIONS ============
+// ============ STRUCTURED CHAT OPERATIONS ============
 
 /**
- * Get chat history for a topic as a string
- * @param {string} userId - User ID
- * @param {string} topicId - Topic ID
- * @returns {Promise<string>} - Chat history in "AGENT: ...\nUSER: ..." format
+ * Get chat history as structured messages array
  */
 export async function getChatHistory(userId, topicId) {
+  const client = getSupabaseClient()
+  
+  console.log(`🔍 Fetching structured chat history: ${userId}/${topicId}`)
+  
   try {
-    const supabase = getSupabaseClient()
-
-    const { data, error } = await supabase
+    const { data, error } = await client
       .from('chat_sessions')
-      .select('messages')
+      .select('messages, message_count, phase')
       .eq('user_id', userId)
       .eq('topic_id', topicId)
       .single()
 
-    if (error && error.code !== 'PGRST116') {
-      throw error
+    if (error) {
+      if (error.code === 'PGRST116') { // No rows found
+        console.log(`📝 No chat history found - returning empty array`)
+        return []
+      }
+      throw new Error(`Database error: ${error.message}`)
     }
 
-    return data?.messages || ''
-  } catch (error) {
-    console.error('Error getting chat history:', error)
-    return ''
-  }
-}
+    let messages = []
+    const rawMessages = data?.messages || ''
 
-/**
- * Get last N messages from chat history
- * @param {string} userId - User ID
- * @param {string} topicId - Topic ID
- * @param {number} limit - Number of messages to retrieve (default 10)
- * @returns {Promise<string>} - Last N messages in string format
- */
-export async function getLastMessages(userId, topicId, limit = 10) {
-  try {
-    const fullHistory = await getChatHistory(userId, topicId)
-    if (!fullHistory) return ''
-
-    // Split by message boundaries and get last N
-    const messages = fullHistory.split(/(?=AGENT:|USER:)/).filter(msg => msg.trim())
-    const lastMessages = messages.slice(-limit)
-
-    return lastMessages.join('')
-  } catch (error) {
-    console.error('Error getting last messages:', error)
-    return ''
-  }
-}
-
-/**
- * Append new message to chat history
- * @param {string} userId - User ID
- * @param {string} topicId - Topic ID
- * @param {string} role - 'AGENT' or 'USER'
- * @param {string} content - Message content
- * @returns {Promise<boolean>} - Success status
- */
-export async function appendMessage(userId, topicId, role, content) {
-  try {
-    const supabase = getSupabaseClient()
-
-    // Get current history
-    const currentHistory = await getChatHistory(userId, topicId)
-
-    // Append new message
-    const newMessage = `${role}: ${content}\n`
-    const updatedHistory = currentHistory + newMessage
-
-    // Upsert (insert or update)
-    const { error } = await supabase
-      .from('chat_sessions')
-      .upsert({
-        user_id: userId,
-        topic_id: topicId,
-        messages: updatedHistory,
-        phase: 'session',
-        updated_at: new Date().toISOString()
-      }, {
-        onConflict: 'user_id,topic_id'
-      })
-
-    if (error) throw error
-
-    return true
-  } catch (error) {
-    console.error('Error appending message:', error)
-    return false
-  }
-}
-
-/**
- * Save a complete conversation turn (user message + AI response)
- * @param {string} userId - User ID
- * @param {string} topicId - Topic ID
- * @param {string} userMessage - User's message
- * @param {string} aiResponse - AI's response
- * @returns {Promise<boolean>} - Success status
- */
-export async function saveChatTurn(userId, topicId, userMessage, aiResponse) {
-  try {
-    const supabase = getSupabaseClient()
-
-    // Get current history
-    const currentHistory = await getChatHistory(userId, topicId)
-
-    // Append both messages
-    const newTurn = `USER: ${userMessage}\nAGENT: ${aiResponse}\n`
-    const updatedHistory = currentHistory + newTurn
-
-    // Upsert (insert or update)
-    const { error } = await supabase
-      .from('chat_sessions')
-      .upsert({
-        user_id: userId,
-        topic_id: topicId,
-        messages: updatedHistory,
-        phase: 'session',
-        updated_at: new Date().toISOString()
-      }, {
-        onConflict: 'user_id,topic_id'
-      })
-
-    if (error) throw error
-
-    console.log(`✅ Chat turn saved: User ${userId}, Topic ${topicId}`)
-    return true
-  } catch (error) {
-    console.error('Error saving chat turn:', error)
-    return false
-  }
-}
-
-/**
- * Save initial AI message (for session start)
- * @param {string} userId - User ID
- * @param {string} topicId - Topic ID
- * @param {string} aiMessage - Initial AI message
- * @returns {Promise<{wasCreated: boolean, conversationHistory: string}>}
- */
-export async function saveInitialMessage(userId, topicId, aiMessage) {
-  try {
-    const supabase = getSupabaseClient()
-
-    // Check if conversation already exists
-    const { data: existing } = await supabase
-      .from('chat_sessions')
-      .select('messages')
-      .eq('user_id', userId)
-      .eq('topic_id', topicId)
-      .single()
-
-    if (existing && existing.messages && existing.messages.trim()) {
-      // Conversation exists, return it
-      return {
-        wasCreated: false,
-        conversationHistory: existing.messages
+    // Handle both old text format and new JSON format
+    if (rawMessages) {
+      try {
+        // Try to parse as JSON first (new format)
+        messages = JSON.parse(rawMessages)
+        if (!Array.isArray(messages)) {
+          throw new Error('Invalid JSON format')
+        }
+      } catch (jsonError) {
+        // Fallback to parsing old text format
+        messages = parseTextToMessages(rawMessages)
       }
     }
 
-    // Create new conversation with initial message
-    const initialHistory = `AGENT: ${aiMessage}\n`
+    console.log(`✅ Chat history retrieved: ${messages.length} messages`)
+    return messages
 
-    const { error } = await supabase
+  } catch (error) {
+    console.error(`❌ Failed to get chat history:`, error)
+    throw error
+  }
+}
+
+/**
+ * Parse old text format to structured messages
+ */
+function parseTextToMessages(conversationText) {
+  if (!conversationText || typeof conversationText !== 'string') {
+    return []
+  }
+
+  const messages = []
+  const lines = conversationText.split('\n')
+  let currentMessage = null
+  let currentContent = []
+
+  for (const line of lines) {
+    if (line.startsWith('USER: ')) {
+      // Save previous message if exists
+      if (currentMessage && currentContent.length > 0) {
+        messages.push({
+          role: currentMessage.role,
+          content: currentContent.join('\n').trim(),
+          timestamp: new Date().toISOString()
+        })
+      }
+      
+      currentMessage = { role: 'user' }
+      currentContent = [line.substring(6)]
+    } else if (line.startsWith('AGENT: ')) {
+      // Save previous message if exists
+      if (currentMessage && currentContent.length > 0) {
+        messages.push({
+          role: currentMessage.role,
+          content: currentContent.join('\n').trim(),
+          timestamp: new Date().toISOString()
+        })
+      }
+      
+      currentMessage = { role: 'assistant' }
+      currentContent = [line.substring(7)]
+    } else if (currentMessage) {
+      // Continue current message (preserves multi-line content)
+      currentContent.push(line)
+    }
+  }
+
+  // Don't forget the last message
+  if (currentMessage && currentContent.length > 0) {
+    messages.push({
+      role: currentMessage.role,
+      content: currentContent.join('\n').trim(),
+      timestamp: new Date().toISOString()
+    })
+  }
+
+  return messages
+}
+
+/**
+ * Save a single chat turn with structured format
+ */
+export async function saveChatTurn(userId, topicId, userMessage, aiResponse, phase = 'session') {
+  const client = getSupabaseClient()
+  
+  console.log(`💾 Saving structured chat turn: ${userId}/${topicId}`)
+  
+  try {
+    // Get current messages
+    const currentMessages = await getChatHistory(userId, topicId)
+    
+    // Add new messages
+    const newMessages = [
+      {
+        role: 'user',
+        content: userMessage.trim(),
+        timestamp: new Date().toISOString()
+      },
+      {
+        role: 'assistant',
+        content: aiResponse.trim(),
+        timestamp: new Date().toISOString()
+      }
+    ]
+
+    const updatedMessages = [...currentMessages, ...newMessages]
+    
+    // Keep only last 100 messages (50 pairs)
+    const trimmedMessages = updatedMessages.slice(-100)
+    const messagesJson = JSON.stringify(trimmedMessages, null, 0)
+
+    // Upsert chat session
+    const { error } = await client
       .from('chat_sessions')
       .upsert({
         user_id: userId,
         topic_id: topicId,
-        messages: initialHistory,
-        phase: 'session',
+        messages: messagesJson,
+        message_count: trimmedMessages.length,
+        phase: phase,
+        last_message_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }, {
+        onConflict: 'user_id,topic_id'
+      })
+
+    if (error) {
+      throw new Error(`Failed to save chat turn: ${error.message}`)
+    }
+
+    console.log(`✅ Chat turn saved successfully: ${trimmedMessages.length} total messages`)
+    return trimmedMessages
+
+  } catch (error) {
+    console.error(`❌ Failed to save chat turn:`, error)
+    throw error
+  }
+}
+
+/**
+ * Save initial message (welcome message)
+ */
+export async function saveInitialMessage(userId, topicId, message, phase = 'session') {
+  const client = getSupabaseClient()
+  
+  console.log(`💾 Saving initial message: ${userId}/${topicId}`)
+  
+  try {
+    const initialMessage = {
+      role: 'assistant',
+      content: message.trim(),
+      timestamp: new Date().toISOString()
+    }
+
+    const messagesJson = JSON.stringify([initialMessage], null, 0)
+
+    const { error } = await client
+      .from('chat_sessions')
+      .upsert({
+        user_id: userId,
+        topic_id: topicId,
+        messages: messagesJson,
+        message_count: 1,
+        phase: phase,
+        last_message_at: new Date().toISOString(),
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       }, {
         onConflict: 'user_id,topic_id'
       })
 
-    if (error) throw error
+    if (error) {
+      throw new Error(`Failed to save initial message: ${error.message}`)
+    }
 
-    console.log(`✅ Initial message saved: User ${userId}, Topic ${topicId}`)
-    return {
-      wasCreated: true,
-      conversationHistory: initialHistory
-    }
+    console.log(`✅ Initial message saved successfully`)
+    return [initialMessage]
+
   } catch (error) {
-    console.error('Error saving initial message:', error)
-    return {
-      wasCreated: false,
-      conversationHistory: ''
-    }
+    console.error(`❌ Failed to save initial message:`, error)
+    throw error
   }
 }
 
 /**
  * Clear chat history for a topic
- * @param {string} userId - User ID
- * @param {string} topicId - Topic ID
- * @returns {Promise<boolean>} - Success status
  */
 export async function clearChatHistory(userId, topicId) {
+  const client = getSupabaseClient()
+  
+  console.log(`🗑️ Clearing chat history: ${userId}/${topicId}`)
+  
   try {
-    const supabase = getSupabaseClient()
-
-    const { error } = await supabase
+    const { error } = await client
       .from('chat_sessions')
       .delete()
       .eq('user_id', userId)
       .eq('topic_id', topicId)
 
-    if (error) throw error
-
-    console.log(`✅ Chat history cleared: User ${userId}, Topic ${topicId}`)
-    return true
-  } catch (error) {
-    console.error('Error clearing chat history:', error)
-    return false
-  }
-}
-
-/**
- * Parse string history to array format (for frontend display)
- * @param {string} history - String history in "AGENT: ...\nUSER: ..." format
- * @returns {Array} - Array of message objects
- */
-export function parseHistoryToMessages(history) {
-  if (!history || typeof history !== 'string') return []
-
-  const messages = []
-  
-  // Split by message markers, not by newlines
-  const messageParts = history.split(/(?=AGENT:|USER:)/).filter(part => part.trim())
-  
-  for (const part of messageParts) {
-    const trimmedPart = part.trim()
-    
-    if (trimmedPart.startsWith('AGENT: ')) {
-      // Extract everything after "AGENT: " including newlines
-      const content = trimmedPart.substring(7).trim()
-      if (content) {
-        messages.push({
-          role: 'assistant',
-          content: content,
-          timestamp: new Date().toISOString()
-        })
-      }
-    } else if (trimmedPart.startsWith('USER: ')) {
-      // Extract everything after "USER: " including newlines
-      const content = trimmedPart.substring(6).trim()
-      if (content) {
-        messages.push({
-          role: 'user',
-          content: content,
-          timestamp: new Date().toISOString()
-        })
-      }
+    if (error) {
+      throw new Error(`Failed to clear chat history: ${error.message}`)
     }
-  }
 
-  console.log(`📝 Parsed ${messages.length} messages from history`)
-  return messages
+    console.log(`✅ Chat history cleared successfully`)
+
+  } catch (error) {
+    console.error(`❌ Failed to clear chat history:`, error)
+    throw error
+  }
 }
 
 /**
- * Legacy compatibility function
- * @deprecated Use getChatHistory instead
+ * Get chat messages in old string format (for backward compatibility)
  */
 export async function getChatHistoryString(userId, topicId) {
-  return await getChatHistory(userId, topicId)
+  try {
+    const messages = await getChatHistory(userId, topicId)
+    
+    if (messages.length === 0) {
+      return ''
+    }
+
+    // Convert structured messages back to text format
+    const textLines = []
+    for (const message of messages) {
+      const prefix = message.role === 'user' ? 'USER: ' : 'AGENT: '
+      textLines.push(prefix + message.content)
+    }
+
+    return textLines.join('\n')
+
+  } catch (error) {
+    console.error('Error converting messages to string:', error)
+    return ''
+  }
+}
+
+/**
+ * Get recent messages for context
+ */
+export async function getLastMessages(userId, topicId, count = 10) {
+  try {
+    const messages = await getChatHistory(userId, topicId)
+    return messages.slice(-count)
+  } catch (error) {
+    console.error('Error getting last messages:', error)
+    return []
+  }
+}
+
+/**
+ * Parse history to messages (for compatibility)
+ */
+export function parseHistoryToMessages(historyString) {
+  if (!historyString) return []
+  return parseTextToMessages(historyString)
+}
+
+export default {
+  getChatHistory,
+  saveChatTurn,
+  saveInitialMessage,
+  clearChatHistory,
+  getChatHistoryString,
+  getLastMessages,
+  parseHistoryToMessages
 }
