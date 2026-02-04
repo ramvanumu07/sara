@@ -1027,19 +1027,19 @@ const Learn = () => {
 
                           // Execute code securely on server
                           const response = await learning.executeCode(userCode, topicId)
-                          
+
                           if (response.data.success) {
                             const execution = response.data.data.execution
-                            
+
                             if (execution.success) {
                               const outputText = execution.output || 'No output'
                               outputDiv.innerHTML = `<pre style="margin: 0; color: #10a37f; font-family: Monaco, monospace; line-height: 1.4; white-space: pre-wrap; word-break: break-word;">${outputText}</pre>`
-                              
+
                               // Enable AI analysis button and clear previous analysis
                               if (aiDiv) {
                                 aiDiv.innerHTML = '<div style="color: #6b7280; font-style: italic;">Click "Explain Code" to get AI analysis of your code and output</div>'
                               }
-                              
+
                               // Store execution state for AI analysis
                               setLastExecutionState({
                                 code: userCode,
@@ -1049,12 +1049,12 @@ const Learn = () => {
                             } else {
                               const errorMessage = execution.error || 'Unknown error'
                               outputDiv.innerHTML = `<pre style="margin: 0; color: #dc2626; font-family: Monaco, monospace; line-height: 1.4; white-space: pre-wrap; word-break: break-word;">${errorMessage}</pre>`
-                              
+
                               // Enable AI analysis for errors too
                               if (aiDiv) {
                                 aiDiv.innerHTML = '<div style="color: #6b7280; font-style: italic;">Click "Explain Code" to get help with this error</div>'
                               }
-                              
+
                               // Store execution state for AI analysis
                               setLastExecutionState({
                                 code: userCode,
@@ -1065,7 +1065,7 @@ const Learn = () => {
                           } else {
                             const errorMessage = response.data.message || 'Server error'
                             outputDiv.innerHTML = `<pre style="margin: 0; color: #dc2626; font-family: Monaco, monospace;">Server Error: ${errorMessage}</pre>`
-                            
+
                             setLastExecutionState({
                               code: userCode,
                               output: errorMessage,
@@ -1076,7 +1076,7 @@ const Learn = () => {
                           console.error('Code execution error:', error)
                           const errorMessage = `Network Error: ${error.message}`
                           outputDiv.innerHTML = `<pre style="margin: 0; color: #dc2626; font-family: Monaco, monospace;">${errorMessage}</pre>`
-                          
+
                           setLastExecutionState({
                             code: userCode,
                             output: errorMessage,
@@ -1637,16 +1637,16 @@ const Learn = () => {
                         console.log('✅ Assignment completed via progress manager:', completionResponse.data)
                       } catch (error) {
                         console.error('❌ Error marking assignment complete:', error)
-                        
+
                         // Show error message to user
                         const errorMessage = error.response?.data?.error || error.message || 'Failed to complete assignment'
-                        
+
                         if (errorMessage.includes('tests are failing')) {
                           alert('❌ Cannot advance to next assignment!\n\nYour code must pass all tests before you can continue. Please:\n\n1. Click "Submit" to run the tests\n2. Fix any failing tests\n3. Try "Next" again when all tests pass')
                         } else {
                           alert(`❌ Error completing assignment: ${errorMessage}`)
                         }
-                        
+
                         return // Don't advance if assignment completion failed
                       }
 
@@ -1750,14 +1750,14 @@ const Learn = () => {
 
                     // Execute code securely on server
                     const response = await learning.executeCode(userCode, topicId, currentAssignmentIndex)
-                    
+
                     if (response.data.success) {
                       const execution = response.data.data.execution
-                      
+
                       if (execution.success) {
                         const outputText = execution.output || 'No output'
                         outputDiv.innerHTML = `<pre style="margin: 0; color: #10a37f; font-family: Monaco, monospace; line-height: 1.4; white-space: pre-wrap; word-break: break-word;">${outputText}</pre>`
-                        
+
                         // Store execution state
                         setLastExecutionState({
                           code: userCode,
@@ -1767,7 +1767,7 @@ const Learn = () => {
                       } else {
                         const errorMessage = execution.error || 'Unknown error'
                         outputDiv.innerHTML = `<pre style="margin: 0; color: #dc2626; font-family: Monaco, monospace; line-height: 1.4; white-space: pre-wrap; word-break: break-word;">${errorMessage}</pre>`
-                        
+
                         // Store error state
                         setLastExecutionState({
                           code: userCode,
@@ -1818,7 +1818,7 @@ const Learn = () => {
 
                     // Execute code securely on server with test validation
                     const response = await learning.executeCode(userCode, topicId, currentAssignmentIndex)
-                    
+
                     if (response.data.success) {
                       const execution = response.data.data.execution
                       setTestResults(execution.testResults || [])
@@ -1829,13 +1829,13 @@ const Learn = () => {
                         const allPassed = execution.allTestsPassed
                         const resultColor = allPassed ? '#10a37f' : '#dc2626'
                         const statusText = allPassed ? 'PASSED ✓' : 'FAILED ✗'
-                        
+
                         let outputHtml = `<pre style="margin: 0; color: #111827; font-family: Monaco, monospace; line-height: 1.4;">`
-                        
+
                         if (execution.output) {
                           outputHtml += `Output: ${execution.output}\n\n`
                         }
-                        
+
                         if (execution.testResults && execution.testResults.length > 0) {
                           outputHtml += `Test Results:\n`
                           execution.testResults.forEach((test, index) => {
@@ -1846,7 +1846,7 @@ const Learn = () => {
                         } else {
                           outputHtml += `Result: `
                         }
-                        
+
                         outputHtml += `</pre><div style="color: ${resultColor}; font-weight: bold; margin-top: 8px; font-size: 1.1em;">${statusText}</div>`
                         outputDiv.innerHTML = outputHtml
                       }
@@ -1857,14 +1857,14 @@ const Learn = () => {
 
                         try {
                           const feedbackResponse = await learning.getFeedback(topicId, userCode, currentAssignment)
-                          
+
                           if (feedbackResponse.data.success) {
                             const feedback = feedbackResponse.data.data.feedback
                             reviewDiv.innerHTML = `<div style="color: #111827; line-height: 1.5; white-space: pre-wrap;">${feedback}</div>`
                           } else {
                             // Enhanced fallback review
                             let review = `**Code Review:**\n\n`
-                            
+
                             if (execution.allTestsPassed) {
                               review += `🎉 **Excellent work!** Your solution passes all test cases.\n\n`
                               review += `**What you did well:**\n`
@@ -1890,14 +1890,14 @@ const Learn = () => {
                               review += `- Test with the expected values\n\n`
                               review += `💪 **Keep trying!** You're on the right track.`
                             }
-                            
+
                             reviewDiv.innerHTML = `<div style="color: #111827; line-height: 1.5; white-space: pre-wrap;">${review}</div>`
                           }
                         } catch (feedbackError) {
                           console.error('Feedback generation failed:', feedbackError)
                           // Simple fallback without AI
                           const isSuccess = execution.allTestsPassed
-                          const message = isSuccess 
+                          const message = isSuccess
                             ? `✅ **Great job!** All tests passed. Click "Next" to continue.`
                             : `❌ **Keep trying!** Some tests failed. Check the output above and adjust your code.`
                           reviewDiv.innerHTML = `<div style="color: #111827; line-height: 1.5;">${message}</div>`
@@ -1940,305 +1940,305 @@ const Learn = () => {
             </div>
           </div>
         ) : (
-    // Regular Learning Interface (Session/Feedback) 
-    <>
-      {!sessionStarted ? (
-        // Topic Overview - Only show if no existing history
-        <div style={{
-          backgroundColor: '#ffffff',
-          border: '1px solid #e5e7eb',
-          borderRadius: '12px',
-          padding: '32px',
-          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-          maxWidth: '800px',
-          margin: '0 auto'
-        }}>
-          <h3 style={{
-            fontSize: '1.5rem',
-            fontWeight: '700',
-            color: '#111827',
-            marginBottom: '16px'
-          }}>
-            {topic.title}
-          </h3>
-
-          <div style={{ marginBottom: '24px' }}>
-            <h4 style={{
-              fontSize: '1.125rem',
-              fontWeight: '600',
-              color: '#111827',
-              marginBottom: '12px'
-            }}>
-              Learning Objectives:
-            </h4>
-            <ul style={{ paddingLeft: '20px', color: '#6b7280' }}>
-              {topic.outcomes?.map((outcome, index) => (
-                <li key={index} style={{ marginBottom: '8px' }}>
-                  {outcome}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div style={{
-            backgroundColor: '#f0f9ff',
-            border: '1px solid #bae6fd',
-            borderRadius: '8px',
-            padding: '16px',
-            marginBottom: '24px'
-          }}>
-            <p style={{
-              color: '#0c4a6e',
-              margin: 0,
-              fontSize: '0.875rem'
-            }}>
-              💡 Ready to start your personalized learning session with Sara?
-              This topic contains {topic.tasks?.length || 0} practice tasks that we'll work through together.
-            </p>
-          </div>
-
-          {chatError && (
-            <div style={{
-              backgroundColor: '#fef2f2',
-              border: '1px solid #fecaca',
-              borderRadius: '8px',
-              padding: '16px',
-              marginBottom: '24px'
-            }}>
-              <p style={{
-                color: '#dc2626',
-                margin: 0,
-                fontSize: '0.875rem'
-              }}>
-                ❌ {chatError}
-              </p>
-            </div>
-          )}
-
-          <button
-            onClick={startSession}
-            disabled={isTyping || !historyChecked}
-            style={{
-              padding: '16px 32px',
-              backgroundColor: isTyping ? '#9ca3af' : '#10a37f',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              cursor: isTyping ? 'not-allowed' : 'pointer',
-              fontSize: '1.1rem',
-              fontWeight: '600',
-              width: '100%',
-              transition: 'background-color 0.2s',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px'
-            }}
-          >
-            {isTyping ? (
-              <>
-                <div style={{
-                  width: '16px',
-                  height: '16px',
-                  border: '2px solid #ffffff',
-                  borderTop: '2px solid transparent',
-                  borderRadius: '50%',
-                  animation: 'spin 1s linear infinite'
-                }}></div>
-                Starting Session...
-              </>
-            ) : (
-              <>
-                🚀 Continue Learning with Sara
-              </>
-            )}
-          </button>
-        </div>
-      ) : (
-        // Chat Interface - Full Screen (NO CONTAINER)
-        <>
-          {/* Chat Messages - Full Screen */}
-          <div className="chat-messages" style={{
-            flex: 1,
-            overflowY: 'auto',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '12px',
-            padding: '24px 32px',
-            backgroundColor: '#ffffff',
-            WebkitOverflowScrolling: 'touch'
-          }}>
-            {messages.map((message, index) => (
-              <div key={index} style={{
-                display: 'flex',
-                justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start',
-                width: '100%',
-                maxWidth: '1000px',
+          // Regular Learning Interface (Session/Feedback) 
+          <>
+            {!sessionStarted ? (
+              // Topic Overview - Only show if no existing history
+              <div style={{
+                backgroundColor: '#ffffff',
+                border: '1px solid #e5e7eb',
+                borderRadius: '12px',
+                padding: '32px',
+                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                maxWidth: '800px',
                 margin: '0 auto'
               }}>
-                <div className={`message-bubble ${message.role === 'user' ? 'user-message' : ''}`} style={{
-                  maxWidth: message.role === 'user' ? '70%' : '85%',
-                  padding: '12px 16px',
-                  borderRadius: message.role === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
-                  backgroundColor: message.role === 'user' ? '#10a37f' : '#f8f9fa',
-                  border: message.role === 'assistant' ? '1px solid #e9ecef' : 'none',
-                  color: message.role === 'user' ? 'white' : '#212529',
-                  fontSize: '0.95rem',
-                  lineHeight: '1.5',
-                  boxShadow: message.role === 'user' ? '0 2px 6px rgba(16, 163, 127, 0.2)' : '0 1px 3px rgba(0, 0, 0, 0.1)',
-                  position: 'relative',
-                  wordBreak: 'break-word'
+                <h3 style={{
+                  fontSize: '1.5rem',
+                  fontWeight: '700',
+                  color: '#111827',
+                  marginBottom: '16px'
                 }}>
-                  {message.role === 'assistant' && (
-                    <div style={{
-                      fontSize: '0.75rem',
-                      opacity: 0.7,
-                      marginBottom: '4px',
-                      fontWeight: '600',
-                      color: '#10a37f'
+                  {topic.title}
+                </h3>
+
+                <div style={{ marginBottom: '24px' }}>
+                  <h4 style={{
+                    fontSize: '1.125rem',
+                    fontWeight: '600',
+                    color: '#111827',
+                    marginBottom: '12px'
+                  }}>
+                    Learning Objectives:
+                  </h4>
+                  <ul style={{ paddingLeft: '20px', color: '#6b7280' }}>
+                    {topic.outcomes?.map((outcome, index) => (
+                      <li key={index} style={{ marginBottom: '8px' }}>
+                        {outcome}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div style={{
+                  backgroundColor: '#f0f9ff',
+                  border: '1px solid #bae6fd',
+                  borderRadius: '8px',
+                  padding: '16px',
+                  marginBottom: '24px'
+                }}>
+                  <p style={{
+                    color: '#0c4a6e',
+                    margin: 0,
+                    fontSize: '0.875rem'
+                  }}>
+                    💡 Ready to start your personalized learning session with Sara?
+                    This topic contains {topic.tasks?.length || 0} practice tasks that we'll work through together.
+                  </p>
+                </div>
+
+                {chatError && (
+                  <div style={{
+                    backgroundColor: '#fef2f2',
+                    border: '1px solid #fecaca',
+                    borderRadius: '8px',
+                    padding: '16px',
+                    marginBottom: '24px'
+                  }}>
+                    <p style={{
+                      color: '#dc2626',
+                      margin: 0,
+                      fontSize: '0.875rem'
                     }}>
-                      Sara
+                      ❌ {chatError}
+                    </p>
+                  </div>
+                )}
+
+                <button
+                  onClick={startSession}
+                  disabled={isTyping || !historyChecked}
+                  style={{
+                    padding: '16px 32px',
+                    backgroundColor: isTyping ? '#9ca3af' : '#10a37f',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    cursor: isTyping ? 'not-allowed' : 'pointer',
+                    fontSize: '1.1rem',
+                    fontWeight: '600',
+                    width: '100%',
+                    transition: 'background-color 0.2s',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px'
+                  }}
+                >
+                  {isTyping ? (
+                    <>
+                      <div style={{
+                        width: '16px',
+                        height: '16px',
+                        border: '2px solid #ffffff',
+                        borderTop: '2px solid transparent',
+                        borderRadius: '50%',
+                        animation: 'spin 1s linear infinite'
+                      }}></div>
+                      Starting Session...
+                    </>
+                  ) : (
+                    <>
+                      🚀 Continue Learning with Sara
+                    </>
+                  )}
+                </button>
+              </div>
+            ) : (
+              // Chat Interface - Full Screen (NO CONTAINER)
+              <>
+                {/* Chat Messages - Full Screen */}
+                <div className="chat-messages" style={{
+                  flex: 1,
+                  overflowY: 'auto',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px',
+                  padding: '24px 32px',
+                  backgroundColor: '#ffffff',
+                  WebkitOverflowScrolling: 'touch'
+                }}>
+                  {messages.map((message, index) => (
+                    <div key={index} style={{
+                      display: 'flex',
+                      justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start',
+                      width: '100%',
+                      maxWidth: '1000px',
+                      margin: '0 auto'
+                    }}>
+                      <div className={`message-bubble ${message.role === 'user' ? 'user-message' : ''}`} style={{
+                        maxWidth: message.role === 'user' ? '70%' : '85%',
+                        padding: '12px 16px',
+                        borderRadius: message.role === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
+                        backgroundColor: message.role === 'user' ? '#10a37f' : '#f8f9fa',
+                        border: message.role === 'assistant' ? '1px solid #e9ecef' : 'none',
+                        color: message.role === 'user' ? 'white' : '#212529',
+                        fontSize: '0.95rem',
+                        lineHeight: '1.5',
+                        boxShadow: message.role === 'user' ? '0 2px 6px rgba(16, 163, 127, 0.2)' : '0 1px 3px rgba(0, 0, 0, 0.1)',
+                        position: 'relative',
+                        wordBreak: 'break-word'
+                      }}>
+                        {message.role === 'assistant' && (
+                          <div style={{
+                            fontSize: '0.75rem',
+                            opacity: 0.7,
+                            marginBottom: '4px',
+                            fontWeight: '600',
+                            color: '#10a37f'
+                          }}>
+                            Sara
+                          </div>
+                        )}
+                        <MessageContent content={message.content} role={message.role} />
+                      </div>
+                    </div>
+                  ))}
+
+                  {isTyping && (
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'flex-start',
+                      width: '100%',
+                      maxWidth: '1000px',
+                      margin: '0 auto'
+                    }}>
+                      <div style={{
+                        maxWidth: '85%',
+                        padding: '12px 16px',
+                        borderRadius: '16px 16px 16px 4px',
+                        backgroundColor: '#f8f9fa',
+                        border: '1px solid #e9ecef',
+                        color: '#212529',
+                        fontSize: '0.95rem',
+                        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+                      }}>
+                        <div style={{
+                          fontSize: '0.75rem',
+                          opacity: 0.7,
+                          marginBottom: '4px',
+                          fontWeight: '600',
+                          color: '#10a37f'
+                        }}>
+                          Sara
+                        </div>
+                        <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                          <div style={{ width: '8px', height: '8px', backgroundColor: '#10a37f', borderRadius: '50%', animation: 'pulse 1.5s infinite' }}></div>
+                          <div style={{ width: '8px', height: '8px', backgroundColor: '#10a37f', borderRadius: '50%', animation: 'pulse 1.5s infinite 0.2s' }}></div>
+                          <div style={{ width: '8px', height: '8px', backgroundColor: '#10a37f', borderRadius: '50%', animation: 'pulse 1.5s infinite 0.4s' }}></div>
+                          <span style={{ marginLeft: '8px', fontSize: '0.9rem', color: '#6c757d' }}>Sara is thinking...</span>
+                        </div>
+                      </div>
                     </div>
                   )}
-                  <MessageContent content={message.content} role={message.role} />
-                </div>
-              </div>
-            ))}
 
-            {isTyping && (
-              <div style={{
-                display: 'flex',
-                justifyContent: 'flex-start',
-                width: '100%',
-                maxWidth: '1000px',
-                margin: '0 auto'
-              }}>
-                <div style={{
-                  maxWidth: '85%',
-                  padding: '12px 16px',
-                  borderRadius: '16px 16px 16px 4px',
-                  backgroundColor: '#f8f9fa',
-                  border: '1px solid #e9ecef',
-                  color: '#212529',
-                  fontSize: '0.95rem',
-                  boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+                  <div ref={messagesEndRef} />
+                </div>
+
+                {/* Chat Error */}
+                {chatError && (
+                  <div style={{
+                    padding: '16px 32px',
+                    backgroundColor: '#fef2f2',
+                    borderTop: '1px solid #fecaca',
+                    color: '#dc2626',
+                    fontSize: '1rem',
+                    textAlign: 'center'
+                  }}>
+                    ❌ {chatError}
+                  </div>
+                )}
+
+                {/* Chat Input - Full Width */}
+                <div className="chat-input-container" style={{
+                  padding: '16px 32px 24px',
+                  borderTop: '1px solid #e5e7eb',
+                  backgroundColor: '#ffffff',
+                  flexShrink: 0
                 }}>
                   <div style={{
-                    fontSize: '0.75rem',
-                    opacity: 0.7,
-                    marginBottom: '4px',
-                    fontWeight: '600',
-                    color: '#10a37f'
+                    display: 'flex',
+                    gap: '16px',
+                    alignItems: 'flex-end',
+                    maxWidth: '1000px',
+                    margin: '0 auto',
+                    width: '100%'
                   }}>
-                    Sara
-                  </div>
-                  <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                    <div style={{ width: '8px', height: '8px', backgroundColor: '#10a37f', borderRadius: '50%', animation: 'pulse 1.5s infinite' }}></div>
-                    <div style={{ width: '8px', height: '8px', backgroundColor: '#10a37f', borderRadius: '50%', animation: 'pulse 1.5s infinite 0.2s' }}></div>
-                    <div style={{ width: '8px', height: '8px', backgroundColor: '#10a37f', borderRadius: '50%', animation: 'pulse 1.5s infinite 0.4s' }}></div>
-                    <span style={{ marginLeft: '8px', fontSize: '0.9rem', color: '#6c757d' }}>Sara is thinking...</span>
+                    <textarea
+                      ref={inputRef}
+                      value={currentMessage}
+                      onChange={(e) => setCurrentMessage(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      placeholder={
+                        currentPhase === 'session' && sessionComplete
+                          ? "Session complete! Click 'Start Practicing' above to continue"
+                          : "Type your message"
+                      }
+                      disabled={isTyping || (currentPhase === 'session' && sessionComplete)}
+                      className="chat-input"
+                      style={{
+                        flex: 1,
+                        padding: '12px 16px',
+                        border: '2px solid #e5e7eb',
+                        borderRadius: '10px',
+                        fontSize: '0.95rem',
+                        fontFamily: 'inherit',
+                        resize: 'none',
+                        minHeight: '44px',
+                        maxHeight: '120px',
+                        backgroundColor: (isTyping || (currentPhase === 'session' && sessionComplete)) ? '#f9fafb' : 'white',
+                        color: (isTyping || (currentPhase === 'session' && sessionComplete)) ? '#9ca3af' : '#111827',
+                        outline: 'none',
+                        transition: 'border-color 0.2s',
+                        borderColor: currentMessage.trim() ? '#10a37f' : '#e5e7eb'
+                      }}
+                      rows="1"
+                    />
+                    <button
+                      onClick={sendMessage}
+                      disabled={!currentMessage.trim() || isTyping || (currentPhase === 'session' && sessionComplete)}
+                      className="send-button"
+                      style={{
+                        padding: '12px 20px',
+                        backgroundColor: (!currentMessage.trim() || isTyping || (currentPhase === 'session' && sessionComplete)) ? '#d1d5db' : '#10a37f',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '10px',
+                        cursor: (!currentMessage.trim() || isTyping || (currentPhase === 'session' && sessionComplete)) ? 'not-allowed' : 'pointer',
+                        fontSize: '0.95rem',
+                        fontWeight: '600',
+                        transition: 'all 0.2s',
+                        minWidth: '80px',
+                        height: '44px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxShadow: (!currentMessage.trim() || isTyping) ? 'none' : '0 1px 4px rgba(16, 163, 127, 0.3)'
+                      }}
+                    >
+                      Send
+                    </button>
                   </div>
                 </div>
-              </div>
+              </>
             )}
-
-            <div ref={messagesEndRef} />
-          </div>
-
-          {/* Chat Error */}
-          {chatError && (
-            <div style={{
-              padding: '16px 32px',
-              backgroundColor: '#fef2f2',
-              borderTop: '1px solid #fecaca',
-              color: '#dc2626',
-              fontSize: '1rem',
-              textAlign: 'center'
-            }}>
-              ❌ {chatError}
-            </div>
-          )}
-
-          {/* Chat Input - Full Width */}
-          <div className="chat-input-container" style={{
-            padding: '16px 32px 24px',
-            borderTop: '1px solid #e5e7eb',
-            backgroundColor: '#ffffff',
-            flexShrink: 0
-          }}>
-            <div style={{
-              display: 'flex',
-              gap: '16px',
-              alignItems: 'flex-end',
-              maxWidth: '1000px',
-              margin: '0 auto',
-              width: '100%'
-            }}>
-              <textarea
-                ref={inputRef}
-                value={currentMessage}
-                onChange={(e) => setCurrentMessage(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder={
-                  currentPhase === 'session' && sessionComplete
-                    ? "Session complete! Click 'Start Practicing' above to continue"
-                    : "Type your message"
-                }
-                disabled={isTyping || (currentPhase === 'session' && sessionComplete)}
-                className="chat-input"
-                style={{
-                  flex: 1,
-                  padding: '12px 16px',
-                  border: '2px solid #e5e7eb',
-                  borderRadius: '10px',
-                  fontSize: '0.95rem',
-                  fontFamily: 'inherit',
-                  resize: 'none',
-                  minHeight: '44px',
-                  maxHeight: '120px',
-                  backgroundColor: (isTyping || (currentPhase === 'session' && sessionComplete)) ? '#f9fafb' : 'white',
-                  color: (isTyping || (currentPhase === 'session' && sessionComplete)) ? '#9ca3af' : '#111827',
-                  outline: 'none',
-                  transition: 'border-color 0.2s',
-                  borderColor: currentMessage.trim() ? '#10a37f' : '#e5e7eb'
-                }}
-                rows="1"
-              />
-              <button
-                onClick={sendMessage}
-                disabled={!currentMessage.trim() || isTyping || (currentPhase === 'session' && sessionComplete)}
-                className="send-button"
-                style={{
-                  padding: '12px 20px',
-                  backgroundColor: (!currentMessage.trim() || isTyping || (currentPhase === 'session' && sessionComplete)) ? '#d1d5db' : '#10a37f',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '10px',
-                  cursor: (!currentMessage.trim() || isTyping || (currentPhase === 'session' && sessionComplete)) ? 'not-allowed' : 'pointer',
-                  fontSize: '0.95rem',
-                  fontWeight: '600',
-                  transition: 'all 0.2s',
-                  minWidth: '80px',
-                  height: '44px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: (!currentMessage.trim() || isTyping) ? 'none' : '0 1px 4px rgba(16, 163, 127, 0.3)'
-                }}
-              >
-                Send
-              </button>
-            </div>
-          </div>
-        </>
-      )}
-    </>
-  )
-}
+          </>
+        )
+        }
       </main >
 
-  {/* CSS Animations and Mobile Styles */ }
-  < style > {`
+      {/* CSS Animations and Mobile Styles */}
+      < style > {`
         @keyframes spin {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }

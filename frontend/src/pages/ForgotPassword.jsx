@@ -3,13 +3,16 @@
  * Security question-based password recovery
  */
 
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { useAuth } from '../contexts/AuthContext'
 import { getSecurityQuestionById } from '../utils/securityQuestions'
 import './Auth.css'
 
 const ForgotPassword = () => {
+  const navigate = useNavigate()
+  const { isAuthenticated } = useAuth()
   const [step, setStep] = useState(1) // 1: username, 2: security question, 3: new password, 4: success
   const [formData, setFormData] = useState({
     usernameOrEmail: '',
@@ -21,6 +24,14 @@ const ForgotPassword = () => {
   const [errors, setErrors] = useState({})
   const [isLoading, setIsLoading] = useState(false)
   const [showNewPassword, setShowNewPassword] = useState(false)
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      console.log('🔄 ForgotPassword: User already authenticated, redirecting to dashboard')
+      navigate('/dashboard', { replace: true })
+    }
+  }, [isAuthenticated, navigate])
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -125,10 +136,55 @@ const ForgotPassword = () => {
       return
     }
 
-    // Just move to step 3 for password entry
-    // We'll verify the security answer when they submit the new password
-    setStep(3)
-    setErrors({})
+    setIsLoading(true)
+
+    try {
+      // Verify security answer first before proceeding to password reset
+      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/auth/verify-security-answer-only`, {
+        usernameOrEmail: formData.usernameOrEmail.trim(),
+        securityAnswer: formData.securityAnswer.trim()
+      })
+
+      if (response.data.success) {
+        // Security answer is correct, proceed to password reset step
+        setStep(3)
+        setErrors({})
+      }
+    } catch (error) {
+      console.error('Security answer verification error:', error)
+      
+      let errorMessage = 'Something went wrong. Please try again.'
+
+      if (error.response) {
+        const status = error.response.status
+        const serverMessage = error.response.data?.error || error.response.data?.message
+
+        switch (status) {
+          case 400:
+            errorMessage = serverMessage || 'Please provide a valid answer'
+            break
+          case 401:
+            errorMessage = 'Incorrect security answer. Please try again.'
+            break
+          case 404:
+            errorMessage = 'Account not found. Please go back and verify your username/email.'
+            break
+          case 429:
+            errorMessage = 'Too many attempts. Please wait before trying again.'
+            break
+          default:
+            if (serverMessage) {
+              errorMessage = serverMessage
+            }
+        }
+      } else if (error.request) {
+        errorMessage = 'Unable to connect to server. Please check your internet connection.'
+      }
+      
+      setErrors({ securityAnswer: errorMessage })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const validateStep3 = () => {
@@ -162,6 +218,7 @@ const ForgotPassword = () => {
     setIsLoading(true)
 
     try {
+      // Since security answer was already verified in Step 2, we just need to reset the password
       const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/auth/verify-security-answer`, {
         usernameOrEmail: formData.usernameOrEmail.trim(),
         securityAnswer: formData.securityAnswer.trim(),
@@ -184,11 +241,13 @@ const ForgotPassword = () => {
 
         switch (status) {
           case 400:
-            errorMessage = serverMessage || 'Invalid password or security answer'
+            errorMessage = serverMessage || 'Invalid password format'
             break
           case 401:
-            errorMessage = 'Incorrect security answer. Please try again.'
-            break
+            // This shouldn't happen since we already verified the answer, but just in case
+            errorMessage = 'Session expired. Please start over.'
+            setStep(1)
+            return
           case 429:
             errorMessage = 'Too many attempts. Please wait before trying again.'
             break

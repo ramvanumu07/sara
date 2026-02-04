@@ -126,7 +126,6 @@ export const progress = {
     params: { _t: Date.now() } // Cache busting
   }),
   getSummary: () => api.get('/learn/progress/summary'),
-  getRecent: (days = 7) => api.get(`/learn/progress/recent?days=${days}`),
   resetAll: () => api.delete('/learn/debug/reset-progress'),
   clearCache: () => api.post('/learn/debug/clear-cache'),
   debugAllSources: () => api.get('/learn/debug/all-data-sources'),

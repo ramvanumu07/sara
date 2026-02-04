@@ -3,7 +3,7 @@
  * Enhanced login with username/email support and forgot password
  */
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { useAuth } from '../contexts/AuthContext'
@@ -16,7 +16,7 @@ const SUBMIT_COOLDOWN = 1000 // 1 second
 
 const Login = () => {
   const navigate = useNavigate()
-  const { login } = useAuth()
+  const { login, isAuthenticated } = useAuth()
   const [formData, setFormData] = useState({
     usernameOrEmail: '',
     password: ''
@@ -26,6 +26,14 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [loginAttempts, setLoginAttempts] = useState(0)
   const [lastAttemptTime, setLastAttemptTime] = useState(0)
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      console.log('🔄 Login: User already authenticated, redirecting to dashboard')
+      navigate('/dashboard', { replace: true })
+    }
+  }, [isAuthenticated, navigate])
 
   const handleChange = (e) => {
     const { name, value } = e.target

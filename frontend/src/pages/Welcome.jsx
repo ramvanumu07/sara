@@ -5,17 +5,26 @@
 
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 import './Welcome.css'
 
 const Welcome = () => {
   const navigate = useNavigate()
+  const { isAuthenticated } = useAuth()
   const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
+    // If user is authenticated, redirect to dashboard
+    if (isAuthenticated) {
+      console.log('🔄 Welcome: User is authenticated, redirecting to dashboard')
+      navigate('/dashboard', { replace: true })
+      return
+    }
+
     // Trigger animations after component mounts
     const timer = setTimeout(() => setIsVisible(true), 100)
     return () => clearTimeout(timer)
-  }, [])
+  }, [isAuthenticated, navigate])
 
   const handleGetStarted = () => {
     navigate('/signup')

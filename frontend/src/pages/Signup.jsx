@@ -3,9 +3,10 @@
  * Enhanced registration with validation and modern design
  */
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { useAuth } from '../contexts/AuthContext'
 import { validatePassword } from '../utils/passwordValidation'
 import PasswordStrengthMeter from '../components/PasswordStrengthMeter'
 import { validateEmail } from '../utils/emailValidation'
@@ -20,6 +21,7 @@ const SUCCESS_REDIRECT_DELAY = 1000 // 1 second
 
 const Signup = () => {
   const navigate = useNavigate()
+  const { isAuthenticated } = useAuth()
   let usernameCheckTimeout = null
   let emailCheckTimeout = null
   const [formData, setFormData] = useState({
@@ -40,6 +42,14 @@ const Signup = () => {
   const [emailExists, setEmailExists] = useState(null)
   const [submitAttempts, setSubmitAttempts] = useState(0)
   const [lastSubmitTime, setLastSubmitTime] = useState(0)
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      console.log('🔄 Signup: User already authenticated, redirecting to dashboard')
+      navigate('/dashboard', { replace: true })
+    }
+  }, [isAuthenticated, navigate])
 
   const handleChange = (e) => {
     const { name, value } = e.target

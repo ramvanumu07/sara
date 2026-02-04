@@ -7,11 +7,11 @@ import express from 'express'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import crypto from 'crypto'
-import { 
-  createUser, 
+import {
+  createUser,
   getUserById,
-  getUserByUsername, 
-  getUserByEmail, 
+  getUserByUsername,
+  getUserByEmail,
   updateUserProfile,
   updateLastLogin,
   createPasswordResetToken,
@@ -72,55 +72,55 @@ export function authenticateToken(req, res, next) {
 
 function validateEmail(email) {
   if (!email) return { isValid: false, errors: ['Email is required'] }
-  
+
   const errors = []
   const trimmedEmail = email.trim().toLowerCase()
-  
+
   // Basic format validation
   const basicEmailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   if (!basicEmailRegex.test(trimmedEmail)) {
     errors.push('Please enter a valid email address')
     return { isValid: false, errors }
   }
-  
+
   // Advanced format validation
   const advancedEmailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
   if (!advancedEmailRegex.test(trimmedEmail)) {
     errors.push('Email format is not valid')
     return { isValid: false, errors }
   }
-  
+
   const [localPart, domain] = trimmedEmail.split('@')
-  
+
   // Local part validation
   if (localPart.length > 64) {
     errors.push('Email address is too long')
     return { isValid: false, errors }
   }
-  
+
   if (localPart.startsWith('.') || localPart.endsWith('.') || localPart.includes('..')) {
     errors.push('Email format is not valid')
     return { isValid: false, errors }
   }
-  
+
   // Domain validation
   if (domain.length > 255) {
     errors.push('Email domain is too long')
     return { isValid: false, errors }
   }
-  
+
   // Disposable email providers
   const disposableProviders = [
     '10minutemail.com', 'guerrillamail.com', 'mailinator.com', 'tempmail.org',
     'throwaway.email', 'temp-mail.org', 'getnada.com', 'maildrop.cc',
     'sharklasers.com', 'guerrillamailblock.com', 'pokemail.net', 'spam4.me'
   ]
-  
+
   if (disposableProviders.includes(domain)) {
     errors.push('Disposable email addresses are not allowed')
     return { isValid: false, errors }
   }
-  
+
   return { isValid: true, errors: [] }
 }
 
@@ -131,47 +131,47 @@ function validateUsername(username) {
 
 function validatePassword(password) {
   if (!password) return { isValid: false, errors: ['Password is required'] }
-  
+
   const errors = []
-  
+
   // Length check
   if (password.length < 8) {
     errors.push('Password must be at least 8 characters long')
   }
-  
+
   if (password.length > 128) {
     errors.push('Password must be no more than 128 characters long')
   }
-  
+
   // Character requirements
   if (!/[A-Z]/.test(password)) {
     errors.push('Password must contain at least one uppercase letter')
   }
-  
+
   if (!/[a-z]/.test(password)) {
     errors.push('Password must contain at least one lowercase letter')
   }
-  
+
   if (!/\d/.test(password)) {
     errors.push('Password must contain at least one number')
   }
-  
+
   if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\?]/.test(password)) {
     errors.push('Password must contain at least one special character')
   }
-  
+
   // Common passwords check
   const commonPasswords = [
     'password', 'password123', '123456', '123456789', 'qwerty', 'abc123',
     'password1', 'admin', 'letmein', 'welcome', 'monkey', '1234567890'
   ]
-  
+
   if (commonPasswords.includes(password.toLowerCase())) {
     errors.push('This password is too common. Please choose a more unique password')
   }
-  
+
   // Personal info validation removed as requested
-  
+
   return {
     isValid: errors.length === 0,
     errors
@@ -191,18 +191,18 @@ async function generateToken(user) {
     email: user.email,
     name: user.name
   }
-  
-  const token = jwt.sign(payload, process.env.JWT_SECRET, { 
+
+  const token = jwt.sign(payload, process.env.JWT_SECRET, {
     expiresIn: process.env.SESSION_TIMEOUT_HOURS ? `${process.env.SESSION_TIMEOUT_HOURS}h` : '24h'
   })
 
   // Create session in database
   const expiresAt = new Date()
   expiresAt.setHours(expiresAt.getHours() + parseInt(process.env.SESSION_TIMEOUT_HOURS || '24'))
-  
+
   await createUserSession(
-    user.id, 
-    token, 
+    user.id,
+    token,
     expiresAt.toISOString(),
     null, // IP address - could be added from req.ip
     null  // User agent - could be added from req.get('User-Agent')
@@ -221,14 +221,14 @@ function checkUsernameRateLimit(identifier) {
   const now = Date.now()
   const LIMIT = 60 // 60 requests per minute (more lenient)
   const WINDOW = 60 * 1000 // 1 minute
-  
+
   const userRequests = usernameCheckLimiter.get(identifier) || []
   const validRequests = userRequests.filter(timestamp => now - timestamp < WINDOW)
-  
+
   if (validRequests.length >= LIMIT) {
     return false
   }
-  
+
   validRequests.push(now)
   usernameCheckLimiter.set(identifier, validRequests)
   return true
@@ -237,7 +237,7 @@ function checkUsernameRateLimit(identifier) {
 // Check email existence
 router.post('/check-email', async (req, res) => {
   const identifier = req.ip || 'anonymous'
-  
+
   if (!checkUsernameRateLimit(identifier)) {
     return res.status(429).json({
       success: false,
@@ -261,7 +261,7 @@ router.post('/check-email', async (req, res) => {
 
     // Check if email exists
     const existingUser = await getUserByEmail(email)
-    
+
     return res.json({
       success: true,
       data: {
@@ -282,7 +282,7 @@ router.post('/check-email', async (req, res) => {
 // Check email availability (GET)
 router.get('/check-email/:email', async (req, res) => {
   const identifier = req.ip || 'anonymous'
-  
+
   if (!checkUsernameRateLimit(identifier)) {
     return res.status(429).json({
       success: false,
@@ -306,7 +306,7 @@ router.get('/check-email/:email', async (req, res) => {
 
     // Check if email exists
     const existingUser = await getUserByEmail(email)
-    
+
     return res.json({
       success: true,
       data: {
@@ -328,7 +328,7 @@ router.get('/check-email/:email', async (req, res) => {
 router.get('/check-username/:username', async (req, res) => {
   // Apply lighter rate limiting for username checks
   const identifier = req.ip || 'anonymous'
-  
+
   if (!checkUsernameRateLimit(identifier)) {
     return res.status(429).json({
       success: false,
@@ -353,11 +353,11 @@ router.get('/check-username/:username', async (req, res) => {
 
     // Check if username exists
     const existingUser = await getUserByUsername(username)
-    
+
     if (existingUser) {
       // Generate suggestions
       const suggestions = generateUsernameSuggestions(username)
-      
+
       return res.json({
         success: true,
         data: {
@@ -387,23 +387,23 @@ router.get('/check-username/:username', async (req, res) => {
 function generateUsernameSuggestions(username) {
   const suggestions = []
   const baseUsername = username.toLowerCase()
-  
+
   // Add numbers
   for (let i = 1; i <= 3; i++) {
     suggestions.push(`${baseUsername}${i}`)
     suggestions.push(`${baseUsername}${Math.floor(Math.random() * 100)}`)
   }
-  
+
   // Add common suffixes
   const suffixes = ['_dev', '_code', '_js', '_user', '_pro']
   suffixes.forEach(suffix => {
     suggestions.push(`${baseUsername}${suffix}`)
   })
-  
+
   // Add year
   const currentYear = new Date().getFullYear()
   suggestions.push(`${baseUsername}${currentYear}`)
-  
+
   // Remove duplicates and return first 5
   return [...new Set(suggestions)].slice(0, 5)
 }
@@ -498,7 +498,7 @@ router.post('/login', rateLimitMiddleware, async (req, res) => {
     // Find user by username or email
     let user = null
     const isEmail = validateEmail(usernameOrEmail).isValid
-    
+
     if (isEmail) {
       console.log(`🔍 Backend - Looking up user by email: ${usernameOrEmail}`)
       user = await getUserByEmail(usernameOrEmail)
@@ -506,7 +506,7 @@ router.post('/login', rateLimitMiddleware, async (req, res) => {
       console.log(`🔍 Backend - Looking up user by username: ${usernameOrEmail}`)
       user = await getUserByUsername(usernameOrEmail)
     }
-    
+
     if (user) {
       console.log(`🔍 Backend - Found user:`, {
         id: user.id,
@@ -561,7 +561,7 @@ router.post('/login', rateLimitMiddleware, async (req, res) => {
       name: user.name,
       lastLogin: user.last_login
     }
-    
+
     console.log(`🔐 Backend - Response user data:`, responseUserData)
 
     res.json(createSuccessResponse({
@@ -577,7 +577,7 @@ router.post('/login', rateLimitMiddleware, async (req, res) => {
 router.post('/logout', authenticateToken, async (req, res) => {
   try {
     const token = req.headers['authorization']?.split(' ')[1]
-    
+
     if (token) {
       await deleteUserSession(token)
     }
@@ -697,12 +697,12 @@ router.put('/profile', authenticateToken, rateLimitMiddleware, async (req, res) 
       if (!validateEmail(email)) {
         return res.status(400).json(createErrorResponse('Please enter a valid email address'))
       }
-      
+
       const existingEmail = await getUserByEmail(email)
       if (existingEmail) {
         return res.status(409).json(createErrorResponse('Email already in use'))
       }
-      
+
       updates.email = email
     }
 
@@ -711,12 +711,12 @@ router.put('/profile', authenticateToken, rateLimitMiddleware, async (req, res) 
       if (!validateUsername(username)) {
         return res.status(400).json(createErrorResponse('Username must be 3-20 characters and contain only letters, numbers, and underscores'))
       }
-      
+
       const existingUsername = await getUserByUsername(username)
       if (existingUsername) {
         return res.status(409).json(createErrorResponse('Username already taken'))
       }
-      
+
       updates.username = username
     }
 
@@ -763,12 +763,12 @@ router.get('/validate', authenticateToken, async (req, res) => {
     // Get fresh user data from database instead of JWT
     console.log(`🔍 Validation - Looking for user with ID: ${req.user.userId}`)
     const currentUser = await getUserById(req.user.userId)
-    
+
     if (!currentUser) {
       console.error(`❌ Validation - User not found: ${req.user.userId}`)
       return res.status(404).json(createErrorResponse('User not found'))
     }
-    
+
     console.log(`✅ Validation - Fresh user data from DB:`, {
       id: currentUser.id,
       username: currentUser.username,
@@ -777,7 +777,7 @@ router.get('/validate', authenticateToken, async (req, res) => {
       nameType: typeof currentUser.name,
       nameValue: JSON.stringify(currentUser.name)
     })
-    
+
     const responseData = {
       valid: true,
       user: {
@@ -787,7 +787,7 @@ router.get('/validate', authenticateToken, async (req, res) => {
         name: currentUser.name
       }
     }
-    
+
     console.log(`🔍 Validation - Sending response:`, responseData)
     res.json(createSuccessResponse(responseData))
   } catch (error) {
@@ -849,7 +849,7 @@ router.post('/get-security-question', async (req, res) => {
     }
 
     const input = usernameOrEmail.trim()
-    
+
     // Validate email format if it contains @
     if (input.includes('@')) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -861,7 +861,7 @@ router.post('/get-security-question', async (req, res) => {
     // Check if user exists
     let user = null
     const isEmail = input.includes('@')
-    
+
     if (isEmail) {
       user = await getUserByEmail(input)
     } else {
@@ -888,6 +888,54 @@ router.post('/get-security-question', async (req, res) => {
   }
 })
 
+// Verify Security Answer Only endpoint (for step validation)
+router.post('/verify-security-answer-only', async (req, res) => {
+  try {
+    const { usernameOrEmail, securityAnswer } = req.body
+
+    if (!usernameOrEmail || !securityAnswer) {
+      return res.status(400).json(createErrorResponse('Username/email and security answer are required'))
+    }
+
+    const input = usernameOrEmail.trim()
+
+    // Check if user exists
+    let user = null
+    const isEmail = input.includes('@')
+
+    if (isEmail) {
+      user = await getUserByEmail(input)
+    } else {
+      user = await getUserByUsername(input)
+    }
+
+    if (!user) {
+      return res.status(404).json(createErrorResponse('Account not found'))
+    }
+
+    if (!user.security_answer) {
+      return res.status(400).json(createErrorResponse('No security answer set for this account'))
+    }
+
+    // Verify security answer
+    const isAnswerCorrect = await bcrypt.compare(securityAnswer.toLowerCase().trim(), user.security_answer)
+
+    if (!isAnswerCorrect) {
+      return res.status(401).json(createErrorResponse('Incorrect security answer'))
+    }
+
+    // Security answer is correct
+    res.json(createSuccessResponse({
+      message: 'Security answer verified successfully',
+      username: user.username
+    }))
+
+  } catch (error) {
+    console.error('Verify security answer error:', error)
+    res.status(500).json(createErrorResponse('Failed to verify security answer'))
+  }
+})
+
 // Verify Security Answer and Reset Password endpoint
 router.post('/verify-security-answer', async (req, res) => {
   try {
@@ -902,11 +950,11 @@ router.post('/verify-security-answer', async (req, res) => {
     }
 
     const input = usernameOrEmail.trim()
-    
+
     // Check if user exists
     let user = null
     const isEmail = input.includes('@')
-    
+
     if (isEmail) {
       user = await getUserByEmail(input)
     } else {
@@ -937,7 +985,7 @@ router.post('/verify-security-answer', async (req, res) => {
     // Hash the new password
     const saltRounds = parseInt(process.env.BCRYPT_ROUNDS || '12')
     const hashedNewPassword = await bcrypt.hash(newPassword, saltRounds)
-    
+
     // Update user's password in database
     await updateUserPassword(user.id, hashedNewPassword)
     // Password successfully reset
@@ -955,7 +1003,7 @@ router.post('/verify-security-answer', async (req, res) => {
 router.get('/profile/password', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.userId
-    
+
     // Get current user data
     console.log(`🔍 Looking for user with ID: ${req.user.userId}`)
     const currentUser = await getUserById(req.user.userId)

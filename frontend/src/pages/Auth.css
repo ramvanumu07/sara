@@ -430,8 +430,13 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* ============================================================================
@@ -808,17 +813,17 @@
     border-width: 2px;
     border-color: #dc2626;
   }
-  
+
   .form-input.success {
     border-width: 2px;
     border-color: #16a34a;
   }
-  
+
   .error-message {
     border-width: 2px;
     font-weight: 600;
   }
-  
+
   .success-message {
     border-width: 2px;
     font-weight: 600;
@@ -827,15 +832,16 @@
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
+
   .toast-enter,
   .toast-exit {
     animation: none;
   }
-  
+
   .suggestion-button:hover {
     transform: none;
   }
-  
+
   .auth-submit-btn,
   .password-toggle,
   .form-input {
@@ -1013,6 +1019,7 @@
     transform: translateX(100%);
     opacity: 0;
   }
+
   to {
     transform: translateX(0);
     opacity: 1;
@@ -1024,6 +1031,7 @@
     transform: translateX(0);
     opacity: 1;
   }
+
   to {
     transform: translateX(100%);
     opacity: 0;
@@ -1032,48 +1040,50 @@
 
 /* Mobile responsive components */
 @media (max-width: 768px) {
+
   /* Password Strength Meter - Mobile */
   .password-strength-meter {
     padding: 0.875rem;
     font-size: 0.8125rem;
   }
-  
+
   .requirements-grid {
     grid-template-columns: 1fr;
     gap: 0.25rem;
   }
-  
+
   .requirement-item {
     font-size: 0.8125rem;
     padding: 0.375rem 0;
   }
-  
+
   /* Username Checker - Mobile */
   .username-suggestions {
     padding: 0.875rem;
   }
-  
+
   .suggestions-list {
     gap: 0.375rem;
   }
-  
+
   .suggestion-button {
     padding: 0.5rem 0.75rem;
     font-size: 0.8125rem;
-    min-height: 44px; /* Touch-friendly */
+    min-height: 44px;
+    /* Touch-friendly */
   }
-  
+
   /* Email Validator - Mobile */
   .email-validator .suggestions-list {
     flex-direction: column;
   }
-  
+
   .email-validator .suggestion-button {
     width: 100%;
     text-align: left;
     justify-content: flex-start;
   }
-  
+
   /* Toast Notifications - Mobile */
   .toast-container {
     left: 1rem;
@@ -1081,12 +1091,12 @@
     top: 0.5rem;
     max-width: none;
   }
-  
+
   .toast {
     padding: 0.875rem;
     font-size: 0.8125rem;
   }
-  
+
   .toast-close {
     min-width: 32px;
     min-height: 32px;
@@ -1094,30 +1104,31 @@
 }
 
 @media (max-width: 640px) {
+
   /* Form elements - Small mobile */
   .form-label {
     font-size: 0.875rem;
     font-weight: 600;
   }
-  
+
   .auth-submit-btn {
     padding: 1rem;
     font-size: 1rem;
     min-height: 52px;
     font-weight: 600;
   }
-  
+
   .auth-footer {
     margin-top: 1.5rem;
     font-size: 0.875rem;
   }
-  
+
   /* Status items - Mobile */
   .status-item {
     padding: 0.75rem;
     font-size: 0.8125rem;
   }
-  
+
   .status-icon {
     font-size: 1rem;
   }
@@ -1129,20 +1140,20 @@
     transform: none;
     box-shadow: none;
   }
-  
+
   .suggestion-button:active {
     transform: scale(0.98);
     background: var(--sara-primary);
     border-color: var(--sara-primary);
     color: white;
   }
-  
+
   .password-toggle:active {
     background: none !important;
     border: none !important;
     outline: none !important;
   }
-  
+
   .toast-close:active {
     background: rgba(0, 0, 0, 0.2);
   }
@@ -1166,15 +1177,18 @@
 /* Mobile-optimized form inputs */
 @media (max-width: 768px) {
   .form-input {
-    font-size: 16px; /* Prevents zoom on iOS */
+    font-size: 16px;
+    /* Prevents zoom on iOS */
     padding: 0.875rem 1rem;
-    min-height: 48px; /* Touch-friendly height */
+    min-height: 48px;
+    /* Touch-friendly height */
   }
-  
+
   .password-input-wrapper .form-input {
-    padding-right: 3.5rem; /* More space for toggle button */
+    padding-right: 3.5rem;
+    /* More space for toggle button */
   }
-  
+
   .password-toggle {
     right: 0.75rem;
     width: 44px;
@@ -1186,15 +1200,16 @@
 @media (max-width: 640px) {
   .auth-container {
     min-height: 100vh;
-    min-height: 100dvh; /* Dynamic viewport height for mobile */
+    min-height: 100dvh;
+    /* Dynamic viewport height for mobile */
   }
-  
+
   .auth-main {
     padding: 1rem;
     align-items: flex-start;
     padding-top: 2rem;
   }
-  
+
   .auth-card {
     width: 100%;
     max-width: none;
@@ -1204,11 +1219,11 @@
     border-radius: 1rem;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   }
-  
+
   .auth-card-header h1 {
     font-size: 1.5rem;
   }
-  
+
   .auth-card-header p {
     font-size: 0.875rem;
   }
@@ -1219,15 +1234,15 @@
   .auth-card {
     padding: 1rem;
   }
-  
+
   .form-group {
     margin-bottom: 0.5rem;
   }
-  
+
   .auth-card-header {
     margin-bottom: 1.5rem;
   }
-  
+
   .auth-card-header h1 {
     font-size: 1.375rem;
   }
@@ -1239,23 +1254,23 @@
     padding: 0.5rem;
     align-items: flex-start;
   }
-  
+
   .auth-card {
     margin: 0;
     max-height: 90vh;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
-  
+
   .auth-card-header {
     margin-bottom: 0.75rem;
   }
-  
+
   .auth-card-header h1 {
     font-size: 1.25rem;
     margin-bottom: 0.25rem;
   }
-  
+
   .auth-card-header p {
     font-size: 0.8125rem;
   }
@@ -1269,16 +1284,16 @@
   .auth-main {
     padding: 1rem;
   }
-  
+
   .auth-card {
     padding: 1.5rem;
     border-radius: 0.5rem;
   }
-  
+
   .auth-card-header h1 {
     font-size: 1.5rem;
   }
-  
+
   .logo-sara {
     font-size: 1.75rem;
   }
@@ -1288,28 +1303,28 @@
   .auth-header {
     padding: 1.5rem 0;
   }
-  
+
   .auth-card {
     padding: 1.25rem;
     margin: 0 0.5rem;
   }
-  
+
   .auth-card-header h1 {
     font-size: 1.375rem;
   }
-  
+
   .auth-card-header p {
     font-size: 0.9rem;
   }
-  
+
   .logo-sara {
     font-size: 1.5rem;
   }
-  
+
   .form-input {
     padding: 0.625rem;
   }
-  
+
   .auth-submit-btn {
     padding: 0.75rem;
   }
@@ -1430,20 +1445,21 @@
 /* Mobile optimization for dropdown */
 @media (max-width: 768px) {
   .security-question-select {
-    font-size: 16px; /* Prevents zoom on iOS */
+    font-size: 16px;
+    /* Prevents zoom on iOS */
     padding: 0.875rem 1rem;
     background-size: 1.2rem;
     padding-right: 3rem;
     height: 50px;
     max-height: 50px;
   }
-  
+
   .security-question-select option {
     padding: 0.625rem 0.75rem;
     font-size: 0.9rem;
     line-height: 1.2;
   }
-  
+
   .security-question-group {
     margin-bottom: 0.5rem;
   }
@@ -1458,17 +1474,17 @@
     max-height: 46px;
     padding-right: 2.75rem;
   }
-  
+
   .security-question-select option {
     padding: 0.5rem;
     font-size: 0.85rem;
   }
-  
+
   .auth-card {
     padding: 1.25rem;
     margin: 0 0.5rem;
   }
-  
+
   .security-question-group .form-label {
     font-size: 0.9rem;
   }
@@ -1479,14 +1495,14 @@
   .security-question-group {
     margin-bottom: 0.5rem;
   }
-  
+
   .security-question-select {
     padding: 0.625rem 0.75rem;
     height: 42px;
     max-height: 42px;
     font-size: 0.85rem;
   }
-  
+
   .security-question-group .form-label {
     margin-bottom: 0.375rem;
     font-size: 0.85rem;
@@ -1494,7 +1510,8 @@
 }
 
 /* High DPI screens */
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+@media (-webkit-min-device-pixel-ratio: 2),
+(min-resolution: 192dpi) {
   .security-question-select {
     border-width: 1px;
   }
@@ -1507,7 +1524,7 @@
     border-color: #374151;
     color: #f9fafb;
   }
-  
+
   .security-question-select option {
     background-color: #1f2937;
     color: #f9fafb;
