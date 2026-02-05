@@ -66,23 +66,56 @@
   color: #111;
 }
 
-.phase-indicator {
-  display: flex;
-  gap: 8px;
-  margin-top: 8px;
-  justify-content: center;
+.phase-text {
+  margin-top: 4px;
+  font-size: 0.85rem;
+  color: #6b7280;
+  text-align: center;
+  font-weight: 500;
 }
 
-.phase-dot {
-  width: 24px;
-  height: 24px;
+/* Professional Button Animations */
+.play-btn, .ready-btn {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.play-btn:hover:not([style*="cursor: not-allowed"]), 
+.ready-btn:hover:not([style*="cursor: not-allowed"]) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 163, 127, 0.3);
+}
+
+.play-btn:active:not([style*="cursor: not-allowed"]), 
+.ready-btn:active:not([style*="cursor: not-allowed"]) {
+  transform: translateY(0);
+}
+
+/* Disabled button pulse effect */
+.play-btn[style*="cursor: not-allowed"]:hover,
+.ready-btn[style*="cursor: not-allowed"]:hover {
+  animation: subtle-pulse 0.6s ease-in-out;
+}
+
+@keyframes subtle-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+/* Professional loading states */
+.loading-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #e5e7eb;
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.7rem;
-  font-weight: 600;
-  color: white;
+  border-top-color: #10a37f;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 .phase-label {

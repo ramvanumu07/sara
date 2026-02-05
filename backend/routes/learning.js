@@ -216,7 +216,9 @@ router.get('/state/:topicId', authenticateToken, async (req, res) => {
     const { topicId } = req.params
     const userId = req.user.userId
 
-    console.log(`🔄 Loading learning state for: ${topicId}`)
+    console.log(`🔄 Loading learning state for: "${topicId}" (type: ${typeof topicId}, length: ${topicId?.length})`)
+    console.log(`🔄 Raw params:`, req.params)
+    console.log(`🔄 Full URL:`, req.url)
 
     // Validate topic exists
     const topic = findTopicById(courses, topicId)
@@ -1029,6 +1031,29 @@ router.get('/topic/:topicId', authenticateToken, async (req, res) => {
     }))
   } catch (error) {
     handleErrorResponse(res, error, 'get topic details')
+  }
+})
+
+// ============ DEBUG ENDPOINTS ============
+
+// Debug: List all available topics
+router.get('/debug/topics', (req, res) => {
+  try {
+    const allTopics = courses.flatMap(course => 
+      course.topics.map(topic => ({
+        id: topic.id,
+        title: topic.title,
+        courseId: course.id,
+        courseTitle: course.title
+      }))
+    )
+    
+    res.json(createSuccessResponse({
+      total: allTopics.length,
+      topics: allTopics
+    }))
+  } catch (error) {
+    handleErrorResponse(res, error, 'Failed to get topics')
   }
 })
 

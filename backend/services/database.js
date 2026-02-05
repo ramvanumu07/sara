@@ -81,6 +81,7 @@ export async function createUser(username, email, name, hashedPassword, security
       security_question: securityQuestion,
       security_answer: securityAnswer,
       has_access: true,
+      email_verified: false, // Match schema default
       created_at: new Date().toISOString()
     }
     DEV_USERS.set(username, user)
@@ -88,17 +89,27 @@ export async function createUser(username, email, name, hashedPassword, security
     return user
   }
 
+  // Prepare user data - only include security fields if provided
+  const userData = {
+    username,
+    email,
+    name,
+    password: hashedPassword,
+    has_access: true, // Default access for Sara
+    email_verified: false // Explicit default
+  }
+
+  // Only add security fields if they're provided (avoid storing empty strings)
+  if (securityQuestion && securityQuestion.trim()) {
+    userData.security_question = securityQuestion.trim()
+  }
+  if (securityAnswer && securityAnswer.trim()) {
+    userData.security_answer = securityAnswer.trim()
+  }
+
   const { data, error } = await client
     .from('users')
-    .insert({
-      username,
-      email,
-      name,
-      password: hashedPassword,
-      security_question: securityQuestion,
-      security_answer: securityAnswer,
-      has_access: true // Default access for Sara
-    })
+    .insert(userData)
     .select()
     .single()
 

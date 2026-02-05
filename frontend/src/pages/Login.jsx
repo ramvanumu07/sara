@@ -42,11 +42,19 @@ const Login = () => {
       [name]: value
     }))
 
-    // Clear error when user starts typing
+    // Clear field-specific errors when user starts typing
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
         [name]: ''
+      }))
+    }
+    
+    // Clear general error when user starts typing in any field
+    if (errors.general) {
+      setErrors(prev => ({
+        ...prev,
+        general: ''
       }))
     }
   }
@@ -107,6 +115,7 @@ const Login = () => {
       } else {
         console.log('🔐 Login Page - Login failed:', result.error)
         setErrors({ general: result.error || 'Login failed' })
+        setLoginAttempts(prev => prev + 1)
       }
     } catch (error) {
       console.error('🔐 Login Page - Unexpected error:', error)

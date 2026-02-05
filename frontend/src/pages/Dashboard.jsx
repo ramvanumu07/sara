@@ -232,6 +232,11 @@ const Dashboard = () => {
         targetPhase = 'playtime'
         targetUrl = `/learn/${topicId}?phase=playtime`
         console.log('🎯 Session completed → Redirecting to playtime')
+      } else if (phase === 'playtime' && status === 'completed') {
+        // Playtime completed → Go to assignments
+        targetPhase = 'assignment'
+        targetUrl = `/learn/${topicId}?phase=assignment`
+        console.log('🎯 Playtime completed → Redirecting to assignments')
       } else if (phase === 'playtime' && status === 'in_progress') {
         // User is in playtime → Continue playtime
         targetPhase = 'playtime'
@@ -367,6 +372,20 @@ const Dashboard = () => {
         console.log('   - fallback result:', result)
         return result
       }
+    }
+    
+    // Final fallback: if no progress at all, return first topic of selected course
+    console.log('   - no progress found, showing first topic of selected course')
+    const selectedCourseData = courses.find(c => c.id === selectedCourse)
+    const firstTopic = selectedCourseData?.topics?.[0]
+    if (firstTopic) {
+      const result = {
+        ...firstTopic,
+        phase: 'session',
+        progress: null
+      }
+      console.log('   - returning first topic as fallback:', result)
+      return result
     }
     
     console.log('   - no topic found at all, returning null')
@@ -607,7 +626,7 @@ const Dashboard = () => {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polygon points="5,3 19,12 5,21" />
             </svg>
-            {userProgress.length > 0 ? 'Continue Learning' : 'Start Learning'}
+            Continue Learning
           </button>
         </div>
 

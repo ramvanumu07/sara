@@ -7,6 +7,7 @@ import express from 'express'
 import { authenticateToken } from './auth.js'
 import { callAI } from '../services/ai.js'
 import { getChatHistory, saveChatTurn, saveInitialMessage, getLastMessages, parseHistoryToMessages, clearChatHistory, getChatHistoryString } from '../services/chatService.js'
+import { getSupabaseClient } from '../services/database.js'
 import { courses } from '../../data/curriculum.js'
 import { formatLearningObjectives, findTopicById } from '../utils/curriculum.js'
 import { getCompletedTopics, upsertProgress } from '../services/database.js'
@@ -18,15 +19,20 @@ const router = express.Router()
 
 // ============ VALIDATION FUNCTIONS ============
 function validateChatRequest(req, res) {
-  const requiredFields = ['message', 'topicId']
+  const { message, topicId } = req.body
 
-  for (const field of requiredFields) {
-    const value = req.body[field]
-    if (!value?.trim?.() && value !== 0 && !value) {
-      res.status(400).json(createErrorResponse(`${field} is required`))
-      return false
-    }
+  // topicId is always required
+  if (!topicId?.trim?.()) {
+    res.status(400).json(createErrorResponse('topicId is required'))
+    return false
   }
+
+  // message is required but can be empty string for session initialization
+  if (message === undefined || message === null) {
+    res.status(400).json(createErrorResponse('message is required'))
+    return false
+  }
+
   return true
 }
 
@@ -186,9 +192,13 @@ router.post('/session', authenticateToken, rateLimitMiddleware, async (req, res)
     console.log('   - System Prompt (first 500 chars):', embeddedPrompt.substring(0, 500) + '...')
 
     const messages = [
-      { role: 'system', content: embeddedPrompt },
-      { role: 'user', content: message.trim() }
+      { role: 'system', content: embeddedPrompt }
     ]
+
+    // Only add user message if it's not empty (for session initialization)
+    if (message.trim()) {
+      messages.push({ role: 'user', content: message.trim() })
+    }
 
     // Get AI response with optimized parameters for education
     console.log('Calling AI with messages:', messages.length)
@@ -206,7 +216,14 @@ router.post('/session', authenticateToken, rateLimitMiddleware, async (req, res)
     const cleanedResponse = aiResponse.replace('SESSION_COMPLETE_SIGNAL\n\n', '').replace('SESSION_COMPLETE_SIGNAL', '')
 
     // Save the conversation turn (user message + cleaned AI response) atomically
-    const saveSuccess = await saveChatTurn(userId, topicId, message.trim(), cleanedResponse)
+    let saveSuccess
+    if (message.trim()) {
+      // Regular conversation turn
+      saveSuccess = await saveChatTurn(userId, topicId, message.trim(), cleanedResponse)
+    } else {
+      // Initial session message
+      saveSuccess = await saveInitialMessage(userId, topicId, cleanedResponse)
+    }
 
     if (!saveSuccess) {
       console.error('Failed to save chat turn')
@@ -451,6 +468,35 @@ Provide detailed feedback on their code:`
 
 // ============ CHAT HISTORY MANAGEMENT ============
 
+// Debug: Get raw chat history from database
+router.get('/debug/history/:topicId', authenticateToken, async (req, res) => {
+  try {
+    const { topicId } = req.params
+    const userId = req.user.userId
+
+    // Get raw data from database
+    const { data, error } = await getSupabaseClient()
+      .from('chat_sessions')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('topic_id', topicId)
+      .single()
+
+    if (error && error.code !== 'PGRST116') {
+      throw error
+    }
+
+    res.json(createSuccessResponse({
+      raw_data: data,
+      messages_type: typeof data?.messages,
+      messages_content: data?.messages
+    }))
+
+  } catch (error) {
+    handleErrorResponse(res, error, 'get debug history')
+  }
+})
+
 router.get('/history/:topicId', authenticateToken, async (req, res) => {
   try {
     const { topicId } = req.params
@@ -462,11 +508,9 @@ router.get('/history/:topicId', authenticateToken, async (req, res) => {
       return res.status(404).json(createErrorResponse('Topic not found'))
     }
 
-    const conversationHistory = await getChatHistory(userId, topicId)
-    const messages = parseHistoryToMessages(conversationHistory)
+    const messages = await getChatHistory(userId, topicId)
 
     res.json(createSuccessResponse({
-      conversationHistory: conversationHistory || '',
       messages: messages,
       messageCount: messages.length,
       topic: {

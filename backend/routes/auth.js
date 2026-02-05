@@ -519,13 +519,13 @@ router.post('/login', rateLimitMiddleware, async (req, res) => {
     }
 
     if (!user) {
-      return res.status(401).json(createErrorResponse('Invalid credentials'))
+      return res.status(401).json(createErrorResponse('Username or email not found. Please check your credentials or create an account.'))
     }
 
     // Check password
     const isValidPassword = await bcrypt.compare(password, user.password)
     if (!isValidPassword) {
-      return res.status(401).json(createErrorResponse('Invalid credentials'))
+      return res.status(401).json(createErrorResponse('Incorrect password. Please try again or use "Forgot Password" if needed.'))
     }
 
     // Check if user has access

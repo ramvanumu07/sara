@@ -17,6 +17,8 @@ import authRoutes from './routes/auth.js'
 import chatRoutes from './routes/chat.js'
 import learningRoutes from './routes/learning.js'
 import progressRoutes from './routes/progress.js'
+import debugSchemaRoutes from './routes/debug-schema.js'
+import debugChatRoutes from './routes/debug-chat.js'
 
 // Import middleware
 import { performanceMonitor } from './middleware/performance.js'
@@ -79,6 +81,8 @@ app.use('/api/auth', authRoutes)
 app.use('/api/chat', chatRoutes)
 app.use('/api/learn', learningRoutes)
 app.use('/api/progress', progressRoutes)
+app.use('/api/debug', debugSchemaRoutes)
+app.use('/api/debug', debugChatRoutes)
 
 // ============ ERROR HANDLING ============
 app.use(errorHandler)

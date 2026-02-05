@@ -1,0 +1,14 @@
+# Server
+PORT=5000
+NODE_ENV=development
+FRONTEND_URL=http://localhost:5173
+
+# Supabase (you'll need to add your actual values)
+SUPABASE_URL=https://thzkyzlotxpznhbuvzhw.supabase.co
+SUPABASE_SERVICE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRoemt5emxvdHhwem5oYnV2emh3Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2OTgxMTM0NywiZXhwIjoyMDg1Mzg3MzQ3fQ.jHZwIxr6tU3BeoUs6Pg8MS5g120xS31h8YKM4VqZWzk
+
+# AI (Groq)
+GROQ_API_KEY=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
+
+# JWT
+JWT_SECRET=sb_secret_6VLlCbsH4Z6l4h2LkIOvWw_qvx850lN
