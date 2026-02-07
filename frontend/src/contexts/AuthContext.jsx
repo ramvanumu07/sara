@@ -101,13 +101,30 @@ export const AuthProvider = ({ children }) => {
         console.log('🔐 AuthContext - Login successful, user state set to:', userData)
         return { success: true, user: userData }
       } else {
-        return { success: false, error: response.data.error || 'Login failed' }
+        return { success: false, error: response.data.message || response.data.error || 'Login failed' }
       }
     } catch (error) {
       console.error('Login error:', error)
+      console.error('Error response:', error.response)
+      console.error('Error response data:', error.response?.data)
+      
+      // Extract the specific error message from the backend response
+      let errorMessage = 'Login failed. Please try again.'
+      
+      if (error.response?.data) {
+        // Backend uses 'message' field for error messages (see responses.js)
+        if (error.response.data.message) {
+          errorMessage = error.response.data.message
+        } else if (error.response.data.error) {
+          errorMessage = error.response.data.error
+        } else if (typeof error.response.data === 'string') {
+          errorMessage = error.response.data
+        }
+      }
+      
       return { 
         success: false, 
-        error: error.response?.data?.error || 'Login failed. Please try again.' 
+        error: errorMessage
       }
     }
   }
@@ -127,13 +144,13 @@ export const AuthProvider = ({ children }) => {
         
         return { success: true, user: userData }
       } else {
-        return { success: false, error: response.data.error || 'Signup failed' }
+        return { success: false, error: response.data.message || response.data.error || 'Signup failed' }
       }
     } catch (error) {
       console.error('Signup error:', error)
       return { 
         success: false, 
-        error: error.response?.data?.error || 'Signup failed. Please try again.' 
+        error: error.response?.data?.message || error.response?.data?.error || 'Signup failed. Please try again.' 
       }
     }
   }
@@ -195,7 +212,7 @@ export const AuthProvider = ({ children }) => {
       
       return { 
         success: false, 
-        error: error.response?.data?.error || error.response?.data?.message || 'Profile update failed. Please try again.' 
+        error: error.response?.data?.message || error.response?.data?.error || 'Profile update failed. Please try again.' 
       }
     }
   }
@@ -207,13 +224,13 @@ export const AuthProvider = ({ children }) => {
       if (response.data.success) {
         return { success: true, message: response.data.data.message }
       } else {
-        return { success: false, error: response.data.error || 'Password reset failed' }
+        return { success: false, error: response.data.message || response.data.error || 'Password reset failed' }
       }
     } catch (error) {
       console.error('Forgot password error:', error)
       return { 
         success: false, 
-        error: error.response?.data?.error || 'Password reset failed. Please try again.' 
+        error: error.response?.data?.message || error.response?.data?.error || 'Password reset failed. Please try again.' 
       }
     }
   }
@@ -225,13 +242,13 @@ export const AuthProvider = ({ children }) => {
       if (response.data.success) {
         return { success: true, message: response.data.data.message }
       } else {
-        return { success: false, error: response.data.error || 'Password reset failed' }
+        return { success: false, error: response.data.message || response.data.error || 'Password reset failed' }
       }
     } catch (error) {
       console.error('Reset password error:', error)
       return { 
         success: false, 
-        error: error.response?.data?.error || 'Password reset failed. Please try again.' 
+        error: error.response?.data?.message || error.response?.data?.error || 'Password reset failed. Please try again.' 
       }
     }
   }

@@ -144,7 +144,7 @@ function calculatePasswordStrength(password, requirements) {
   const hasLower = /[a-z]/.test(password)
   const hasNumbers = /\d/.test(password)
   const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\?]/.test(password)
-  
+
   const varietyCount = [hasUpper, hasLower, hasNumbers, hasSpecial].filter(Boolean).length
   score += varietyCount * 5
 

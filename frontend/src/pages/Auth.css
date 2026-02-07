@@ -311,6 +311,42 @@
 }
 
 /* ============================================================================
+   TERMS AGREEMENT
+   ============================================================================ */
+
+.terms-agreement {
+  text-align: center;
+  padding: 0 0.5rem;
+}
+
+.terms-agreement p {
+  font-size: 0.875rem;
+  color: var(--sara-text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.terms-link {
+  color: var(--sara-primary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.terms-link:hover {
+  color: var(--sara-primary-hover);
+  text-decoration: underline;
+}
+
+/* Mobile responsive */
+@media (max-width: 480px) {
+  .terms-agreement p {
+    font-size: 0.8rem;
+    line-height: 1.4;
+  }
+}
+
+/* ============================================================================
    SUBMIT BUTTON
    ============================================================================ */
 
@@ -329,7 +365,6 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  margin-top: 0.5rem;
   box-shadow: var(--sara-shadow);
 }
 

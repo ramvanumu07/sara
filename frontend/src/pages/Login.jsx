@@ -57,6 +57,20 @@ const Login = () => {
         general: ''
       }))
     }
+    
+    // Clear the other field's error when user types in username/email field
+    // This handles cases where we showed field-specific errors
+    if (name === 'usernameOrEmail' && errors.password) {
+      setErrors(prev => ({
+        ...prev,
+        password: ''
+      }))
+    } else if (name === 'password' && errors.usernameOrEmail) {
+      setErrors(prev => ({
+        ...prev,
+        usernameOrEmail: ''
+      }))
+    }
   }
 
   const validateForm = () => {
@@ -114,12 +128,51 @@ const Login = () => {
         }, 500)
       } else {
         console.log('🔐 Login Page - Login failed:', result.error)
-        setErrors({ general: result.error || 'Login failed' })
+        
+        // Handle specific error types with field-specific errors when possible
+        const errorMessage = result.error || 'Login failed'
+        
+        console.log('🔐 Login Page - Processing error message:', errorMessage)
+        
+        // Check for specific error patterns and set appropriate field errors
+        if (errorMessage.includes('Username or email not found') || 
+            errorMessage.includes('not found') || 
+            errorMessage.includes('Please check your credentials or create an account')) {
+          setErrors({ 
+            usernameOrEmail: 'Username or email not found. Please check your input or create an account.',
+            general: ''
+          })
+        } else if (errorMessage.includes('Incorrect password') || 
+                   errorMessage.includes('Please try again or use "Forgot Password"')) {
+          setErrors({ 
+            password: 'Incorrect password. Please try again or use "Forgot Password" if needed.',
+            general: ''
+          })
+        } else if (errorMessage.includes('Invalid credentials')) {
+          setErrors({ general: 'Invalid username/email or password. Please check your credentials.' })
+        } else {
+          // Use the exact error message from backend
+          setErrors({ general: errorMessage })
+        }
         setLoginAttempts(prev => prev + 1)
       }
     } catch (error) {
       console.error('🔐 Login Page - Unexpected error:', error)
-      setErrors({ general: 'Something went wrong. Please try again.' })
+      
+      // Handle network and other errors with specific messages
+      let errorMessage = 'Something went wrong. Please try again.'
+      
+      if (error.response?.status === 401) {
+        errorMessage = 'Invalid username/email or password. Please check your credentials.'
+      } else if (error.response?.status === 429) {
+        errorMessage = 'Too many login attempts. Please wait a moment before trying again.'
+      } else if (error.response?.status >= 500) {
+        errorMessage = 'Server error. Please try again in a moment.'
+      } else if (!navigator.onLine) {
+        errorMessage = 'No internet connection. Please check your connection and try again.'
+      }
+      
+      setErrors({ general: errorMessage })
       setLoginAttempts(prev => prev + 1)
     } finally {
       setIsLoading(false)

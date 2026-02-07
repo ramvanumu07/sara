@@ -15,11 +15,6 @@ export const SECURITY_QUESTIONS = [
     shortQuestion: 'Birth city'
   },
   {
-    id: 'mothers_maiden',
-    question: 'What is your mother\'s maiden name?',
-    shortQuestion: 'Mother\'s maiden name'
-  },
-  {
     id: 'first_school',
     question: 'What was your first school\'s name?',
     shortQuestion: 'First school name'
@@ -35,21 +30,6 @@ export const SECURITY_QUESTIONS = [
     shortQuestion: 'Best friend\'s name'
   },
   {
-    id: 'first_job',
-    question: 'What was your first job title?',
-    shortQuestion: 'First job title'
-  },
-  {
-    id: 'favorite_book',
-    question: 'What is your favorite book?',
-    shortQuestion: 'Favorite book'
-  },
-  {
-    id: 'dream_vacation',
-    question: 'Where is your dream vacation destination?',
-    shortQuestion: 'Dream vacation place'
-  },
-  {
     id: 'favorite_food',
     question: 'What is your favorite food?',
     shortQuestion: 'Favorite food'
@@ -58,11 +38,6 @@ export const SECURITY_QUESTIONS = [
     id: 'childhood_nickname',
     question: 'What was your childhood nickname?',
     shortQuestion: 'Childhood nickname'
-  },
-  {
-    id: 'first_car',
-    question: 'What was your first car\'s make?',
-    shortQuestion: 'First car make'
   }
 ]
 

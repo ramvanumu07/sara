@@ -583,6 +583,16 @@ const Signup = () => {
               )}
             </div>
 
+            {/* Terms and Privacy Agreement */}
+            <div className="terms-agreement">
+              <p>
+                By clicking "Create Account", you agree to our{' '}
+                <Link to="/terms" className="terms-link">Terms of Service</Link>
+                {' '}and{' '}
+                <Link to="/privacy" className="terms-link">Privacy Policy</Link>.
+              </p>
+            </div>
+
             <button
               type="submit"
               className={`auth-submit-btn ${isLoading || isSubmitting ? 'loading' : ''}`}

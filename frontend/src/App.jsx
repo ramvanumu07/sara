@@ -16,6 +16,8 @@ import ForgotPassword from './pages/ForgotPassword'
 import Dashboard from './pages/Dashboard'
 import Profile from './pages/Profile'
 import Learn from './pages/Learn'
+import Terms from './pages/Terms'
+import Privacy from './pages/Privacy'
 
 // Import Styles
 import './index.css'
@@ -58,6 +60,10 @@ const AppRoutes = () => {
       <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
       <Route path="/signup" element={<PublicRoute><Signup /></PublicRoute>} />
       <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
+      
+      {/* Legal Pages - Always accessible */}
+      <Route path="/terms" element={<Terms />} />
+      <Route path="/privacy" element={<Privacy />} />
       
       {/* Protected Routes */}
       <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />

@@ -32,18 +32,6 @@ const Welcome = () => {
 
   return (
     <div className="welcome-container">
-      {/* Animated Background */}
-      <div className="animated-background">
-        <div className="floating-shapes">
-          <div className="shape shape-1"></div>
-          <div className="shape shape-2"></div>
-          <div className="shape shape-3"></div>
-          <div className="shape shape-4"></div>
-          <div className="shape shape-5"></div>
-          <div className="shape shape-6"></div>
-        </div>
-        <div className="gradient-overlay"></div>
-      </div>
 
       {/* Header */}
       <header className="welcome-header">
@@ -126,27 +114,21 @@ const Welcome = () => {
           </div>
         </div>
 
-        {/* Floating Code Snippets */}
-        <div className="floating-code">
-          <div className="code-snippet code-1">
-            <span className="code-keyword">const</span> <span className="code-variable">future</span> = <span className="code-string">'bright'</span>
-          </div>
-          <div className="code-snippet code-2">
-            <span className="code-function">console.log</span>(<span className="code-string">'Hello, Sara!'</span>)
-          </div>
-          <div className="code-snippet code-3">
-            <span className="code-keyword">function</span> <span className="code-function">learnWithSara</span>() {'{'}
-          </div>
-          <div className="code-snippet code-4">
-            <span className="code-variable">skills</span>.<span className="code-function">push</span>(<span className="code-string">'JavaScript'</span>)
-          </div>
-        </div>
       </main>
 
       {/* Footer */}
       <footer className="welcome-footer">
         <div className="footer-content">
-          <p>&copy; 2026 Sara Learning Platform. Empowering learners worldwide.</p>
+          <div className="footer-main">
+            <p>&copy; 2026 Sara Learning Platform. Empowering learners worldwide.</p>
+          </div>
+          <div className="footer-links">
+            <Link to="/terms" className="footer-link">Terms of Service</Link>
+            <span className="footer-separator">•</span>
+            <Link to="/privacy" className="footer-link">Privacy Policy</Link>
+            <span className="footer-separator">•</span>
+            <a href="mailto:sara4code@gmail.com" className="footer-link">Contact</a>
+          </div>
         </div>
       </footer>
     </div>

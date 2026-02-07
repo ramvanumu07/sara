@@ -2129,11 +2129,11 @@
 @media (min-width: 769px) {
   .playground-run-btn,
   .playground-reset-btn {
-    padding: 2px 6px !important;
-    font-size: 0.6rem !important;
-    min-width: 40px !important;
-    height: 18px !important;
-    border-radius: 3px !important;
+    padding: 1px 4px !important;
+    font-size: 0.55rem !important;
+    min-width: 35px !important;
+    height: 14px !important;
+    border-radius: 2px !important;
   }
 }
 
@@ -2183,9 +2183,9 @@
   /* Responsive Headers - Reduced height for mobile */
   .playground-editor-header,
   .playground-output-header {
-    height: clamp(40px, 6vh, 56px) !important;
-    padding: clamp(6px, 1.5vh, 12px) !important;
-    font-size: clamp(0.65rem, 1.8vw, 0.75rem) !important;
+    height: clamp(32px, 5vh, 48px) !important;
+    padding: clamp(4px, 1vh, 10px) !important;
+    font-size: clamp(0.6rem, 1.6vw, 0.7rem) !important;
   }
 
     /* Responsive Panels */
@@ -2227,18 +2227,18 @@
   /* Responsive Buttons - Smaller than main code button */
   .playground-run-btn,
   .playground-reset-btn {
-    padding: clamp(2px, 0.6vh, 3px) clamp(4px, 1.2vw, 6px) !important;
-    font-size: clamp(0.5rem, 1.4vw, 0.6rem) !important;
-    min-width: clamp(32px, 8vw, 40px) !important;
-    height: clamp(15px, 3vh, 18px) !important;
-    border-radius: clamp(2px, 0.6vw, 3px) !important;
+    padding: clamp(1px, 0.4vh, 2px) clamp(3px, 1vw, 4px) !important;
+    font-size: clamp(0.45rem, 1.2vw, 0.55rem) !important;
+    min-width: clamp(28px, 7vw, 35px) !important;
+    height: clamp(12px, 2.5vh, 14px) !important;
+    border-radius: clamp(1px, 0.4vw, 2px) !important;
   }
 
     /* File Tab Responsive */
   .playground-editor-header>div:first-child,
   .playground-output-header>div:first-child {
-    padding: clamp(2px, 0.8vh, 3px) clamp(6px, 1.5vw, 10px) !important;
-    font-size: clamp(0.55rem, 1.6vw, 0.7rem) !important;
+    padding: clamp(1px, 0.6vh, 2px) clamp(4px, 1.2vw, 8px) !important;
+    font-size: clamp(0.5rem, 1.4vw, 0.65rem) !important;
   }
   }
 
@@ -2247,11 +2247,11 @@
 
   .playground-editor-header,
   .playground-output-header {
-    height: clamp(36px, 8vh, 48px) !important;
-    padding: clamp(4px, 1vh, 8px) !important;
-    font-size: clamp(0.55rem, 2.2vw, 0.7rem) !important;
+    height: clamp(28px, 6vh, 40px) !important;
+    padding: clamp(3px, 0.8vh, 6px) !important;
+    font-size: clamp(0.5rem, 2vw, 0.65rem) !important;
     flex-wrap: wrap !important;
-    gap: clamp(3px, 0.8vh, 6px) !important;
+    gap: clamp(2px, 0.6vh, 4px) !important;
   }
 
     .playground-line-numbers,
@@ -2276,8 +2276,8 @@
     padding: clamp(1px, 0.3vh, 2px) clamp(2px, 0.8vw, 3px) !important;
     font-size: clamp(0.4rem, 1.4vw, 0.5rem) !important;
     min-width: clamp(25px, 5.5vw, 32px) !important;
-    height: clamp(10px, 2vh, 12px) !important;
-    border-radius: clamp(1px, 0.3vw, 2px) !important;
+    height: clamp(8px, 1.5vh, 10px) !important;
+    border-radius: clamp(1px, 0.2vw, 2px) !important;
   }
 
     /* Mobile Splitter */
@@ -2293,8 +2293,8 @@
 
   /* Mobile Terminal Header */
   .playground-output-header>div:first-child {
-    padding: clamp(2px, 0.5vh, 3px) clamp(6px, 1.5vw, 8px) !important;
-    font-size: clamp(0.5rem, 2vw, 0.6rem) !important;
+    padding: clamp(1px, 0.4vh, 2px) clamp(4px, 1.2vw, 6px) !important;
+    font-size: clamp(0.45rem, 1.8vw, 0.55rem) !important;
   }
 
   /* Ensure Run/Reset buttons are smaller than Code button on mobile */

@@ -224,7 +224,22 @@ const Learn = () => {
           const assignments = topicResponse.data.data.topic.tasks || []
           setAssignments(assignments)
           if (assignments.length > 0) {
-            setAssignmentCode(assignments[0].starter_code || '')
+            // Create assignment code with question in comments
+            const assignment = assignments[0]
+            let codeWithComments = `// Assignment ${1}: ${assignment.title || ''}\n`
+            codeWithComments += `// ${assignment.description || 'Complete the assignment below'}\n`
+
+            if (assignment.requirements && assignment.requirements.length > 0) {
+              codeWithComments += `\n// Requirements:\n`
+              assignment.requirements.forEach(req => {
+                codeWithComments += `// - ${req}\n`
+              })
+            }
+
+            codeWithComments += `\n// Start your code below this line:\n\n`
+            codeWithComments += assignment.starter_code || ''
+
+            setAssignmentCode(codeWithComments)
           }
         } else if (phase === 'feedback') {
           // Load feedback
@@ -443,27 +458,85 @@ const Learn = () => {
     setPlaygroundOutput('')
   }
 
-  // Handle running code in assignment
+  // Handle running code in assignment - Similar to playground execution
   const handleRunAssignment = async () => {
-    // Execute code first
+    const outputDiv = document.getElementById('assignment-terminal-output')
+    if (!outputDiv) return
+
     try {
-      const response = await learning.executeCode(assignmentCode, topicId, currentAssignment)
-      const executionResult = response.data.data.execution
+      // Clear previous output
+      outputDiv.innerHTML = ''
 
-      if (executionResult.success) {
-        setAssignmentOutput(executionResult.output || 'Code executed successfully (no output)')
-      } else {
-        setAssignmentOutput(`Error: ${executionResult.error}`)
+      // Capture console.log output
+      const outputs = []
+      const originalConsoleLog = console.log
+      const originalConsoleError = console.error
+      const originalConsoleWarn = console.warn
+
+      // Override console methods
+      console.log = (...args) => {
+        outputs.push({ type: 'log', content: args.map(arg => String(arg)).join(' ') })
       }
-    } catch (err) {
-      const errorMsg = err.response?.data?.error || err.message || 'Code execution failed'
-      setAssignmentOutput(`Error: ${errorMsg}`)
-      showError('Assignment execution failed. Please review your code and try again.', 4000)
-      return // Don't proceed to review if code execution failed
-    }
+      console.error = (...args) => {
+        outputs.push({ type: 'error', content: args.map(arg => String(arg)).join(' ') })
+      }
+      console.warn = (...args) => {
+        outputs.push({ type: 'warn', content: args.map(arg => String(arg)).join(' ') })
+      }
 
-    // Temporarily disable code review to focus on code execution
-    setAssignmentReview('✅ Code executed successfully! Code review coming soon...')
+      // Execute user code in try-catch
+      try {
+        eval(assignmentCode)
+      } catch (executionError) {
+        outputs.push({ type: 'error', content: `Error: ${executionError.message}` })
+      }
+
+      // Restore console methods
+      console.log = originalConsoleLog
+      console.error = originalConsoleError
+      console.warn = originalConsoleWarn
+
+      // Process output
+      const outputText = outputs.length > 0
+        ? outputs.map(out => out.content).join('\n')
+        : 'No output'
+      const outputLines = outputText.split('\n')
+
+      // Update line numbers
+      const lineNumbersDiv = outputDiv.parentElement.querySelector('.assignment-terminal-line-numbers')
+      if (lineNumbersDiv) {
+        let lineNumbersHTML = ''
+        outputLines.forEach((_, index) => {
+          lineNumbersHTML += `<div style="line-height: 1.4; color: #6b7280; text-align: right; padding-right: 8px; font-size: 0.875rem;">${index + 1}</div>`
+        })
+        lineNumbersDiv.innerHTML = lineNumbersHTML
+      }
+
+      // Update output content with color coding
+      let formattedOutput = ''
+      outputLines.forEach((line) => {
+        const output = outputs.find(out => out.content.includes(line))
+        const color = output?.type === 'error' ? '#ef4444' :
+          output?.type === 'warn' ? '#f59e0b' : '#10a37f'
+        formattedOutput += `<div style="line-height: 1.4; color: ${color}; white-space: pre; padding-left: 2px; font-size: 0.875rem;">${line || ' '}</div>`
+      })
+
+      outputDiv.innerHTML = `
+        <div style="font-family: Monaco, Consolas, 'SF Mono', 'Courier New', monospace; line-height: 1.4;">
+          ${formattedOutput}
+        </div>
+      `
+
+      // Set output for reference
+      setAssignmentOutput(outputText)
+      success('Assignment code executed successfully!', 2000)
+
+    } catch (error) {
+      console.error('Assignment code execution failed:', error)
+      const errorDiv = `<div style="color: #ef4444; font-family: Monaco, Consolas, monospace; padding: 16px;">Error: ${error.message}</div>`
+      outputDiv.innerHTML = errorDiv
+      showError('Assignment code execution failed. Please check your syntax.', 3000)
+    }
   }
 
   // Handle submitting assignment
@@ -474,8 +547,25 @@ const Learn = () => {
       if (response.data.data.success) {
         if (currentAssignment < assignments.length - 1) {
           // Move to next assignment
-          setCurrentAssignment(prev => prev + 1)
-          setAssignmentCode(assignments[currentAssignment + 1].starter_code || '')
+          const nextAssignmentIndex = currentAssignment + 1
+          setCurrentAssignment(nextAssignmentIndex)
+
+          // Create next assignment code with question in comments
+          const nextAssignment = assignments[nextAssignmentIndex]
+          let codeWithComments = `// ${nextAssignment.description || 'Complete the assignment below'}\n`
+          codeWithComments += `// ${nextAssignment.description || 'Complete the assignment below'}\n`
+
+          if (nextAssignment.requirements && nextAssignment.requirements.length > 0) {
+            codeWithComments += `\n// Requirements:\n`
+            nextAssignment.requirements.forEach(req => {
+              codeWithComments += `// - ${req}\n`
+            })
+          }
+
+          codeWithComments += `\n// Start your code below this line`
+          codeWithComments += nextAssignment.starter_code || ''
+
+          setAssignmentCode(codeWithComments)
           setAssignmentOutput('')
           setAssignmentReview('')
           success('Assignment completed! Moving to next one...', 3000)
@@ -726,15 +816,15 @@ const Learn = () => {
                     backgroundColor: userCode.trim() ? '#10a37f' : '#d1d5db',
                     color: userCode.trim() ? 'white' : '#9ca3af',
                     border: 'none',
-                    borderRadius: '3px',
-                    padding: '2px 6px',
-                    fontSize: '0.6rem',
+                    borderRadius: '6px',
+                    padding: '6px 12px',
+                    fontSize: '0.75rem',
                     fontWeight: '500',
                     cursor: userCode.trim() ? 'pointer' : 'not-allowed',
                     transition: 'all 0.2s ease',
-                    boxShadow: userCode.trim() ? '0 1px 2px rgba(0, 0, 0, 0.1)' : 'none',
-                    minWidth: '40px',
-                    height: '18px',
+                    boxShadow: userCode.trim() ? '0 1px 3px rgba(0, 0, 0, 0.1)' : 'none',
+                    minWidth: '60px',
+                    height: '28px',
                     alignSelf: 'flex-start'
                   }}
                   title="Run Code (Ctrl+Enter)"
@@ -748,15 +838,15 @@ const Learn = () => {
                     backgroundColor: '#6b7280',
                     color: 'white',
                     border: 'none',
-                    borderRadius: '3px',
-                    padding: '2px 6px',
-                    fontSize: '0.6rem',
+                    borderRadius: '6px',
+                    padding: '6px 12px',
+                    fontSize: '0.75rem',
                     fontWeight: '500',
                     cursor: 'pointer',
                     transition: 'all 0.2s ease',
-                    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
-                    minWidth: '40px',
-                    height: '18px',
+                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                    minWidth: '60px',
+                    height: '28px',
                     alignSelf: 'flex-start'
                   }}
                   title="Reset Code"
@@ -963,166 +1053,318 @@ const Learn = () => {
         </div>
       )}
 
-      {/* Assignment Phase */}
+      {/* Assignment Phase - Same Structure as Playground */}
       {phase === 'assignment' && assignments.length > 0 && (
-        <div className="assignment-container">
-          <div className="assignment-main-content">
-            <div className="assignment-left-panel">
-              <div className="assignment-header">
-                <div style={{ color: '#111827' }}>
-                  <span className="assignment-number">Assignment {currentAssignment + 1} of {assignments.length}</span>
-                  <h2 className="assignment-title">{assignments[currentAssignment]?.title}</h2>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                  <button className="hint-button">💡 Hint</button>
-                  <div className="timer-box">
-                    <span>⏱️</span>
-                    <span className="timer-text">05:30</span>
-                  </div>
-                </div>
+        <div className="assignment-main-content" style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%',
+          minHeight: 0,
+          overflow: 'hidden'
+        }}>
+          {/* Assignment Info Header */}
+          <div style={{
+            padding: '12px 16px',
+            backgroundColor: '#f0f9ff',
+            borderBottom: '1px solid #e0e7ff',
+            fontSize: '0.85rem',
+            color: '#1e40af'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <span style={{ fontWeight: '600' }}>Assignment {currentAssignment + 1} of {assignments.length}</span>
+                <span style={{ margin: '0 8px', color: '#6b7280' }}>•</span>
+                <span>{assignments[currentAssignment]?.title}</span>
               </div>
-
-              <div className="assignment-question-section">
-                <h3 style={{ margin: '0 0 12px 0', fontWeight: '600', color: '#111827', fontSize: '1rem' }}>
-                  Task Description
-                </h3>
-                <p style={{ margin: '0 0 16px 0', color: '#374151', lineHeight: '1.6', fontSize: '0.9rem' }}>
-                  {assignments[currentAssignment]?.description}
-                </p>
-
-                {assignments[currentAssignment]?.requirements && (
-                  <>
-                    <h4 style={{ margin: '16px 0 8px 0', fontWeight: '600', color: '#111827', fontSize: '0.9rem' }}>
-                      Requirements:
-                    </h4>
-                    {assignments[currentAssignment].requirements.map((req, index) => (
-                      <div key={index} style={{ margin: '4px 0', fontSize: '0.85rem', color: '#6b7280' }}>
-                        • {req}
-                      </div>
-                    ))}
-                  </>
-                )}
-              </div>
-
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: '300px' }}>
-                <div className="assignment-editor-header">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '0.85rem', fontWeight: '500' }}>Code Editor</span>
-                  </div>
-                </div>
-
-                <div style={{ flex: 1, display: 'flex', border: '1px solid #e5e7eb', backgroundColor: '#ffffff' }}>
-                  <div className="assignment-line-numbers">
-                    {assignmentCode.split('\n').map((_, index) => (
-                      <div key={index} style={{ height: '19.6px' }}>
-                        {index + 1}
-                      </div>
-                    ))}
-                  </div>
-
-                  <textarea
-                    className="assignment-textarea"
-                    value={assignmentCode}
-                    onChange={(e) => setAssignmentCode(e.target.value)}
-                    style={{
-                      flex: 1,
-                      resize: 'none',
-                      border: 'none',
-                      outline: 'none',
-                      padding: '12px 16px',
-                      fontFamily: 'Monaco, Consolas, monospace',
-                      fontSize: '14px',
-                      lineHeight: '19.6px',
-                      backgroundColor: '#ffffff',
-                      color: '#111827'
-                    }}
-                  />
-                </div>
-
-                <div className="assignment-footer">
-                  <div style={{ display: 'flex', gap: '12px' }}>
-                    <span style={{ fontSize: '0.8rem', color: '#6b7280' }}>
-                      Press Ctrl+Enter to run • Ctrl+S to save
-                    </span>
-                  </div>
-                  <div style={{ fontSize: '0.7rem', color: '#9ca3af' }}>
-                    Last saved: Just now
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="assignment-right-panel">
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                <div className="assignment-output-header">
-                  <span>Test Results</span>
-                </div>
-
-                <div style={{ flex: 1, padding: '16px', backgroundColor: '#1e1e1e', color: '#e2e8f0', fontFamily: 'Monaco, Consolas, monospace', fontSize: '0.85rem', overflow: 'auto' }}>
-                  {assignmentOutput ? (
-                    <pre style={{ margin: 0, color: '#6b7280' }}>{assignmentOutput}</pre>
-                  ) : (
-                    <pre style={{ margin: 0, color: '#6b7280' }}>Click "Run" to test your code</pre>
-                  )}
-                </div>
-              </div>
-
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', borderTop: '1px solid #e5e7eb' }}>
-                <div className="assignment-review-header">
-                  <span style={{ fontWeight: '500' }}>Code Review & Feedback</span>
-                </div>
-
-                <div style={{ flex: 1, padding: '16px', backgroundColor: '#ffffff', color: '#111827', fontSize: '0.9rem', overflow: 'auto' }}>
-                  {assignmentReview ? (
-                    <div style={{ color: '#111827', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>{assignmentReview}</div>
-                  ) : (
-                    <div style={{ color: '#6b7280', fontStyle: 'italic' }}>
-                      Run your code to get detailed feedback and suggestions
-                    </div>
-                  )}
-                </div>
+              <div style={{ fontSize: '0.8rem', color: '#6b7280' }}>
+                Read the instructions in the code comments above
               </div>
             </div>
           </div>
 
-          <div className="assignment-sticky-footer">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-              <span style={{ fontSize: '0.85rem', color: '#6b7280' }}>
-                Assignment {currentAssignment + 1} of {assignments.length}
-              </span>
+          {/* Editor Panel */}
+          <div className="assignment-editor-panel" style={{
+            height: `${editorHeight}%`,
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: '200px',
+            overflow: 'hidden'
+          }}>
+            {/* Editor Header */}
+            <div className="assignment-editor-header" style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '12px 16px',
+              backgroundColor: '#f9fafb',
+              borderBottom: '1px solid #e5e7eb',
+              fontSize: '0.8rem',
+              color: '#6b7280',
+              minHeight: '56px'
+            }}>
+              {/* File Tab */}
+              <div style={{
+                padding: '4px 12px',
+                backgroundColor: '#ffffff',
+                borderRadius: '4px 4px 0 0',
+                borderBottom: '2px solid #10a37f',
+                color: '#111827',
+                fontWeight: '500',
+                fontSize: '0.75rem'
+              }}>
+                assignment.js
+              </div>
+
+              {/* Action Buttons */}
+              <div className="assignment-header-actions" style={{
+                display: 'flex',
+                gap: '8px',
+                alignItems: 'center'
+              }}>
+                <button
+                  onClick={handleRunAssignment}
+                  className="assignment-run-btn"
+                  style={{
+                    backgroundColor: assignmentCode.trim() ? '#10a37f' : '#d1d5db',
+                    color: assignmentCode.trim() ? 'white' : '#9ca3af',
+                    border: 'none',
+                    borderRadius: '6px',
+                    padding: '6px 12px',
+                    fontSize: '0.75rem',
+                    fontWeight: '500',
+                    cursor: assignmentCode.trim() ? 'pointer' : 'not-allowed',
+                    transition: 'all 0.2s ease',
+                    boxShadow: assignmentCode.trim() ? '0 1px 3px rgba(0, 0, 0, 0.1)' : 'none',
+                    minWidth: '60px',
+                    height: '28px',
+                    alignSelf: 'flex-start'
+                  }}
+                  title="Run Code (Ctrl+Enter)"
+                >
+                  Run
+                </button>
+                <button
+                  onClick={handleSubmitAssignment}
+                  className="assignment-submit-btn"
+                  style={{
+                    backgroundColor: '#6b7280',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '6px',
+                    padding: '6px 12px',
+                    fontSize: '0.75rem',
+                    fontWeight: '500',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                    minWidth: '60px',
+                    height: '28px',
+                    alignSelf: 'flex-start'
+                  }}
+                  title="Submit Assignment"
+                >
+                  Submit
+                </button>
+              </div>
             </div>
 
-            <div className="assignment-sticky-actions">
-              <button
-                onClick={handleRunAssignment}
+            {/* Editor Content */}
+            <div style={{
+              flex: 1,
+              minHeight: '300px',
+              display: 'flex',
+              backgroundColor: '#ffffff',
+              border: '1px solid #e5e7eb',
+              borderRadius: '6px',
+              overflow: 'hidden'
+            }}>
+              {/* Line Numbers */}
+              <div className="assignment-line-numbers" style={{
+                width: '50px',
+                backgroundColor: '#f9fafb',
+                borderRight: '1px solid #e5e7eb',
+                padding: '16px 8px',
+                fontSize: '0.875rem',
+                color: '#9ca3af',
+                fontFamily: 'Monaco, Consolas, "SF Mono", "Courier New", monospace',
+                lineHeight: '1.4',
+                textAlign: 'right',
+                userSelect: 'none',
+                overflow: 'hidden',
+                flexShrink: 0,
+                position: 'relative'
+              }}>
+                {assignmentCode.split('\n').map((_, index) => (
+                  <div key={index} style={{
+                    lineHeight: '1.4',
+                    fontSize: '0.875rem'
+                  }}>
+                    {index + 1}
+                  </div>
+                ))}
+              </div>
+
+              {/* Code Textarea */}
+              <textarea
+                className="assignment-textarea"
+                value={assignmentCode}
+                onChange={(e) => setAssignmentCode(e.target.value)}
+                onScroll={(e) => {
+                  // Sync line numbers with textarea scroll
+                  const lineNumbers = e.target.parentElement.querySelector('.assignment-line-numbers')
+                  if (lineNumbers) {
+                    lineNumbers.scrollTop = e.target.scrollTop
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if (e.ctrlKey && e.key === 'Enter') {
+                    e.preventDefault()
+                    handleRunAssignment()
+                  }
+                }}
+                placeholder="// Write your assignment code here..."
                 style={{
-                  padding: '10px 20px',
-                  backgroundColor: '#374151',
-                  color: 'white',
+                  flex: 1,
                   border: 'none',
-                  borderRadius: '8px',
-                  fontSize: '0.9rem',
-                  fontWeight: '500',
-                  cursor: 'pointer'
+                  outline: 'none',
+                  resize: 'none',
+                  padding: '16px',
+                  fontSize: '0.875rem',
+                  fontFamily: 'Monaco, Consolas, "SF Mono", "Courier New", monospace',
+                  lineHeight: '1.4',
+                  backgroundColor: 'transparent',
+                  color: '#111827',
+                  overflow: 'auto',
+                  whiteSpace: 'pre',
+                  tabSize: 2
+                }}
+                spellCheck={false}
+              />
+            </div>
+          </div>
+
+          {/* Resizable Splitter */}
+          <div
+            className="assignment-splitter"
+            style={{
+              height: '8px',
+              backgroundColor: isDragging ? '#e5e7eb' : 'transparent',
+              cursor: 'row-resize',
+              position: 'relative',
+              flexShrink: 0,
+              transition: isDragging ? 'none' : 'background-color 0.2s ease'
+            }}
+            onMouseDown={handleMouseDown}
+            onTouchStart={handleTouchStart}
+          >
+            <div style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '40px',
+              height: '2px',
+              backgroundColor: '#9ca3af',
+              borderRadius: '1px',
+              opacity: isDragging ? 1 : 0.5
+            }} />
+          </div>
+
+          {/* Terminal Panel */}
+          <div className="assignment-output-panel" style={{
+            height: `${100 - editorHeight}%`,
+            display: 'flex',
+            flexDirection: 'column',
+            backgroundColor: '#ffffff',
+            minHeight: '100px',
+            overflow: 'hidden'
+          }}>
+            {/* Terminal Header */}
+            <div className="assignment-output-header" style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '12px 16px',
+              backgroundColor: '#f9fafb',
+              borderBottom: '1px solid #e5e7eb',
+              fontSize: '0.8rem',
+              color: '#6b7280',
+              minHeight: '56px'
+            }}>
+              <div style={{
+                padding: '4px 12px',
+                backgroundColor: '#ffffff',
+                borderRadius: '4px 4px 0 0',
+                fontSize: '0.75rem',
+                fontWeight: '500',
+                color: '#111827',
+                border: '1px solid #e5e7eb',
+                borderBottom: '2px solid #10a37f',
+                marginBottom: '-1px'
+              }}>
+                Test Results
+              </div>
+            </div>
+
+            {/* Terminal Content */}
+            <div style={{
+              flex: 1,
+              backgroundColor: '#1e1e1e',
+              border: '1px solid #333',
+              borderTop: 'none',
+              display: 'flex',
+              minHeight: 0
+            }}>
+              {/* Terminal Line Numbers */}
+              <div className="assignment-terminal-line-numbers" style={{
+                width: '50px',
+                backgroundColor: '#2d2d2d',
+                borderRight: '1px solid #404040',
+                padding: '16px 8px',
+                fontSize: '0.875rem',
+                color: '#6b7280',
+                fontFamily: 'Monaco, Consolas, "SF Mono", "Courier New", monospace',
+                lineHeight: '1.4',
+                textAlign: 'right',
+                userSelect: 'none',
+                overflow: 'hidden',
+                flexShrink: 0,
+                position: 'relative'
+              }}>
+              </div>
+
+              {/* Terminal Output */}
+              <div
+                id="assignment-terminal-output"
+                className="assignment-output"
+                onScroll={(e) => {
+                  const lineNumbers = e.target.parentElement.querySelector('.assignment-terminal-line-numbers')
+                  if (lineNumbers) {
+                    lineNumbers.scrollTop = e.target.scrollTop
+                  }
+                }}
+                style={{
+                  flex: 1,
+                  padding: '16px',
+                  backgroundColor: '#1e1e1e',
+                  color: '#10a37f',
+                  fontFamily: 'Monaco, Consolas, "SF Mono", "Courier New", monospace',
+                  fontSize: '0.875rem',
+                  lineHeight: '1.4',
+                  overflow: 'auto',
+                  minHeight: 0,
+                  height: '100%'
                 }}
               >
-                Run & Test
-              </button>
-              <button
-                onClick={handleSubmitAssignment}
-                style={{
-                  padding: '10px 24px',
-                  backgroundColor: '#10a37f',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  fontSize: '0.9rem',
-                  fontWeight: '600',
-                  cursor: 'pointer'
-                }}
-              >
-                {currentAssignment < assignments.length - 1 ? 'Next Assignment' : 'Complete'}
-              </button>
+                <div style={{ color: '#6b7280', fontStyle: 'italic' }}>
+                  {assignmentOutput ? (
+                    <pre style={{ margin: 0, color: '#10a37f', whiteSpace: 'pre-wrap' }}>{assignmentOutput}</pre>
+                  ) : (
+                    'Click "Run" to test your assignment code'
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
