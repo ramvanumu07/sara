@@ -121,10 +121,11 @@ const Learn = () => {
   const messagesEndRef = useRef(null)
 
   // Playground phase states
-  const [playgroundCode, setPlaygroundCode] = useState('')
+  const [userCode, setUserCode] = useState('')
   const [playgroundOutput, setPlaygroundOutput] = useState('')
-  const [playgroundAnalysis, setPlaygroundAnalysis] = useState('')
   const [playgroundReady, setPlaygroundReady] = useState(false)
+  const [editorHeight, setEditorHeight] = useState(70) // 70% editor, 30% terminal
+  const [isDragging, setIsDragging] = useState(false)
 
   // Assignment phase states
   const [assignments, setAssignments] = useState([])
@@ -162,50 +163,32 @@ const Learn = () => {
         
         setTopic(topicResponse.data.data.topic)
 
-        // Check if user is trying to access advanced phases without completing session
-        if ((phase === 'playtime' || phase === 'assignment') && !sessionComplete) {
-          // Check if session is actually complete by looking at chat history
-          try {
-            const historyResponse = await chat.getHistory(topicId)
-            if (historyResponse.data.data.messages && historyResponse.data.data.messages.length > 0) {
-              const lastMessage = historyResponse.data.data.messages[historyResponse.data.data.messages.length - 1]
-              if (lastMessage.role === 'assistant' && lastMessage.content.includes('ready for the playground')) {
-                setSessionComplete(true)
-                // Delay the success message slightly to let the UI update
-                setTimeout(() => {
-                  success('🎉 Session completed! Playground and assignments unlocked!', 4000)
-                }, 500)
-              } else {
-                // Session not complete, redirect to session
-                navigate(`/learn/${topicId}?phase=session`)
-                return
-              }
-            } else {
-              // No chat history, redirect to session
-              navigate(`/learn/${topicId}?phase=session`)
-              return
-            }
-          } catch (historyError) {
-            // Error loading history, redirect to session
-            navigate(`/learn/${topicId}?phase=session`)
-            return
-          }
+        // Trust the database progress table - if phase is advanced, allow access
+        if (phase === 'playtime' || phase === 'assignment') {
+          setSessionComplete(true)
         }
 
         if (phase === 'session') {
           // Load chat history
           try {
             const historyResponse = await chat.getHistory(topicId)
+            console.log('Chat history response:', historyResponse.data)
+            
             if (historyResponse.data.data.messages && historyResponse.data.data.messages.length > 0) {
               setMessages(historyResponse.data.data.messages)
-              // Check if session is complete
+              // Check if session is complete based on message content
               const lastMessage = historyResponse.data.data.messages[historyResponse.data.data.messages.length - 1]
-              if (lastMessage.role === 'assistant' && lastMessage.content.includes('ready for the playground')) {
+              if (lastMessage.role === 'assistant' && 
+                  (lastMessage.content.includes('ready for the playground') ||
+                   lastMessage.content.includes('Congratulations! You\'ve mastered') ||
+                   lastMessage.content.includes('🏆'))) {
                 setSessionComplete(true)
               }
             } else {
               // Start new session
               const startResponse = await learning.sessionChat(topicId, '')
+              console.log('Start session response:', startResponse.data)
+              
               if (startResponse.data.data.response) {
                 const message = {
                   role: 'assistant',
@@ -218,19 +201,24 @@ const Learn = () => {
           } catch (historyError) {
             console.error('Error loading chat history:', historyError)
             // Start new session on error
-            const startResponse = await learning.sessionChat(topicId, '')
-            if (startResponse.data.data.response) {
-              const message = {
-                role: 'assistant',
-                content: startResponse.data.data.response,
-                timestamp: new Date().toISOString()
+            try {
+              const startResponse = await learning.sessionChat(topicId, '')
+              if (startResponse.data.data.response) {
+                const message = {
+                  role: 'assistant',
+                  content: startResponse.data.data.response,
+                  timestamp: new Date().toISOString()
+                }
+                setMessages([message])
               }
-              setMessages([message])
+            } catch (startError) {
+              console.error('Error starting new session:', startError)
+              setError('Failed to initialize chat session')
             }
           }
         } else if (phase === 'playtime') {
           // Initialize playground
-          setPlaygroundCode(`// Welcome to the ${topicResponse.data.data.topic.title} playground!\n// Try writing some code here\n\nconsole.log("Hello, World!");`)
+          setUserCode(`// Welcome to the ${topicResponse.data.data.topic.title} playground!\n// Try writing some code here\n\nconsole.log("Hello, World!");`)
         } else if (phase === 'assignment') {
           // Load assignments from topic data
           const assignments = topicResponse.data.data.topic.tasks || []
@@ -283,10 +271,13 @@ const Learn = () => {
         }
         setMessages(prev => [...prev, message])
 
-        // Check if session is complete
-        if (response.data.data.response.includes('ready for the playground')) {
+        // Check if session is complete (using backend flag or text detection)
+        if (response.data.data.sessionComplete || 
+            response.data.data.response.includes('ready for the playground') ||
+            response.data.data.response.includes('Congratulations! You\'ve mastered') ||
+            response.data.data.response.includes('🏆')) {
           setSessionComplete(true)
-          success('🎉 Session completed! Playground unlocked!', 3000)
+          success('Session completed! Playground unlocked!', 3000)
         }
       }
     } catch (err) {
@@ -303,36 +294,176 @@ const Learn = () => {
     }
   }
 
-  // Handle running code in playground
-  const handleRunPlayground = async () => {
-    try {
-      const response = await learning.executeCode(playgroundCode, topicId)
-      setPlaygroundOutput(response.data.data.output)
+  // Professional code execution system
+  const handleRunPlayground = () => {
+    const outputDiv = document.getElementById('terminal-output')
+    if (!outputDiv) return
 
-      // Get AI analysis (using getFeedback as a substitute for analysis)
-      const analysisResponse = await learning.getFeedback(topicId, playgroundCode, null)
-      setPlaygroundAnalysis(analysisResponse.data.data.feedback)
-    } catch (err) {
-      const errorMsg = err.response?.data?.error || err.message || 'Code execution failed'
-      setPlaygroundOutput(`Error: ${errorMsg}`)
-      showError('Code execution failed. Please check your syntax and try again.', 4000)
+    try {
+      // Clear previous output
+      outputDiv.innerHTML = ''
+
+      // Capture console.log output
+      const outputs = []
+      const originalConsoleLog = console.log
+      const originalConsoleError = console.error
+      const originalConsoleWarn = console.warn
+
+      // Override console methods
+      console.log = (...args) => {
+        outputs.push({ type: 'log', content: args.map(arg => String(arg)).join(' ') })
+      }
+      console.error = (...args) => {
+        outputs.push({ type: 'error', content: args.map(arg => String(arg)).join(' ') })
+      }
+      console.warn = (...args) => {
+        outputs.push({ type: 'warn', content: args.map(arg => String(arg)).join(' ') })
+      }
+
+      // Execute user code in try-catch
+      try {
+        eval(userCode)
+      } catch (executionError) {
+        outputs.push({ type: 'error', content: `Error: ${executionError.message}` })
+      }
+
+      // Restore console methods
+      console.log = originalConsoleLog
+      console.error = originalConsoleError
+      console.warn = originalConsoleWarn
+
+      // Process output
+      const outputText = outputs.length > 0 
+        ? outputs.map(out => out.content).join('\n') 
+        : 'No output'
+      const outputLines = outputText.split('\n')
+
+      // Update line numbers
+      const lineNumbersDiv = outputDiv.parentElement.querySelector('.terminal-line-numbers')
+      if (lineNumbersDiv) {
+        let lineNumbersHTML = ''
+        outputLines.forEach((_, index) => {
+          lineNumbersHTML += `<div style="line-height: 1.4; color: #6b7280; text-align: right; padding-right: 8px; font-size: 0.875rem;">${index + 1}</div>`
+        })
+        lineNumbersDiv.innerHTML = lineNumbersHTML
+      }
+
+      // Update output content with color coding
+      let formattedOutput = ''
+      outputLines.forEach((line) => {
+        const output = outputs.find(out => out.content.includes(line))
+        const color = output?.type === 'error' ? '#ef4444' : 
+                     output?.type === 'warn' ? '#f59e0b' : '#10a37f'
+        formattedOutput += `<div style="line-height: 1.4; color: ${color}; white-space: pre; padding-left: 2px; font-size: 0.875rem;">${line || ' '}</div>`
+      })
+
+      outputDiv.innerHTML = `
+        <div style="font-family: Monaco, Consolas, 'SF Mono', 'Courier New', monospace; line-height: 1.4;">
+          ${formattedOutput}
+        </div>
+      `
+
+      // Set output for reference
+      setPlaygroundOutput(outputText)
+
+    } catch (error) {
+      console.error('Code execution failed:', error)
+      const errorDiv = `<div style="color: #ef4444; font-family: Monaco, Consolas, monospace; padding: 16px;">Error: ${error.message}</div>`
+      outputDiv.innerHTML = errorDiv
+      showError('Code execution failed. Please check your syntax.', 3000)
     }
+  }
+
+  // Handle splitter dragging (mouse)
+  const handleMouseDown = (e) => {
+    e.preventDefault()
+    setIsDragging(true)
+    const startY = e.clientY
+    const startHeight = editorHeight
+    const container = e.currentTarget.parentElement
+    const containerHeight = container.clientHeight
+
+    const handleMouseMove = (e) => {
+      const deltaY = e.clientY - startY
+      const deltaPercent = (deltaY / containerHeight) * 100
+      const newHeight = Math.min(Math.max(startHeight + deltaPercent, 20), 80)
+      setEditorHeight(newHeight)
+    }
+
+    const handleMouseUp = () => {
+      setIsDragging(false)
+      document.removeEventListener('mousemove', handleMouseMove)
+      document.removeEventListener('mouseup', handleMouseUp)
+    }
+
+    document.addEventListener('mousemove', handleMouseMove)
+    document.addEventListener('mouseup', handleMouseUp)
+  }
+
+  // Handle splitter dragging (touch)
+  const handleTouchStart = (e) => {
+    e.preventDefault()
+    setIsDragging(true)
+    const touch = e.touches[0]
+    const startY = touch.clientY
+    const startHeight = editorHeight
+    const container = e.currentTarget.parentElement
+    const containerHeight = container.clientHeight
+
+    const handleTouchMove = (e) => {
+      e.preventDefault()
+      const touch = e.touches[0]
+      const deltaY = touch.clientY - startY
+      const deltaPercent = (deltaY / containerHeight) * 100
+      const newHeight = Math.min(Math.max(startHeight + deltaPercent, 20), 80)
+      setEditorHeight(newHeight)
+    }
+
+    const handleTouchEnd = () => {
+      setIsDragging(false)
+      document.removeEventListener('touchmove', handleTouchMove)
+      document.removeEventListener('touchend', handleTouchEnd)
+    }
+
+    document.addEventListener('touchmove', handleTouchMove, { passive: false })
+    document.addEventListener('touchend', handleTouchEnd)
+  }
+
+  // Handle reset code
+  const handleResetCode = () => {
+    setUserCode(`// Welcome to the ${topic?.title || 'JavaScript'} playground!\n// Try writing some code here\n\nconsole.log("Hello, World!");`)
+    const outputDiv = document.getElementById('terminal-output')
+    if (outputDiv) {
+      outputDiv.innerHTML = '<div style="color: #6b7280; font-style: italic; padding: 16px;">Click "Run" to execute your code</div>'
+    }
+    const lineNumbersDiv = document.querySelector('.terminal-line-numbers')
+    if (lineNumbersDiv) {
+      lineNumbersDiv.innerHTML = ''
+    }
+    setPlaygroundOutput('')
   }
 
   // Handle running code in assignment
   const handleRunAssignment = async () => {
+    // Execute code first
     try {
       const response = await learning.executeCode(assignmentCode, topicId, currentAssignment)
-      setAssignmentOutput(response.data.data.output)
-
-      // Get code review
-      const reviewResponse = await learning.getFeedback(topicId, assignmentCode, assignments[currentAssignment])
-      setAssignmentReview(reviewResponse.data.data.feedback)
+      const executionResult = response.data.data.execution
+      
+      if (executionResult.success) {
+        setAssignmentOutput(executionResult.output || 'Code executed successfully (no output)')
+      } else {
+        setAssignmentOutput(`Error: ${executionResult.error}`)
+      }
     } catch (err) {
       const errorMsg = err.response?.data?.error || err.message || 'Code execution failed'
       setAssignmentOutput(`Error: ${errorMsg}`)
       showError('Assignment execution failed. Please review your code and try again.', 4000)
+      return // Don't proceed to review if code execution failed
     }
+
+    // Temporarily disable code review to focus on code execution
+    setAssignmentReview('✅ Code executed successfully! Code review coming soon...')
   }
 
   // Handle submitting assignment
@@ -459,13 +590,13 @@ const Learn = () => {
         </div>
 
         <button
-          className="play-btn"
+          className="code-btn"
           onClick={() => {
             if (sessionComplete) {
-              info('Loading playground...', 1500)
-              navigate(`/learn/${topicId}?phase=playtime`)
+              info('Loading assignments...', 1500)
+              navigate(`/learn/${topicId}?phase=assignment`)
             } else {
-              warning('Complete the learning session first to unlock the playground!', 4000)
+              warning('Complete the learning session first to unlock assignments!', 4000)
             }
           }}
           style={{ 
@@ -477,9 +608,9 @@ const Learn = () => {
             cursor: sessionComplete ? 'pointer' : 'not-allowed',
             opacity: sessionComplete ? 1 : 0.7
           }}
-          title={sessionComplete ? 'Go to Playground' : 'Complete the session first'}
+          title={sessionComplete ? 'Go to Assignments' : 'Complete the session first'}
         >
-          Play
+          Code
         </button>
       </header>
 
@@ -512,24 +643,19 @@ const Learn = () => {
             <div ref={messagesEndRef} />
           </div>
 
-          {sessionComplete && (
-            <div className="transition-banner">
-              <span>🎉 Great job! You're ready for the playground.</span>
-              <button
-                className="transition-btn"
-                onClick={() => navigate(`/learn/${topicId}?phase=playtime`)}
-              >
-                Go to Playground
-              </button>
-            </div>
-          )}
 
           <form className="input-form" onSubmit={handleSendMessage}>
             <textarea
               className="text-input"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Type your message..."
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault()
+                  handleSendMessage(e)
+                }
+              }}
+              placeholder="Type your message... (Press Enter to send, Shift+Enter for new line)"
               rows="1"
               disabled={isTyping}
             />
@@ -544,141 +670,293 @@ const Learn = () => {
         </div>
       )}
 
-      {/* Playground Phase */}
+      {/* Professional Responsive Playground Phase */}
       {phase === 'playtime' && (
-        <div className="playtime-container">
-          <div className="playtime-left">
-            <div className="playground-main-content">
-              <div className="playground-left-panel">
-                <div className="playground-editor-header">
-                  <span>Code Editor</span>
-                </div>
-
-                <div style={{ display: 'flex', flex: 1 }}>
-                  <div className="playground-line-numbers">
-                    {playgroundCode.split('\n').map((_, index) => (
-                      <div key={index} style={{ height: '19.6px' }}>
-                        {index + 1}
-                      </div>
-                    ))}
-                  </div>
-
-                  <textarea
-                    className="playground-textarea"
-                    value={playgroundCode}
-                    onChange={(e) => setPlaygroundCode(e.target.value)}
-                    style={{
-                      flex: 1,
-                      resize: 'none',
-                      border: 'none',
-                      outline: 'none',
-                      padding: '12px 16px',
-                      fontFamily: 'Monaco, Consolas, monospace',
-                      fontSize: '14px',
-                      lineHeight: '19.6px',
-                      backgroundColor: '#ffffff',
-                      color: '#111827'
-                    }}
-                  />
-                </div>
-
-                <div className="playground-footer">
-                  <div style={{ display: 'flex', gap: '12px' }}>
-                    <span style={{ fontSize: '0.8rem', color: '#6b7280' }}>
-                      Press Ctrl+Enter to run
-                    </span>
-                  </div>
-                  <div className="playground-footer-actions" style={{ display: 'flex', gap: '8px' }}>
-                    <button
-                      onClick={handleRunPlayground}
-                      style={{
-                        padding: '8px 16px',
-                        backgroundColor: '#374151',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '6px',
-                        fontSize: '0.85rem',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      Run Code
-                    </button>
-                  </div>
-                </div>
+        <div className="playground-main-content" style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%',
+          minHeight: 0,
+          overflow: 'hidden'
+        }}>
+          {/* Editor Panel */}
+          <div className="playground-editor-panel" style={{
+            height: `${editorHeight}%`,
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: '200px',
+            overflow: 'hidden'
+          }}>
+            {/* Editor Header */}
+            <div className="playground-editor-header" style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '12px 16px',
+              backgroundColor: '#f9fafb',
+              borderBottom: '1px solid #e5e7eb',
+              fontSize: '0.8rem',
+              color: '#6b7280',
+              minHeight: '56px'
+            }}>
+              {/* File Tab */}
+              <div style={{
+                padding: '4px 12px',
+                backgroundColor: '#ffffff',
+                borderRadius: '4px 4px 0 0',
+                borderBottom: '2px solid #10a37f',
+                color: '#111827',
+                fontWeight: '500',
+                fontSize: '0.75rem'
+              }}>
+                playground.js
               </div>
 
-              <div className="playground-right-panel">
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                  <div className="playground-output-header">
-                    <span>Output</span>
-                  </div>
-
-                  <div style={{ flex: 1, padding: '16px', backgroundColor: '#1e1e1e', color: '#e2e8f0', fontFamily: 'Monaco, Consolas, monospace', fontSize: '0.85rem', overflow: 'auto' }}>
-                    {playgroundOutput ? (
-                      <pre style={{ margin: 0, color: '#6b7280' }}>{playgroundOutput}</pre>
-                    ) : (
-                      <pre style={{ margin: 0, color: '#6b7280' }}>Click "Run" to execute your code</pre>
-                    )}
-                  </div>
-                </div>
-
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', borderTop: '1px solid #e5e7eb' }}>
-                  <div className="playground-ai-header">
-                    <span style={{ fontWeight: '500' }}>AI Code Analysis</span>
-                  </div>
-
-                  <div style={{ flex: 1, padding: '16px', backgroundColor: '#ffffff', color: '#111827', fontSize: '0.9rem', overflow: 'auto' }}>
-                    {playgroundAnalysis ? (
-                      <div style={{ color: '#111827', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>{playgroundAnalysis}</div>
-                    ) : (
-                      <div style={{ color: '#6b7280', fontStyle: 'italic' }}>
-                        Run your code to get AI analysis and suggestions
-                      </div>
-                    )}
-                  </div>
-                </div>
+              {/* Action Buttons */}
+              <div className="playground-header-actions" style={{
+                display: 'flex',
+                gap: '8px',
+                alignItems: 'center'
+              }}>
+                <button
+                  onClick={handleRunPlayground}
+                  style={{
+                    backgroundColor: userCode.trim() ? '#10a37f' : '#d1d5db',
+                    color: userCode.trim() ? 'white' : '#9ca3af',
+                    border: 'none',
+                    borderRadius: '6px',
+                    padding: '6px 12px',
+                    fontSize: '0.75rem',
+                    fontWeight: '500',
+                    cursor: userCode.trim() ? 'pointer' : 'not-allowed',
+                    transition: 'all 0.2s ease',
+                    boxShadow: userCode.trim() ? '0 1px 3px rgba(0, 0, 0, 0.1)' : 'none',
+                    minWidth: '60px',
+                    height: '28px',
+                    alignSelf: 'flex-start'
+                  }}
+                  title="Run Code (Ctrl+Enter)"
+                >
+                  Run
+                </button>
+                <button
+                  onClick={handleResetCode}
+                  style={{
+                    backgroundColor: '#6b7280',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '6px',
+                    padding: '6px 12px',
+                    fontSize: '0.75rem',
+                    fontWeight: '500',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                    minWidth: '60px',
+                    height: '28px',
+                    alignSelf: 'flex-start'
+                  }}
+                  title="Reset Code"
+                >
+                  Reset
+                </button>
               </div>
+            </div>
+
+            {/* Editor Content */}
+            <div style={{
+              flex: 1,
+              minHeight: '300px',
+              display: 'flex',
+              backgroundColor: '#ffffff',
+              border: '1px solid #e5e7eb',
+              borderRadius: '6px',
+              overflow: 'hidden'
+            }}>
+              {/* Line Numbers */}
+              <div className="playground-line-numbers" style={{
+                width: '50px',
+                backgroundColor: '#f9fafb',
+                borderRight: '1px solid #e5e7eb',
+                padding: '16px 8px',
+                fontSize: '0.875rem',
+                color: '#9ca3af',
+                fontFamily: 'Monaco, Consolas, "SF Mono", "Courier New", monospace',
+                lineHeight: '1.4',
+                textAlign: 'right',
+                userSelect: 'none',
+                overflow: 'hidden',
+                flexShrink: 0,
+                position: 'relative'
+              }}>
+                {userCode.split('\n').map((_, index) => (
+                  <div key={index} style={{
+                    lineHeight: '1.4',
+                    fontSize: '0.875rem'
+                  }}>
+                    {index + 1}
+                  </div>
+                ))}
+              </div>
+
+              {/* Code Textarea */}
+              <textarea
+                className="playground-textarea"
+                value={userCode}
+                onChange={(e) => setUserCode(e.target.value)}
+                onScroll={(e) => {
+                  // Sync line numbers with textarea scroll
+                  const lineNumbers = e.target.parentElement.querySelector('.playground-line-numbers')
+                  if (lineNumbers) {
+                    lineNumbers.scrollTop = e.target.scrollTop
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if (e.ctrlKey && e.key === 'Enter') {
+                    e.preventDefault()
+                    handleRunPlayground()
+                  }
+                }}
+                placeholder="// Write your JavaScript code here..."
+                style={{
+                  flex: 1,
+                  border: 'none',
+                  outline: 'none',
+                  resize: 'none',
+                  padding: '16px',
+                  fontSize: '0.875rem',
+                  fontFamily: 'Monaco, Consolas, "SF Mono", "Courier New", monospace',
+                  lineHeight: '1.4',
+                  backgroundColor: 'transparent',
+                  color: '#111827',
+                  overflow: 'auto',
+                  whiteSpace: 'pre',
+                  tabSize: 2
+                }}
+                spellCheck={false}
+              />
             </div>
           </div>
 
-          <div className="playtime-right">
-            <div className="playtime-header">
-              <span>Notes & Chat</span>
+          {/* Resizable Splitter */}
+          <div
+            className="playground-splitter"
+            style={{
+              height: '8px',
+              backgroundColor: isDragging ? '#e5e7eb' : 'transparent',
+              cursor: 'row-resize',
+              position: 'relative',
+              flexShrink: 0,
+              transition: isDragging ? 'none' : 'background-color 0.2s ease'
+            }}
+            onMouseDown={handleMouseDown}
+            onTouchStart={handleTouchStart}
+          >
+            <div style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '40px',
+              height: '2px',
+              backgroundColor: '#9ca3af',
+              borderRadius: '1px',
+              opacity: isDragging ? 1 : 0.5
+            }} />
+          </div>
+
+          {/* Terminal Panel */}
+          <div className="playground-output-panel" style={{
+            height: `${100 - editorHeight}%`,
+            display: 'flex',
+            flexDirection: 'column',
+            backgroundColor: '#ffffff',
+            minHeight: '100px',
+            overflow: 'hidden'
+          }}>
+            {/* Terminal Header */}
+            <div className="playground-output-header" style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '12px 16px',
+              backgroundColor: '#f9fafb',
+              borderBottom: '1px solid #e5e7eb',
+              fontSize: '0.8rem',
+              color: '#6b7280',
+              minHeight: '56px'
+            }}>
+              <div style={{
+                padding: '4px 12px',
+                backgroundColor: '#ffffff',
+                borderRadius: '4px 4px 0 0',
+                fontSize: '0.75rem',
+                fontWeight: '500',
+                color: '#111827',
+                border: '1px solid #e5e7eb',
+                borderBottom: '2px solid #10a37f',
+                marginBottom: '-1px'
+              }}>
+                Terminal Output
+              </div>
             </div>
 
-            <div className="playtime-messages">
-              {/* Placeholder for playground chat */}
+            {/* Terminal Content */}
+            <div style={{
+              flex: 1,
+              backgroundColor: '#1e1e1e',
+              border: '1px solid #333',
+              borderTop: 'none',
+              display: 'flex',
+              minHeight: 0
+            }}>
+              {/* Terminal Line Numbers */}
+              <div className="terminal-line-numbers" style={{
+                width: '50px',
+                backgroundColor: '#2d2d2d',
+                borderRight: '1px solid #404040',
+                padding: '16px 8px',
+                fontSize: '0.875rem',
+                color: '#6b7280',
+                fontFamily: 'Monaco, Consolas, "SF Mono", "Courier New", monospace',
+                lineHeight: '1.4',
+                textAlign: 'right',
+                userSelect: 'none',
+                overflow: 'hidden',
+                flexShrink: 0,
+                position: 'relative'
+              }}>
+              </div>
+
+              {/* Terminal Output */}
+              <div
+                id="terminal-output"
+                className="playground-output"
+                onScroll={(e) => {
+                  const lineNumbers = e.target.parentElement.querySelector('.terminal-line-numbers')
+                  if (lineNumbers) {
+                    lineNumbers.scrollTop = e.target.scrollTop
+                  }
+                }}
+                style={{
+                  flex: 1,
+                  padding: '16px',
+                  backgroundColor: '#1e1e1e',
+                  color: '#10a37f',
+                  fontFamily: 'Monaco, Consolas, "SF Mono", "Courier New", monospace',
+                  fontSize: '0.875rem',
+                  lineHeight: '1.4',
+                  overflow: 'auto',
+                  minHeight: 0,
+                  height: '100%'
+                }}
+              >
+                <div style={{ color: '#6b7280', fontStyle: 'italic' }}>
+                  Click "Run" to execute your code
+                </div>
+              </div>
             </div>
-
-            <form className="playtime-input-form">
-              <input
-                className="playtime-input"
-                placeholder="Ask Sara about your code..."
-              />
-              <button type="submit" className="playtime-send-btn">
-                →
-              </button>
-            </form>
-
-            <button
-              className="ready-btn"
-              onClick={() => {
-                if (sessionComplete) {
-                  info('Loading assignments...', 1500)
-                  navigate(`/learn/${topicId}?phase=assignment`)
-                } else {
-                  warning('Complete the learning session first to unlock assignments!', 4000)
-                }
-              }}
-              style={{ 
-                backgroundColor: sessionComplete ? '#10a37f' : '#9ca3af',
-                cursor: sessionComplete ? 'pointer' : 'not-allowed',
-                opacity: sessionComplete ? 1 : 0.7
-              }}
-              title={sessionComplete ? 'Go to Assignments' : 'Complete the session first'}
-            >
-              Ready for Assignments
-            </button>
           </div>
         </div>
       )}

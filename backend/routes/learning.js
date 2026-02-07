@@ -76,6 +76,7 @@ function validateBody(schema) {
 
 // Secure code execution function
 async function executeCodeSecurely(code, testCases = []) {
+  console.log('🔧 Executing code:', code.substring(0, 100) + '...')
   try {
     // Create a safe execution context
     const vm = await import('vm')
@@ -114,13 +115,16 @@ async function executeCodeSecurely(code, testCases = []) {
         })
       }
       
-      return {
+      const result = {
         success: true,
         output,
         testResults: results,
         allTestsPassed: results.length === 0 || results.every(r => r.passed)
       }
+      console.log('✅ Code execution successful:', result)
+      return result
     } catch (execError) {
+      console.error('❌ Code execution error:', execError.message)
       return {
         success: false,
         error: execError.message,
@@ -948,7 +952,8 @@ router.get('/continue', authenticateToken, async (req, res) => {
     res.json(createSuccessResponse({
       lastAccessed: {
         topicId: lastAccessed.topic_id,
-        phase: lastAccessed.phase || 'session'
+        phase: lastAccessed.phase || 'session',
+        status: lastAccessed.status || 'not_started'
       }
     }))
   } catch (error) {

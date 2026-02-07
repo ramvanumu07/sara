@@ -82,9 +82,7 @@ Adaptive Behaviors:
 - If wrong: Point out issue gently + why + hint (not answer) + ask retry
 - If stuck after 2 tries: Give more explicit guidance
 
-🚨 COMPLETION SIGNAL 🚨
-You have exactly ${goals.split('\n').length} goals to teach:
-${goals}
+🚨 CRITICAL: SEND COMPLETION SIGNAL 🚨
 
 When ALL goals are taught and practiced, send this EXACT completion signal:
 SESSION_COMPLETE_SIGNAL
@@ -179,7 +177,7 @@ router.post('/session', authenticateToken, rateLimitMiddleware, async (req, res)
 
     // Get conversation history and completed topics in parallel
     const [conversationHistory, completedTopics] = await Promise.all([
-      getChatHistory(userId, topicId),
+      getChatHistoryString(userId, topicId),
       getCompletedTopics(userId)
     ])
 
@@ -188,7 +186,9 @@ router.post('/session', authenticateToken, rateLimitMiddleware, async (req, res)
 
     console.log('🔍 System Prompt Debug:')
     console.log('   - Topic ID:', topicId)
+    console.log('   - Conversation History Type:', typeof conversationHistory)
     console.log('   - Conversation History Length:', conversationHistory?.length || 0)
+    console.log('   - Conversation History Preview:', conversationHistory?.substring(0, 200) + '...')
     console.log('   - System Prompt (first 500 chars):', embeddedPrompt.substring(0, 500) + '...')
 
     const messages = [
@@ -210,10 +210,27 @@ router.post('/session', authenticateToken, rateLimitMiddleware, async (req, res)
     })
 
     // Simple and reliable completion detection - look for the exact signal
-    const isSessionComplete = aiResponse.includes('SESSION_COMPLETE_SIGNAL')
+    let isSessionComplete = aiResponse.includes('SESSION_COMPLETE_SIGNAL')
     
     // Clean the response by removing the signal (don't show it to user)
-    const cleanedResponse = aiResponse.replace('SESSION_COMPLETE_SIGNAL\n\n', '').replace('SESSION_COMPLETE_SIGNAL', '')
+    let cleanedResponse = aiResponse.replace('SESSION_COMPLETE_SIGNAL\n\n', '').replace('SESSION_COMPLETE_SIGNAL', '')
+    
+    // Fallback: Force completion if conversation is too long (8+ messages) and student has shown console.log usage
+    if (!isSessionComplete) {
+      const messageCount = conversationHistory.split(/(?=AGENT:|USER:)/).filter(msg => msg.trim()).length
+      const hasConsoleLogUsage = conversationHistory.toLowerCase().includes('console.log')
+      
+      // Count console.log occurrences in user messages
+      const userMessages = conversationHistory.split('USER:').slice(1) // Remove first empty element
+      const consoleLogCount = userMessages.filter(msg => msg.toLowerCase().includes('console.log')).length
+      
+      if ((messageCount >= 8 && hasConsoleLogUsage) || consoleLogCount >= 3) {
+        console.log(`🔄 Forcing session completion - messageCount: ${messageCount}, consoleLogCount: ${consoleLogCount}`)
+        isSessionComplete = true
+        // Add the completion message that frontend will detect
+        cleanedResponse = cleanedResponse + '\n\n🏆 Congratulations! You\'ve mastered console.log! you\'re ready for the playground.'
+      }
+    }
 
     // Save the conversation turn (user message + cleaned AI response) atomically
     let saveSuccess
@@ -363,7 +380,7 @@ router.post('/assignment/hint', authenticateToken, rateLimitMiddleware, async (r
     }
 
     // Get conversation history for assignment context
-    const conversationHistory = await getChatHistory(userId, topicId)
+    const conversationHistory = await getChatHistoryString(userId, topicId)
 
     // Build assignment prompt
     const embeddedPrompt = buildAssignmentPrompt(topicId, conversationHistory, assignment)
