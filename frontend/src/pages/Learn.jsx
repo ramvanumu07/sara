@@ -524,7 +524,7 @@ const Learn = () => {
 
   // Handle running code in assignment - Similar to playground execution
   const handleRunAssignment = async () => {
-    const outputDiv = document.getElementById('assignment-terminal-output')
+    const outputDiv = document.getElementById('terminal-output')
     if (!outputDiv) return
 
     try {
@@ -567,7 +567,7 @@ const Learn = () => {
       const outputLines = outputText.split('\n')
 
       // Update line numbers
-      const lineNumbersDiv = outputDiv.parentElement.querySelector('.assignment-terminal-line-numbers')
+      const lineNumbersDiv = outputDiv.parentElement.querySelector('.terminal-line-numbers')
       if (lineNumbersDiv) {
         let lineNumbersHTML = ''
         outputLines.forEach((_, index) => {
@@ -1143,44 +1143,30 @@ const Learn = () => {
 
       {/* Assignment Phase - Same Structure as Playground */}
       {phase === 'assignment' && assignments.length > 0 && (
-        <div className="assignment-main-content" style={{
+        <div className="playground-main-content" style={{
           flex: 1,
           display: 'flex',
-          flexDirection: 'column',
+          flexDirection: isDesktop ? 'row' : 'column',
           height: '100%',
           minHeight: 0,
           overflow: 'hidden'
         }}>
-          {/* Assignment Info Header */}
-          <div style={{
-            padding: '12px 16px',
-            backgroundColor: '#f0f9ff',
-            borderBottom: '1px solid #e0e7ff',
-            fontSize: '0.85rem',
-            color: '#1e40af'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div>
-                <span style={{ fontWeight: '600' }}>Assignment {currentAssignment + 1} of {assignments.length}</span>
-                <span style={{ margin: '0 8px', color: '#6b7280' }}>•</span>
-                <span>{assignments[currentAssignment]?.title}</span>
-              </div>
-              <div style={{ fontSize: '0.8rem', color: '#6b7280' }}>
-                Read the instructions in the code comments above
-              </div>
-            </div>
-          </div>
-
           {/* Editor Panel */}
-          <div className="assignment-editor-panel" style={{
-            height: `${editorHeight}%`,
+          <div className="playground-editor-panel" style={{
+            ...(isDesktop ? {
+              width: `${editorWidth}%`,
+              height: '100%',
+              minWidth: '300px'
+            } : {
+              height: `${editorHeight}%`,
+              minHeight: '200px'
+            }),
             display: 'flex',
             flexDirection: 'column',
-            minHeight: '200px',
             overflow: 'hidden'
           }}>
             {/* Editor Header */}
-            <div className="assignment-editor-header" style={{
+            <div className="playground-editor-header" style={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
@@ -1205,14 +1191,14 @@ const Learn = () => {
               </div>
 
               {/* Action Buttons */}
-              <div className="assignment-header-actions" style={{
+              <div className="playground-header-actions" style={{
                 display: 'flex',
                 gap: '8px',
                 alignItems: 'center'
               }}>
                 <button
                   onClick={handleRunAssignment}
-                  className="assignment-run-btn"
+                  className="playground-run-btn"
                   style={{
                     backgroundColor: assignmentCode.trim() ? '#10a37f' : '#d1d5db',
                     color: assignmentCode.trim() ? 'white' : '#9ca3af',
@@ -1234,7 +1220,7 @@ const Learn = () => {
                 </button>
                 <button
                   onClick={handleSubmitAssignment}
-                  className="assignment-submit-btn"
+                  className="playground-reset-btn"
                   style={{
                     backgroundColor: '#6b7280',
                     color: 'white',
@@ -1268,7 +1254,7 @@ const Learn = () => {
               overflow: 'hidden'
             }}>
               {/* Line Numbers */}
-              <div className="assignment-line-numbers" style={{
+              <div className="playground-line-numbers" style={{
                 width: '50px',
                 backgroundColor: '#f9fafb',
                 borderRight: '1px solid #e5e7eb',
@@ -1295,12 +1281,12 @@ const Learn = () => {
 
               {/* Code Textarea */}
               <textarea
-                className="assignment-textarea"
+                className="playground-textarea"
                 value={assignmentCode}
                 onChange={(e) => setAssignmentCode(e.target.value)}
                 onScroll={(e) => {
                   // Sync line numbers with textarea scroll
-                  const lineNumbers = e.target.parentElement.querySelector('.assignment-line-numbers')
+                    const lineNumbers = e.target.parentElement.querySelector('.playground-line-numbers')
                   if (lineNumbers) {
                     lineNumbers.scrollTop = e.target.scrollTop
                   }
@@ -1334,11 +1320,18 @@ const Learn = () => {
 
           {/* Resizable Splitter */}
           <div
-            className="assignment-splitter"
+            className="playground-splitter"
             style={{
-              height: '8px',
+              ...(isDesktop ? {
+                width: '8px',
+                height: '100%',
+                cursor: 'col-resize'
+              } : {
+                height: '8px',
+                width: '100%',
+                cursor: 'row-resize'
+              }),
               backgroundColor: isDragging ? '#e5e7eb' : 'transparent',
-              cursor: 'row-resize',
               position: 'relative',
               flexShrink: 0,
               transition: isDragging ? 'none' : 'background-color 0.2s ease'
@@ -1351,8 +1344,13 @@ const Learn = () => {
               top: '50%',
               left: '50%',
               transform: 'translate(-50%, -50%)',
-              width: '40px',
-              height: '2px',
+              ...(isDesktop ? {
+                width: '2px',
+                height: '40px'
+              } : {
+                width: '40px',
+                height: '2px'
+              }),
               backgroundColor: '#9ca3af',
               borderRadius: '1px',
               opacity: isDragging ? 1 : 0.5
@@ -1360,16 +1358,22 @@ const Learn = () => {
           </div>
 
           {/* Terminal Panel */}
-          <div className="assignment-output-panel" style={{
-            height: `${100 - editorHeight}%`,
+          <div className="playground-output-panel" style={{
+            ...(isDesktop ? {
+              width: `${100 - editorWidth}%`,
+              height: '100%',
+              minWidth: '200px'
+            } : {
+              height: `${100 - editorHeight}%`,
+              minHeight: '100px'
+            }),
             display: 'flex',
             flexDirection: 'column',
             backgroundColor: '#ffffff',
-            minHeight: '100px',
             overflow: 'hidden'
           }}>
             {/* Terminal Header */}
-            <div className="assignment-output-header" style={{
+            <div className="playground-output-header" style={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
@@ -1405,7 +1409,7 @@ const Learn = () => {
               minHeight: 0
             }}>
               {/* Terminal Line Numbers */}
-              <div className="assignment-terminal-line-numbers" style={{
+              <div className="terminal-line-numbers" style={{
                 width: '50px',
                 backgroundColor: '#2d2d2d',
                 borderRight: '1px solid #404040',
@@ -1424,10 +1428,10 @@ const Learn = () => {
 
               {/* Terminal Output */}
               <div
-                id="assignment-terminal-output"
-                className="assignment-output"
+                id="terminal-output"
+                className="playground-output"
                 onScroll={(e) => {
-                  const lineNumbers = e.target.parentElement.querySelector('.assignment-terminal-line-numbers')
+                  const lineNumbers = e.target.parentElement.querySelector('.terminal-line-numbers')
                   if (lineNumbers) {
                     lineNumbers.scrollTop = e.target.scrollTop
                   }
