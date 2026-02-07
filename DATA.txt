@@ -1,0 +1,45 @@
+console.log
+Variables and Constants
+Numbers and Basic Arithmetic
+Built-in Math Utilities
+Understanding Undefined and Null
+Strings and Basic Operations
+Type Conversion
+Operators (Comparison & Logical)
+if / else Statements
+else-if Chains
+Nested Conditions
+Working with Dates
+while Loops
+for Loops
+Loop Control (break / continue)
+Nested Loops
+Arrays
+Objects
+Specialized Collections (Map/Set)
+Destructuring
+Spread and Rest Operators
+Data Serialization (JSON)
+Functions
+Arrow Functions
+Recursion (Functions calling themselves)
+Callbacks
+Closures (Functions remembering scope)
+forEach
+map
+filter
+find and findIndex
+some and every
+reduce
+Common String Manipulations
+split and join
+substring and slice
+String Searching and Matching
+Pattern Matching (Regex basics)
+Method Chaining
+Nested Arrays / Multidimensional Data
+Error Handling (try-catch)
+Object-Oriented Programming (Classes)
+Organizing Code (Modules)
+Async Concepts (Timers/Promises)
+Writing Cleaner Async (Async/Await)

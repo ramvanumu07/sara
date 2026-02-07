@@ -433,23 +433,26 @@ const Learn = () => {
             wrappedCode = wrappedCode.replace(pattern, `(() => { throw new Error("🚫 ${message}"); })()`)
           })
           
-          // Comprehensive loop protection
+          // Comprehensive loop protection with better nested loop handling
           wrappedCode = wrappedCode
-            // For loops
+            // For loops - inject counter at the beginning of each iteration
             .replace(/for\s*\(\s*[^;]*;\s*[^;]*;\s*[^)]*\)\s*\{/g, 
               (match) => match.replace('{', `{ 
+                if(typeof iterationCount === 'undefined') iterationCount = 0;
                 if(++iterationCount > ${MAX_ITERATIONS}) 
                   throw new Error("🔄 For loop iteration limit exceeded (${MAX_ITERATIONS}). Reduce iterations to prevent browser freeze."); 
               `))
             // While loops
             .replace(/while\s*\([^)]*\)\s*\{/g,
               (match) => match.replace('{', `{ 
+                if(typeof iterationCount === 'undefined') iterationCount = 0;
                 if(++iterationCount > ${MAX_ITERATIONS}) 
                   throw new Error("🔄 While loop iteration limit exceeded (${MAX_ITERATIONS}). Check your loop condition to avoid infinite loops."); 
               `))
             // Do-while loops
             .replace(/do\s*\{/g,
               `do { 
+                if(typeof iterationCount === 'undefined') iterationCount = 0;
                 if(++iterationCount > ${MAX_ITERATIONS}) 
                   throw new Error("🔄 Do-while loop iteration limit exceeded (${MAX_ITERATIONS}). Check your loop condition to avoid infinite loops."); 
               `)
@@ -478,7 +481,18 @@ const Learn = () => {
         }
         
         const sandboxedCode = createSecureSandbox(userCode)
-        eval(sandboxedCode)
+        // Create a more robust execution environment
+        const executionScope = `
+          // Global iteration counter for loop protection
+          let iterationCount = 0;
+          
+          // Reset counter function for nested scenarios
+          const resetIterationCount = () => { iterationCount = 0; };
+          
+          // User code execution
+          ${sandboxedCode}
+        `;
+        eval(executionScope)
         
         clearTimeout(timeoutId)
         if (!timedOut && Date.now() - startTime > 1000) {
@@ -768,23 +782,26 @@ const Learn = () => {
             wrappedCode = wrappedCode.replace(pattern, `(() => { throw new Error("🚫 ${message}"); })()`)
           })
           
-          // Comprehensive loop protection
+          // Comprehensive loop protection with better nested loop handling
           wrappedCode = wrappedCode
-            // For loops
+            // For loops - inject counter at the beginning of each iteration
             .replace(/for\s*\(\s*[^;]*;\s*[^;]*;\s*[^)]*\)\s*\{/g, 
               (match) => match.replace('{', `{ 
+                if(typeof iterationCount === 'undefined') iterationCount = 0;
                 if(++iterationCount > ${MAX_ITERATIONS}) 
                   throw new Error("🔄 For loop iteration limit exceeded (${MAX_ITERATIONS}). Reduce iterations to prevent browser freeze."); 
               `))
             // While loops
             .replace(/while\s*\([^)]*\)\s*\{/g,
               (match) => match.replace('{', `{ 
+                if(typeof iterationCount === 'undefined') iterationCount = 0;
                 if(++iterationCount > ${MAX_ITERATIONS}) 
                   throw new Error("🔄 While loop iteration limit exceeded (${MAX_ITERATIONS}). Check your loop condition to avoid infinite loops."); 
               `))
             // Do-while loops
             .replace(/do\s*\{/g,
               `do { 
+                if(typeof iterationCount === 'undefined') iterationCount = 0;
                 if(++iterationCount > ${MAX_ITERATIONS}) 
                   throw new Error("🔄 Do-while loop iteration limit exceeded (${MAX_ITERATIONS}). Check your loop condition to avoid infinite loops."); 
               `)
@@ -813,7 +830,18 @@ const Learn = () => {
         }
         
         const sandboxedCode = createSecureSandbox(assignmentCode)
-        eval(sandboxedCode)
+        // Create a more robust execution environment
+        const executionScope = `
+          // Global iteration counter for loop protection
+          let iterationCount = 0;
+          
+          // Reset counter function for nested scenarios
+          const resetIterationCount = () => { iterationCount = 0; };
+          
+          // User code execution
+          ${sandboxedCode}
+        `;
+        eval(executionScope)
         
         clearTimeout(timeoutId)
         if (!timedOut && Date.now() - startTime > 1000) {

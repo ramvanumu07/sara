@@ -8,64 +8,121 @@ export const courses = [
         id: 'console-log',
         title: 'console.log',
         outcomes: [
-          'console log basics',
-          'printing strings using single and double quotes',
-          'printing numbers',
-          'printing multiple values separated by +',
-          'math expressions'
+          'console.log() basic syntax',
+          'String literals (Single vs. Double quotes)',
+          'Printing numeric values and decimals',
+          'Basic arithmetic expressions in logs',
+          'String concatenation (+) and the space problem',
+          'Comma-separated logging and auto-spacing',
+          'Logic vs. String representation (The Quote Trap)',
+          'Introduction to Template Literals (${})'
         ],
         tasks: [
           {
-            description: 'Print the text: Hello, World!',
+            description: 'Print the following three lines exactly as shown:\n// JavaScript\n// is\n// awesome',
             testCases: [
               {
                 input: null,
-                expectedOutput: 'Hello, World!'
+                expectedOutput: 'JavaScript\nis\nawesome'
               }
             ]
           },
           {
-            description: 'Print the number 42',
+            description: '// Given values below, calculate and print only the final result\nconst a = 25;\nconst b = 17;\nconst c = 8;\n// Print the result of: (a + b) * c - 50',
             testCases: [
               {
                 input: null,
-                expectedOutput: '42'
+                expectedOutput: '286'
               }
             ]
           },
           {
-            description: 'Print the decimal number 3.14159',
+            description: '// Print this sentence with quotes intact:\n// The book\'s title is "1984"',
             testCases: [
               {
                 input: null,
-                expectedOutput: '3.14159'
+                expectedOutput: 'The book\'s title is "1984"'
               }
             ]
           },
           {
-            description: 'Print the negative number -50',
+            description: '// Do not modify the variables, use them in your solution\nconst product = "Laptop";\nconst price = 45000;\n// Print: Product: Laptop costs Rs. 45000\n// Use string concatenation (+) with proper spacing',
             testCases: [
               {
                 input: null,
-                expectedOutput: '-50'
+                expectedOutput: 'Product: Laptop costs Rs. 45000'
               }
             ]
           },
           {
-            description: 'Print "Result:" and 100 together, separated by a space',
+            description: '// Print this EXACT text (it should NOT calculate):\n// 15 + 25',
             testCases: [
               {
                 input: null,
-                expectedOutput: 'Result: 100'
+                expectedOutput: '15 + 25'
               }
             ]
           },
           {
-            description: 'Print the result of 8 multiplied by 5',
+            description: '// Do not modify the variables\nconst length = 12.5;\nconst width = 8.4;\n// Print the area calculation in this format:\n// Area: 105\n// Use comma-separated logging (not concatenation)',
             testCases: [
               {
                 input: null,
-                expectedOutput: '40'
+                expectedOutput: 'Area: 105'
+              }
+            ]
+          },
+          {
+            description: '// Do not modify the variables\nconst num1 = 100;\nconst num2 = 47;\n// Print in format: 100 - 47 = 53\n// Use template literals with ${} for all three values',
+            testCases: [
+              {
+                input: null,
+                expectedOutput: '100 - 47 = 53'
+              }
+            ]
+          },
+          {
+            description: '// Do not modify the variables\nconst quantity = 7;\nconst pricePerUnit = 12.99;\n// Print: Total amount: $90.93\n// Use template literals to calculate and embed the total',
+            testCases: [
+              {
+                input: null,
+                expectedOutput: 'Total amount: $90.93'
+              }
+            ]
+          },
+          {
+            description: '// Do not modify the variables\nconst marks1 = 85;\nconst marks2 = 92;\nconst marks3 = 78;\n// Calculate average and print: Your average is 85\n// Use template literals (result will have decimals)',
+            testCases: [
+              {
+                input: null,
+                expectedOutput: 'Your average is 85'
+              }
+            ]
+          },
+          {
+            description: '// Do not modify the variables\nconst celsius = 25;\n// Convert to Fahrenheit using formula: (C * 9/5) + 32\n// Print: 25°C equals 77°F\n// Use template literals for both values',
+            testCases: [
+              {
+                input: null,
+                expectedOutput: '25°C equals 77°F'
+              }
+            ]
+          },
+          {
+            description: '// Do not modify the variables\nconst name = "Alice";\nconst score = 94;\nconst total = 100;\n// Print these three lines using three console.log statements:\n// Student: Alice\n// Score: 94/100\n// Percentage: 94%\n// Use template literals for lines 2 and 3',
+            testCases: [
+              {
+                input: null,
+                expectedOutput: 'Student: Alice\nScore: 94/100\nPercentage: 94%'
+              }
+            ]
+          },
+          {
+            description: '// Do not modify the variables\nconst hours = 2;\nconst minutes = 45;\n// Convert total time to minutes and print:\n// Total: 165 minutes\n// Use comma-separated logging',
+            testCases: [
+              {
+                input: null,
+                expectedOutput: 'Total: 165 minutes'
               }
             ]
           }
@@ -75,13 +132,14 @@ export const courses = [
         id: 'variables-and-constants',
         title: 'Variables and Constants',
         outcomes: [
-          'what_are_variables_constants',
-          'const_declaration',
-          'let_declaration',
-          'using_variables',
-          'reassignment',
-          'const_cannot_reassign',
-          'naming_conventions'
+          'Variables as named memory containers',
+          'Declaring constants with const',
+          'Declaring mutable variables with let',
+          'Initialization and Assignment',
+          'Accessing and using stored values',
+          'Variable Reassignment (let)',
+          'Immutability: Why const cannot be reassigned',
+          'Identifier Naming Rules (CamelCase and Reserved Words)'
         ],
         tasks: [
           {
@@ -144,13 +202,13 @@ export const courses = [
         id: 'numbers-arithmetic',
         title: 'Numbers and basic arithmetic',
         outcomes: [
-          'number_types',
-          'addition_subtraction',
-          'multiplication_division',
-          'modulo_operator',
-          'operator_precedence',
-          'using_parentheses',
-          'multi_step_calculations'
+          'Number Types: Integers and Floating-points',
+          'Basic Arithmetic: Addition and Subtraction',
+          'Scale and Ratio: Multiplication and Division',
+          'The Modulo Operator: Finding the Remainder (%)',
+          'Operator Precedence (PEMDAS/BODMAS)',
+          'Overriding Priority with Parentheses',
+          'Compound Logic: Multi-step Calculations'
         ],
         tasks: [
           {
@@ -231,13 +289,13 @@ export const courses = [
         id: 'strings-operations',
         title: 'Strings and string operations',
         outcomes: [
-          'creating_strings',
-          'string_length',
-          'string_indexing',
-          'last_character',
-          'string_concatenation',
-          'toUpperCase_toLowerCase',
-          'combining_operations'
+          'String Creation: Character Sequences in Memory',
+          'The length Property: Measuring Sequence Size',
+          'Zero-based Indexing: Accessing Specific Characters',
+          'Dynamic Access: Calculating the Last Character Index',
+          'Concatenation: Merging Sequences',
+          'Case Transformation: toUpperCase and toLowerCase Methods',
+          'Method Chaining: Combining Operations in a Single Line'
         ],
         tasks: [
           {
