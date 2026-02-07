@@ -738,7 +738,7 @@ const Learn = () => {
           <div className="phase-text">
             {phase === 'session' && 'Learning Session'}
             {phase === 'playtime' && 'Practice Mode'}
-            {phase === 'assignment' && 'Assignments'}
+            {phase === 'assignment' && `Assignment ${currentAssignment + 1} of ${assignments.length}`}
             {phase === 'feedback' && 'Feedback'}
           </div>
         </div>
