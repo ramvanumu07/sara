@@ -124,7 +124,9 @@ const Learn = () => {
   const [userCode, setUserCode] = useState('')
   const [playgroundOutput, setPlaygroundOutput] = useState('')
   const [playgroundReady, setPlaygroundReady] = useState(false)
-  const [editorHeight, setEditorHeight] = useState(70) // 70% editor, 30% terminal
+  const [editorHeight, setEditorHeight] = useState(60) // 60% editor, 40% terminal (mobile)
+  const [editorWidth, setEditorWidth] = useState(60) // 60% editor, 40% terminal (desktop)
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768)
   const [isDragging, setIsDragging] = useState(false)
 
   // Assignment phase states
@@ -146,6 +148,16 @@ const Learn = () => {
   useEffect(() => {
     scrollToBottom()
   }, [messages])
+
+  // Handle window resize for responsive layout
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 768)
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   // Load topic and initialize based on phase
   useEffect(() => {
@@ -393,26 +405,51 @@ const Learn = () => {
   const handleMouseDown = (e) => {
     e.preventDefault()
     setIsDragging(true)
-    const startY = e.clientY
-    const startHeight = editorHeight
     const container = e.currentTarget.parentElement
-    const containerHeight = container.clientHeight
+    
+    if (isDesktop) {
+      // Horizontal resizing for desktop
+      const startX = e.clientX
+      const startWidth = editorWidth
+      const containerWidth = container.clientWidth
 
-    const handleMouseMove = (e) => {
-      const deltaY = e.clientY - startY
-      const deltaPercent = (deltaY / containerHeight) * 100
-      const newHeight = Math.min(Math.max(startHeight + deltaPercent, 20), 80)
-      setEditorHeight(newHeight)
+      const handleMouseMove = (e) => {
+        const deltaX = e.clientX - startX
+        const deltaPercent = (deltaX / containerWidth) * 100
+        const newWidth = Math.min(Math.max(startWidth + deltaPercent, 30), 70)
+        setEditorWidth(newWidth)
+      }
+
+      const handleMouseUp = () => {
+        setIsDragging(false)
+        document.removeEventListener('mousemove', handleMouseMove)
+        document.removeEventListener('mouseup', handleMouseUp)
+      }
+
+      document.addEventListener('mousemove', handleMouseMove)
+      document.addEventListener('mouseup', handleMouseUp)
+    } else {
+      // Vertical resizing for mobile
+      const startY = e.clientY
+      const startHeight = editorHeight
+      const containerHeight = container.clientHeight
+
+      const handleMouseMove = (e) => {
+        const deltaY = e.clientY - startY
+        const deltaPercent = (deltaY / containerHeight) * 100
+        const newHeight = Math.min(Math.max(startHeight + deltaPercent, 30), 70)
+        setEditorHeight(newHeight)
+      }
+
+      const handleMouseUp = () => {
+        setIsDragging(false)
+        document.removeEventListener('mousemove', handleMouseMove)
+        document.removeEventListener('mouseup', handleMouseUp)
+      }
+
+      document.addEventListener('mousemove', handleMouseMove)
+      document.addEventListener('mouseup', handleMouseUp)
     }
-
-    const handleMouseUp = () => {
-      setIsDragging(false)
-      document.removeEventListener('mousemove', handleMouseMove)
-      document.removeEventListener('mouseup', handleMouseUp)
-    }
-
-    document.addEventListener('mousemove', handleMouseMove)
-    document.addEventListener('mouseup', handleMouseUp)
   }
 
   // Handle splitter dragging (touch)
@@ -420,28 +457,55 @@ const Learn = () => {
     e.preventDefault()
     setIsDragging(true)
     const touch = e.touches[0]
-    const startY = touch.clientY
-    const startHeight = editorHeight
     const container = e.currentTarget.parentElement
-    const containerHeight = container.clientHeight
+    
+    if (isDesktop) {
+      // Horizontal resizing for desktop
+      const startX = touch.clientX
+      const startWidth = editorWidth
+      const containerWidth = container.clientWidth
 
-    const handleTouchMove = (e) => {
-      e.preventDefault()
-      const touch = e.touches[0]
-      const deltaY = touch.clientY - startY
-      const deltaPercent = (deltaY / containerHeight) * 100
-      const newHeight = Math.min(Math.max(startHeight + deltaPercent, 20), 80)
-      setEditorHeight(newHeight)
+      const handleTouchMove = (e) => {
+        e.preventDefault()
+        const touch = e.touches[0]
+        const deltaX = touch.clientX - startX
+        const deltaPercent = (deltaX / containerWidth) * 100
+        const newWidth = Math.min(Math.max(startWidth + deltaPercent, 30), 70)
+        setEditorWidth(newWidth)
+      }
+
+      const handleTouchEnd = () => {
+        setIsDragging(false)
+        document.removeEventListener('touchmove', handleTouchMove)
+        document.removeEventListener('touchend', handleTouchEnd)
+      }
+
+      document.addEventListener('touchmove', handleTouchMove, { passive: false })
+      document.addEventListener('touchend', handleTouchEnd)
+    } else {
+      // Vertical resizing for mobile
+      const startY = touch.clientY
+      const startHeight = editorHeight
+      const containerHeight = container.clientHeight
+
+      const handleTouchMove = (e) => {
+        e.preventDefault()
+        const touch = e.touches[0]
+        const deltaY = touch.clientY - startY
+        const deltaPercent = (deltaY / containerHeight) * 100
+        const newHeight = Math.min(Math.max(startHeight + deltaPercent, 30), 70)
+        setEditorHeight(newHeight)
+      }
+
+      const handleTouchEnd = () => {
+        setIsDragging(false)
+        document.removeEventListener('touchmove', handleTouchMove)
+        document.removeEventListener('touchend', handleTouchEnd)
+      }
+
+      document.addEventListener('touchmove', handleTouchMove, { passive: false })
+      document.addEventListener('touchend', handleTouchEnd)
     }
-
-    const handleTouchEnd = () => {
-      setIsDragging(false)
-      document.removeEventListener('touchmove', handleTouchMove)
-      document.removeEventListener('touchend', handleTouchEnd)
-    }
-
-    document.addEventListener('touchmove', handleTouchMove, { passive: false })
-    document.addEventListener('touchend', handleTouchEnd)
   }
 
   // Handle reset code
@@ -765,17 +829,23 @@ const Learn = () => {
         <div className="playground-main-content" style={{
           flex: 1,
           display: 'flex',
-          flexDirection: 'column',
+          flexDirection: isDesktop ? 'row' : 'column',
           height: '100%',
           minHeight: 0,
           overflow: 'hidden'
         }}>
           {/* Editor Panel */}
           <div className="playground-editor-panel" style={{
-            height: `${editorHeight}%`,
+            ...(isDesktop ? {
+              width: `${editorWidth}%`,
+              height: '100%',
+              minWidth: '300px'
+            } : {
+              height: `${editorHeight}%`,
+              minHeight: '200px'
+            }),
             display: 'flex',
             flexDirection: 'column',
-            minHeight: '200px',
             overflow: 'hidden'
           }}>
             {/* Editor Header */}
@@ -935,9 +1005,16 @@ const Learn = () => {
           <div
             className="playground-splitter"
             style={{
-              height: '8px',
+              ...(isDesktop ? {
+                width: '8px',
+                height: '100%',
+                cursor: 'col-resize'
+              } : {
+                height: '8px',
+                width: '100%',
+                cursor: 'row-resize'
+              }),
               backgroundColor: isDragging ? '#e5e7eb' : 'transparent',
-              cursor: 'row-resize',
               position: 'relative',
               flexShrink: 0,
               transition: isDragging ? 'none' : 'background-color 0.2s ease'
@@ -950,8 +1027,13 @@ const Learn = () => {
               top: '50%',
               left: '50%',
               transform: 'translate(-50%, -50%)',
-              width: '40px',
-              height: '2px',
+              ...(isDesktop ? {
+                width: '2px',
+                height: '40px'
+              } : {
+                width: '40px',
+                height: '2px'
+              }),
               backgroundColor: '#9ca3af',
               borderRadius: '1px',
               opacity: isDragging ? 1 : 0.5
@@ -960,11 +1042,17 @@ const Learn = () => {
 
           {/* Terminal Panel */}
           <div className="playground-output-panel" style={{
-            height: `${100 - editorHeight}%`,
+            ...(isDesktop ? {
+              width: `${100 - editorWidth}%`,
+              height: '100%',
+              minWidth: '200px'
+            } : {
+              height: `${100 - editorHeight}%`,
+              minHeight: '100px'
+            }),
             display: 'flex',
             flexDirection: 'column',
             backgroundColor: '#ffffff',
-            minHeight: '100px',
             overflow: 'hidden'
           }}>
             {/* Terminal Header */}
