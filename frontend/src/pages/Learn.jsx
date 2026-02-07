@@ -375,19 +375,110 @@ const Learn = () => {
           outputs.push({ type: 'error', content: '⏱️ Execution timeout: Code took too long (>5s). Check for infinite loops or reduce iterations.' })
         }, EXECUTION_TIMEOUT)
 
-        // Execute with periodic checks for long-running operations
-        const originalSetTimeout = window.setTimeout
-        let iterationCount = 0
-        
-        // Wrap common loop patterns to add iteration counting
-        const wrappedCode = userCode.replace(
-          /for\s*\(\s*[^;]*;\s*[^;]*;\s*[^)]*\)\s*{/g, 
-          (match) => {
-            return match.replace('{', '{ if(++iterationCount > 100000) throw new Error("Loop iteration limit exceeded (100,000). Reduce iterations to prevent browser freeze."); ')
+        // Comprehensive security sandbox
+        const createSecureSandbox = (code) => {
+          let iterationCount = 0
+          const MAX_ITERATIONS = 100000
+          const MAX_ARRAY_SIZE = 1000000
+          const MAX_STRING_REPEAT = 1000000
+          
+          // Block dangerous APIs and operations
+          const dangerousAPIs = {
+            // Network APIs
+            'fetch': 'Network requests are not allowed for security reasons',
+            'XMLHttpRequest': 'Network requests are not allowed for security reasons',
+            'WebSocket': 'WebSocket connections are not allowed for security reasons',
+            
+            // Storage APIs
+            'localStorage': 'Local storage access is not allowed for security reasons',
+            'sessionStorage': 'Session storage access is not allowed for security reasons',
+            'indexedDB': 'IndexedDB access is not allowed for security reasons',
+            
+            // Navigation APIs
+            'location': 'Location manipulation is not allowed for security reasons',
+            'history': 'History manipulation is not allowed for security reasons',
+            
+            // Dangerous functions
+            'eval': 'eval() is not allowed for security reasons',
+            'Function': 'Function constructor is not allowed for security reasons',
+            'setTimeout': 'setTimeout is not allowed for security reasons',
+            'setInterval': 'setInterval is not allowed for security reasons',
+            
+            // Import/Export
+            'import': 'Dynamic imports are not allowed for security reasons'
           }
-        )
-
-        eval(wrappedCode)
+          
+          // DOM protection patterns
+          const domProtectedPatterns = [
+            { pattern: /document\.write\s*\(/g, message: 'document.write is not allowed for security reasons' },
+            { pattern: /document\.writeln\s*\(/g, message: 'document.writeln is not allowed for security reasons' },
+            { pattern: /document\.cookie/g, message: 'Cookie access is not allowed for security reasons' },
+            { pattern: /window\.open\s*\(/g, message: 'Opening new windows is not allowed for security reasons' },
+            { pattern: /window\.close\s*\(/g, message: 'Closing windows is not allowed for security reasons' },
+            { pattern: /alert\s*\(/g, message: 'alert() is not allowed to prevent spam' },
+            { pattern: /confirm\s*\(/g, message: 'confirm() is not allowed to prevent spam' },
+            { pattern: /prompt\s*\(/g, message: 'prompt() is not allowed to prevent spam' }
+          ]
+          
+          let wrappedCode = code
+          
+          // Block dangerous APIs
+          Object.keys(dangerousAPIs).forEach(api => {
+            const regex = new RegExp(`\\b${api}\\b`, 'g')
+            wrappedCode = wrappedCode.replace(regex, `(() => { throw new Error("🚫 ${dangerousAPIs[api]}"); })()`)
+          })
+          
+          // Block DOM manipulation patterns
+          domProtectedPatterns.forEach(({ pattern, message }) => {
+            wrappedCode = wrappedCode.replace(pattern, `(() => { throw new Error("🚫 ${message}"); })()`)
+          })
+          
+          // Comprehensive loop protection
+          wrappedCode = wrappedCode
+            // For loops
+            .replace(/for\s*\(\s*[^;]*;\s*[^;]*;\s*[^)]*\)\s*\{/g, 
+              (match) => match.replace('{', `{ 
+                if(++iterationCount > ${MAX_ITERATIONS}) 
+                  throw new Error("🔄 For loop iteration limit exceeded (${MAX_ITERATIONS}). Reduce iterations to prevent browser freeze."); 
+              `))
+            // While loops
+            .replace(/while\s*\([^)]*\)\s*\{/g,
+              (match) => match.replace('{', `{ 
+                if(++iterationCount > ${MAX_ITERATIONS}) 
+                  throw new Error("🔄 While loop iteration limit exceeded (${MAX_ITERATIONS}). Check your loop condition to avoid infinite loops."); 
+              `))
+            // Do-while loops
+            .replace(/do\s*\{/g,
+              `do { 
+                if(++iterationCount > ${MAX_ITERATIONS}) 
+                  throw new Error("🔄 Do-while loop iteration limit exceeded (${MAX_ITERATIONS}). Check your loop condition to avoid infinite loops."); 
+              `)
+          
+          // Memory protection for arrays
+          wrappedCode = wrappedCode.replace(/new Array\s*\(\s*([^)]+)\s*\)/g, (match, size) => {
+            return `(() => { 
+              const size = ${size}; 
+              if(typeof size === 'number' && size > ${MAX_ARRAY_SIZE}) 
+                throw new Error("💾 Array size too large (" + size + "). Maximum allowed: ${MAX_ARRAY_SIZE.toLocaleString()} elements to prevent memory overflow."); 
+              return new Array(size); 
+            })()`
+          })
+          
+          // Memory protection for string operations
+          wrappedCode = wrappedCode.replace(/\.repeat\s*\(\s*([^)]+)\s*\)/g, (match, count) => {
+            return `.repeat((() => { 
+              const count = ${count}; 
+              if(typeof count === 'number' && count > ${MAX_STRING_REPEAT}) 
+                throw new Error("💾 String repeat count too large (" + count + "). Maximum allowed: ${MAX_STRING_REPEAT.toLocaleString()} to prevent memory overflow."); 
+              return count; 
+            })())`
+          })
+          
+          return wrappedCode
+        }
+        
+        const sandboxedCode = createSecureSandbox(userCode)
+        eval(sandboxedCode)
         
         clearTimeout(timeoutId)
         if (!timedOut && Date.now() - startTime > 1000) {
@@ -619,18 +710,110 @@ const Learn = () => {
           outputs.push({ type: 'error', content: '⏱️ Execution timeout: Code took too long (>5s). Check for infinite loops or reduce iterations.' })
         }, EXECUTION_TIMEOUT)
 
-        // Execute with periodic checks for long-running operations
-        let iterationCount = 0
-        
-        // Wrap common loop patterns to add iteration counting
-        const wrappedCode = assignmentCode.replace(
-          /for\s*\(\s*[^;]*;\s*[^;]*;\s*[^)]*\)\s*{/g, 
-          (match) => {
-            return match.replace('{', '{ if(++iterationCount > 100000) throw new Error("Loop iteration limit exceeded (100,000). Reduce iterations to prevent browser freeze."); ')
+        // Comprehensive security sandbox (same as playground)
+        const createSecureSandbox = (code) => {
+          let iterationCount = 0
+          const MAX_ITERATIONS = 100000
+          const MAX_ARRAY_SIZE = 1000000
+          const MAX_STRING_REPEAT = 1000000
+          
+          // Block dangerous APIs and operations
+          const dangerousAPIs = {
+            // Network APIs
+            'fetch': 'Network requests are not allowed for security reasons',
+            'XMLHttpRequest': 'Network requests are not allowed for security reasons',
+            'WebSocket': 'WebSocket connections are not allowed for security reasons',
+            
+            // Storage APIs
+            'localStorage': 'Local storage access is not allowed for security reasons',
+            'sessionStorage': 'Session storage access is not allowed for security reasons',
+            'indexedDB': 'IndexedDB access is not allowed for security reasons',
+            
+            // Navigation APIs
+            'location': 'Location manipulation is not allowed for security reasons',
+            'history': 'History manipulation is not allowed for security reasons',
+            
+            // Dangerous functions
+            'eval': 'eval() is not allowed for security reasons',
+            'Function': 'Function constructor is not allowed for security reasons',
+            'setTimeout': 'setTimeout is not allowed for security reasons',
+            'setInterval': 'setInterval is not allowed for security reasons',
+            
+            // Import/Export
+            'import': 'Dynamic imports are not allowed for security reasons'
           }
-        )
-
-        eval(wrappedCode)
+          
+          // DOM protection patterns
+          const domProtectedPatterns = [
+            { pattern: /document\.write\s*\(/g, message: 'document.write is not allowed for security reasons' },
+            { pattern: /document\.writeln\s*\(/g, message: 'document.writeln is not allowed for security reasons' },
+            { pattern: /document\.cookie/g, message: 'Cookie access is not allowed for security reasons' },
+            { pattern: /window\.open\s*\(/g, message: 'Opening new windows is not allowed for security reasons' },
+            { pattern: /window\.close\s*\(/g, message: 'Closing windows is not allowed for security reasons' },
+            { pattern: /alert\s*\(/g, message: 'alert() is not allowed to prevent spam' },
+            { pattern: /confirm\s*\(/g, message: 'confirm() is not allowed to prevent spam' },
+            { pattern: /prompt\s*\(/g, message: 'prompt() is not allowed to prevent spam' }
+          ]
+          
+          let wrappedCode = code
+          
+          // Block dangerous APIs
+          Object.keys(dangerousAPIs).forEach(api => {
+            const regex = new RegExp(`\\b${api}\\b`, 'g')
+            wrappedCode = wrappedCode.replace(regex, `(() => { throw new Error("🚫 ${dangerousAPIs[api]}"); })()`)
+          })
+          
+          // Block DOM manipulation patterns
+          domProtectedPatterns.forEach(({ pattern, message }) => {
+            wrappedCode = wrappedCode.replace(pattern, `(() => { throw new Error("🚫 ${message}"); })()`)
+          })
+          
+          // Comprehensive loop protection
+          wrappedCode = wrappedCode
+            // For loops
+            .replace(/for\s*\(\s*[^;]*;\s*[^;]*;\s*[^)]*\)\s*\{/g, 
+              (match) => match.replace('{', `{ 
+                if(++iterationCount > ${MAX_ITERATIONS}) 
+                  throw new Error("🔄 For loop iteration limit exceeded (${MAX_ITERATIONS}). Reduce iterations to prevent browser freeze."); 
+              `))
+            // While loops
+            .replace(/while\s*\([^)]*\)\s*\{/g,
+              (match) => match.replace('{', `{ 
+                if(++iterationCount > ${MAX_ITERATIONS}) 
+                  throw new Error("🔄 While loop iteration limit exceeded (${MAX_ITERATIONS}). Check your loop condition to avoid infinite loops."); 
+              `))
+            // Do-while loops
+            .replace(/do\s*\{/g,
+              `do { 
+                if(++iterationCount > ${MAX_ITERATIONS}) 
+                  throw new Error("🔄 Do-while loop iteration limit exceeded (${MAX_ITERATIONS}). Check your loop condition to avoid infinite loops."); 
+              `)
+          
+          // Memory protection for arrays
+          wrappedCode = wrappedCode.replace(/new Array\s*\(\s*([^)]+)\s*\)/g, (match, size) => {
+            return `(() => { 
+              const size = ${size}; 
+              if(typeof size === 'number' && size > ${MAX_ARRAY_SIZE}) 
+                throw new Error("💾 Array size too large (" + size + "). Maximum allowed: ${MAX_ARRAY_SIZE.toLocaleString()} elements to prevent memory overflow."); 
+              return new Array(size); 
+            })()`
+          })
+          
+          // Memory protection for string operations
+          wrappedCode = wrappedCode.replace(/\.repeat\s*\(\s*([^)]+)\s*\)/g, (match, count) => {
+            return `.repeat((() => { 
+              const count = ${count}; 
+              if(typeof count === 'number' && count > ${MAX_STRING_REPEAT}) 
+                throw new Error("💾 String repeat count too large (" + count + "). Maximum allowed: ${MAX_STRING_REPEAT.toLocaleString()} to prevent memory overflow."); 
+              return count; 
+            })())`
+          })
+          
+          return wrappedCode
+        }
+        
+        const sandboxedCode = createSecureSandbox(assignmentCode)
+        eval(sandboxedCode)
         
         clearTimeout(timeoutId)
         if (!timedOut && Date.now() - startTime > 1000) {
