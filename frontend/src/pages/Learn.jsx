@@ -230,7 +230,7 @@ const Learn = () => {
           }
         } else if (phase === 'playtime') {
           // Initialize playground
-          setUserCode(`// Welcome to the ${topicResponse.data.data.topic.title} playground!\n// Try writing some code here\n\nconsole.log("Hello, World!");`)
+          setUserCode('')
         } else if (phase === 'assignment') {
           // Load assignments from topic data
           const assignments = topicResponse.data.data.topic.tasks || []
@@ -330,26 +330,69 @@ const Learn = () => {
       // Clear previous output
       outputDiv.innerHTML = ''
 
-      // Capture console.log output
+      // Capture console.log output with limits
       const outputs = []
+      let outputCount = 0
+      const MAX_OUTPUTS = 1000 // Limit outputs to prevent memory issues
       const originalConsoleLog = console.log
       const originalConsoleError = console.error
       const originalConsoleWarn = console.warn
 
-      // Override console methods
+      // Override console methods with output limiting
       console.log = (...args) => {
+        if (outputCount >= MAX_OUTPUTS) {
+          if (outputCount === MAX_OUTPUTS) {
+            outputs.push({ type: 'warn', content: `⚠️ Output limit reached (${MAX_OUTPUTS} lines). Further output truncated to prevent browser freeze.` })
+            outputCount++
+          }
+          return
+        }
         outputs.push({ type: 'log', content: args.map(arg => String(arg)).join(' ') })
+        outputCount++
       }
       console.error = (...args) => {
-        outputs.push({ type: 'error', content: args.map(arg => String(arg)).join(' ') })
+        if (outputCount < MAX_OUTPUTS) {
+          outputs.push({ type: 'error', content: args.map(arg => String(arg)).join(' ') })
+          outputCount++
+        }
       }
       console.warn = (...args) => {
-        outputs.push({ type: 'warn', content: args.map(arg => String(arg)).join(' ') })
+        if (outputCount < MAX_OUTPUTS) {
+          outputs.push({ type: 'warn', content: args.map(arg => String(arg)).join(' ') })
+          outputCount++
+        }
       }
 
-      // Execute user code in try-catch
+      // Execute user code with timeout protection
+      const startTime = Date.now()
+      const EXECUTION_TIMEOUT = 5000 // 5 seconds
+      
       try {
-        eval(userCode)
+        // Set up timeout mechanism
+        let timedOut = false
+        const timeoutId = setTimeout(() => {
+          timedOut = true
+          outputs.push({ type: 'error', content: '⏱️ Execution timeout: Code took too long (>5s). Check for infinite loops or reduce iterations.' })
+        }, EXECUTION_TIMEOUT)
+
+        // Execute with periodic checks for long-running operations
+        const originalSetTimeout = window.setTimeout
+        let iterationCount = 0
+        
+        // Wrap common loop patterns to add iteration counting
+        const wrappedCode = userCode.replace(
+          /for\s*\(\s*[^;]*;\s*[^;]*;\s*[^)]*\)\s*{/g, 
+          (match) => {
+            return match.replace('{', '{ if(++iterationCount > 100000) throw new Error("Loop iteration limit exceeded (100,000). Reduce iterations to prevent browser freeze."); ')
+          }
+        )
+
+        eval(wrappedCode)
+        
+        clearTimeout(timeoutId)
+        if (!timedOut && Date.now() - startTime > 1000) {
+          outputs.push({ type: 'info', content: `✅ Execution completed in ${Date.now() - startTime}ms` })
+        }
       } catch (executionError) {
         outputs.push({ type: 'error', content: `Error: ${executionError.message}` })
       }
@@ -510,7 +553,7 @@ const Learn = () => {
 
   // Handle reset code
   const handleResetCode = () => {
-    setUserCode(`// Welcome to the ${topic?.title || 'JavaScript'} playground!\n// Try writing some code here\n\nconsole.log("Hello, World!");`)
+    setUserCode('')
     const outputDiv = document.getElementById('terminal-output')
     if (outputDiv) {
       outputDiv.innerHTML = '<div style="color: #6b7280; font-style: italic; padding: 16px;">Click "Run" to execute your code</div>'
@@ -531,26 +574,68 @@ const Learn = () => {
       // Clear previous output
       outputDiv.innerHTML = ''
 
-      // Capture console.log output
+      // Capture console.log output with limits
       const outputs = []
+      let outputCount = 0
+      const MAX_OUTPUTS = 1000 // Limit outputs to prevent memory issues
       const originalConsoleLog = console.log
       const originalConsoleError = console.error
       const originalConsoleWarn = console.warn
 
-      // Override console methods
+      // Override console methods with output limiting
       console.log = (...args) => {
+        if (outputCount >= MAX_OUTPUTS) {
+          if (outputCount === MAX_OUTPUTS) {
+            outputs.push({ type: 'warn', content: `⚠️ Output limit reached (${MAX_OUTPUTS} lines). Further output truncated to prevent browser freeze.` })
+            outputCount++
+          }
+          return
+        }
         outputs.push({ type: 'log', content: args.map(arg => String(arg)).join(' ') })
+        outputCount++
       }
       console.error = (...args) => {
-        outputs.push({ type: 'error', content: args.map(arg => String(arg)).join(' ') })
+        if (outputCount < MAX_OUTPUTS) {
+          outputs.push({ type: 'error', content: args.map(arg => String(arg)).join(' ') })
+          outputCount++
+        }
       }
       console.warn = (...args) => {
-        outputs.push({ type: 'warn', content: args.map(arg => String(arg)).join(' ') })
+        if (outputCount < MAX_OUTPUTS) {
+          outputs.push({ type: 'warn', content: args.map(arg => String(arg)).join(' ') })
+          outputCount++
+        }
       }
 
-      // Execute user code in try-catch
+      // Execute assignment code with timeout protection
+      const startTime = Date.now()
+      const EXECUTION_TIMEOUT = 5000 // 5 seconds
+      
       try {
-        eval(assignmentCode)
+        // Set up timeout mechanism
+        let timedOut = false
+        const timeoutId = setTimeout(() => {
+          timedOut = true
+          outputs.push({ type: 'error', content: '⏱️ Execution timeout: Code took too long (>5s). Check for infinite loops or reduce iterations.' })
+        }, EXECUTION_TIMEOUT)
+
+        // Execute with periodic checks for long-running operations
+        let iterationCount = 0
+        
+        // Wrap common loop patterns to add iteration counting
+        const wrappedCode = assignmentCode.replace(
+          /for\s*\(\s*[^;]*;\s*[^;]*;\s*[^)]*\)\s*{/g, 
+          (match) => {
+            return match.replace('{', '{ if(++iterationCount > 100000) throw new Error("Loop iteration limit exceeded (100,000). Reduce iterations to prevent browser freeze."); ')
+          }
+        )
+
+        eval(wrappedCode)
+        
+        clearTimeout(timeoutId)
+        if (!timedOut && Date.now() - startTime > 1000) {
+          outputs.push({ type: 'info', content: `✅ Execution completed in ${Date.now() - startTime}ms` })
+        }
       } catch (executionError) {
         outputs.push({ type: 'error', content: `Error: ${executionError.message}` })
       }
@@ -980,7 +1065,7 @@ const Learn = () => {
                     handleRunPlayground()
                   }
                 }}
-                placeholder="// Write your JavaScript code here..."
+                placeholder="Practice what you learned in the session - try out the concepts here!"
                 style={{
                   flex: 1,
                   border: 'none',
