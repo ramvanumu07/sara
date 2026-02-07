@@ -155,12 +155,12 @@ const Learn = () => {
         setError(null)
 
         const topicResponse = await learning.getTopic(topicId)
-        
+
         // Validate response structure
         if (!topicResponse.data?.success || !topicResponse.data?.data?.topic) {
           throw new Error('Invalid topic response structure')
         }
-        
+
         setTopic(topicResponse.data.data.topic)
 
         // Trust the database progress table - if phase is advanced, allow access
@@ -173,22 +173,22 @@ const Learn = () => {
           try {
             const historyResponse = await chat.getHistory(topicId)
             console.log('Chat history response:', historyResponse.data)
-            
+
             if (historyResponse.data.data.messages && historyResponse.data.data.messages.length > 0) {
               setMessages(historyResponse.data.data.messages)
               // Check if session is complete based on message content
               const lastMessage = historyResponse.data.data.messages[historyResponse.data.data.messages.length - 1]
-              if (lastMessage.role === 'assistant' && 
-                  (lastMessage.content.includes('ready for the playground') ||
-                   lastMessage.content.includes('Congratulations! You\'ve mastered') ||
-                   lastMessage.content.includes('🏆'))) {
+              if (lastMessage.role === 'assistant' &&
+                (lastMessage.content.includes('ready for the playground') ||
+                  lastMessage.content.includes('Congratulations! You\'ve mastered') ||
+                  lastMessage.content.includes('🏆'))) {
                 setSessionComplete(true)
               }
             } else {
               // Start new session
               const startResponse = await learning.sessionChat(topicId, '')
               console.log('Start session response:', startResponse.data)
-              
+
               if (startResponse.data.data.response) {
                 const message = {
                   role: 'assistant',
@@ -272,10 +272,10 @@ const Learn = () => {
         setMessages(prev => [...prev, message])
 
         // Check if session is complete (using backend flag or text detection)
-        if (response.data.data.sessionComplete || 
-            response.data.data.response.includes('ready for the playground') ||
-            response.data.data.response.includes('Congratulations! You\'ve mastered') ||
-            response.data.data.response.includes('🏆')) {
+        if (response.data.data.sessionComplete ||
+          response.data.data.response.includes('ready for the playground') ||
+          response.data.data.response.includes('Congratulations! You\'ve mastered') ||
+          response.data.data.response.includes('🏆')) {
           setSessionComplete(true)
           success('Session completed! Playground unlocked!', 3000)
         }
@@ -333,8 +333,8 @@ const Learn = () => {
       console.warn = originalConsoleWarn
 
       // Process output
-      const outputText = outputs.length > 0 
-        ? outputs.map(out => out.content).join('\n') 
+      const outputText = outputs.length > 0
+        ? outputs.map(out => out.content).join('\n')
         : 'No output'
       const outputLines = outputText.split('\n')
 
@@ -352,8 +352,8 @@ const Learn = () => {
       let formattedOutput = ''
       outputLines.forEach((line) => {
         const output = outputs.find(out => out.content.includes(line))
-        const color = output?.type === 'error' ? '#ef4444' : 
-                     output?.type === 'warn' ? '#f59e0b' : '#10a37f'
+        const color = output?.type === 'error' ? '#ef4444' :
+          output?.type === 'warn' ? '#f59e0b' : '#10a37f'
         formattedOutput += `<div style="line-height: 1.4; color: ${color}; white-space: pre; padding-left: 2px; font-size: 0.875rem;">${line || ' '}</div>`
       })
 
@@ -449,7 +449,7 @@ const Learn = () => {
     try {
       const response = await learning.executeCode(assignmentCode, topicId, currentAssignment)
       const executionResult = response.data.data.execution
-      
+
       if (executionResult.success) {
         setAssignmentOutput(executionResult.output || 'Code executed successfully (no output)')
       } else {
@@ -599,11 +599,11 @@ const Learn = () => {
               warning('Complete the learning session first to unlock assignments!', 4000)
             }
           }}
-          style={{ 
-            padding: '8px 16px', 
-            backgroundColor: sessionComplete ? '#10a37f' : '#9ca3af', 
-            color: 'white', 
-            border: 'none', 
+          style={{
+            padding: '8px 16px',
+            backgroundColor: sessionComplete ? '#10a37f' : '#9ca3af',
+            color: 'white',
+            border: 'none',
             borderRadius: '8px',
             cursor: sessionComplete ? 'pointer' : 'not-allowed',
             opacity: sessionComplete ? 1 : 0.7
@@ -721,19 +721,20 @@ const Learn = () => {
               }}>
                 <button
                   onClick={handleRunPlayground}
+                  className="playground-run-btn"
                   style={{
                     backgroundColor: userCode.trim() ? '#10a37f' : '#d1d5db',
                     color: userCode.trim() ? 'white' : '#9ca3af',
                     border: 'none',
-                    borderRadius: '6px',
-                    padding: '6px 12px',
-                    fontSize: '0.75rem',
+                    borderRadius: '3px',
+                    padding: '2px 6px',
+                    fontSize: '0.6rem',
                     fontWeight: '500',
                     cursor: userCode.trim() ? 'pointer' : 'not-allowed',
                     transition: 'all 0.2s ease',
-                    boxShadow: userCode.trim() ? '0 1px 3px rgba(0, 0, 0, 0.1)' : 'none',
-                    minWidth: '60px',
-                    height: '28px',
+                    boxShadow: userCode.trim() ? '0 1px 2px rgba(0, 0, 0, 0.1)' : 'none',
+                    minWidth: '40px',
+                    height: '18px',
                     alignSelf: 'flex-start'
                   }}
                   title="Run Code (Ctrl+Enter)"
@@ -742,19 +743,20 @@ const Learn = () => {
                 </button>
                 <button
                   onClick={handleResetCode}
+                  className="playground-reset-btn"
                   style={{
                     backgroundColor: '#6b7280',
                     color: 'white',
                     border: 'none',
-                    borderRadius: '6px',
-                    padding: '6px 12px',
-                    fontSize: '0.75rem',
+                    borderRadius: '3px',
+                    padding: '2px 6px',
+                    fontSize: '0.6rem',
                     fontWeight: '500',
                     cursor: 'pointer',
                     transition: 'all 0.2s ease',
-                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-                    minWidth: '60px',
-                    height: '28px',
+                    boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+                    minWidth: '40px',
+                    height: '18px',
                     alignSelf: 'flex-start'
                   }}
                   title="Reset Code"
@@ -1187,7 +1189,7 @@ const Learn = () => {
           </div>
         </div>
       )}
-      
+
       {/* Professional Toast Notifications */}
       <ToastContainer toasts={toasts} />
     </div>
