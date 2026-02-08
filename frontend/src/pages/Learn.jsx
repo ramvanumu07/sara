@@ -1275,6 +1275,23 @@ const Learn = () => {
                     e.preventDefault()
                     handleRunPlayground()
                   }
+                  // Handle Tab key for indentation
+                  if (e.key === 'Tab') {
+                    e.preventDefault()
+                    const textarea = e.target
+                    const start = textarea.selectionStart
+                    const end = textarea.selectionEnd
+                    const value = textarea.value
+                    
+                    // Insert 4 spaces at cursor position
+                    const newValue = value.substring(0, start) + '    ' + value.substring(end)
+                    setUserCode(newValue)
+                    
+                    // Move cursor after the inserted spaces
+                    setTimeout(() => {
+                      textarea.selectionStart = textarea.selectionEnd = start + 4
+                    }, 0)
+                  }
                 }}
                 placeholder="Practice what you learned in the session - try out the concepts here!"
                 style={{
@@ -1290,7 +1307,7 @@ const Learn = () => {
                   color: '#111827',
                   overflow: 'auto',
                   whiteSpace: 'pre',
-                  tabSize: 2
+                  tabSize: 4
                 }}
                 spellCheck={false}
               />
@@ -1592,6 +1609,23 @@ const Learn = () => {
                     e.preventDefault()
                     handleRunAssignment()
                   }
+                  // Handle Tab key for indentation
+                  if (e.key === 'Tab') {
+                    e.preventDefault()
+                    const textarea = e.target
+                    const start = textarea.selectionStart
+                    const end = textarea.selectionEnd
+                    const value = textarea.value
+                    
+                    // Insert 4 spaces at cursor position
+                    const newValue = value.substring(0, start) + '    ' + value.substring(end)
+                    setAssignmentCode(newValue)
+                    
+                    // Move cursor after the inserted spaces
+                    setTimeout(() => {
+                      textarea.selectionStart = textarea.selectionEnd = start + 4
+                    }, 0)
+                  }
                 }}
                 placeholder="// Write your assignment code here..."
                 style={{
@@ -1607,7 +1641,7 @@ const Learn = () => {
                   color: '#111827',
                   overflow: 'auto',
                   whiteSpace: 'pre',
-                  tabSize: 2
+                  tabSize: 4
                 }}
                 spellCheck={false}
               />
