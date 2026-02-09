@@ -30,6 +30,7 @@ filter
 find and findIndex
 some and every
 reduce
+
 Common String Manipulations
 split and join
 substring and slice

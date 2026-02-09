@@ -15,14 +15,13 @@ ASSIGNMENT STRUCTURE:
   tasks: [
     {
       description: 'Task description as code comments',
-      solution_type: 'script' | 'function' | 'class',
-      function_name: 'nameHere',  // Required for 'function' and 'class' types
+      solution_type: 'script' | 'function',
+      function_name: 'nameHere',  // Required for 'function' type
       testCases: [
         {
           input: {
             // For 'script': variables to declare (e.g., { temp: 25, unit: 'C' })
             // For 'function': function arguments (e.g., { arr: [1,2,3], target: 5 })
-            // For 'class': { constructor: {...}, methodCalls: [{method: 'name', args: [...]}] }
           },
           expectedOutput: 'expected result as string'
         }
@@ -44,11 +43,6 @@ SOLUTION TYPES GUIDE:
    - Must specify function_name
    - Example topics: Functions, Arrow Functions, Recursion, Array methods (map, filter, etc.)
 
-3. **'class'**: Use for OOP topics where students create classes
-   - Input contains constructor params and method calls to test
-   - Output is captured from method returns or console.log
-   - Must specify class name in function_name
-   - Example topics: Classes, OOP
 
 CRITICAL RULES:
 1. No fixed task count - Base the number on topic complexity (could be 3-20 tasks)
@@ -64,7 +58,6 @@ CRITICAL RULES:
 6. Specify correct solution_type based on the topic:
    - Early topics (console.log through conditionals, loops) → 'script'
    - Function-related topics → 'function' with function_name
-   - OOP topics → 'class' with class name
 
 7. Follow patterns for each solution_type:
    

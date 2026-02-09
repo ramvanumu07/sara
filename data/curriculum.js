@@ -20,7 +20,7 @@ export const courses = [
         "tasks": [
           {
             "description": '// Print the result of 147 + 289\n// Your output should be:\n// 436',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": {},
@@ -30,7 +30,7 @@ export const courses = [
           },
           {
             "description": '// Print the result of 100 divided by 8\n// Your output should be:\n// 12.5',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": {},
@@ -40,7 +40,7 @@ export const courses = [
           },
           {
             "description": '// Print the result of (15 + 25) * 3 - 10\n// Your output should be:\n// 110',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": {},
@@ -50,7 +50,7 @@ export const courses = [
           },
           {
             "description": '// Print three separate calculations, each on a new line:\n// 45 + 78\n// 200 - 63\n// 12 * 9\n// Your output should be:\n// 123\n// 137\n// 108',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": {},
@@ -60,7 +60,7 @@ export const courses = [
           },
           {
             "description": '// Print "Hello" and "World" with exactly one space between them using the + operator\n// Your output should be:\n// Hello World',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": {},
@@ -70,7 +70,7 @@ export const courses = [
           },
           {
             "description": '// Print the text "The answer is" followed by the calculation 7 * 6\n// Your output should be:\n// The answer is 42',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": {},
@@ -80,7 +80,7 @@ export const courses = [
           },
           {
             "description": '// Use a template literal to print "15 plus 28 equals" followed by the actual sum\n// Your output should be:\n// 15 plus 28 equals 43',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": {},
@@ -90,7 +90,7 @@ export const courses = [
           },
           {
             "description": '// Print: He said "JavaScript is amazing"\n// (Include the double quotes in the output)\n// Your output should be:\n// He said "JavaScript is amazing"',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": {},
@@ -100,7 +100,7 @@ export const courses = [
           },
           {
             "description": '// Print three values using comma separation: the number 100, the text "items", and the calculation 50 * 2\n// Your output should be:\n// 100 items 100',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": {},
@@ -110,7 +110,7 @@ export const courses = [
           },
           {
             "description": '// Print a formatted statement showing both the expression and result\n// Use template literals to print: "Expression: 20 + 30 * 2 = " followed by the calculated result\n// Your output should be:\n// Expression: 20 + 30 * 2 = 80',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": {},
@@ -136,7 +136,7 @@ export const courses = [
         "tasks": [
           {
             "description": '// Do not rename a and b, use them as input for your program.\n// While testing we will change their values.\nconst a = 15;\nconst b = 27;\n\n// Swap the values of a and b using a third variable\n// Print both values after swapping\n// For example, if a = 15 and b = 27, your output should be:\n// 27\n// 15',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "a": 15, "b": 27 },
@@ -154,7 +154,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename num1, num2, num3, use them as input for your program.\n// While testing we will change their values.\nconst num1 = 5;\nconst num2 = 12;\nconst num3 = 8;\n\n// Calculate a running sum: start with num1, add num2, then add num3\n// Print the sum after each addition\n// For example, if num1 = 5, num2 = 12, num3 = 8, your output should be:\n// 5\n// 17\n// 25',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "num1": 5, "num2": 12, "num3": 8 },
@@ -172,7 +172,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename start and increment, use them as input for your program.\n// While testing we will change their values.\nconst start = 10;\nconst increment = 3;\n\n// Create a counter starting at \'start\' and increment it 4 times by \'increment\'\n// Print the counter value after each increment\n// For example, if start = 10 and increment = 3, your output should be:\n// 13\n// 16\n// 19\n// 22',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "start": 10, "increment": 3 },
@@ -190,7 +190,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename celsius, use it as input for your program.\n// While testing we will change its value.\nconst celsius = 100;\n\n// Convert celsius to Fahrenheit using: (celsius * 9/5) + 32, then store that result\n// Convert the Fahrenheit value to Kelvin using: (F - 32) * 5/9 + 273.15\n// Print both converted values (Fahrenheit first, then Kelvin)\n// For example, if celsius = 100, your output should be:\n// 212\n// 373.15',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "celsius": 100 },
@@ -208,7 +208,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename principal, rate, time, use them as input for your program.\n// While testing we will change their values.\nconst principal = 1000;\nconst rate = 5;\nconst time = 2;\n\n// Calculate simple interest: (principal * rate * time) / 100\n// Calculate total amount: principal + interest\n// Print the interest and then the total amount\n// For example, if principal = 1000, rate = 5, time = 2, your output should be:\n// 100\n// 1100',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "principal": 1000, "rate": 5, "time": 2 },
@@ -226,7 +226,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename length and width, use them as input for your program.\n// While testing we will change their values.\nconst length = 8;\nconst width = 5;\n\n// Calculate the area and perimeter of a rectangle\n// Area = length * width\n// Perimeter = 2 * (length + width)\n// Print area first, then perimeter\n// For example, if length = 8 and width = 5, your output should be:\n// 40\n// 26',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "length": 8, "width": 5 },
@@ -244,7 +244,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename score1, score2, score3, use them as input for your program.\n// While testing we will change their values.\nconst score1 = 85;\nconst score2 = 92;\nconst score3 = 78;\n\n// Calculate the sum of all scores\n// Calculate the average (sum divided by 3)\n// Print the sum and then the average\n// For example, if scores are 85, 92, 78, your output should be:\n// 255\n// 85',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "score1": 85, "score2": 92, "score3": 78 },
@@ -262,7 +262,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename distance and time, use them as input for your program.\n// While testing we will change their values.\nconst distance = 150;\nconst time = 3;\n\n// Calculate speed: distance / time\n// Calculate double the speed\n// Print original speed and then doubled speed\n// For example, if distance = 150 and time = 3, your output should be:\n// 50\n// 100',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "distance": 150, "time": 3 },
@@ -280,7 +280,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename num, use it as input for your program.\n// num will be a two-digit number.\n// While testing we will change its value.\nconst num = 47;\n\n// Extract and store the tens digit and units digit separately\n// Print tens digit first, then units digit\n// Hint: Use Math.floor(num / 10) for tens, num % 10 for units\n// For example, if num = 47, your output should be:\n// 4\n// 7',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "num": 47 },
@@ -298,7 +298,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename x, y, z, use them as input for your program.\n// While testing we will change their values.\nconst x = 6;\nconst y = 4;\nconst z = 2;\n\n// Calculate: (x + y) * z\n// Store the result and then calculate: result - x\n// Print both values\n// For example, if x = 6, y = 4, z = 2, your output should be:\n// 20\n// 14',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "x": 6, "y": 4, "z": 2 },
@@ -331,7 +331,7 @@ export const courses = [
         "tasks": [
           {
             "description": '// Do not rename dividend and divisor, use them as input for your program.\n// While testing we will change their values.\nconst dividend = 47;\nconst divisor = 6;\n\n// Calculate the quotient (without decimals) and remainder\n// Use Math.floor for quotient and % for remainder\n// Print quotient first, then remainder\n// For example, if dividend = 47 and divisor = 6, your output should be:\n// 7\n// 5',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "dividend": 47, "divisor": 6 },
@@ -357,7 +357,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename a, b, c, use them as input for your program.\n// While testing we will change their values.\nconst a = 12;\nconst b = 25;\nconst c = 18;\n\n// Calculate and print:\n// 1. Sum of all three numbers\n// 2. Product of all three numbers\n// 3. Average of all three numbers\n// For example, if a = 12, b = 25, c = 18, your output should be:\n// 55\n// 5400\n// 18.333333333333332',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "a": 12, "b": 25, "c": 18 },
@@ -383,7 +383,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename obtained and total, use them as input for your program.\n// While testing we will change their values.\nconst obtained = 427;\nconst total = 500;\n\n// Calculate the percentage: (obtained / total) * 100\n// Print the percentage value\n// For example, if obtained = 427 and total = 500, your output should be:\n// 85.4',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "obtained": 427, "total": 500 },
@@ -413,7 +413,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename num, use it as input for your program.\n// num will be a positive integer.\n// While testing we will change its value.\nconst num = 5847;\n\n// Extract and print the last digit of num\n// Hint: Use the modulo operator\n// For example, if num = 5847, your output should be:\n// 7',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "num": 5847 },
@@ -439,7 +439,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename amount, use it as input for your program.\n// amount will be a positive integer representing total rupees.\n// While testing we will change its value.\nconst amount = 1847;\n\n// Break down the amount into 500, 100, 50, and remaining rupees\n// Calculate how many 500 notes, then from remainder how many 100 notes,\n// then from that remainder how many 50 notes, and finally the remaining amount\n// Print all four values in order\n// For example, if amount = 1847, your output should be:\n// 3\n// 3\n// 0\n// 47',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "amount": 1847 },
@@ -469,7 +469,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename num, use it as input for your program.\n// While testing we will change its value.\nconst num = 47;\n\n// Calculate the remainder when num is divided by 2\n// Print the remainder (0 for even, 1 for odd)\n// For example, if num = 47, your output should be:\n// 1',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "num": 47 },
@@ -499,7 +499,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename num, use it as input for your program.\n// num will be a two-digit number.\n// While testing we will change its value.\nconst num = 73;\n\n// Reverse the digits and print the reversed number\n// Extract tens and units digits, then form reversed number\n// For example, if num = 73, your output should be:\n// 37',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "num": 73 },
@@ -529,7 +529,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename principal and rate, use them as input for your program.\n// While testing we will change their values.\nconst principal = 10000;\nconst rate = 8;\n\n// Calculate the amount after 1 year with compound interest\n// Formula: principal * (1 + rate/100)\n// Print the final amount\n// For example, if principal = 10000 and rate = 8, your output should be:\n// 10800',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "principal": 10000, "rate": 8 },
@@ -555,7 +555,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename a, b, c, d, use them as input for your program.\n// While testing we will change their values.\nconst a = 10;\nconst b = 5;\nconst c = 3;\nconst d = 2;\n\n// Calculate: a + b * c - d\n// Then calculate: (a + b) * (c - d)\n// Print both results\n// For example, if a = 10, b = 5, c = 3, d = 2, your output should be:\n// 23\n// 15',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "a": 10, "b": 5, "c": 3, "d": 2 },
@@ -585,7 +585,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename hours, minutes, seconds, use them as input for your program.\n// While testing we will change their values.\nconst hours = 2;\nconst minutes = 15;\nconst seconds = 30;\n\n// Convert the total time to seconds\n// 1 hour = 3600 seconds, 1 minute = 60 seconds\n// Print total seconds\n// For example, if hours = 2, minutes = 15, seconds = 30, your output should be:\n// 8130',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "hours": 2, "minutes": 15, "seconds": 30 },
@@ -615,7 +615,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename radius, use it as input for your program.\n// While testing we will change its value.\nconst radius = 7;\n\n// Calculate the area of a circle: π * radius * radius\n// Use 3.14159 as the value of π\n// Print the area\n// For example, if radius = 7, your output should be:\n// 153.93804',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "radius": 7 },
@@ -645,7 +645,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename num, use it as input for your program.\n// num will be a three-digit number.\n// While testing we will change its value.\nconst num = 456;\n\n// Extract all three digits and calculate their sum\n// Use division and modulo operations\n// Print the sum of digits\n// For example, if num = 456, your output should be:\n// 15',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "num": 456 },
@@ -675,7 +675,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename costPrice and sellingPrice, use them as input for your program.\n// While testing we will change their values.\nconst costPrice = 850;\nconst sellingPrice = 1020;\n\n// Calculate the profit or loss amount (sellingPrice - costPrice)\n// Then calculate the profit/loss percentage: (difference / costPrice) * 100\n// Print the amount first, then the percentage\n// For example, if costPrice = 850 and sellingPrice = 1020, your output should be:\n// 170\n// 20',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "costPrice": 850, "sellingPrice": 1020 },
@@ -705,7 +705,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename n1, n2, n3, n4, n5, use them as input for your program.\n// While testing we will change their values.\nconst n1 = 23;\nconst n2 = 45;\nconst n3 = 67;\nconst n4 = 12;\nconst n5 = 89;\n\n// Calculate the sum of all five numbers\n// Calculate the average by dividing sum by 5\n// Print the average\n// For example, if numbers are 23, 45, 67, 12, 89, your output should be:\n// 47.2',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "n1": 23, "n2": 45, "n3": 67, "n4": 12, "n5": 89 },
@@ -735,7 +735,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename weight and height, use them as input for your program.\n// weight is in kilograms, height is in meters.\n// While testing we will change their values.\nconst weight = 70;\nconst height = 1.75;\n\n// Calculate BMI: weight / (height * height)\n// Print the BMI value\n// For example, if weight = 70 and height = 1.75, your output should be:\n// 22.857142857142858',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "weight": 70, "height": 1.75 },
@@ -782,7 +782,7 @@ export const courses = [
         "tasks": [
           {
             "description": '// Do not rename num, use it as input for your program.\n// While testing we will change its value.\nconst num = 47.6;\n\n// Apply different rounding methods and print the results\n// Print round, floor, ceil, trunc of num in order\n// For example, if num = 47.6, your output should be:\n// 48\n// 47\n// 48\n// 47',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "num": 47.6 },
@@ -812,7 +812,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename x1, y1, x2, y2, use them as input for your program.\n// While testing we will change their values.\nconst x1 = 3;\nconst y1 = 4;\nconst x2 = 7;\nconst y2 = 1;\n\n// Calculate the distance between points (x1, y1) and (x2, y2)\n// Distance formula: √[(x2-x1)² + (y2-y1)²]\n// Print the distance\n// For example, if points are (3,4) and (7,1), your output should be:\n// 5',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "x1": 3, "y1": 4, "x2": 7, "y2": 1 },
@@ -842,7 +842,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename num, use it as input for your program.\n// num will be a positive integer.\n// While testing we will change its value.\nconst num = 144;\n\n// Find the square root of num\n// Verify by squaring the result\n// Print the square root, then the squared verification\n// For example, if num = 144, your output should be:\n// 12\n// 144',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "num": 144 },
@@ -872,7 +872,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename a, b, c, d, e, use them as input for your program.\n// While testing we will change their values.\nconst a = 45;\nconst b = 23;\nconst c = 89;\nconst d = 12;\nconst e = 67;\n\n// Find minimum, maximum, and range (max - min)\n// Print min, max, range in order\n// For example, if numbers are 45, 23, 89, 12, 67, your output should be:\n// 12\n// 89\n// 77',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "a": 45, "b": 23, "c": 89, "d": 12, "e": 67 },
@@ -902,7 +902,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename radius, use it as input for your program.\n// While testing we will change its value.\nconst radius = 7;\n\n// Calculate circumference and area of a circle\n// Circumference = 2πr, Area = πr²\n// Print circumference, then area\n// For example, if radius = 7, your output should be:\n// 43.982297150257104\n// 153.93804002589985',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "radius": 7 },
@@ -932,7 +932,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename a, b, c, use them as input for your program.\n// While testing we will change their values.\nconst a = 15;\nconst b = 25;\nconst c = 10;\n\n// Calculate absolute difference between a and b\n// Then calculate absolute difference between that result and c\n// Print both absolute differences\n// For example, if a = 15, b = 25, c = 10, your output should be:\n// 10\n// 0',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "a": 15, "b": 25, "c": 10 },
@@ -962,7 +962,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename principal, rate, time, use them as input for your program.\n// While testing we will change their values.\nconst principal = 1000;\nconst rate = 5;\nconst time = 3;\n\n// Calculate final amount with compound interest\n// Amount = principal × (1 + rate/100)^time\n// Print the final amount\n// For example, if principal = 1000, rate = 5, time = 3, your output should be:\n// 1157.625',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "principal": 1000, "rate": 5, "time": 3 },
@@ -992,7 +992,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename temp1, temp2, temp3, temp4, temp5, use them as input for your program.\n// While testing we will change their values.\nconst temp1 = 23.5;\nconst temp2 = 19.8;\nconst temp3 = 27.3;\nconst temp4 = 15.2;\nconst temp5 = 21.9;\n\n// Find minimum temperature, maximum temperature, and average\n// Round the average to 2 decimal places\n// Print min, max, rounded average in order\n// For example, if temps are 23.5, 19.8, 27.3, 15.2, 21.9, your output should be:\n// 15.2\n// 27.3\n// 21.54',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "temp1": 23.5, "temp2": 19.8, "temp3": 27.3, "temp4": 15.2, "temp5": 21.9 },
@@ -1022,7 +1022,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename a, b, use them as input for your program.\n// a and b are the two legs of a right triangle.\n// While testing we will change their values.\nconst a = 3;\nconst b = 4;\n\n// Calculate the hypotenuse of the right triangle\n// Pythagorean theorem: c = √(a² + b²)\n// Print the hypotenuse\n// For example, if a = 3 and b = 4, your output should be:\n// 5',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "a": 3, "b": 4 },
@@ -1052,7 +1052,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename dividend, divisor, use them as input for your program.\n// While testing we will change their values.\nconst dividend = 47;\nconst divisor = 6;\n\n// Divide dividend by divisor\n// Print the result rounded down, then rounded up\n// For example, if dividend = 47 and divisor = 6, your output should be:\n// 7\n// 8',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "dividend": 47, "divisor": 6 },
@@ -1082,7 +1082,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename radius, use it as input for your program.\n// While testing we will change its value.\nconst radius = 5;\n\n// Calculate the volume of a sphere\n// Volume = (4/3) × π × radius³\n// Print the volume\n// For example, if radius = 5, your output should be:\n// 523.5987755982989',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "radius": 5 },
@@ -1112,7 +1112,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename base, exponent, use them as input for your program.\n// While testing we will change their values.\nconst base = 2;\nconst exponent = 10;\n\n// Calculate base raised to the power of exponent\n// Then calculate the exponent-th root of the result to verify\n// Print the power result, then the root verification\n// For example, if base = 2 and exponent = 10, your output should be:\n// 1024\n// 2',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "base": 2, "exponent": 10 },
@@ -1142,7 +1142,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename num, use it as input for your program.\n// While testing we will change its value.\nconst num = 27;\n\n// Calculate the cube root of num\n// Cube root is the same as raising to power (1/3)\n// Print the cube root\n// For example, if num = 27, your output should be:\n// 3',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "num": 27 },
@@ -1172,7 +1172,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename initial, growthRate, periods, use them as input for your program.\n// While testing we will change their values.\nconst initial = 100;\nconst growthRate = 1.5;\nconst periods = 4;\n\n// Calculate value after exponential growth\n// Final = initial × (growthRate)^periods\n// Print the final value\n// For example, if initial = 100, growthRate = 1.5, periods = 4, your output should be:\n// 506.25',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "initial": 100, "growthRate": 1.5, "periods": 4 },
@@ -1202,7 +1202,7 @@ export const courses = [
           },
           {
             "description": '// Do not rename a, b, c, use them as input for your program.\n// a, b, c are the three sides of a triangle.\n// While testing we will change their values.\nconst a = 5;\nconst b = 6;\nconst c = 7;\n\n// Calculate the area using Heron\'s formula\n// s = (a + b + c) / 2\n// Area = √[s(s-a)(s-b)(s-c)]\n// Print the area\n// For example, if sides are 5, 6, 7, your output should be:\n// 14.696938456699069',
-            "solution_type": 'script',
+            "solution_type": "script",
             "testCases": [
               {
                 "input": { "a": 5, "b": 6, "c": 7 },
@@ -5039,8 +5039,9 @@ export const courses = [
         ],
         "tasks": [
           {
-            "description": "// Create a function named greet that takes no parameters\n// The function should return the string \"Hello, World!\"\n// Call the function and print the result\n// Your output should be: Hello, World!",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that takes no parameters and returns \"Hello, World!\".\n  Examples:\n    greet() => \"Hello, World!\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction greet() {\n  // Implementation here.\n}",
+            "solution_type": "function",
+            "function_name": "greet",
             "testCases": [
               {
                 "input": {},
@@ -5049,7 +5050,7 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a function named double that takes one parameter: num\n// The function should return num multiplied by 2\n// Test it by calling double(5) and printing the result\n// Your output should be: 10",
+            "description": "/*\n  Implement the below function to double a number.\n  Examples:\n    double(5) => 10\n    double(7) => 14\n    double(0) => 0\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction double(num) {\n  // Implementation here.\n}",
             "solution_type": "function",
             "function_name": "double",
             "testCases": [
@@ -5072,7 +5073,7 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a function named add that takes two parameters: a and b\n// The function should return the sum of a and b\n// Test it with add(10, 20) and print the result\n// Your output should be: 30",
+            "description": "/*\n  Implement the below function to add two numbers.\n  Examples:\n    add(10, 20) => 30\n    add(5, 15) => 20\n    add(0, 0) => 0\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction add(a, b) {\n  // Implementation here.\n}",
             "solution_type": "function",
             "function_name": "add",
             "testCases": [
@@ -5095,7 +5096,7 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a function named isEven that takes one parameter: num\n// The function should return true if num is even, false otherwise\n// Test it with isEven(4) and print the result\n// Your output should be: true",
+            "description": "/*\n  Implement the below function to check if a number is even.\n  Examples:\n    isEven(4) => true\n    isEven(7) => false\n    isEven(0) => true\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction isEven(num) {\n  // Implementation here.\n}",
             "solution_type": "function",
             "function_name": "isEven",
             "testCases": [
@@ -5118,7 +5119,7 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a function named getMax that takes two parameters: x and y\n// The function should return the larger of the two numbers\n// If they're equal, return either one\n// Test it with getMax(15, 10) and print the result\n// Your output should be: 15",
+            "description": "/*\n  Implement the below function to find the maximum of two numbers.\n  If they're equal, return either one.\n  Examples:\n    getMax(15, 10) => 15\n    getMax(5, 20) => 20\n    getMax(10, 10) => 10\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction getMax(x, y) {\n  // Implementation here.\n}",
             "solution_type": "function",
             "function_name": "getMax",
             "testCases": [
@@ -5141,7 +5142,7 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a function named calculateArea that takes two parameters: width and height\n// The function should return the area of a rectangle (width * height)\n// Test it with calculateArea(5, 10) and print the result\n// Your output should be: 50",
+            "description": "/*\n  Implement the below function to calculate the area of a rectangle.\n  Area = width × height\n  Examples:\n    calculateArea(5, 10) => 50\n    calculateArea(7, 3) => 21\n    calculateArea(1, 1) => 1\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction calculateArea(width, height) {\n  // Implementation here.\n}",
             "solution_type": "function",
             "function_name": "calculateArea",
             "testCases": [
@@ -5164,7 +5165,7 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a function named countVowels that takes one parameter: str\n// The function should return the count of vowels (a, e, i, o, u) in the string\n// Case-insensitive: treat 'A' and 'a' as the same\n// Test it with countVowels(\"hello\") and print the result\n// Your output should be: 2",
+            "description": "/*\n  Implement the below function to count vowels in a string.\n  Count vowels (a, e, i, o, u) - case insensitive.\n  Examples:\n    countVowels(\"hello\") => 2\n    countVowels(\"JavaScript\") => 3\n    countVowels(\"AEIOU\") => 5\n    countVowels(\"xyz\") => 0\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction countVowels(str) {\n  // Implementation here.\n}",
             "solution_type": "function",
             "function_name": "countVowels",
             "testCases": [
@@ -5187,7 +5188,7 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a function named reverseString that takes one parameter: str\n// The function should return the reversed string\n// Test it with reverseString(\"hello\") and print the result\n// Your output should be: olleh",
+            "description": "/*\n  Implement the below function to reverse a string.\n  Examples:\n    reverseString(\"hello\") => \"olleh\"\n    reverseString(\"world\") => \"dlrow\"\n    reverseString(\"JavaScript\") => \"tpircSavaJ\"\n    reverseString(\"a\") => \"a\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction reverseString(str) {\n  // Implementation here.\n}",
             "solution_type": "function",
             "function_name": "reverseString",
             "testCases": [
@@ -5210,7 +5211,7 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a function named isPalindrome that takes one parameter: str\n// The function should return true if the string is a palindrome, false otherwise\n// A palindrome reads the same forwards and backwards\n// Test it with isPalindrome(\"racecar\") and print the result\n// Your output should be: true",
+            "description": "/*\n  Implement the below function to check if a string is a palindrome.\n  A palindrome reads the same forwards and backwards.\n  Examples:\n    isPalindrome(\"racecar\") => true\n    isPalindrome(\"hello\") => false\n    isPalindrome(\"madam\") => true\n    isPalindrome(\"noon\") => true\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction isPalindrome(str) {\n  // Implementation here.\n}",
             "solution_type": "function",
             "function_name": "isPalindrome",
             "testCases": [
@@ -5237,7 +5238,7 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a function named sumArray that takes one parameter: arr (an array of numbers)\n// The function should return the sum of all elements in the array\n// Test it with sumArray([1, 2, 3, 4, 5]) and print the result\n// Your output should be: 15",
+            "description": "/*\n  Implement the below function to calculate the sum of all elements in an array.\n  Examples:\n    sumArray([1, 2, 3, 4, 5]) => 15\n    sumArray([10, 20, 30]) => 60\n    sumArray([5]) => 5\n    sumArray([0, 0, 0]) => 0\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction sumArray(arr) {\n  // Implementation here.\n}",
             "solution_type": "function",
             "function_name": "sumArray",
             "testCases": [
@@ -5260,7 +5261,7 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a function named findMax that takes one parameter: arr (an array of numbers)\n// The function should return the largest number in the array\n// Test it with findMax([5, 12, 8, 21, 3]) and print the result\n// Your output should be: 21",
+            "description": "/*\n  Implement the below function to find the largest number in an array.\n  Examples:\n    findMax([5, 12, 8, 21, 3]) => 21\n    findMax([1, 2, 3, 4, 5]) => 5\n    findMax([100]) => 100\n    findMax([50, 25, 75, 10]) => 75\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction findMax(arr) {\n  // Implementation here.\n}",
             "solution_type": "function",
             "function_name": "findMax",
             "testCases": [
@@ -5283,7 +5284,7 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a function named factorial that takes one parameter: n\n// The function should return the factorial of n\n// Factorial of n = n × (n-1) × (n-2) × ... × 1\n// Test it with factorial(5) and print the result\n// Your output should be: 120",
+            "description": "/*\n  Implement the below function to calculate the factorial of a number.\n  Factorial of n = n × (n-1) × (n-2) × ... × 1\n  Examples:\n    factorial(5) => 120 => 5 × 4 × 3 × 2 × 1\n    factorial(3) => 6 => 3 × 2 × 1\n    factorial(1) => 1\n    factorial(7) => 5040\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction factorial(n) {\n  // Implementation here.\n}",
             "solution_type": "function",
             "function_name": "factorial",
             "testCases": [
@@ -5322,8 +5323,9 @@ export const courses = [
         ],
         "tasks": [
           {
-            "description": "// Create an arrow function named greet that takes no parameters\n// The function should return \"Hello!\"\n// Call the function and print the result\n// Your output should be: Hello!",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below arrow function that takes no parameters and returns \"Hello!\".\n  Examples:\n    greet() => \"Hello!\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nconst greet = () => {\n  // Implementation here\n};",
+            "solution_type": "function",
+            "function_name": "greet",
             "testCases": [
               {
                 "input": {},
@@ -5332,7 +5334,7 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create an arrow function named square that takes one parameter: num\n// Return the square of num\n// Test it with square(5) and print the result\n// Your output should be: 25",
+            "description": "/*\n  Implement the below arrow function to calculate the square of a number.\n  Examples:\n    square(5) => 25\n    square(7) => 49\n    square(0) => 0\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nconst square = (num) => {\n  // Implementation here\n};",
             "solution_type": "function",
             "function_name": "square",
             "testCases": [
@@ -5355,7 +5357,7 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create an arrow function named multiply that takes two parameters: a and b\n// Return the product of a and b\n// Test it with multiply(6, 7) and print the result\n// Your output should be: 42",
+            "description": "/*\n  Implement the below arrow function to multiply two numbers.\n  Examples:\n    multiply(6, 7) => 42\n    multiply(5, 5) => 25\n    multiply(0, 100) => 0\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nconst multiply = (a, b) => {\n  // Implementation here\n};",
             "solution_type": "function",
             "function_name": "multiply",
             "testCases": [
@@ -5378,7 +5380,7 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create an arrow function named isPositive that takes one parameter: num\n// Return true if num is greater than 0, false otherwise\n// Test it with isPositive(5) and print the result\n// Your output should be: true",
+            "description": "/*\n  Implement the below arrow function to check if a number is positive.\n  Examples:\n    isPositive(5) => true\n    isPositive(-3) => false\n    isPositive(0) => false\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nconst isPositive = (num) => {\n  // Implementation here\n};",
             "solution_type": "function",
             "function_name": "isPositive",
             "testCases": [
@@ -5401,7 +5403,7 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create an arrow function named getFullName that takes two parameters: firstName and lastName\n// Return the full name with a space between first and last name\n// Test it with getFullName(\"John\", \"Doe\") and print the result\n// Your output should be: John Doe",
+            "description": "/*\n  Implement the below arrow function to create a full name from first and last names.\n  Examples:\n    getFullName(\"John\", \"Doe\") => \"John Doe\"\n    getFullName(\"Jane\", \"Smith\") => \"Jane Smith\"\n    getFullName(\"Alice\", \"Johnson\") => \"Alice Johnson\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nconst getFullName = (firstName, lastName) => {\n  // Implementation here\n};",
             "solution_type": "function",
             "function_name": "getFullName",
             "testCases": [
@@ -5424,7 +5426,7 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create an arrow function named createPerson that takes two parameters: name and age\n// Return an object with properties name and age\n// Test it with createPerson(\"Alice\", 25) and print the result as JSON string using JSON.stringify\n// Your output should be: {\"name\":\"Alice\",\"age\":25}",
+            "description": "/*\n  Implement the below arrow function to create a person object.\n  Return an object with name and age properties.\n  Examples:\n    createPerson(\"Alice\", 25) => {\"name\":\"Alice\",\"age\":25}\n    createPerson(\"Bob\", 30) => {\"name\":\"Bob\",\"age\":30}\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nconst createPerson = (name, age) => {\n  // Implementation here\n};",
             "solution_type": "function",
             "function_name": "createPerson",
             "testCases": [
@@ -5447,7 +5449,7 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create an arrow function named filterEven that takes one parameter: arr (array of numbers)\n// Return a new array containing only the even numbers from arr\n// Test it with filterEven([1, 2, 3, 4, 5, 6]) and print the result as JSON string\n// Your output should be: [2,4,6]",
+            "description": "/*\n  Implement the below arrow function to filter even numbers from an array.\n  Examples:\n    filterEven([1, 2, 3, 4, 5, 6]) => [2,4,6]\n    filterEven([10, 15, 20, 25]) => [10,20]\n    filterEven([1, 3, 5, 7]) => []\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nconst filterEven = (arr) => {\n  // Implementation here\n};",
             "solution_type": "function",
             "function_name": "filterEven",
             "testCases": [
@@ -5470,7 +5472,7 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create an arrow function named doubleValues that takes one parameter: arr (array of numbers)\n// Return a new array with all values doubled\n// Test it with doubleValues([1, 2, 3, 4]) and print the result as JSON string\n// Your output should be: [2,4,6,8]",
+            "description": "/*\n  Implement the below arrow function to double all values in an array.\n  Examples:\n    doubleValues([1, 2, 3, 4]) => [2,4,6,8]\n    doubleValues([5, 10, 15]) => [10,20,30]\n    doubleValues([0, 1, 2]) => [0,2,4]\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nconst doubleValues = (arr) => {\n  // Implementation here\n};",
             "solution_type": "function",
             "function_name": "doubleValues",
             "testCases": [
@@ -5493,7 +5495,7 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create an arrow function named sumAll that takes one parameter: arr (array of numbers)\n// Return the sum of all elements in the array\n// Test it with sumAll([1, 2, 3, 4, 5]) and print the result\n// Your output should be: 15",
+            "description": "/*\n  Implement the below arrow function to calculate the sum of all elements in an array.\n  Examples:\n    sumAll([1, 2, 3, 4, 5]) => 15\n    sumAll([10, 20, 30]) => 60\n    sumAll([5]) => 5\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nconst sumAll = (arr) => {\n  // Implementation here\n};",
             "solution_type": "function",
             "function_name": "sumAll",
             "testCases": [
@@ -5516,7 +5518,7 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create an arrow function named getLengths that takes one parameter: arr (array of strings)\n// Return a new array containing the length of each string\n// Test it with getLengths([\"hi\", \"hello\", \"hey\"]) and print the result as JSON string\n// Your output should be: [2,5,3]",
+            "description": "/*\n  Implement the below arrow function to get the length of each string in an array.\n  Examples:\n    getLengths([\"hi\", \"hello\", \"hey\"]) => [2,5,3]\n    getLengths([\"JavaScript\", \"is\", \"awesome\"]) => [10,2,7]\n    getLengths([\"a\", \"ab\", \"abc\"]) => [1,2,3]\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nconst getLengths = (arr) => {\n  // Implementation here\n};",
             "solution_type": "function",
             "function_name": "getLengths",
             "testCases": [
@@ -5539,7 +5541,7 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create an arrow function named getAdults that takes one parameter: people\n// people is an array of objects with properties: name and age\n// Return a new array containing only people who are 18 or older\n// Test it with getAdults([{name: \"Alice\", age: 25}, {name: \"Bob\", age: 15}])\n// Print the result as JSON string\n// Your output should be: [{\"name\":\"Alice\",\"age\":25}]",
+            "description": "/*\n  Implement the below arrow function to filter adults (18+) from an array of people.\n  Each person is an object with name and age properties.\n  Examples:\n    getAdults([{name: \"Alice\", age: 25}, {name: \"Bob\", age: 15}]) => [{\"name\":\"Alice\",\"age\":25}]\n    getAdults([{name: \"Charlie\", age: 30}, {name: \"Diana\", age: 20}]) => [{\"name\":\"Charlie\",\"age\":30},{\"name\":\"Diana\",\"age\":20}]\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nconst getAdults = (people) => {\n  // Implementation here\n};",
             "solution_type": "function",
             "function_name": "getAdults",
             "testCases": [
@@ -5562,7 +5564,7 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create an arrow function named calculator that takes three parameters: a, b, operation\n// operation is a string: \"add\", \"subtract\", \"multiply\", or \"divide\"\n// Return the result of performing the specified operation on a and b\n// Test it with calculator(10, 5, \"add\") and print the result\n// Your output should be: 15",
+            "description": "/*\n  Implement the below arrow function to perform basic calculator operations.\n  Operation can be \"add\", \"subtract\", \"multiply\", or \"divide\".\n  Examples:\n    calculator(10, 5, \"add\") => 15\n    calculator(10, 5, \"subtract\") => 5\n    calculator(10, 5, \"multiply\") => 50\n    calculator(10, 5, \"divide\") => 2\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nconst calculator = (a, b, operation) => {\n  // Implementation here\n};",
             "solution_type": "function",
             "function_name": "calculator",
             "testCases": [
@@ -5602,7 +5604,7 @@ export const courses = [
         ],
         "tasks": [
           {
-            "description": "// Create a recursive function named countdown that takes one parameter: n\n// The function should print numbers from n down to 1\n// Stop when n reaches 0 or less\n// Test it with countdown(5) and your output should be:\n// 5\n// 4\n// 3\n// 2\n// 1",
+            "description": "/*\n  Implement the below recursive function to count down from n to 1.\n  Print each number on a new line. Stop when n reaches 0 or less.\n  Examples:\n    countdown(5) => prints \"5\\n4\\n3\\n2\\n1\"\n    countdown(3) => prints \"3\\n2\\n1\"\n    countdown(0) => prints nothing\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction countdown(n) {\n  // Implementation here\n}",
             "solution_type": "function",
             "function_name": "countdown",
             "testCases": [
@@ -5625,7 +5627,7 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a recursive function named sumToN that takes one parameter: n\n// Return the sum of all numbers from 1 to n\n// Test it with sumToN(5) and print the result\n// Your output should be: 15",
+            "description": "/*\n  Implement the below recursive function to calculate the sum of numbers from 1 to n.\n  Examples:\n    sumToN(5) => 15 (1+2+3+4+5)\n    sumToN(10) => 55\n    sumToN(1) => 1\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction sumToN(n) {\n  // Implementation here\n}",
             "solution_type": "function",
             "function_name": "sumToN",
             "testCases": [
@@ -5648,7 +5650,7 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a recursive function named factorial that takes one parameter: n\n// Return the factorial of n (n! = n × (n-1) × (n-2) × ... × 1)\n// Test it with factorial(5) and print the result\n// Your output should be: 120",
+            "description": "/*\n  Implement the below recursive function to calculate the factorial of n.\n  Factorial of n = n × (n-1) × (n-2) × ... × 1\n  Examples:\n    factorial(5) => 120 (5 × 4 × 3 × 2 × 1)\n    factorial(3) => 6 (3 × 2 × 1)\n    factorial(0) => 1\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction factorial(n) {\n  // Implementation here\n}",
             "solution_type": "function",
             "function_name": "factorial",
             "testCases": [
@@ -5671,7 +5673,7 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a recursive function named power that takes two parameters: base and exponent\n// Return base raised to the power of exponent\n// Test it with power(2, 3) and print the result\n// Your output should be: 8",
+            "description": "/*\n  Implement the below recursive function to calculate base raised to the power of exponent.\n  Examples:\n    power(2, 3) => 8 (2 × 2 × 2)\n    power(5, 2) => 25 (5 × 5)\n    power(10, 0) => 1\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction power(base, exponent) {\n  // Implementation here\n}",
             "solution_type": "function",
             "function_name": "power",
             "testCases": [
@@ -5694,7 +5696,7 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a recursive function named countDigits that takes one parameter: num\n// Return the count of digits in num\n// Test it with countDigits(12345) and print the result\n// Your output should be: 5",
+            "description": "/*\n  Implement the below recursive function to count the digits in a number.\n  Examples:\n    countDigits(12345) => 5\n    countDigits(999) => 3\n    countDigits(7) => 1\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction countDigits(num) {\n  // Implementation here\n}",
             "solution_type": "function",
             "function_name": "countDigits",
             "testCases": [
@@ -5717,7 +5719,7 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a recursive function named fibonacci that takes one parameter: n\n// Return the nth Fibonacci number\n// Fibonacci sequence: 0, 1, 1, 2, 3, 5, 8, 13, 21...\n// Test it with fibonacci(6) and print the result\n// Your output should be: 8",
+            "description": "/*\n  Implement the below recursive function to find the nth Fibonacci number.\n  Fibonacci sequence: 0, 1, 1, 2, 3, 5, 8, 13, 21...\n  Examples:\n    fibonacci(6) => 8\n    fibonacci(0) => 0\n    fibonacci(1) => 1\n    fibonacci(8) => 21\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction fibonacci(n) {\n  // Implementation here\n}",
             "solution_type": "function",
             "function_name": "fibonacci",
             "testCases": [
@@ -5740,7 +5742,7 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a recursive function named reverseString that takes one parameter: str\n// Return the reversed string\n// Test it with reverseString(\"hello\") and print the result\n// Your output should be: olleh",
+            "description": "/*\n  Implement the below recursive function to reverse a string.\n  Examples:\n    reverseString(\"hello\") => \"olleh\"\n    reverseString(\"world\") => \"dlrow\"\n    reverseString(\"a\") => \"a\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction reverseString(str) {\n  // Implementation here\n}",
             "solution_type": "function",
             "function_name": "reverseString",
             "testCases": [
@@ -5763,7 +5765,7 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a recursive function named sumArray that takes one parameter: arr (array of numbers)\n// Return the sum of all elements in the array\n// Test it with sumArray([1, 2, 3, 4, 5]) and print the result\n// Your output should be: 15",
+            "description": "/*\n  Implement the below recursive function to calculate the sum of all elements in an array.\n  Examples:\n    sumArray([1, 2, 3, 4, 5]) => 15\n    sumArray([10, 20, 30]) => 60\n    sumArray([5]) => 5\n    sumArray([]) => 0\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction sumArray(arr) {\n  // Implementation here\n}",
             "solution_type": "function",
             "function_name": "sumArray",
             "testCases": [
@@ -5786,7 +5788,7 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a recursive function named isPalindrome that takes one parameter: str\n// Return true if str is a palindrome, false otherwise\n// A palindrome reads the same forwards and backwards\n// Test it with isPalindrome(\"racecar\") and print the result\n// Your output should be: true",
+            "description": "/*\n  Implement the below recursive function to check if a string is a palindrome.\n  A palindrome reads the same forwards and backwards.\n  Examples:\n    isPalindrome(\"racecar\") => true\n    isPalindrome(\"hello\") => false\n    isPalindrome(\"madam\") => true\n    isPalindrome(\"a\") => true\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction isPalindrome(str) {\n  // Implementation here\n}",
             "solution_type": "function",
             "function_name": "isPalindrome",
             "testCases": [
@@ -5809,7 +5811,7 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a recursive function named findMax that takes one parameter: arr (array of numbers)\n// Return the maximum number in the array\n// Test it with findMax([3, 7, 2, 9, 4]) and print the result\n// Your output should be: 9",
+            "description": "/*\n  Implement the below recursive function to find the maximum number in an array.\n  Examples:\n    findMax([3, 7, 2, 9, 4]) => 9\n    findMax([1, 2, 3, 4, 5]) => 5\n    findMax([100]) => 100\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction findMax(arr) {\n  // Implementation here\n}",
             "solution_type": "function",
             "function_name": "findMax",
             "testCases": [
@@ -5832,7 +5834,7 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a recursive function named countOccurrences that takes two parameters: arr and target\n// Return the count of how many times target appears in arr\n// Test it with countOccurrences([1, 2, 3, 2, 4, 2], 2) and print the result\n// Your output should be: 3",
+            "description": "/*\n  Implement the below recursive function to count occurrences of a target value in an array.\n  Examples:\n    countOccurrences([1, 2, 3, 2, 4, 2], 2) => 3\n    countOccurrences([5, 5, 5, 5], 5) => 4\n    countOccurrences([1, 2, 3], 4) => 0\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction countOccurrences(arr, target) {\n  // Implementation here\n}",
             "solution_type": "function",
             "function_name": "countOccurrences",
             "testCases": [
@@ -5855,7 +5857,7 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a recursive function named flatten that takes one parameter: arr\n// arr can contain nested arrays at any depth\n// Return a new flattened array with all elements at the top level\n// Example: [1, [2, 3], [4, [5, 6]]] should become [1, 2, 3, 4, 5, 6]\n// Test it with flatten([1, [2, 3], [4, [5, 6]]]) and print result as JSON string\n// Your output should be: [1,2,3,4,5,6]",
+            "description": "/*\n  Implement the below recursive function to flatten a nested array.\n  Return a new array with all elements at the top level.\n  Examples:\n    flatten([1, [2, 3], [4, [5, 6]]]) => [1,2,3,4,5,6]\n    flatten([1, 2, 3]) => [1,2,3]\n    flatten([[1], [2], [3]]) => [1,2,3]\n    flatten([]) => []\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction flatten(arr) {\n  // Implementation here\n}",
             "solution_type": "function",
             "function_name": "flatten",
             "testCases": [
@@ -5892,250 +5894,134 @@ export const courses = [
         ],
         "tasks": [
           {
-            "description": "// Create a function named createGreeting that takes one parameter: greeting\n// Return an inner function that takes a name parameter\n// The inner function should return greeting + name\n// Test it by creating a greeter with \"Hello, \" and calling it with \"Alice\"\n// Your output should be: Hello, Alice",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that creates a greeting closure.\n  Return an inner function that combines greeting with a name.\n  Examples:\n    createGreeting(\"Hello, \") => returns a function\n    const greeter = createGreeting(\"Hello, \")\n    greeter(\"Alice\") => \"Hello, Alice\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction createGreeting(greeting) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "createGreeting",
             "testCases": [
               {
-                "input": { "greeting": "Hello, ", "name": "Alice" },
-                "expectedOutput": "Hello, Alice"
-              },
-              {
-                "input": { "greeting": "Hi, ", "name": "Bob" },
-                "expectedOutput": "Hi, Bob"
-              },
-              {
-                "input": { "greeting": "Welcome, ", "name": "Charlie" },
-                "expectedOutput": "Welcome, Charlie"
+                "input": { "greeting": "Hello, " },
+                "expectedOutput": "function"
               }
             ]
           },
           {
-            "description": "// Create a function named createCounter that takes no parameters\n// Return an object with two methods: increment and getValue\n// increment should increase an internal count by 1\n// getValue should return the current count\n// The count should start at 0 and persist across method calls\n// Test by creating a counter, calling increment twice, then getValue\n// Your output should be: 2",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that creates a counter with closure.\n  Return an object with increment and getValue methods.\n  The count should start at 0 and persist across method calls.\n  Examples:\n    createCounter() => {increment: function, getValue: function}\n    const counter = createCounter()\n    counter.increment(); counter.getValue() => 1\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction createCounter() {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "createCounter",
             "testCases": [
               {
-                "input": { "operations": ["increment", "increment", "getValue"] },
-                "expectedOutput": "2"
-              },
-              {
-                "input": { "operations": ["increment", "getValue"] },
-                "expectedOutput": "1"
-              },
-              {
-                "input": { "operations": ["getValue"] },
-                "expectedOutput": "0"
-              },
-              {
-                "input": { "operations": ["increment", "increment", "increment", "getValue"] },
-                "expectedOutput": "3"
+                "input": {},
+                "expectedOutput": "object"
               }
             ]
           },
           {
-            "description": "// Create a function named createMultiplier that takes one parameter: multiplier\n// Return a function that takes a number and returns it multiplied by multiplier\n// Test by creating a doubler (multiplier = 2) and calling it with 5\n// Your output should be: 10",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that creates a multiplier closure.\n  Return a function that multiplies numbers by the given multiplier.\n  Examples:\n    createMultiplier(2) => returns a function\n    const doubler = createMultiplier(2)\n    doubler(5) => 10\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction createMultiplier(multiplier) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "createMultiplier",
             "testCases": [
               {
-                "input": { "multiplier": 2, "number": 5 },
-                "expectedOutput": "10"
-              },
-              {
-                "input": { "multiplier": 3, "number": 7 },
-                "expectedOutput": "21"
-              },
-              {
-                "input": { "multiplier": 10, "number": 4 },
-                "expectedOutput": "40"
-              },
-              {
-                "input": { "multiplier": 5, "number": 0 },
-                "expectedOutput": "0"
+                "input": { "multiplier": 2 },
+                "expectedOutput": "function"
               }
             ]
           },
           {
-            "description": "// Create a function named createAdder that takes one parameter: x\n// Return a function that takes a parameter y and returns x + y\n// Test by creating an adder with x = 10 and calling it with y = 5\n// Your output should be: 15",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that creates an adder closure.\n  Return a function that adds the given x value to any input.\n  Examples:\n    createAdder(10) => returns a function\n    const addTen = createAdder(10)\n    addTen(5) => 15\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction createAdder(x) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "createAdder",
             "testCases": [
               {
-                "input": { "x": 10, "y": 5 },
-                "expectedOutput": "15"
-              },
-              {
-                "input": { "x": 100, "y": 50 },
-                "expectedOutput": "150"
-              },
-              {
-                "input": { "x": 7, "y": 3 },
-                "expectedOutput": "10"
-              },
-              {
-                "input": { "x": 0, "y": 0 },
-                "expectedOutput": "0"
+                "input": { "x": 10 },
+                "expectedOutput": "function"
               }
             ]
           },
           {
-            "description": "// Create a function named secretKeeper that takes one parameter: secret\n// Return an object with two methods: getSecret and setSecret\n// getSecret should return the current secret\n// setSecret should take a new value and update the secret\n// The secret variable should not be directly accessible from outside\n// Test by creating a keeper with \"myPassword\", calling getSecret\n// Your output should be: myPassword",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that creates a secret keeper with closure.\n  Return an object with getSecret and setSecret methods for data privacy.\n  Examples:\n    secretKeeper(\"myPassword\") => {getSecret: function, setSecret: function}\n    const keeper = secretKeeper(\"myPassword\")\n    keeper.getSecret() => \"myPassword\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction secretKeeper(secret) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "secretKeeper",
             "testCases": [
               {
-                "input": { "secret": "myPassword", "operations": [{ "method": "getSecret" }] },
-                "expectedOutput": "myPassword"
-              },
-              {
-                "input": { "secret": "initial", "operations": [{ "method": "setSecret", "value": "updated" }, { "method": "getSecret" }] },
-                "expectedOutput": "updated"
-              },
-              {
-                "input": { "secret": "test123", "operations": [{ "method": "getSecret" }] },
-                "expectedOutput": "test123"
+                "input": { "secret": "myPassword" },
+                "expectedOutput": "object"
               }
             ]
           },
           {
-            "description": "// Create a function named createBankAccount that takes one parameter: initialBalance\n// Return an object with three methods: deposit, withdraw, and getBalance\n// deposit should add to the balance and return the new balance\n// withdraw should subtract from the balance and return the new balance\n// getBalance should return the current balance\n// Test by creating account with 100, depositing 50, then getting balance\n// Your output should be: 150",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that creates a bank account with closure.\n  Return an object with deposit, withdraw, and getBalance methods.\n  Examples:\n    createBankAccount(100) => {deposit: function, withdraw: function, getBalance: function}\n    const account = createBankAccount(100)\n    account.getBalance() => 100\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction createBankAccount(initialBalance) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "createBankAccount",
             "testCases": [
               {
-                "input": { "initialBalance": 100, "operations": [{ "method": "deposit", "amount": 50 }, { "method": "getBalance" }] },
-                "expectedOutput": "150"
-              },
-              {
-                "input": { "initialBalance": 200, "operations": [{ "method": "withdraw", "amount": 50 }, { "method": "getBalance" }] },
-                "expectedOutput": "150"
-              },
-              {
-                "input": { "initialBalance": 500, "operations": [{ "method": "getBalance" }] },
-                "expectedOutput": "500"
-              },
-              {
-                "input": { "initialBalance": 100, "operations": [{ "method": "deposit", "amount": 25 }, { "method": "withdraw", "amount": 25 }, { "method": "getBalance" }] },
-                "expectedOutput": "100"
+                "input": { "initialBalance": 100 },
+                "expectedOutput": "object"
               }
             ]
           },
           {
-            "description": "// Create a function named createLimitedCounter that takes one parameter: limit\n// Return an object with two methods: increment and getValue\n// increment should increase count by 1, but not exceed the limit\n// getValue should return the current count\n// Count starts at 0\n// Test by creating counter with limit 3, incrementing 5 times, then getValue\n// Your output should be: 3",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that creates a limited counter with closure.\n  Return an object with increment and getValue methods that respect the limit.\n  Examples:\n    createLimitedCounter(3) => {increment: function, getValue: function}\n    const counter = createLimitedCounter(3)\n    counter.getValue() => 0 (starts at 0)\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction createLimitedCounter(limit) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "createLimitedCounter",
             "testCases": [
               {
-                "input": { "limit": 3, "increments": 5 },
-                "expectedOutput": "3"
-              },
-              {
-                "input": { "limit": 5, "increments": 3 },
-                "expectedOutput": "3"
-              },
-              {
-                "input": { "limit": 10, "increments": 10 },
-                "expectedOutput": "10"
-              },
-              {
-                "input": { "limit": 2, "increments": 0 },
-                "expectedOutput": "0"
+                "input": { "limit": 3 },
+                "expectedOutput": "object"
               }
             ]
           },
           {
-            "description": "// Create a function named createLogger that takes one parameter: prefix\n// Return a function that takes a message parameter\n// The returned function should print prefix + \": \" + message\n// Test by creating logger with \"INFO\" and calling it with \"Server started\"\n// Your output should be: INFO: Server started",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that creates a logger with closure.\n  Return a function that formats messages with the given prefix.\n  Examples:\n    createLogger(\"INFO\") => returns a function\n    const logger = createLogger(\"INFO\")\n    logger(\"Server started\") => \"INFO: Server started\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction createLogger(prefix) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "createLogger",
             "testCases": [
               {
-                "input": { "prefix": "INFO", "message": "Server started" },
-                "expectedOutput": "INFO: Server started"
-              },
-              {
-                "input": { "prefix": "ERROR", "message": "Connection failed" },
-                "expectedOutput": "ERROR: Connection failed"
-              },
-              {
-                "input": { "prefix": "WARNING", "message": "Low memory" },
-                "expectedOutput": "WARNING: Low memory"
+                "input": { "prefix": "INFO" },
+                "expectedOutput": "function"
               }
             ]
           },
           {
-            "description": "// Create a function named createTemperatureConverter that takes one parameter: unit\n// unit can be \"C\" for Celsius or \"F\" for Fahrenheit\n// Return a function that takes a temperature value\n// If unit is \"C\", convert Celsius to Fahrenheit: (C × 9/5) + 32\n// If unit is \"F\", convert Fahrenheit to Celsius: (F - 32) × 5/9\n// Test by creating converter with \"C\" and calling it with 0\n// Your output should be: 32",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that creates a temperature converter with closure.\n  Return a function that converts temperatures based on the unit.\n  C to F: (C × 9/5) + 32, F to C: (F - 32) × 5/9\n  Examples:\n    createTemperatureConverter(\"C\") => returns a function\n    const cToF = createTemperatureConverter(\"C\")\n    cToF(0) => 32\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction createTemperatureConverter(unit) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "createTemperatureConverter",
             "testCases": [
               {
-                "input": { "unit": "C", "value": 0 },
-                "expectedOutput": "32"
-              },
-              {
-                "input": { "unit": "F", "value": 32 },
-                "expectedOutput": "0"
-              },
-              {
-                "input": { "unit": "C", "value": 100 },
-                "expectedOutput": "212"
-              },
-              {
-                "input": { "unit": "F", "value": 212 },
-                "expectedOutput": "100"
+                "input": { "unit": "C" },
+                "expectedOutput": "function"
               }
             ]
           },
           {
-            "description": "// Create a function named createIdGenerator that takes no parameters\n// Return a function that generates sequential IDs starting from 1\n// Each call to the returned function should return the next ID\n// Test by creating generator and calling it three times, print last result\n// Your output should be: 3",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that creates an ID generator with closure.\n  Return a function that generates sequential IDs starting from 1.\n  Examples:\n    createIdGenerator() => returns a function\n    const generator = createIdGenerator()\n    generator() => 1, generator() => 2, generator() => 3\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction createIdGenerator() {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "createIdGenerator",
             "testCases": [
               {
-                "input": { "calls": 3 },
-                "expectedOutput": "3"
-              },
-              {
-                "input": { "calls": 1 },
-                "expectedOutput": "1"
-              },
-              {
-                "input": { "calls": 5 },
-                "expectedOutput": "5"
-              },
-              {
-                "input": { "calls": 10 },
-                "expectedOutput": "10"
+                "input": {},
+                "expectedOutput": "function"
               }
             ]
           },
           {
-            "description": "// Create a function named once that takes one parameter: fn (a function)\n// Return a new function that can only be called once\n// The first call executes fn and returns its result\n// Subsequent calls return the same result without executing fn again\n// Test by creating a once wrapper for a function that returns a random string\n// Call it twice and verify both calls return the same value\n// For testing: wrap a function that returns \"first\" on all calls\n// Your output should be: first",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that creates a \"once\" wrapper with closure.\n  Return a function that can only be called once and caches the result.\n  Examples:\n    once(someFunction) => returns a wrapped function\n    const onceWrapper = once(() => \"result\")\n    onceWrapper() => \"result\" (first call)\n    onceWrapper() => \"result\" (cached, same result)\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction once(fn) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "once",
             "testCases": [
               {
-                "input": { "functionResult": "first", "calls": 2 },
-                "expectedOutput": "first"
-              },
-              {
-                "input": { "functionResult": "test", "calls": 5 },
-                "expectedOutput": "test"
-              },
-              {
-                "input": { "functionResult": "value", "calls": 1 },
-                "expectedOutput": "value"
+                "input": { "fn": "function" },
+                "expectedOutput": "function"
               }
             ]
           },
           {
-            "description": "// Create a function named createCalculator that takes no parameters\n// Return an object with methods: add, subtract, multiply, divide, and getValue\n// Each operation method takes a number and performs that operation on internal total\n// getValue returns the current total\n// Total starts at 0\n// Test by creating calculator, adding 10, multiplying by 2, then getValue\n// Your output should be: 20",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that creates a calculator with closure.\n  Return an object with add, subtract, multiply, divide, and getValue methods.\n  The total starts at 0 and persists across operations.\n  Examples:\n    createCalculator() => {add: function, subtract: function, multiply: function, divide: function, getValue: function}\n    const calc = createCalculator()\n    calc.getValue() => 0\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction createCalculator() {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "createCalculator",
             "testCases": [
               {
-                "input": { "operations": [{ "method": "add", "value": 10 }, { "method": "multiply", "value": 2 }, { "method": "getValue" }] },
-                "expectedOutput": "20"
-              },
-              {
-                "input": { "operations": [{ "method": "add", "value": 100 }, { "method": "subtract", "value": 50 }, { "method": "getValue" }] },
-                "expectedOutput": "50"
-              },
-              {
-                "input": { "operations": [{ "method": "add", "value": 20 }, { "method": "divide", "value": 4 }, { "method": "getValue" }] },
-                "expectedOutput": "5"
-              },
-              {
-                "input": { "operations": [{ "method": "getValue" }] },
-                "expectedOutput": "0"
+                "input": {},
+                "expectedOutput": "object"
               }
             ]
           }
@@ -6152,8 +6038,9 @@ export const courses = [
         ],
         "tasks": [
           {
-            "description": "// Given an array of numbers: [1, 2, 3, 4, 5]\n// Use forEach to print each number\n// Your output should be:\n// 1\n// 2\n// 3\n// 4\n// 5",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses forEach to process an array of numbers.\n  Use forEach to collect each number into a result string, separated by newlines.\n  Examples:\n    printNumbers([1, 2, 3, 4, 5]) => \"1\\n2\\n3\\n4\\n5\"\n    printNumbers([10, 20, 30]) => \"10\\n20\\n30\"\n    printNumbers([7]) => \"7\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction printNumbers(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "printNumbers",
             "testCases": [
               {
                 "input": { "arr": [1, 2, 3, 4, 5] },
@@ -6170,8 +6057,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of strings: [\"apple\", \"banana\", \"cherry\"]\n// Use forEach to print each string in uppercase\n// Your output should be:\n// APPLE\n// BANANA\n// CHERRY",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses forEach to convert strings to uppercase.\n  Use forEach to process each string and return them joined by newlines.\n  Examples:\n    uppercaseStrings([\"apple\", \"banana\", \"cherry\"]) => \"APPLE\\nBANANA\\nCHERRY\"\n    uppercaseStrings([\"hello\", \"world\"]) => \"HELLO\\nWORLD\"\n    uppercaseStrings([\"test\"]) => \"TEST\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction uppercaseStrings(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "uppercaseStrings",
             "testCases": [
               {
                 "input": { "arr": ["apple", "banana", "cherry"] },
@@ -6188,8 +6076,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of numbers: [2, 4, 6, 8]\n// Use forEach to print each number doubled\n// Your output should be:\n// 4\n// 8\n// 12\n// 16",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses forEach to double numbers.\n  Use forEach to process each number and return doubled values joined by newlines.\n  Examples:\n    doubleNumbers([2, 4, 6, 8]) => \"4\\n8\\n12\\n16\"\n    doubleNumbers([1, 3, 5]) => \"2\\n6\\n10\"\n    doubleNumbers([10]) => \"20\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction doubleNumbers(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "doubleNumbers",
             "testCases": [
               {
                 "input": { "arr": [2, 4, 6, 8] },
@@ -6206,8 +6095,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of strings: [\"cat\", \"dog\", \"bird\"]\n// Use forEach with index parameter to print: \"Index 0: cat\" for each element\n// Your output should be:\n// Index 0: cat\n// Index 1: dog\n// Index 2: bird",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses forEach with index parameter.\n  Use forEach to format each element with its index and return joined by newlines.\n  Examples:\n    formatWithIndex([\"cat\", \"dog\", \"bird\"]) => \"Index 0: cat\\nIndex 1: dog\\nIndex 2: bird\"\n    formatWithIndex([\"apple\", \"banana\"]) => \"Index 0: apple\\nIndex 1: banana\"\n    formatWithIndex([\"test\"]) => \"Index 0: test\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction formatWithIndex(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "formatWithIndex",
             "testCases": [
               {
                 "input": { "arr": ["cat", "dog", "bird"] },
@@ -6224,8 +6114,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of numbers: [5, 10, 15, 20]\n// Use forEach to calculate and print the sum of all elements\n// Hint: Initialize a variable before forEach to accumulate the sum\n// Your output should be: 50",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses forEach to calculate the sum of all elements.\n  Use forEach to accumulate the sum and return the total.\n  Examples:\n    calculateSum([5, 10, 15, 20]) => 50\n    calculateSum([1, 2, 3, 4]) => 10\n    calculateSum([100]) => 100\n    calculateSum([0, 0, 0]) => 0\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction calculateSum(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "calculateSum",
             "testCases": [
               {
                 "input": { "arr": [5, 10, 15, 20] },
@@ -6246,8 +6137,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of numbers: [3, 7, 2, 9, 1]\n// Use forEach to find and print the maximum value\n// Your output should be: 9",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses forEach to find the maximum value.\n  Use forEach to track the maximum value and return it.\n  Examples:\n    findMaximum([3, 7, 2, 9, 1]) => 9\n    findMaximum([5, 15, 10]) => 15\n    findMaximum([42]) => 42\n    findMaximum([1, 1, 1]) => 1\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction findMaximum(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "findMaximum",
             "testCases": [
               {
                 "input": { "arr": [3, 7, 2, 9, 1] },
@@ -6268,8 +6160,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of numbers: [1, 2, 3, 4, 5, 6]\n// Use forEach to print only the even numbers\n// Your output should be:\n// 2\n// 4\n// 6",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses forEach to filter even numbers.\n  Use forEach to collect only even numbers and return them joined by newlines.\n  Examples:\n    filterEvenNumbers([1, 2, 3, 4, 5, 6]) => \"2\\n4\\n6\"\n    filterEvenNumbers([10, 15, 20, 25]) => \"10\\n20\"\n    filterEvenNumbers([1, 3, 5]) => \"\"\n    filterEvenNumbers([8]) => \"8\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction filterEvenNumbers(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "filterEvenNumbers",
             "testCases": [
               {
                 "input": { "arr": [1, 2, 3, 4, 5, 6] },
@@ -6290,8 +6183,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array: [{name: \"Alice\", age: 25}, {name: \"Bob\", age: 30}]\n// Use forEach to print each person's name\n// Your output should be:\n// Alice\n// Bob",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses forEach to extract names from objects.\n  Use forEach to collect each person's name and return them joined by newlines.\n  Examples:\n    extractNames([{name: \"Alice\", age: 25}, {name: \"Bob\", age: 30}]) => \"Alice\\nBob\"\n    extractNames([{name: \"Charlie\", age: 22}]) => \"Charlie\"\n    extractNames([{name: \"Diana\", age: 28}, {name: \"Eve\", age: 35}]) => \"Diana\\nEve\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction extractNames(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "extractNames",
             "testCases": [
               {
                 "input": { "arr": [{ "name": "Alice", "age": 25 }, { "name": "Bob", "age": 30 }] },
@@ -6320,8 +6214,9 @@ export const courses = [
         ],
         "tasks": [
           {
-            "description": "// Given an array of numbers: [1, 2, 3, 4, 5]\n// Use map to create a new array with each number doubled\n// Print the new array as JSON string\n// Your output should be: [2,4,6,8,10]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses map to double numbers.\n  Use map to create a new array with each number doubled.\n  Examples:\n    doubleNumbers([1, 2, 3, 4, 5]) => [2,4,6,8,10]\n    doubleNumbers([10, 20, 30]) => [20,40,60]\n    doubleNumbers([0]) => [0]\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction doubleNumbers(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "doubleNumbers",
             "testCases": [
               {
                 "input": { "arr": [1, 2, 3, 4, 5] },
@@ -6342,8 +6237,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of strings: [\"hello\", \"world\", \"javascript\"]\n// Use map to create a new array with each string in uppercase\n// Print the new array as JSON string\n// Your output should be: [\"HELLO\",\"WORLD\",\"JAVASCRIPT\"]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses map to convert strings to uppercase.\n  Use map to create a new array with each string in uppercase.\n  Examples:\n    uppercaseStrings([\"hello\", \"world\", \"javascript\"]) => [\"HELLO\",\"WORLD\",\"JAVASCRIPT\"]\n    uppercaseStrings([\"apple\", \"banana\"]) => [\"APPLE\",\"BANANA\"]\n    uppercaseStrings([\"test\"]) => [\"TEST\"]\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction uppercaseStrings(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "uppercaseStrings",
             "testCases": [
               {
                 "input": { "arr": ["hello", "world", "javascript"] },
@@ -6360,8 +6256,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of numbers: [1, 2, 3, 4]\n// Use map to create a new array with each number squared\n// Print the new array as JSON string\n// Your output should be: [1,4,9,16]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses map to square numbers.\n  Use map to create a new array with each number squared.\n  Examples:\n    squareNumbers([1, 2, 3, 4]) => [1,4,9,16]\n    squareNumbers([5, 10]) => [25,100]\n    squareNumbers([0]) => [0]\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction squareNumbers(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "squareNumbers",
             "testCases": [
               {
                 "input": { "arr": [1, 2, 3, 4] },
@@ -6382,8 +6279,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of strings: [\"cat\", \"elephant\", \"dog\"]\n// Use map to create a new array containing the length of each string\n// Print the new array as JSON string\n// Your output should be: [3,8,3]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses map to get string lengths.\n  Use map to create a new array containing the length of each string.\n  Examples:\n    getStringLengths([\"cat\", \"elephant\", \"dog\"]) => [3,8,3]\n    getStringLengths([\"hi\", \"hello\", \"hey\"]) => [2,5,3]\n    getStringLengths([\"\"]) => [0]\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction getStringLengths(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "getStringLengths",
             "testCases": [
               {
                 "input": { "arr": ["cat", "elephant", "dog"] },
@@ -6404,8 +6302,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of numbers: [10, 20, 30, 40]\n// Use map to create a new array with each number divided by 10\n// Print the new array as JSON string\n// Your output should be: [1,2,3,4]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses map to divide numbers by 10.\n  Use map to create a new array with each number divided by 10.\n  Examples:\n    divideByTen([10, 20, 30, 40]) => [1,2,3,4]\n    divideByTen([50, 100]) => [5,10]\n    divideByTen([0]) => [0]\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction divideByTen(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "divideByTen",
             "testCases": [
               {
                 "input": { "arr": [10, 20, 30, 40] },
@@ -6426,8 +6325,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array: [{name: \"Alice\", age: 25}, {name: \"Bob\", age: 30}]\n// Use map to create a new array containing only the names\n// Print the new array as JSON string\n// Your output should be: [\"Alice\",\"Bob\"]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses map to extract names from objects.\n  Use map to create a new array containing only the names from person objects.\n  Examples:\n    extractNames([{name: \"Alice\", age: 25}, {name: \"Bob\", age: 30}]) => [\"Alice\",\"Bob\"]\n    extractNames([{name: \"Charlie\", age: 22}]) => [\"Charlie\"]\n    extractNames([{name: \"Diana\", age: 28}, {name: \"Eve\", age: 35}]) => [\"Diana\",\"Eve\"]\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction extractNames(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "extractNames",
             "testCases": [
               {
                 "input": { "arr": [{ "name": "Alice", "age": 25 }, { "name": "Bob", "age": 30 }] },
@@ -6444,8 +6344,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of numbers: [5, 10, 15, 20]\n// Use map to create a new array where each number has 100 added to it\n// Print the new array as JSON string\n// Your output should be: [105,110,115,120]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses map to add 100 to each number.\n  Use map to create a new array where each number has 100 added to it.\n  Examples:\n    addHundred([5, 10, 15, 20]) => [105,110,115,120]\n    addHundred([0, 50]) => [100,150]\n    addHundred([1]) => [101]\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction addHundred(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "addHundred",
             "testCases": [
               {
                 "input": { "arr": [5, 10, 15, 20] },
@@ -6462,8 +6363,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of numbers: [1, 2, 3, 4, 5]\n// Use map to create a new array where each number is converted to a boolean\n// Even numbers should be true, odd numbers should be false\n// Print the new array as JSON string\n// Your output should be: [false,true,false,true,false]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses map to convert numbers to booleans.\n  Use map to create a new array where each number is converted to a boolean.\n  Even numbers should be true, odd numbers should be false.\n  Examples:\n    numbersToEvenBooleans([1, 2, 3, 4, 5]) => [false,true,false,true,false]\n    numbersToEvenBooleans([10, 15, 20]) => [true,false,true]\n    numbersToEvenBooleans([7]) => [false]\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction numbersToEvenBooleans(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "numbersToEvenBooleans",
             "testCases": [
               {
                 "input": { "arr": [1, 2, 3, 4, 5] },
@@ -6484,8 +6386,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array: [{name: \"Alice\", score: 85}, {name: \"Bob\", score: 92}]\n// Use map to create a new array of strings formatted as: \"name: score\"\n// Print the new array as JSON string\n// Your output should be: [\"Alice: 85\",\"Bob: 92\"]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses map to format student data.\n  Use map to create a new array of strings formatted as: \"name: score\".\n  Examples:\n    formatStudents([{name: \"Alice\", score: 85}, {name: \"Bob\", score: 92}]) => [\"Alice: 85\",\"Bob: 92\"]\n    formatStudents([{name: \"Charlie\", score: 78}]) => [\"Charlie: 78\"]\n    formatStudents([{name: \"Diana\", score: 95}, {name: \"Eve\", score: 88}]) => [\"Diana: 95\",\"Eve: 88\"]\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction formatStudents(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "formatStudents",
             "testCases": [
               {
                 "input": { "arr": [{ "name": "Alice", "score": 85 }, { "name": "Bob", "score": 92 }] },
@@ -6502,8 +6405,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of strings: [\"1\", \"2\", \"3\", \"4\"]\n// Use map to create a new array with each string converted to a number\n// Print the new array as JSON string\n// Your output should be: [1,2,3,4]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses map to convert strings to numbers.\n  Use map to create a new array with each string converted to a number.\n  Examples:\n    stringsToNumbers([\"1\", \"2\", \"3\", \"4\"]) => [1,2,3,4]\n    stringsToNumbers([\"10\", \"20\"]) => [10,20]\n    stringsToNumbers([\"5\"]) => [5]\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction stringsToNumbers(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "stringsToNumbers",
             "testCases": [
               {
                 "input": { "arr": ["1", "2", "3", "4"] },
@@ -6536,8 +6440,9 @@ export const courses = [
         ],
         "tasks": [
           {
-            "description": "// Given an array of numbers: [1, 2, 3, 4, 5, 6, 7, 8]\n// Use filter to create a new array containing only even numbers\n// Print the new array as JSON string\n// Your output should be: [2,4,6,8]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses filter to get even numbers.\n  Use filter to create a new array containing only even numbers.\n  Examples:\n    filterEvenNumbers([1, 2, 3, 4, 5, 6, 7, 8]) => [2,4,6,8]\n    filterEvenNumbers([10, 15, 20, 25]) => [10,20]\n    filterEvenNumbers([1, 3, 5]) => []\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction filterEvenNumbers(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "filterEvenNumbers",
             "testCases": [
               {
                 "input": { "arr": [1, 2, 3, 4, 5, 6, 7, 8] },
@@ -6558,8 +6463,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of numbers: [10, 25, 30, 45, 50, 60]\n// Use filter to create a new array containing only numbers greater than 30\n// Print the new array as JSON string\n// Your output should be: [45,50,60]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses filter to get numbers greater than 30.\n  Use filter to create a new array containing only numbers greater than 30.\n  Examples:\n    filterGreaterThan30([10, 25, 30, 45, 50, 60]) => [45,50,60]\n    filterGreaterThan30([5, 10, 15]) => []\n    filterGreaterThan30([100, 200]) => [100,200]\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction filterGreaterThan30(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "filterGreaterThan30",
             "testCases": [
               {
                 "input": { "arr": [10, 25, 30, 45, 50, 60] },
@@ -6580,8 +6486,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of strings: [\"apple\", \"banana\", \"kiwi\", \"grape\", \"watermelon\"]\n// Use filter to create a new array containing only strings with length greater than 5\n// Print the new array as JSON string\n// Your output should be: [\"banana\",\"watermelon\"]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses filter to get long strings.\n  Use filter to create a new array containing only strings with length greater than 5.\n  Examples:\n    filterLongStrings([\"apple\", \"banana\", \"kiwi\", \"grape\", \"watermelon\"]) => [\"banana\",\"watermelon\"]\n    filterLongStrings([\"hi\", \"hello\", \"hey\"]) => []\n    filterLongStrings([\"JavaScript\", \"is\", \"awesome\"]) => [\"JavaScript\",\"awesome\"]\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction filterLongStrings(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "filterLongStrings",
             "testCases": [
               {
                 "input": { "arr": ["apple", "banana", "kiwi", "grape", "watermelon"] },
@@ -6602,8 +6509,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array: [{name: \"Alice\", age: 25}, {name: \"Bob\", age: 17}, {name: \"Charlie\", age: 30}]\n// Use filter to create a new array containing only people aged 18 or older\n// Print the new array as JSON string\n// Your output should be: [{\"name\":\"Alice\",\"age\":25},{\"name\":\"Charlie\",\"age\":30}]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses filter to get adults.\n  Use filter to create a new array containing only people aged 18 or older.\n  Examples:\n    filterAdults([{name: \"Alice\", age: 25}, {name: \"Bob\", age: 17}, {name: \"Charlie\", age: 30}]) => [{\"name\":\"Alice\",\"age\":25},{\"name\":\"Charlie\",\"age\":30}]\n    filterAdults([{name: \"Diana\", age: 15}, {name: \"Eve\", age: 16}]) => []\n    filterAdults([{name: \"Frank\", age: 18}]) => [{\"name\":\"Frank\",\"age\":18}]\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction filterAdults(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "filterAdults",
             "testCases": [
               {
                 "input": { "arr": [{ "name": "Alice", "age": 25 }, { "name": "Bob", "age": 17 }, { "name": "Charlie", "age": 30 }] },
@@ -6624,8 +6532,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of numbers: [5, 10, 15, 20, 25, 30]\n// Use filter to create a new array containing only numbers divisible by 10\n// Print the new array as JSON string\n// Your output should be: [10,20,30]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses filter to get numbers divisible by 10.\n  Use filter to create a new array containing only numbers divisible by 10.\n  Examples:\n    filterDivisibleBy10([5, 10, 15, 20, 25, 30]) => [10,20,30]\n    filterDivisibleBy10([3, 7, 11]) => []\n    filterDivisibleBy10([100, 200, 300]) => [100,200,300]\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction filterDivisibleBy10(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "filterDivisibleBy10",
             "testCases": [
               {
                 "input": { "arr": [5, 10, 15, 20, 25, 30] },
@@ -6646,8 +6555,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of strings: [\"hello\", \"world\", \"javascript\", \"code\"]\n// Use filter to create a new array containing only strings that start with the letter 'c'\n// Print the new array as JSON string\n// Your output should be: [\"code\"]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses filter to get strings starting with 'c'.\n  Use filter to create a new array containing only strings that start with the letter 'c'.\n  Examples:\n    filterStartsWithC([\"hello\", \"world\", \"javascript\", \"code\"]) => [\"code\"]\n    filterStartsWithC([\"cat\", \"dog\", \"cow\"]) => [\"cat\",\"cow\"]\n    filterStartsWithC([\"apple\", \"banana\"]) => []\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction filterStartsWithC(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "filterStartsWithC",
             "testCases": [
               {
                 "input": { "arr": ["hello", "world", "javascript", "code"] },
@@ -6668,8 +6578,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of numbers: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]\n// Use filter to create a new array containing only odd numbers\n// Print the new array as JSON string\n// Your output should be: [1,3,5,7,9]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses filter to get odd numbers.\n  Use filter to create a new array containing only odd numbers.\n  Examples:\n    filterOddNumbers([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) => [1,3,5,7,9]\n    filterOddNumbers([2, 4, 6, 8]) => []\n    filterOddNumbers([11, 13, 15]) => [11,13,15]\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction filterOddNumbers(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "filterOddNumbers",
             "testCases": [
               {
                 "input": { "arr": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] },
@@ -6690,8 +6601,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array: [{name: \"Apple\", price: 1.5}, {name: \"Banana\", price: 0.8}, {name: \"Orange\", price: 2.0}]\n// Use filter to create a new array containing only items with price less than 1.0\n// Print the new array as JSON string\n// Your output should be: [{\"name\":\"Banana\",\"price\":0.8}]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses filter to get cheap items.\n  Use filter to create a new array containing only items with price less than 1.0.\n  Examples:\n    filterCheapItems([{name: \"Apple\", price: 1.5}, {name: \"Banana\", price: 0.8}, {name: \"Orange\", price: 2.0}]) => [{\"name\":\"Banana\",\"price\":0.8}]\n    filterCheapItems([{name: \"Grape\", price: 3.0}, {name: \"Melon\", price: 5.0}]) => []\n    filterCheapItems([{name: \"Cherry\", price: 0.5}]) => [{\"name\":\"Cherry\",\"price\":0.5}]\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction filterCheapItems(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "filterCheapItems",
             "testCases": [
               {
                 "input": { "arr": [{ "name": "Apple", "price": 1.5 }, { "name": "Banana", "price": 0.8 }, { "name": "Orange", "price": 2.0 }] },
@@ -6708,8 +6620,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of numbers: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]\n// Use filter to create a new array containing numbers between 3 and 7 (inclusive)\n// Print the new array as JSON string\n// Your output should be: [3,4,5,6,7]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses filter to get numbers in range.\n  Use filter to create a new array containing numbers between 3 and 7 (inclusive).\n  Examples:\n    filterNumbersInRange([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]) => [3,4,5,6,7]\n    filterNumbersInRange([1, 2, 8, 9]) => []\n    filterNumbersInRange([5, 6]) => [5,6]\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction filterNumbersInRange(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "filterNumbersInRange",
             "testCases": [
               {
                 "input": { "arr": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] },
@@ -6730,8 +6643,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of strings: [\"a\", \"ab\", \"abc\", \"abcd\", \"abcde\"]\n// Use filter to create a new array containing strings with exactly 3 characters\n// Print the new array as JSON string\n// Your output should be: [\"abc\"]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses filter to get strings with exactly 3 characters.\n  Use filter to create a new array containing strings with exactly 3 characters.\n  Examples:\n    filterThreeCharStrings([\"a\", \"ab\", \"abc\", \"abcd\", \"abcde\"]) => [\"abc\"]\n    filterThreeCharStrings([\"cat\", \"dog\", \"bird\"]) => [\"cat\",\"dog\"]\n    filterThreeCharStrings([\"hello\", \"hi\"]) => []\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction filterThreeCharStrings(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "filterThreeCharStrings",
             "testCases": [
               {
                 "input": { "arr": ["a", "ab", "abc", "abcd", "abcde"] },
@@ -6765,8 +6679,9 @@ export const courses = [
         ],
         "tasks": [
           {
-            "description": "// Given an array of numbers: [5, 10, 15, 20, 25]\n// Use find to get the first number greater than 12\n// Print the result\n// Your output should be: 15",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses find to get first number greater than 12.\n  Use find to get the first number greater than 12.\n  Examples:\n    findFirstGreaterThan12([5, 10, 15, 20, 25]) => 15\n    findFirstGreaterThan12([1, 2, 3]) => undefined\n    findFirstGreaterThan12([13, 14, 15]) => 13\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction findFirstGreaterThan12(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "findFirstGreaterThan12",
             "testCases": [
               {
                 "input": { "arr": [5, 10, 15, 20, 25] },
@@ -6787,8 +6702,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of numbers: [5, 10, 15, 20, 25]\n// Use findIndex to get the index of the first number greater than 12\n// Print the result\n// Your output should be: 2",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses findIndex to get index of first number greater than 12.\n  Use findIndex to get the index of the first number greater than 12.\n  Examples:\n    findIndexGreaterThan12([5, 10, 15, 20, 25]) => 2\n    findIndexGreaterThan12([1, 2, 3]) => -1\n    findIndexGreaterThan12([13, 14, 15]) => 0\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction findIndexGreaterThan12(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "findIndexGreaterThan12",
             "testCases": [
               {
                 "input": { "arr": [5, 10, 15, 20, 25] },
@@ -6809,8 +6725,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of strings: [\"apple\", \"banana\", \"cherry\", \"date\"]\n// Use find to get the first string that starts with the letter 'c'\n// Print the result\n// Your output should be: cherry",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses find to get first string starting with 'c'.\n  Use find to get the first string that starts with the letter 'c'.\n  Examples:\n    findFirstStartsWithC([\"apple\", \"banana\", \"cherry\", \"date\"]) => \"cherry\"\n    findFirstStartsWithC([\"cat\", \"dog\", \"cow\"]) => \"cat\"\n    findFirstStartsWithC([\"apple\", \"banana\"]) => undefined\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction findFirstStartsWithC(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "findFirstStartsWithC",
             "testCases": [
               {
                 "input": { "arr": ["apple", "banana", "cherry", "date"] },
@@ -6831,8 +6748,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array: [{id: 1, name: \"Alice\"}, {id: 2, name: \"Bob\"}, {id: 3, name: \"Charlie\"}]\n// Use find to get the object with id equal to 2\n// Print the result as JSON string\n// Your output should be: {\"id\":2,\"name\":\"Bob\"}",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses find to get object with specific id.\n  Use find to get the object with id equal to 2.\n  Examples:\n    findObjectById2([{id: 1, name: \"Alice\"}, {id: 2, name: \"Bob\"}, {id: 3, name: \"Charlie\"}]) => {\"id\":2,\"name\":\"Bob\"}\n    findObjectById2([{id: 1, name: \"Alice\"}]) => undefined\n    findObjectById2([{id: 5, name: \"Diana\"}, {id: 2, name: \"Eve\"}]) => {\"id\":2,\"name\":\"Eve\"}\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction findObjectById2(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "findObjectById2",
             "testCases": [
               {
                 "input": { "arr": [{ "id": 1, "name": "Alice" }, { "id": 2, "name": "Bob" }, { "id": 3, "name": "Charlie" }] },
@@ -6849,8 +6767,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array: [{id: 1, name: \"Alice\"}, {id: 2, name: \"Bob\"}, {id: 3, name: \"Charlie\"}]\n// Use findIndex to get the index of the object with id equal to 3\n// Print the result\n// Your output should be: 2",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses findIndex to get index of object with specific id.\n  Use findIndex to get the index of the object with id equal to 3.\n  Examples:\n    findIndexById3([{id: 1, name: \"Alice\"}, {id: 2, name: \"Bob\"}, {id: 3, name: \"Charlie\"}]) => 2\n    findIndexById3([{id: 5, name: \"Diana\"}]) => -1\n    findIndexById3([{id: 3, name: \"Eve\"}, {id: 4, name: \"Frank\"}]) => 0\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction findIndexById3(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "findIndexById3",
             "testCases": [
               {
                 "input": { "arr": [{ "id": 1, "name": "Alice" }, { "id": 2, "name": "Bob" }, { "id": 3, "name": "Charlie" }] },
@@ -6867,8 +6786,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of numbers: [2, 4, 6, 8, 10]\n// Use find to get the first odd number\n// Print the result\n// Your output should be: undefined",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses find to get first odd number.\n  Use find to get the first odd number.\n  Examples:\n    findFirstOdd([2, 4, 6, 8, 10]) => undefined\n    findFirstOdd([1, 2, 3]) => 1\n    findFirstOdd([2, 3, 4]) => 3\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction findFirstOdd(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "findFirstOdd",
             "testCases": [
               {
                 "input": { "arr": [2, 4, 6, 8, 10] },
@@ -6889,8 +6809,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of numbers: [3, 6, 9, 12, 15]\n// Use findIndex to get the index of the first number divisible by 5\n// Print the result\n// Your output should be: 4",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses findIndex to get index of first number divisible by 5.\n  Use findIndex to get the index of the first number divisible by 5.\n  Examples:\n    findIndexDivisibleBy5([3, 6, 9, 12, 15]) => 4\n    findIndexDivisibleBy5([1, 2, 3]) => -1\n    findIndexDivisibleBy5([5, 10]) => 0\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction findIndexDivisibleBy5(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "findIndexDivisibleBy5",
             "testCases": [
               {
                 "input": { "arr": [3, 6, 9, 12, 15] },
@@ -6911,8 +6832,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of strings: [\"short\", \"medium length\", \"tiny\", \"a bit longer\"]\n// Use find to get the first string with length greater than 10\n// Print the result\n// Your output should be: medium length",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses find to get first long string.\n  Use find to get the first string with length greater than 10.\n  Examples:\n    findFirstLongString([\"short\", \"medium length\", \"tiny\", \"a bit longer\"]) => \"medium length\"\n    findFirstLongString([\"hi\", \"hello\"]) => undefined\n    findFirstLongString([\"JavaScript is awesome\"]) => \"JavaScript is awesome\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction findFirstLongString(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "findFirstLongString",
             "testCases": [
               {
                 "input": { "arr": ["short", "medium length", "tiny", "a bit longer"] },
@@ -6929,8 +6851,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array: [{name: \"Alice\", age: 17}, {name: \"Bob\", age: 25}, {name: \"Charlie\", age: 30}]\n// Use findIndex to get the index of the first person aged 18 or older\n// Print the result\n// Your output should be: 1",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses findIndex to get index of first adult.\n  Use findIndex to get the index of the first person aged 18 or older.\n  Examples:\n    findIndexFirstAdult([{name: \"Alice\", age: 17}, {name: \"Bob\", age: 25}, {name: \"Charlie\", age: 30}]) => 1\n    findIndexFirstAdult([{name: \"Diana\", age: 15}, {name: \"Eve\", age: 16}]) => -1\n    findIndexFirstAdult([{name: \"Frank\", age: 18}]) => 0\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction findIndexFirstAdult(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "findIndexFirstAdult",
             "testCases": [
               {
                 "input": { "arr": [{ "name": "Alice", "age": 17 }, { "name": "Bob", "age": 25 }, { "name": "Charlie", "age": 30 }] },
@@ -6947,8 +6870,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of numbers: [1, 3, 5, 7, 9, 11]\n// Use find to get the first even number\n// If no even number exists, print \"No even number found\"\n// Otherwise print the number\n// Your output should be: No even number found",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses find to get first even number with fallback message.\n  Use find to get the first even number.\n  If no even number exists, return \"No even number found\".\n  Otherwise return the number.\n  Examples:\n    findFirstEvenOrMessage([1, 3, 5, 7, 9, 11]) => \"No even number found\"\n    findFirstEvenOrMessage([1, 2, 3]) => 2\n    findFirstEvenOrMessage([8, 10]) => 8\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction findFirstEvenOrMessage(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "findFirstEvenOrMessage",
             "testCases": [
               {
                 "input": { "arr": [1, 3, 5, 7, 9, 11] },
@@ -6981,8 +6905,9 @@ export const courses = [
         ],
         "tasks": [
           {
-            "description": "// Given an array of numbers: [1, 3, 5, 7, 9]\n// Use some to check if at least one number is even\n// Print the result\n// Your output should be: false",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses some to check if at least one number is even.\n  Use some to check if at least one number is even.\n  Examples:\n    hasAnyEven([1, 3, 5, 7, 9]) => false\n    hasAnyEven([1, 2, 3]) => true\n    hasAnyEven([2, 4, 6]) => true\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction hasAnyEven(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "hasAnyEven",
             "testCases": [
               {
                 "input": { "arr": [1, 3, 5, 7, 9] },
@@ -7003,8 +6928,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of numbers: [2, 4, 6, 8, 10]\n// Use every to check if all numbers are even\n// Print the result\n// Your output should be: true",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses every to check if all numbers are even.\n  Use every to check if all numbers are even.\n  Examples:\n    areAllEven([2, 4, 6, 8, 10]) => true\n    areAllEven([2, 3, 4]) => false\n    areAllEven([1, 3, 5]) => false\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction areAllEven(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "areAllEven",
             "testCases": [
               {
                 "input": { "arr": [2, 4, 6, 8, 10] },
@@ -7025,8 +6951,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of numbers: [10, 20, 30, 40, 50]\n// Use some to check if at least one number is greater than 45\n// Print the result\n// Your output should be: true",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses some to check if at least one number is greater than 45.\n  Use some to check if at least one number is greater than 45.\n  Examples:\n    hasAnyGreaterThan45([10, 20, 30, 40, 50]) => true\n    hasAnyGreaterThan45([10, 20, 30]) => false\n    hasAnyGreaterThan45([100, 200]) => true\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction hasAnyGreaterThan45(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "hasAnyGreaterThan45",
             "testCases": [
               {
                 "input": { "arr": [10, 20, 30, 40, 50] },
@@ -7047,8 +6974,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of numbers: [5, 10, 15, 20, 25]\n// Use every to check if all numbers are greater than 3\n// Print the result\n// Your output should be: true",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses every to check if all numbers are greater than 3.\n  Use every to check if all numbers are greater than 3.\n  Examples:\n    areAllGreaterThan3([5, 10, 15, 20, 25]) => true\n    areAllGreaterThan3([1, 2, 3]) => false\n    areAllGreaterThan3([4, 5, 6]) => true\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction areAllGreaterThan3(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "areAllGreaterThan3",
             "testCases": [
               {
                 "input": { "arr": [5, 10, 15, 20, 25] },
@@ -7069,8 +6997,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of strings: [\"apple\", \"banana\", \"cherry\"]\n// Use some to check if at least one string starts with 'b'\n// Print the result\n// Your output should be: true",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses some to check if at least one string starts with 'b'.\n  Use some to check if at least one string starts with 'b'.\n  Examples:\n    hasAnyStartsWithB([\"apple\", \"banana\", \"cherry\"]) => true\n    hasAnyStartsWithB([\"apple\", \"cherry\"]) => false\n    hasAnyStartsWithB([\"ball\", \"bat\"]) => true\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction hasAnyStartsWithB(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "hasAnyStartsWithB",
             "testCases": [
               {
                 "input": { "arr": ["apple", "banana", "cherry"] },
@@ -7091,8 +7020,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of strings: [\"hello\", \"world\", \"test\"]\n// Use every to check if all strings have length greater than 3\n// Print the result\n// Your output should be: true",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses every to check if all strings have length greater than 3.\n  Use every to check if all strings have length greater than 3.\n  Examples:\n    areAllLongerThan3([\"hello\", \"world\", \"test\"]) => true\n    areAllLongerThan3([\"hi\", \"hello\"]) => false\n    areAllLongerThan3([\"code\", \"java\"]) => true\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction areAllLongerThan3(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "areAllLongerThan3",
             "testCases": [
               {
                 "input": { "arr": ["hello", "world", "test"] },
@@ -7113,8 +7043,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array: [{name: \"Alice\", age: 25}, {name: \"Bob\", age: 17}, {name: \"Charlie\", age: 30}]\n// Use some to check if at least one person is under 18\n// Print the result\n// Your output should be: true",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses some to check if at least one person is under 18.\n  Use some to check if at least one person is under 18.\n  Examples:\n    hasAnyMinor([{name: \"Alice\", age: 25}, {name: \"Bob\", age: 17}, {name: \"Charlie\", age: 30}]) => true\n    hasAnyMinor([{name: \"Diana\", age: 20}, {name: \"Eve\", age: 25}]) => false\n    hasAnyMinor([{name: \"Frank\", age: 16}]) => true\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction hasAnyMinor(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "hasAnyMinor",
             "testCases": [
               {
                 "input": { "arr": [{ "name": "Alice", "age": 25 }, { "name": "Bob", "age": 17 }, { "name": "Charlie", "age": 30 }] },
@@ -7135,8 +7066,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array: [{name: \"Alice\", age: 25}, {name: \"Bob\", age: 30}, {name: \"Charlie\", age: 35}]\n// Use every to check if all people are 18 or older\n// Print the result\n// Your output should be: true",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses every to check if all people are 18 or older.\n  Use every to check if all people are 18 or older.\n  Examples:\n    areAllAdults([{name: \"Alice\", age: 25}, {name: \"Bob\", age: 30}, {name: \"Charlie\", age: 35}]) => true\n    areAllAdults([{name: \"Diana\", age: 17}, {name: \"Eve\", age: 20}]) => false\n    areAllAdults([{name: \"Frank\", age: 18}]) => true\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction areAllAdults(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "areAllAdults",
             "testCases": [
               {
                 "input": { "arr": [{ "name": "Alice", "age": 25 }, { "name": "Bob", "age": 30 }, { "name": "Charlie", "age": 35 }] },
@@ -7157,8 +7089,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of numbers: [5, 10, 15, 20]\n// Use some to check if at least one number is divisible by 3\n// Print the result\n// Your output should be: true",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses some to check if at least one number is divisible by 3.\n  Use some to check if at least one number is divisible by 3.\n  Examples:\n    hasAnyDivisibleBy3([5, 10, 15, 20]) => true\n    hasAnyDivisibleBy3([1, 2, 4]) => false\n    hasAnyDivisibleBy3([9, 12]) => true\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction hasAnyDivisibleBy3(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "hasAnyDivisibleBy3",
             "testCases": [
               {
                 "input": { "arr": [5, 10, 15, 20] },
@@ -7179,8 +7112,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of numbers: [10, 20, 30, 40]\n// Use every to check if all numbers are divisible by 10\n// Print the result\n// Your output should be: true",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses every to check if all numbers are divisible by 10.\n  Use every to check if all numbers are divisible by 10.\n  Examples:\n    areAllDivisibleBy10([10, 20, 30, 40]) => true\n    areAllDivisibleBy10([10, 15, 20]) => false\n    areAllDivisibleBy10([100, 200]) => true\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction areAllDivisibleBy10(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "areAllDivisibleBy10",
             "testCases": [
               {
                 "input": { "arr": [10, 20, 30, 40] },
@@ -7214,8 +7148,9 @@ export const courses = [
         ],
         "tasks": [
           {
-            "description": "// Given an array of numbers: [1, 2, 3, 4, 5]\n// Use reduce to calculate the sum of all numbers\n// Print the result\n// Your output should be: 15",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses reduce to calculate the sum of all numbers.\n  Use reduce to calculate the sum of all numbers.\n  Examples:\n    sumNumbers([1, 2, 3, 4, 5]) => 15\n    sumNumbers([10, 20, 30]) => 60\n    sumNumbers([5]) => 5\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction sumNumbers(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "sumNumbers",
             "testCases": [
               {
                 "input": { "arr": [1, 2, 3, 4, 5] },
@@ -7236,8 +7171,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of numbers: [2, 3, 4]\n// Use reduce to calculate the product of all numbers\n// Print the result\n// Your output should be: 24",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses reduce to calculate the product of all numbers.\n  Use reduce to calculate the product of all numbers.\n  Examples:\n    multiplyNumbers([2, 3, 4]) => 24\n    multiplyNumbers([5, 5]) => 25\n    multiplyNumbers([10]) => 10\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction multiplyNumbers(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "multiplyNumbers",
             "testCases": [
               {
                 "input": { "arr": [2, 3, 4] },
@@ -7258,8 +7194,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of numbers: [10, 5, 20, 15, 30]\n// Use reduce to find the maximum number\n// Print the result\n// Your output should be: 30",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses reduce to find the maximum number.\n  Use reduce to find the maximum number.\n  Examples:\n    findMax([10, 5, 20, 15, 30]) => 30\n    findMax([1, 2, 3]) => 3\n    findMax([100]) => 100\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction findMax(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "findMax",
             "testCases": [
               {
                 "input": { "arr": [10, 5, 20, 15, 30] },
@@ -7280,8 +7217,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of strings: [\"Hello\", \" \", \"World\", \"!\"]\n// Use reduce to concatenate all strings into one\n// Print the result\n// Your output should be: Hello World!",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses reduce to concatenate all strings into one.\n  Use reduce to concatenate all strings into one.\n  Examples:\n    concatenateStrings([\"Hello\", \" \", \"World\", \"!\"]) => \"Hello World!\"\n    concatenateStrings([\"JavaScript\", \" \", \"is\", \" \", \"fun\"]) => \"JavaScript is fun\"\n    concatenateStrings([\"test\"]) => \"test\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction concatenateStrings(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "concatenateStrings",
             "testCases": [
               {
                 "input": { "arr": ["Hello", " ", "World", "!"] },
@@ -7302,8 +7240,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of numbers: [1, 2, 2, 3, 3, 3, 4]\n// Use reduce to count the occurrences of each number\n// Return an object where keys are numbers and values are counts\n// Print the result as JSON string\n// Your output should be: {\"1\":1,\"2\":2,\"3\":3,\"4\":1}",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses reduce to count occurrences of each number.\n  Use reduce to count the occurrences of each number.\n  Return an object where keys are numbers and values are counts.\n  Examples:\n    countOccurrences([1, 2, 2, 3, 3, 3, 4]) => {\"1\":1,\"2\":2,\"3\":3,\"4\":1}\n    countOccurrences([5, 5, 5]) => {\"5\":3}\n    countOccurrences([1]) => {\"1\":1}\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction countOccurrences(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "countOccurrences",
             "testCases": [
               {
                 "input": { "arr": [1, 2, 2, 3, 3, 3, 4] },
@@ -7324,8 +7263,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of arrays: [[1, 2], [3, 4], [5, 6]]\n// Use reduce to flatten into a single array\n// Print the result as JSON string\n// Your output should be: [1,2,3,4,5,6]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses reduce to flatten arrays.\n  Use reduce to flatten into a single array.\n  Examples:\n    flattenArrays([[1, 2], [3, 4], [5, 6]]) => [1,2,3,4,5,6]\n    flattenArrays([[10], [20], [30]]) => [10,20,30]\n    flattenArrays([[1, 2, 3]]) => [1,2,3]\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction flattenArrays(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "flattenArrays",
             "testCases": [
               {
                 "input": { "arr": [[1, 2], [3, 4], [5, 6]] },
@@ -7346,8 +7286,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of numbers: [1, 2, 3, 4, 5]\n// Use reduce to create a new array with only even numbers (like filter)\n// Print the result as JSON string\n// Your output should be: [2,4]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses reduce to filter even numbers.\n  Use reduce to create a new array with only even numbers (like filter).\n  Examples:\n    filterEvenWithReduce([1, 2, 3, 4, 5]) => [2,4]\n    filterEvenWithReduce([10, 15, 20]) => [10,20]\n    filterEvenWithReduce([1, 3, 5]) => []\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction filterEvenWithReduce(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "filterEvenWithReduce",
             "testCases": [
               {
                 "input": { "arr": [1, 2, 3, 4, 5] },
@@ -7368,8 +7309,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of numbers: [1, 2, 3, 4]\n// Use reduce to create a new array with each number doubled (like map)\n// Print the result as JSON string\n// Your output should be: [2,4,6,8]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses reduce to double numbers.\n  Use reduce to create a new array with each number doubled (like map).\n  Examples:\n    doubleWithReduce([1, 2, 3, 4]) => [2,4,6,8]\n    doubleWithReduce([5, 10]) => [10,20]\n    doubleWithReduce([0]) => [0]\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction doubleWithReduce(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "doubleWithReduce",
             "testCases": [
               {
                 "input": { "arr": [1, 2, 3, 4] },
@@ -7390,8 +7332,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array: [{name: \"Alice\", age: 25}, {name: \"Bob\", age: 30}, {name: \"Charlie\", age: 35}]\n// Use reduce to calculate the total age of all people\n// Print the result\n// Your output should be: 90",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses reduce to calculate total age.\n  Use reduce to calculate the total age of all people.\n  Examples:\n    calculateTotalAge([{name: \"Alice\", age: 25}, {name: \"Bob\", age: 30}, {name: \"Charlie\", age: 35}]) => 90\n    calculateTotalAge([{name: \"Diana\", age: 20}]) => 20\n    calculateTotalAge([{name: \"Eve\", age: 22}, {name: \"Frank\", age: 28}]) => 50\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction calculateTotalAge(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "calculateTotalAge",
             "testCases": [
               {
                 "input": { "arr": [{ "name": "Alice", "age": 25 }, { "name": "Bob", "age": 30 }, { "name": "Charlie", "age": 35 }] },
@@ -7408,8 +7351,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of numbers: [5, 10, 15, 20]\n// Use reduce to calculate the average\n// Hint: Sum all numbers, then divide by array length\n// Print the result\n// Your output should be: 12.5",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses reduce to calculate the average.\n  Use reduce to calculate the average.\n  Hint: Sum all numbers, then divide by array length.\n  Examples:\n    calculateAverage([5, 10, 15, 20]) => 12.5\n    calculateAverage([10, 20, 30]) => 20\n    calculateAverage([5]) => 5\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction calculateAverage(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "calculateAverage",
             "testCases": [
               {
                 "input": { "arr": [5, 10, 15, 20] },
@@ -7430,8 +7374,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of strings: [\"apple\", \"banana\", \"cherry\"]\n// Use reduce to create an object where keys are strings and values are their lengths\n// Print the result as JSON string\n// Your output should be: {\"apple\":5,\"banana\":6,\"cherry\":6}",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses reduce to map strings to their lengths.\n  Use reduce to create an object where keys are strings and values are their lengths.\n  Examples:\n    mapStringLengths([\"apple\", \"banana\", \"cherry\"]) => {\"apple\":5,\"banana\":6,\"cherry\":6}\n    mapStringLengths([\"hi\", \"hello\"]) => {\"hi\":2,\"hello\":5}\n    mapStringLengths([\"test\"]) => {\"test\":4}\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction mapStringLengths(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "mapStringLengths",
             "testCases": [
               {
                 "input": { "arr": ["apple", "banana", "cherry"] },
@@ -7448,8 +7393,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array: [{x: 1}, {x: 2}, {x: 3}]\n// Use reduce to extract all x values into a single array\n// Print the result as JSON string\n// Your output should be: [1,2,3]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses reduce to extract x values.\n  Use reduce to extract all x values into a single array.\n  Examples:\n    extractXValues([{x: 1}, {x: 2}, {x: 3}]) => [1,2,3]\n    extractXValues([{x: 10}]) => [10]\n    extractXValues([{x: 5}, {x: 15}, {x: 25}]) => [5,15,25]\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction extractXValues(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "extractXValues",
             "testCases": [
               {
                 "input": { "arr": [{ "x": 1 }, { "x": 2 }, { "x": 3 }] },
@@ -7478,8 +7424,9 @@ export const courses = [
         ],
         "tasks": [
           {
-            "description": "// Given a string: \"  Hello World  \"\n// Use trim() to remove leading and trailing whitespace\n// Print the result\n// Your output should be: Hello World",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses trim() to remove whitespace.\n  Use trim() to remove leading and trailing whitespace.\n  Examples:\n    trimString(\"  Hello World  \") => \"Hello World\"\n    trimString(\"   JavaScript   \") => \"JavaScript\"\n    trimString(\"test\") => \"test\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction trimString(str) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "trimString",
             "testCases": [
               {
                 "input": { "str": "  Hello World  " },
@@ -7500,8 +7447,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"Hello World\"\n// Use replace() to replace \"World\" with \"JavaScript\"\n// Print the result\n// Your output should be: Hello JavaScript",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses replace() to substitute text.\n  Use replace() to replace the search term with the replacement.\n  Examples:\n    replaceText(\"Hello World\", \"World\", \"JavaScript\") => \"Hello JavaScript\"\n    replaceText(\"I love coding\", \"coding\", \"programming\") => \"I love programming\"\n    replaceText(\"test\", \"test\", \"exam\") => \"exam\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction replaceText(str, search, replacement) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "replaceText",
             "testCases": [
               {
                 "input": { "str": "Hello World", "search": "World", "replacement": "JavaScript" },
@@ -7518,8 +7466,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"cat cat cat\"\n// Use replaceAll() to replace all occurrences of \"cat\" with \"dog\"\n// Print the result\n// Your output should be: dog dog dog",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses replaceAll() to replace all occurrences.\n  Use replaceAll() to replace all occurrences of the search term with the replacement.\n  Examples:\n    replaceAllText(\"cat cat cat\", \"cat\", \"dog\") => \"dog dog dog\"\n    replaceAllText(\"hello hello\", \"hello\", \"hi\") => \"hi hi\"\n    replaceAllText(\"test\", \"test\", \"exam\") => \"exam\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction replaceAllText(str, search, replacement) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "replaceAllText",
             "testCases": [
               {
                 "input": { "str": "cat cat cat", "search": "cat", "replacement": "dog" },
@@ -7536,8 +7485,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"ha\"\n// Use repeat() to repeat the string 3 times\n// Print the result\n// Your output should be: hahaha",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses repeat() to repeat a string.\n  Use repeat() to repeat the string the specified number of times.\n  Examples:\n    repeatString(\"ha\", 3) => \"hahaha\"\n    repeatString(\"abc\", 2) => \"abcabc\"\n    repeatString(\"x\", 5) => \"xxxxx\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction repeatString(str, count) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "repeatString",
             "testCases": [
               {
                 "input": { "str": "ha", "count": 3 },
@@ -7558,8 +7508,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"5\"\n// Use padStart() to pad the string to a total length of 4 with \"0\"\n// Print the result\n// Your output should be: 0005",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses padStart() to pad a string at the beginning.\n  Use padStart() to pad the string to the specified length with the given character.\n  Examples:\n    padStringStart(\"5\", 4, \"0\") => \"0005\"\n    padStringStart(\"42\", 5, \"0\") => \"00042\"\n    padStringStart(\"7\", 3, \"0\") => \"007\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction padStringStart(str, length, padChar) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "padStringStart",
             "testCases": [
               {
                 "input": { "str": "5", "length": 4, "padChar": "0" },
@@ -7580,8 +7531,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"5\"\n// Use padEnd() to pad the string to a total length of 4 with \"0\"\n// Print the result\n// Your output should be: 5000",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses padEnd() to pad a string at the end.\n  Use padEnd() to pad the string to the specified length with the given character.\n  Examples:\n    padStringEnd(\"5\", 4, \"0\") => \"5000\"\n    padStringEnd(\"42\", 5, \"0\") => \"42000\"\n    padStringEnd(\"7\", 3, \"0\") => \"700\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction padStringEnd(str, length, padChar) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "padStringEnd",
             "testCases": [
               {
                 "input": { "str": "5", "length": 4, "padChar": "0" },
@@ -7602,8 +7554,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"  JavaScript is awesome  \"\n// Use trim() and replace() to remove whitespace and replace \"awesome\" with \"great\"\n// Print the result\n// Your output should be: JavaScript is great",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses trim() and replace() to clean and modify text.\n  Use trim() to remove whitespace and replace() to replace \"awesome\" with \"great\".\n  Examples:\n    trimAndReplace(\"  JavaScript is awesome  \") => \"JavaScript is great\"\n    trimAndReplace(\"  coding is fun  \") => \"coding is great\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction trimAndReplace(str) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "trimAndReplace",
             "testCases": [
               {
                 "input": { "str": "  JavaScript is awesome  " },
@@ -7616,8 +7569,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"hello-world-javascript\"\n// Use replaceAll() to replace all hyphens (-) with spaces\n// Print the result\n// Your output should be: hello world javascript",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses replaceAll() to replace hyphens with spaces.\n  Use replaceAll() to replace all hyphens (-) with spaces.\n  Examples:\n    replaceHyphens(\"hello-world-javascript\") => \"hello world javascript\"\n    replaceHyphens(\"one-two-three\") => \"one two three\"\n    replaceHyphens(\"test\") => \"test\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction replaceHyphens(str) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "replaceHyphens",
             "testCases": [
               {
                 "input": { "str": "hello-world-javascript" },
@@ -7638,8 +7592,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"*\"\n// Use repeat() to create a string with 10 asterisks\n// Print the result\n// Your output should be: **********",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses repeat() to create repeated patterns.\n  Use repeat() to repeat the string the specified number of times.\n  Examples:\n    createPattern(\"*\", 10) => \"**********\"\n    createPattern(\"-\", 5) => \"-----\"\n    createPattern(\"#\", 7) => \"#######\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction createPattern(str, count) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "createPattern",
             "testCases": [
               {
                 "input": { "str": "*", "count": 10 },
@@ -7656,8 +7611,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"Code\"\n// Use padStart() to center-align by padding with spaces to length 10\n// Then use padEnd() on the result to make total length 14\n// Print the result (should have 3 spaces before and 4 spaces after)\n// Your output should be: \"   Code       \" (3 spaces + Code + 7 spaces, but padEnd adds to existing)",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses padStart() and padEnd() to center-align text.\n  Use padStart() to center-align by padding with spaces to length 10.\n  Then use padEnd() on the result to make total length 14.\n  Examples:\n    centerAlignText(\"Code\") => \"   Code       \"\n    centerAlignText(\"Hi\") => \"    Hi        \"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction centerAlignText(str) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "centerAlignText",
             "testCases": [
               {
                 "input": { "str": "Code" },
@@ -7683,8 +7639,9 @@ export const courses = [
         ],
         "tasks": [
           {
-            "description": "// Given a string: \"apple,banana,cherry\"\n// Use split() to convert it into an array using comma as separator\n// Print the result as JSON string\n// Your output should be: [\"apple\",\"banana\",\"cherry\"]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses split() to convert string to array.\n  Use split() to convert it into an array using comma as separator.\n  Examples:\n    splitByComma(\"apple,banana,cherry\") => [\"apple\",\"banana\",\"cherry\"]\n    splitByComma(\"one,two,three\") => [\"one\",\"two\",\"three\"]\n    splitByComma(\"hello\") => [\"hello\"]\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction splitByComma(str) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "splitByComma",
             "testCases": [
               {
                 "input": { "str": "apple,banana,cherry" },
@@ -7705,8 +7662,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array: [\"apple\", \"banana\", \"cherry\"]\n// Use join() to convert it into a string with comma separator\n// Print the result\n// Your output should be: apple,banana,cherry",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses join() to convert array to string.\n  Use join() to convert it into a string with comma separator.\n  Examples:\n    joinWithComma([\"apple\", \"banana\", \"cherry\"]) => \"apple,banana,cherry\"\n    joinWithComma([\"one\", \"two\", \"three\"]) => \"one,two,three\"\n    joinWithComma([\"test\"]) => \"test\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction joinWithComma(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "joinWithComma",
             "testCases": [
               {
                 "input": { "arr": ["apple", "banana", "cherry"] },
@@ -7727,8 +7685,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"hello\"\n// Use split('') to convert it into an array of characters\n// Print the result as JSON string\n// Your output should be: [\"h\",\"e\",\"l\",\"l\",\"o\"]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses split('') to convert string to character array.\n  Use split('') to convert it into an array of characters.\n  Examples:\n    splitToCharacters(\"hello\") => [\"h\",\"e\",\"l\",\"l\",\"o\"]\n    splitToCharacters(\"abc\") => [\"a\",\"b\",\"c\"]\n    splitToCharacters(\"x\") => [\"x\"]\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction splitToCharacters(str) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "splitToCharacters",
             "testCases": [
               {
                 "input": { "str": "hello" },
@@ -7749,8 +7708,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array: [\"H\", \"e\", \"l\", \"l\", \"o\"]\n// Use join('') to convert it into a string with no separator\n// Print the result\n// Your output should be: Hello",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses join('') to convert character array to string.\n  Use join('') to convert it into a string with no separator.\n  Examples:\n    joinCharacters([\"H\", \"e\", \"l\", \"l\", \"o\"]) => \"Hello\"\n    joinCharacters([\"a\", \"b\", \"c\"]) => \"abc\"\n    joinCharacters([\"t\", \"e\", \"s\", \"t\"]) => \"test\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction joinCharacters(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "joinCharacters",
             "testCases": [
               {
                 "input": { "arr": ["H", "e", "l", "l", "o"] },
@@ -7771,8 +7731,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"one two three four\"\n// Use split() with space separator to create an array\n// Print the result as JSON string\n// Your output should be: [\"one\",\"two\",\"three\",\"four\"]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses split() to convert string to word array.\n  Use split() with space separator to create an array.\n  Examples:\n    splitBySpace(\"one two three four\") => [\"one\",\"two\",\"three\",\"four\"]\n    splitBySpace(\"hello world\") => [\"hello\",\"world\"]\n    splitBySpace(\"test\") => [\"test\"]\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction splitBySpace(str) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "splitBySpace",
             "testCases": [
               {
                 "input": { "str": "one two three four" },
@@ -7793,8 +7754,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array: [\"JavaScript\", \"is\", \"awesome\"]\n// Use join() with space separator to create a sentence\n// Print the result\n// Your output should be: JavaScript is awesome",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses join() to create a sentence.\n  Use join() with space separator to create a sentence.\n  Examples:\n    joinWithSpace([\"JavaScript\", \"is\", \"awesome\"]) => \"JavaScript is awesome\"\n    joinWithSpace([\"Hello\", \"World\"]) => \"Hello World\"\n    joinWithSpace([\"one\"]) => \"one\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction joinWithSpace(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "joinWithSpace",
             "testCases": [
               {
                 "input": { "arr": ["JavaScript", "is", "awesome"] },
@@ -7815,8 +7777,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"racecar\"\n// Split it into characters, reverse the array, then join back\n// Check if the result equals the original string\n// Print true if palindrome, false otherwise\n// Your output should be: true",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that checks if a string is a palindrome.\n  Split it into characters, reverse the array, then join back.\n  Check if the result equals the original string.\n  Examples:\n    isPalindrome(\"racecar\") => true\n    isPalindrome(\"hello\") => false\n    isPalindrome(\"madam\") => true\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction isPalindrome(str) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "isPalindrome",
             "testCases": [
               {
                 "input": { "str": "racecar" },
@@ -7837,8 +7800,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"hello world\"\n// Split into words, convert each word to uppercase, then join with hyphens\n// Print the result\n// Your output should be: HELLO-WORLD",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that transforms words to uppercase and joins with hyphens.\n  Split into words, convert each word to uppercase, then join with hyphens.\n  Examples:\n    wordsToUppercaseHyphenated(\"hello world\") => \"HELLO-WORLD\"\n    wordsToUppercaseHyphenated(\"one two three\") => \"ONE-TWO-THREE\"\n    wordsToUppercaseHyphenated(\"test\") => \"TEST\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction wordsToUppercaseHyphenated(str) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "wordsToUppercaseHyphenated",
             "testCases": [
               {
                 "input": { "str": "hello world" },
@@ -7859,8 +7823,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"apple-banana-cherry\"\n// Split by hyphen, then join with space\n// Print the result\n// Your output should be: apple banana cherry",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that replaces hyphens with spaces using split and join.\n  Split by hyphen, then join with space.\n  Examples:\n    replaceHyphensWithSpaces(\"apple-banana-cherry\") => \"apple banana cherry\"\n    replaceHyphensWithSpaces(\"one-two-three\") => \"one two three\"\n    replaceHyphensWithSpaces(\"test\") => \"test\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction replaceHyphensWithSpaces(str) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "replaceHyphensWithSpaces",
             "testCases": [
               {
                 "input": { "str": "apple-banana-cherry" },
@@ -7881,8 +7846,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"hello\"\n// Split into characters, reverse the array, join back, and convert to uppercase\n// Print the result\n// Your output should be: OLLEH",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that reverses and uppercases a string.\n  Split into characters, reverse the array, join back, and convert to uppercase.\n  Examples:\n    reverseAndUppercase(\"hello\") => \"OLLEH\"\n    reverseAndUppercase(\"world\") => \"DLROW\"\n    reverseAndUppercase(\"test\") => \"TSET\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction reverseAndUppercase(str) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "reverseAndUppercase",
             "testCases": [
               {
                 "input": { "str": "hello" },
@@ -7916,8 +7882,9 @@ export const courses = [
         ],
         "tasks": [
           {
-            "description": "// Given a string: \"JavaScript\"\n// Use slice() to extract characters from index 0 to 4 (exclusive)\n// Print the result\n// Your output should be: Java",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses slice() to extract substring.\n  Use slice() to extract characters from start to end (exclusive).\n  Examples:\n    sliceString(\"JavaScript\", 0, 4) => \"Java\"\n    sliceString(\"Hello World\", 0, 5) => \"Hello\"\n    sliceString(\"testing\", 0, 4) => \"test\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction sliceString(str, start, end) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "sliceString",
             "testCases": [
               {
                 "input": { "str": "JavaScript", "start": 0, "end": 4 },
@@ -7938,8 +7905,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"JavaScript\"\n// Use slice() to extract from index 4 to the end\n// Print the result\n// Your output should be: Script",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses slice() to extract from index to end.\n  Use slice() to extract from start index to the end.\n  Examples:\n    sliceFromIndex(\"JavaScript\", 4) => \"Script\"\n    sliceFromIndex(\"Hello World\", 6) => \"World\"\n    sliceFromIndex(\"testing\", 4) => \"ing\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction sliceFromIndex(str, start) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "sliceFromIndex",
             "testCases": [
               {
                 "input": { "str": "JavaScript", "start": 4 },
@@ -7960,8 +7928,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"JavaScript\"\n// Use slice() with negative index to extract the last 6 characters\n// Print the result\n// Your output should be: Script",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses slice() with negative index.\n  Use slice() with negative index to extract from the end.\n  Examples:\n    sliceWithNegative(\"JavaScript\", -6) => \"Script\"\n    sliceWithNegative(\"Hello World\", -5) => \"World\"\n    sliceWithNegative(\"testing\", -3) => \"ing\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction sliceWithNegative(str, start) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "sliceWithNegative",
             "testCases": [
               {
                 "input": { "str": "JavaScript", "start": -6 },
@@ -7982,8 +7951,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"JavaScript\"\n// Use substring() to extract characters from index 0 to 4\n// Print the result\n// Your output should be: Java",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses substring() to extract substring.\n  Use substring() to extract characters from start to end.\n  Examples:\n    substringExtract(\"JavaScript\", 0, 4) => \"Java\"\n    substringExtract(\"Hello World\", 0, 5) => \"Hello\"\n    substringExtract(\"testing\", 0, 4) => \"test\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction substringExtract(str, start, end) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "substringExtract",
             "testCases": [
               {
                 "input": { "str": "JavaScript", "start": 0, "end": 4 },
@@ -8004,8 +7974,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"JavaScript\"\n// Use substring() to extract from index 4 to the end\n// Print the result\n// Your output should be: Script",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses substring() to extract from index to end.\n  Use substring() to extract from start index to the end.\n  Examples:\n    substringFromIndex(\"JavaScript\", 4) => \"Script\"\n    substringFromIndex(\"Hello World\", 6) => \"World\"\n    substringFromIndex(\"testing\", 4) => \"ing\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction substringFromIndex(str, start) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "substringFromIndex",
             "testCases": [
               {
                 "input": { "str": "JavaScript", "start": 4 },
@@ -8026,8 +7997,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"Hello World\"\n// Use slice() to extract characters from index 6 to 11\n// Print the result\n// Your output should be: World",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses slice() to extract middle substring.\n  Use slice() to extract characters from start to end index.\n  Examples:\n    sliceMiddle(\"Hello World\", 6, 11) => \"World\"\n    sliceMiddle(\"JavaScript\", 4, 10) => \"Script\"\n    sliceMiddle(\"testing\", 2, 5) => \"sti\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction sliceMiddle(str, start, end) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "sliceMiddle",
             "testCases": [
               {
                 "input": { "str": "Hello World", "start": 6, "end": 11 },
@@ -8044,8 +8016,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"Hello World\"\n// Use slice() with negative indices to extract from -5 to -1\n// Print the result\n// Your output should be: Worl",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses slice() with negative indices.\n  Use slice() with negative indices to extract from start to end.\n  Examples:\n    sliceNegativeRange(\"Hello World\", -5, -1) => \"Worl\"\n    sliceNegativeRange(\"JavaScript\", -6, -1) => \"Scrip\"\n    sliceNegativeRange(\"testing\", -4, -1) => \"tin\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction sliceNegativeRange(str, start, end) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "sliceNegativeRange",
             "testCases": [
               {
                 "input": { "str": "Hello World", "start": -5, "end": -1 },
@@ -8062,8 +8035,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"programming\"\n// Use slice() to get the first 7 characters\n// Print the result\n// Your output should be: program",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses slice() to get first N characters.\n  Use slice() to get the first N characters.\n  Examples:\n    sliceFirstN(\"programming\", 7) => \"program\"\n    sliceFirstN(\"JavaScript\", 4) => \"Java\"\n    sliceFirstN(\"testing\", 4) => \"test\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction sliceFirstN(str, length) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "sliceFirstN",
             "testCases": [
               {
                 "input": { "str": "programming", "length": 7 },
@@ -8080,8 +8054,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"Hello World\"\n// Use slice() to extract the middle word \"World\" without hardcoding indices\n// Hint: Use indexOf() to find the space, then slice from that position + 1\n// Print the result\n// Your output should be: World",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses slice() and indexOf() to extract the second word.\n  Use slice() to extract the middle word without hardcoding indices.\n  Hint: Use indexOf() to find the space, then slice from that position + 1.\n  Examples:\n    extractSecondWord(\"Hello World\") => \"World\"\n    extractSecondWord(\"Good Morning\") => \"Morning\"\n    extractSecondWord(\"JavaScript Rocks\") => \"Rocks\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction extractSecondWord(str) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "extractSecondWord",
             "testCases": [
               {
                 "input": { "str": "Hello World" },
@@ -8098,8 +8073,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"abcdefghij\"\n// Use slice() to extract every character except the first and last\n// Print the result\n// Your output should be: bcdefghi",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses slice() to extract middle characters.\n  Use slice() to extract every character except the first and last.\n  Examples:\n    sliceMiddleChars(\"abcdefghij\") => \"bcdefghi\"\n    sliceMiddleChars(\"hello\") => \"ell\"\n    sliceMiddleChars(\"test\") => \"es\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction sliceMiddleChars(str) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "sliceMiddleChars",
             "testCases": [
               {
                 "input": { "str": "abcdefghij" },
@@ -8132,8 +8108,9 @@ export const courses = [
         ],
         "tasks": [
           {
-            "description": "// Given a string: \"Hello World\"\n// Use indexOf() to find the position of \"World\"\n// Print the result\n// Your output should be: 6",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses indexOf() to find position of substring.\n  Use indexOf() to find the position of the search term.\n  Examples:\n    findPosition(\"Hello World\", \"World\") => 6\n    findPosition(\"JavaScript\", \"Script\") => 4\n    findPosition(\"testing\", \"ing\") => 4\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction findPosition(str, search) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "findPosition",
             "testCases": [
               {
                 "input": { "str": "Hello World", "search": "World" },
@@ -8154,8 +8131,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"banana\"\n// Use indexOf() to find the first occurrence of \"a\"\n// Print the result\n// Your output should be: 1",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses indexOf() to find first occurrence.\n  Use indexOf() to find the first occurrence of the search character.\n  Examples:\n    findFirstOccurrence(\"banana\", \"a\") => 1\n    findFirstOccurrence(\"hello\", \"l\") => 2\n    findFirstOccurrence(\"test\", \"t\") => 0\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction findFirstOccurrence(str, search) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "findFirstOccurrence",
             "testCases": [
               {
                 "input": { "str": "banana", "search": "a" },
@@ -8176,8 +8154,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"banana\"\n// Use lastIndexOf() to find the last occurrence of \"a\"\n// Print the result\n// Your output should be: 5",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses lastIndexOf() to find last occurrence.\n  Use lastIndexOf() to find the last occurrence of the search character.\n  Examples:\n    findLastOccurrence(\"banana\", \"a\") => 5\n    findLastOccurrence(\"hello\", \"l\") => 3\n    findLastOccurrence(\"test\", \"t\") => 3\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction findLastOccurrence(str, search) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "findLastOccurrence",
             "testCases": [
               {
                 "input": { "str": "banana", "search": "a" },
@@ -8198,8 +8177,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"JavaScript is awesome\"\n// Use includes() to check if the string contains \"awesome\"\n// Print the result\n// Your output should be: true",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses includes() to check if string contains substring.\n  Use includes() to check if the string contains the search term.\n  Examples:\n    containsSubstring(\"JavaScript is awesome\", \"awesome\") => true\n    containsSubstring(\"Hello World\", \"World\") => true\n    containsSubstring(\"testing\", \"xyz\") => false\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction containsSubstring(str, search) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "containsSubstring",
             "testCases": [
               {
                 "input": { "str": "JavaScript is awesome", "search": "awesome" },
@@ -8220,8 +8200,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"hello.txt\"\n// Use startsWith() to check if the string starts with \"hello\"\n// Print the result\n// Your output should be: true",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses startsWith() to check string prefix.\n  Use startsWith() to check if the string starts with the search term.\n  Examples:\n    startsWithPrefix(\"hello.txt\", \"hello\") => true\n    startsWithPrefix(\"JavaScript\", \"Java\") => true\n    startsWithPrefix(\"testing\", \"test\") => true\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction startsWithPrefix(str, search) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "startsWithPrefix",
             "testCases": [
               {
                 "input": { "str": "hello.txt", "search": "hello" },
@@ -8242,8 +8223,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"hello.txt\"\n// Use endsWith() to check if the string ends with \".txt\"\n// Print the result\n// Your output should be: true",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses endsWith() to check string suffix.\n  Use endsWith() to check if the string ends with the search term.\n  Examples:\n    endsWithSuffix(\"hello.txt\", \".txt\") => true\n    endsWithSuffix(\"document.pdf\", \".pdf\") => true\n    endsWithSuffix(\"image.png\", \".jpg\") => false\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction endsWithSuffix(str, search) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "endsWithSuffix",
             "testCases": [
               {
                 "input": { "str": "hello.txt", "search": ".txt" },
@@ -8264,8 +8246,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"the cat in the hat\"\n// Use indexOf() to find the position of the second \"the\"\n// Hint: Use indexOf() twice with a starting position parameter\n// Print the result\n// Your output should be: 11",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses indexOf() to find the second occurrence.\n  Use indexOf() to find the position of the second occurrence of \"the\".\n  Hint: Use indexOf() twice with a starting position parameter.\n  Examples:\n    findSecondOccurrence(\"the cat in the hat\") => 11\n    findSecondOccurrence(\"hello hello world\") => 6\n    findSecondOccurrence(\"test test test\") => 5\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction findSecondOccurrence(str) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "findSecondOccurrence",
             "testCases": [
               {
                 "input": { "str": "the cat in the hat" },
@@ -8282,8 +8265,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"JavaScript\"\n// Check if the string both starts with \"Java\" and ends with \"Script\"\n// Print true if both conditions are met, false otherwise\n// Your output should be: true",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that checks if string starts with \"Java\" and ends with \"Script\".\n  Check if the string both starts with \"Java\" and ends with \"Script\".\n  Examples:\n    isJavaScript(\"JavaScript\") => true\n    isJavaScript(\"JavaCode\") => false\n    isJavaScript(\"TypeScript\") => false\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction isJavaScript(str) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "isJavaScript",
             "testCases": [
               {
                 "input": { "str": "JavaScript" },
@@ -8304,8 +8288,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"hello world hello\"\n// Count how many times \"hello\" appears in the string\n// Hint: Use indexOf() in a loop or count manually\n// Print the count\n// Your output should be: 2",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that counts occurrences of a substring.\n  Count how many times the search term appears in the string.\n  Hint: Use indexOf() in a loop or count manually.\n  Examples:\n    countOccurrences(\"hello world hello\", \"hello\") => 2\n    countOccurrences(\"test test test\", \"test\") => 3\n    countOccurrences(\"banana\", \"a\") => 3\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction countOccurrences(str, search) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "countOccurrences",
             "testCases": [
               {
                 "input": { "str": "hello world hello", "search": "hello" },
@@ -8326,8 +8311,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"example@email.com\"\n// Check if it contains \"@\" and ends with \".com\"\n// Print true if both conditions are met, false otherwise\n// Your output should be: true",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that validates email format.\n  Check if it contains \"@\" and ends with \".com\".\n  Examples:\n    isValidEmail(\"example@email.com\") => true\n    isValidEmail(\"test@site.org\") => false\n    isValidEmail(\"invalid.com\") => false\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction isValidEmail(str) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "isValidEmail",
             "testCases": [
               {
                 "input": { "str": "example@email.com" },
@@ -8368,8 +8354,9 @@ export const courses = [
         ],
         "tasks": [
           {
-            "description": "// Given a string: \"hello123\"\n// Create a regex pattern to test if the string contains any digit\n// Use the test() method\n// Print the result\n// Your output should be: true",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses regex to test if string contains digits.\n  Create a regex pattern to test if the string contains any digit.\n  Use the test() method.\n  Examples:\n    containsDigit(\"hello123\") => true\n    containsDigit(\"hello\") => false\n    containsDigit(\"test456\") => true\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction containsDigit(str) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "containsDigit",
             "testCases": [
               {
                 "input": { "str": "hello123" },
@@ -8390,8 +8377,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"The year is 2024\"\n// Create a regex to match all digits in the string\n// Use the match() method with global flag\n// Print the result as JSON string\n// Your output should be: [\"2\",\"0\",\"2\",\"4\"]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses regex to match all digits.\n  Create a regex to match all digits in the string.\n  Use the match() method with global flag.\n  Examples:\n    matchAllDigits(\"The year is 2024\") => [\"2\",\"0\",\"2\",\"4\"]\n    matchAllDigits(\"Room 101\") => [\"1\",\"0\",\"1\"]\n    matchAllDigits(\"No digits here\") => null\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction matchAllDigits(str) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "matchAllDigits",
             "testCases": [
               {
                 "input": { "str": "The year is 2024" },
@@ -8412,8 +8400,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"Hello World\"\n// Create a regex to replace all spaces with hyphens\n// Use replace() with regex and global flag\n// Print the result\n// Your output should be: Hello-World",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses regex to replace spaces with hyphens.\n  Create a regex to replace all spaces with hyphens.\n  Use replace() with regex and global flag.\n  Examples:\n    replaceSpacesWithHyphens(\"Hello World\") => \"Hello-World\"\n    replaceSpacesWithHyphens(\"one two three\") => \"one-two-three\"\n    replaceSpacesWithHyphens(\"test\") => \"test\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction replaceSpacesWithHyphens(str) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "replaceSpacesWithHyphens",
             "testCases": [
               {
                 "input": { "str": "Hello World" },
@@ -8434,8 +8423,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"hello HELLO HeLLo\"\n// Create a case-insensitive regex to match all occurrences of \"hello\"\n// Use match() with global and case-insensitive flags\n// Print the result as JSON string\n// Your output should be: [\"hello\",\"HELLO\",\"HeLLo\"]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses case-insensitive regex to match \"hello\".\n  Create a case-insensitive regex to match all occurrences of \"hello\".\n  Use match() with global and case-insensitive flags.\n  Examples:\n    matchHelloCaseInsensitive(\"hello HELLO HeLLo\") => [\"hello\",\"HELLO\",\"HeLLo\"]\n    matchHelloCaseInsensitive(\"Test test TEST\") => [\"Test\",\"test\",\"TEST\"]\n    matchHelloCaseInsensitive(\"world\") => null\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction matchHelloCaseInsensitive(str) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "matchHelloCaseInsensitive",
             "testCases": [
               {
                 "input": { "str": "hello HELLO HeLLo" },
@@ -8452,8 +8442,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"abc123def456\"\n// Create a regex to match sequences of one or more digits\n// Use match() with global flag\n// Print the result as JSON string\n// Your output should be: [\"123\",\"456\"]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses regex to match digit sequences.\n  Create a regex to match sequences of one or more digits.\n  Use match() with global flag.\n  Examples:\n    matchDigitSequences(\"abc123def456\") => [\"123\",\"456\"]\n    matchDigitSequences(\"test99x88\") => [\"99\",\"88\"]\n    matchDigitSequences(\"no digits\") => null\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction matchDigitSequences(str) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "matchDigitSequences",
             "testCases": [
               {
                 "input": { "str": "abc123def456" },
@@ -8474,8 +8465,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"hello\"\n// Create a regex to test if the string starts with \"he\"\n// Use test() method with ^ anchor\n// Print the result\n// Your output should be: true",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses regex with ^ anchor to test string start.\n  Create a regex to test if the string starts with \"he\".\n  Use test() method with ^ anchor.\n  Examples:\n    startsWithHe(\"hello\") => true\n    startsWithHe(\"help\") => true\n    startsWithHe(\"world\") => false\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction startsWithHe(str) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "startsWithHe",
             "testCases": [
               {
                 "input": { "str": "hello" },
@@ -8496,8 +8488,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"testing\"\n// Create a regex to test if the string ends with \"ing\"\n// Use test() method with $ anchor\n// Print the result\n// Your output should be: true",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses regex with $ anchor to test string end.\n  Create a regex to test if the string ends with \"ing\".\n  Use test() method with $ anchor.\n  Examples:\n    endsWithIng(\"testing\") => true\n    endsWithIng(\"running\") => true\n    endsWithIng(\"test\") => false\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction endsWithIng(str) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "endsWithIng",
             "testCases": [
               {
                 "input": { "str": "testing" },
@@ -8518,8 +8511,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"cat bat rat mat\"\n// Create a regex to match all three-letter words ending with \"at\"\n// Use match() with global flag\n// Print the result as JSON string\n// Your output should be: [\"cat\",\"bat\",\"rat\",\"mat\"]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses regex to match words ending with \"at\".\n  Create a regex to match all three-letter words ending with \"at\".\n  Use match() with global flag.\n  Examples:\n    matchWordsEndingWithAt(\"cat bat rat mat\") => [\"cat\",\"bat\",\"rat\",\"mat\"]\n    matchWordsEndingWithAt(\"sat fat\") => [\"sat\",\"fat\"]\n    matchWordsEndingWithAt(\"dog log\") => null\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction matchWordsEndingWithAt(str) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "matchWordsEndingWithAt",
             "testCases": [
               {
                 "input": { "str": "cat bat rat mat" },
@@ -8536,8 +8530,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"hello   world  test\"\n// Create a regex to replace multiple consecutive spaces with a single space\n// Use replace() with regex and global flag\n// Print the result\n// Your output should be: hello world test",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses regex to normalize spaces.\n  Create a regex to replace multiple consecutive spaces with a single space.\n  Use replace() with regex and global flag.\n  Examples:\n    normalizeSpaces(\"hello   world  test\") => \"hello world test\"\n    normalizeSpaces(\"one    two\") => \"one two\"\n    normalizeSpaces(\"a  b  c\") => \"a b c\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction normalizeSpaces(str) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "normalizeSpaces",
             "testCases": [
               {
                 "input": { "str": "hello   world  test" },
@@ -8558,8 +8553,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"abc123XYZ\"\n// Create a regex to test if the string contains only alphanumeric characters\n// Use test() method\n// Print the result\n// Your output should be: true",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses regex to test if string is alphanumeric.\n  Create a regex to test if the string contains only alphanumeric characters.\n  Use test() method.\n  Examples:\n    isAlphanumeric(\"abc123XYZ\") => true\n    isAlphanumeric(\"test123\") => true\n    isAlphanumeric(\"hello world\") => false\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction isAlphanumeric(str) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "isAlphanumeric",
             "testCases": [
               {
                 "input": { "str": "abc123XYZ" },
@@ -8580,8 +8576,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"My phone is 555-1234\"\n// Create a regex to match a phone pattern: 3 digits, hyphen, 4 digits\n// Use match() method\n// Print the first match (the phone number)\n// Your output should be: 555-1234",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses regex to extract phone number.\n  Create a regex to match a phone pattern: 3 digits, hyphen, 4 digits.\n  Use match() method.\n  Examples:\n    extractPhoneNumber(\"My phone is 555-1234\") => \"555-1234\"\n    extractPhoneNumber(\"Call 123-4567 now\") => \"123-4567\"\n    extractPhoneNumber(\"No phone here\") => null\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction extractPhoneNumber(str) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "extractPhoneNumber",
             "testCases": [
               {
                 "input": { "str": "My phone is 555-1234" },
@@ -8602,8 +8599,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"Price: $25.99\"\n// Create a regex to extract the dollar amount (digits and decimal)\n// Use match() to get the price\n// Print just the number part (without $)\n// Your output should be: 25.99",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses regex to extract price.\n  Create a regex to extract the dollar amount (digits and decimal).\n  Use match() to get the price.\n  Examples:\n    extractPrice(\"Price: $25.99\") => \"25.99\"\n    extractPrice(\"Cost: $100.50\") => \"100.50\"\n    extractPrice(\"$9.99 only\") => \"9.99\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction extractPrice(str) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "extractPrice",
             "testCases": [
               {
                 "input": { "str": "Price: $25.99" },
@@ -8624,8 +8622,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"email@example.com\"\n// Create a regex to validate basic email format\n// Pattern: one or more word characters, @, one or more word characters, dot, 2-3 letters\n// Use test() method\n// Print the result\n// Your output should be: true",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses regex to validate email format.\n  Create a regex to validate basic email format.\n  Pattern: one or more word characters, @, one or more word characters, dot, 2-3 letters.\n  Examples:\n    validateEmail(\"email@example.com\") => true\n    validateEmail(\"test@site.org\") => true\n    validateEmail(\"invalid.email.com\") => false\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction validateEmail(str) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "validateEmail",
             "testCases": [
               {
                 "input": { "str": "email@example.com" },
@@ -8646,8 +8645,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"The code is ABC-123-XYZ\"\n// Create a regex to match the pattern: 3 uppercase letters, hyphen, 3 digits, hyphen, 3 uppercase letters\n// Use match() method\n// Print the matched code\n// Your output should be: ABC-123-XYZ",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses regex to extract code pattern.\n  Create a regex to match the pattern: 3 uppercase letters, hyphen, 3 digits, hyphen, 3 uppercase letters.\n  Use match() method.\n  Examples:\n    extractCode(\"The code is ABC-123-XYZ\") => \"ABC-123-XYZ\"\n    extractCode(\"Code: DEF-456-GHI\") => \"DEF-456-GHI\"\n    extractCode(\"No code here\") => null\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction extractCode(str) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "extractCode",
             "testCases": [
               {
                 "input": { "str": "The code is ABC-123-XYZ" },
@@ -8664,8 +8664,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a string: \"Visit https://example.com for more\"\n// Create a regex to extract URLs that start with http:// or https://\n// Use match() method\n// Print the URL\n// Your output should be: https://example.com",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses regex to extract URLs.\n  Create a regex to extract URLs that start with http:// or https://.\n  Use match() method.\n  Examples:\n    extractURL(\"Visit https://example.com for more\") => \"https://example.com\"\n    extractURL(\"Go to http://test.org\") => \"http://test.org\"\n    extractURL(\"No URL here\") => null\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction extractURL(str) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "extractURL",
             "testCases": [
               {
                 "input": { "str": "Visit https://example.com for more" },
@@ -8697,8 +8698,9 @@ export const courses = [
         ],
         "tasks": [
           {
-            "description": "// Given an array of numbers: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]\n// Chain filter and map to: filter even numbers, then double them\n// Print the result as JSON string\n// Your output should be: [4,8,12,16,20]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that chains filter and map.\n  Chain filter and map to: filter even numbers, then double them.\n  Examples:\n    filterAndDouble([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) => [4,8,12,16,20]\n    filterAndDouble([5, 10, 15, 20]) => [20,40]\n    filterAndDouble([1, 3, 5]) => []\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction filterAndDouble(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "filterAndDouble",
             "testCases": [
               {
                 "input": { "arr": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] },
@@ -8719,8 +8721,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of strings: [\"apple\", \"banana\", \"cherry\", \"date\"]\n// Chain filter and map to: filter strings longer than 5 characters, then convert to uppercase\n// Print the result as JSON string\n// Your output should be: [\"BANANA\",\"CHERRY\"]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that chains filter and map for strings.\n  Chain filter and map to: filter strings longer than 5 characters, then convert to uppercase.\n  Examples:\n    filterLongAndUppercase([\"apple\", \"banana\", \"cherry\", \"date\"]) => [\"BANANA\",\"CHERRY\"]\n    filterLongAndUppercase([\"hi\", \"hello\", \"hey\"]) => []\n    filterLongAndUppercase([\"JavaScript\", \"is\", \"awesome\"]) => [\"JAVASCRIPT\",\"AWESOME\"]\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction filterLongAndUppercase(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "filterLongAndUppercase",
             "testCases": [
               {
                 "input": { "arr": ["apple", "banana", "cherry", "date"] },
@@ -8737,8 +8740,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of numbers: [1, 2, 3, 4, 5]\n// Chain map, filter, and reduce to: double each, filter even results, then sum them\n// Print the result\n// Your output should be: 20",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that chains map, filter, and reduce.\n  Chain map, filter, and reduce to: double each, filter even results, then sum them.\n  Examples:\n    mapFilterReduce([1, 2, 3, 4, 5]) => 20\n    mapFilterReduce([2, 4, 6]) => 24\n    mapFilterReduce([1, 3, 5]) => 0\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction mapFilterReduce(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "mapFilterReduce",
             "testCases": [
               {
                 "input": { "arr": [1, 2, 3, 4, 5] },
@@ -8759,8 +8763,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a 2D array: [[1, 2, 3], [4, 5, 6], [7, 8, 9]]\n// Access and print the element at row 1, column 2\n// Your output should be: 6",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that accesses 2D array element.\n  Access the element at the specified row and column.\n  Examples:\n    access2DElement([[1, 2, 3], [4, 5, 6], [7, 8, 9]], 1, 2) => 6\n    access2DElement([[10, 20], [30, 40]], 0, 1) => 20\n    access2DElement([[5, 10, 15], [20, 25, 30]], 1, 0) => 20\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction access2DElement(arr, row, col) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "access2DElement",
             "testCases": [
               {
                 "input": { "arr": [[1, 2, 3], [4, 5, 6], [7, 8, 9]], "row": 1, "col": 2 },
@@ -8777,8 +8782,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a 2D array: [[1, 2], [3, 4], [5, 6]]\n// Calculate the sum of all elements across all rows\n// Print the result\n// Your output should be: 21",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that sums all elements in a 2D array.\n  Calculate the sum of all elements across all rows.\n  Examples:\n    sum2DArray([[1, 2], [3, 4], [5, 6]]) => 21\n    sum2DArray([[10, 20], [30, 40]]) => 100\n    sum2DArray([[5], [10], [15]]) => 30\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction sum2DArray(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "sum2DArray",
             "testCases": [
               {
                 "input": { "arr": [[1, 2], [3, 4], [5, 6]] },
@@ -8799,8 +8805,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a 2D array: [[1, 2, 3], [4, 5, 6], [7, 8, 9]]\n// Extract the first column (all elements at index 0 of each row)\n// Print the result as JSON string\n// Your output should be: [1,4,7]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that extracts the first column from 2D array.\n  Extract the first column (all elements at index 0 of each row).\n  Examples:\n    extractFirstColumn([[1, 2, 3], [4, 5, 6], [7, 8, 9]]) => [1,4,7]\n    extractFirstColumn([[10, 20], [30, 40], [50, 60]]) => [10,30,50]\n    extractFirstColumn([[5, 10, 15], [20, 25, 30]]) => [5,20]\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction extractFirstColumn(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "extractFirstColumn",
             "testCases": [
               {
                 "input": { "arr": [[1, 2, 3], [4, 5, 6], [7, 8, 9]] },
@@ -8817,8 +8824,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a nested array: [[1, 2], [3, [4, 5]], [6, 7]]\n// Use flat() to flatten it one level deep\n// Print the result as JSON string\n// Your output should be: [1,2,3,[4,5],6,7]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses flat() to flatten array one level.\n  Use flat() to flatten it one level deep.\n  Examples:\n    flattenOneLevel([[1, 2], [3, [4, 5]], [6, 7]]) => [1,2,3,[4,5],6,7]\n    flattenOneLevel([[10], [20, [30]], [40]]) => [10,20,[30],40]\n    flattenOneLevel([[1, 2, 3]]) => [1,2,3]\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction flattenOneLevel(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "flattenOneLevel",
             "testCases": [
               {
                 "input": { "arr": [[1, 2], [3, [4, 5]], [6, 7]] },
@@ -8835,8 +8843,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a nested array: [[1, [2, [3, [4]]]]]\n// Use flat() with Infinity to completely flatten it\n// Print the result as JSON string\n// Your output should be: [1,2,3,4]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses flat() with Infinity to completely flatten.\n  Use flat() with Infinity to completely flatten it.\n  Examples:\n    flattenCompletely([[1, [2, [3, [4]]]]]) => [1,2,3,4]\n    flattenCompletely([[5, [10, [15]]]]) => [5,10,15]\n    flattenCompletely([[1], [2], [3]]) => [1,2,3]\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction flattenCompletely(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "flattenCompletely",
             "testCases": [
               {
                 "input": { "arr": [[1, [2, [3, [4]]]]] },
@@ -8853,8 +8862,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array: [\"hello world\", \"test case\"]\n// Use flatMap() to split each string into words and flatten the result\n// Print the result as JSON string\n// Your output should be: [\"hello\",\"world\",\"test\",\"case\"]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses flatMap() to split strings into words.\n  Use flatMap() to split each string into words and flatten the result.\n  Examples:\n    splitAndFlatten([\"hello world\", \"test case\"]) => [\"hello\",\"world\",\"test\",\"case\"]\n    splitAndFlatten([\"one two\", \"three\"]) => [\"one\",\"two\",\"three\"]\n    splitAndFlatten([\"JavaScript\"]) => [\"JavaScript\"]\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction splitAndFlatten(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "splitAndFlatten",
             "testCases": [
               {
                 "input": { "arr": ["hello world", "test case"] },
@@ -8871,8 +8881,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of numbers: [1, 2, 3]\n// Use flatMap() to create an array where each number appears twice\n// Print the result as JSON string\n// Your output should be: [1,1,2,2,3,3]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses flatMap() to duplicate numbers.\n  Use flatMap() to create an array where each number appears twice.\n  Examples:\n    duplicateNumbers([1, 2, 3]) => [1,1,2,2,3,3]\n    duplicateNumbers([5, 10]) => [5,5,10,10]\n    duplicateNumbers([7]) => [7,7]\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction duplicateNumbers(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "duplicateNumbers",
             "testCases": [
               {
                 "input": { "arr": [1, 2, 3] },
@@ -8889,8 +8900,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array: [{name: \"Alice\", scores: [85, 90]}, {name: \"Bob\", scores: [75, 80]}]\n// Use flatMap() to extract all scores into a single array\n// Print the result as JSON string\n// Your output should be: [85,90,75,80]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that uses flatMap() to extract all scores.\n  Use flatMap() to extract all scores into a single array.\n  Examples:\n    extractAllScores([{name: \"Alice\", scores: [85, 90]}, {name: \"Bob\", scores: [75, 80]}]) => [85,90,75,80]\n    extractAllScores([{name: \"Charlie\", scores: [95]}, {name: \"Diana\", scores: [88, 92]}]) => [95,88,92]\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction extractAllScores(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "extractAllScores",
             "testCases": [
               {
                 "input": { "arr": [{ "name": "Alice", "scores": [85, 90] }, { "name": "Bob", "scores": [75, 80] }] },
@@ -8903,8 +8915,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array: [{name: \"Alice\", age: 25}, {name: \"Bob\", age: 17}, {name: \"Charlie\", age: 30}]\n// Chain filter and map to: filter adults (age >= 18), then extract just names\n// Print the result as JSON string\n// Your output should be: [\"Alice\",\"Charlie\"]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that chains filter and map for adult names.\n  Chain filter and map to: filter adults (age >= 18), then extract just names.\n  Examples:\n    getAdultNames([{name: \"Alice\", age: 25}, {name: \"Bob\", age: 17}, {name: \"Charlie\", age: 30}]) => [\"Alice\",\"Charlie\"]\n    getAdultNames([{name: \"Diana\", age: 16}, {name: \"Eve\", age: 20}]) => [\"Eve\"]\n    getAdultNames([{name: \"Frank\", age: 18}]) => [\"Frank\"]\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction getAdultNames(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "getAdultNames",
             "testCases": [
               {
                 "input": { "arr": [{ "name": "Alice", "age": 25 }, { "name": "Bob", "age": 17 }, { "name": "Charlie", "age": 30 }] },
@@ -8921,8 +8934,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given a 2D array: [[1, 2, 3], [4, 5, 6], [7, 8, 9]]\n// Create a new array containing the sum of each row\n// Print the result as JSON string\n// Your output should be: [6,15,24]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that calculates sum of each row.\n  Create a new array containing the sum of each row.\n  Examples:\n    sumEachRow([[1, 2, 3], [4, 5, 6], [7, 8, 9]]) => [6,15,24]\n    sumEachRow([[10, 20], [30, 40]]) => [30,70]\n    sumEachRow([[5], [10], [15]]) => [5,10,15]\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction sumEachRow(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "sumEachRow",
             "testCases": [
               {
                 "input": { "arr": [[1, 2, 3], [4, 5, 6], [7, 8, 9]] },
@@ -8939,8 +8953,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array of numbers: [1, 2, 3, 4, 5, 6]\n// Chain methods to: filter numbers > 2, square them, then calculate the sum\n// Print the result\n// Your output should be: 86",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that chains filter, map, and reduce.\n  Chain methods to: filter numbers > 2, square them, then calculate the sum.\n  Examples:\n    filterSquareSum([1, 2, 3, 4, 5, 6]) => 86\n    filterSquareSum([1, 2, 3]) => 9\n    filterSquareSum([5, 10]) => 125\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction filterSquareSum(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "filterSquareSum",
             "testCases": [
               {
                 "input": { "arr": [1, 2, 3, 4, 5, 6] },
@@ -8957,8 +8972,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Given an array: [\"hi\", \"hello\", \"hey\", \"greetings\"]\n// Chain methods to: filter strings with length > 3, convert to uppercase, then join with comma\n// Print the result\n// Your output should be: HELLO,GREETINGS",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that chains filter, map, and join.\n  Chain methods to: filter strings with length > 3, convert to uppercase, then join with comma.\n  Examples:\n    filterUppercaseJoin([\"hi\", \"hello\", \"hey\", \"greetings\"]) => \"HELLO,GREETINGS\"\n    filterUppercaseJoin([\"test\", \"code\", \"js\"]) => \"TEST,CODE\"\n    filterUppercaseJoin([\"a\", \"b\"]) => \"\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction filterUppercaseJoin(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "filterUppercaseJoin",
             "testCases": [
               {
                 "input": { "arr": ["hi", "hello", "hey", "greetings"] },
@@ -8991,8 +9007,9 @@ export const courses = [
         ],
         "tasks": [
           {
-            "description": "// Create a try-catch block that attempts to access an undefined variable\n// In the catch block, print the error message\n// Attempt to log: undefinedVariable\n// Your output should be: undefinedVariable is not defined",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that demonstrates try-catch with undefined variable.\n  Create a try-catch block that attempts to access an undefined variable.\n  In the catch block, return the error message.\n  Examples:\n    catchUndefinedVariable() => \"undefinedVariable is not defined\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction catchUndefinedVariable() {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "catchUndefinedVariable",
             "testCases": [
               {
                 "input": {},
@@ -9001,8 +9018,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a try-catch block that attempts to parse invalid JSON\n// The invalid JSON string is: \"{broken json}\"\n// In the catch block, print the error name\n// Your output should be: SyntaxError",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that demonstrates try-catch with JSON parsing.\n  Create a try-catch block that attempts to parse invalid JSON.\n  In the catch block, return the error name.\n  Examples:\n    catchJSONError(\"{broken json}\") => \"SyntaxError\"\n    catchJSONError(\"{invalid}\") => \"SyntaxError\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction catchJSONError(jsonString) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "catchJSONError",
             "testCases": [
               {
                 "input": { "jsonString": "{broken json}" },
@@ -9015,8 +9033,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a try-catch-finally block\n// In try: print \"Trying\"\n// In catch: print \"Error occurred\"\n// In finally: print \"Cleanup\"\n// Test with code that throws an error\n// Your output should be:\n// Trying\n// Error occurred\n// Cleanup",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that demonstrates try-catch-finally.\n  Create a try-catch-finally block.\n  In try: collect \"Trying\", in catch: collect \"Error occurred\", in finally: collect \"Cleanup\".\n  Test with code that throws an error and return the collected messages joined by newlines.\n  Examples:\n    tryCatchFinally() => \"Trying\\nError occurred\\nCleanup\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction tryCatchFinally() {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "tryCatchFinally",
             "testCases": [
               {
                 "input": {},
@@ -9025,8 +9044,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a function that throws a custom error if a number is negative\n// Use throw new Error() with message \"Number must be positive\"\n// Wrap the function call in try-catch and print the error message\n// Test with number: -5\n// Your output should be: Number must be positive",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that throws custom error for negative numbers.\n  Create a function that throws a custom error if a number is negative.\n  Use throw new Error() with message \"Number must be positive\".\n  Wrap the function call in try-catch and return the error message.\n  Examples:\n    validatePositiveNumber(-5) => \"Number must be positive\"\n    validatePositiveNumber(-10) => \"Number must be positive\"\n    validatePositiveNumber(-1) => \"Number must be positive\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction validatePositiveNumber(num) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "validatePositiveNumber",
             "testCases": [
               {
                 "input": { "num": -5 },
@@ -9043,8 +9063,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a function named divide that takes two parameters: a and b\n// Throw an error if b is 0 with message \"Cannot divide by zero\"\n// Otherwise return a / b\n// Wrap a call to divide(10, 0) in try-catch and print the error message\n// Your output should be: Cannot divide by zero",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that safely divides numbers.\n  Create a function that takes two parameters: a and b.\n  Throw an error if b is 0 with message \"Cannot divide by zero\".\n  Otherwise return a / b. Wrap the call in try-catch and return error message if caught.\n  Examples:\n    safeDivide(10, 0) => \"Cannot divide by zero\"\n    safeDivide(20, 0) => \"Cannot divide by zero\"\n    safeDivide(5, 0) => \"Cannot divide by zero\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction safeDivide(a, b) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "safeDivide",
             "testCases": [
               {
                 "input": { "a": 10, "b": 0 },
@@ -9061,8 +9082,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a try-catch block that attempts to call a non-existent function\n// In the catch block, print both error name and message separated by: \": \"\n// Attempt to call: nonExistentFunction()\n// Your output should be: ReferenceError: nonExistentFunction is not defined",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that demonstrates try-catch with non-existent function.\n  Create a try-catch block that attempts to call a non-existent function.\n  In the catch block, return both error name and message separated by \": \".\n  Examples:\n    catchFunctionError() => \"ReferenceError: nonExistentFunction is not defined\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction catchFunctionError() {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "catchFunctionError",
             "testCases": [
               {
                 "input": {},
@@ -9071,8 +9093,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a function that validates age\n// Throw an error if age is less than 0 with message \"Age cannot be negative\"\n// Throw an error if age is greater than 150 with message \"Age is unrealistic\"\n// Otherwise return \"Valid age\"\n// Test with age -5 in try-catch and print the error message\n// Your output should be: Age cannot be negative",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that validates age with multiple error conditions.\n  Throw an error if age is less than 0 with message \"Age cannot be negative\".\n  Throw an error if age is greater than 150 with message \"Age is unrealistic\".\n  Otherwise return \"Valid age\". Wrap in try-catch and return error message if caught.\n  Examples:\n    validateAge(-5) => \"Age cannot be negative\"\n    validateAge(200) => \"Age is unrealistic\"\n    validateAge(-1) => \"Age cannot be negative\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction validateAge(age) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "validateAge",
             "testCases": [
               {
                 "input": { "age": -5 },
@@ -9089,8 +9112,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a try-catch-finally block\n// In try: attempt to parse valid JSON {\"name\":\"Alice\"}\n// In try: also print \"Parsing successful\"\n// In finally: print \"Done\"\n// Your output should be:\n// Parsing successful\n// Done",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that demonstrates try-catch-finally with successful parsing.\n  In try: attempt to parse valid JSON and collect \"Parsing successful\".\n  In finally: collect \"Done\".\n  Return the collected messages joined by newlines.\n  Examples:\n    parseJSONSuccessfully(\"{\\\"name\\\":\\\"Alice\\\"}\") => \"Parsing successful\\nDone\"\n    parseJSONSuccessfully(\"{\\\"age\\\":25}\") => \"Parsing successful\\nDone\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction parseJSONSuccessfully(jsonString) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "parseJSONSuccessfully",
             "testCases": [
               {
                 "input": { "jsonString": "{\"name\":\"Alice\"}" },
@@ -9103,8 +9127,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a function that checks if a string is empty\n// Throw an error if the string is empty with message \"String cannot be empty\"\n// Otherwise return the string length\n// Test with empty string \"\" in try-catch and print the error message\n// Your output should be: String cannot be empty",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that validates non-empty strings.\n  Throw an error if the string is empty with message \"String cannot be empty\".\n  Otherwise return the string length. Wrap in try-catch and return error message if caught.\n  Examples:\n    validateNonEmptyString(\"\") => \"String cannot be empty\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction validateNonEmptyString(str) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "validateNonEmptyString",
             "testCases": [
               {
                 "input": { "str": "" },
@@ -9113,8 +9138,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a function that safely accesses array elements\n// Parameters: arr and index\n// Throw an error if index is negative with message \"Index cannot be negative\"\n// Throw an error if index >= array length with message \"Index out of bounds\"\n// Otherwise return the element at that index\n// Test with array [1,2,3] and index 5 in try-catch, print error message\n// Your output should be: Index out of bounds",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that safely accesses array elements.\n  Throw an error if index is negative with message \"Index cannot be negative\".\n  Throw an error if index >= array length with message \"Index out of bounds\".\n  Otherwise return the element. Wrap in try-catch and return error message if caught.\n  Examples:\n    safeArrayAccess([1,2,3], 5) => \"Index out of bounds\"\n    safeArrayAccess([10,20], -1) => \"Index cannot be negative\"\n    safeArrayAccess([5], 10) => \"Index out of bounds\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction safeArrayAccess(arr, index) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "safeArrayAccess",
             "testCases": [
               {
                 "input": { "arr": [1, 2, 3], "index": 5 },
@@ -9131,8 +9157,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create nested try-catch blocks\n// Outer try: contains inner try-catch\n// Inner try: throw error with message \"Inner error\"\n// Inner catch: print the error message and re-throw the error\n// Outer catch: print \"Caught in outer: \" + error message\n// Your output should be:\n// Inner error\n// Caught in outer: Inner error",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that demonstrates nested try-catch blocks.\n  Outer try: contains inner try-catch.\n  Inner try: throw error with message \"Inner error\".\n  Inner catch: collect the error message and re-throw the error.\n  Outer catch: collect \"Caught in outer: \" + error message.\n  Return collected messages joined by newlines.\n  Examples:\n    nestedTryCatch() => \"Inner error\\nCaught in outer: Inner error\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction nestedTryCatch() {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "nestedTryCatch",
             "testCases": [
               {
                 "input": {},
@@ -9141,8 +9168,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a function that validates email format\n// Throw an error if email doesn't contain \"@\" with message \"Invalid email: missing @\"\n// Throw an error if email doesn't contain \".\" with message \"Invalid email: missing domain\"\n// Otherwise return \"Valid email\"\n// Test with \"invalidemail.com\" in try-catch and print error message\n// Your output should be: Invalid email: missing @",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that validates email format.\n  Throw an error if email doesn't contain \"@\" with message \"Invalid email: missing @\".\n  Throw an error if email doesn't contain \".\" with message \"Invalid email: missing domain\".\n  Otherwise return \"Valid email\". Wrap in try-catch and return error message if caught.\n  Examples:\n    validateEmailFormat(\"invalidemail.com\") => \"Invalid email: missing @\"\n    validateEmailFormat(\"test@invalid\") => \"Invalid email: missing domain\"\n    validateEmailFormat(\"notemail\") => \"Invalid email: missing @\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction validateEmailFormat(email) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "validateEmailFormat",
             "testCases": [
               {
                 "input": { "email": "invalidemail.com" },
@@ -9176,8 +9204,9 @@ export const courses = [
         ],
         "tasks": [
           {
-            "description": "// Create a class named Person with a constructor that takes name and age\n// Add a method introduce() that returns \"Hi, I'm {name} and I'm {age} years old\"\n// Create an instance with name \"Alice\" and age 25\n// Call introduce() and print the result\n// Your output should be: Hi, I'm Alice and I'm 25 years old",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that creates a Person class and returns introduction.\n  Create a class named Person with a constructor that takes name and age.\n  Add a method introduce() that returns \"Hi, I'm {name} and I'm {age} years old\".\n  Create an instance and call introduce().\n  Examples:\n    createPersonAndIntroduce(\"Alice\", 25) => \"Hi, I'm Alice and I'm 25 years old\"\n    createPersonAndIntroduce(\"Bob\", 30) => \"Hi, I'm Bob and I'm 30 years old\"\n    createPersonAndIntroduce(\"Charlie\", 22) => \"Hi, I'm Charlie and I'm 22 years old\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction createPersonAndIntroduce(name, age) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "createPersonAndIntroduce",
             "testCases": [
               {
                 "input": { "name": "Alice", "age": 25 },
@@ -9194,8 +9223,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a class named Rectangle with constructor taking width and height\n// Add a method getArea() that returns the area\n// Add a method getPerimeter() that returns the perimeter\n// Create instance with width 5 and height 10, print the area\n// Your output should be: 50",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that creates a Rectangle class and calls specified method.\n  Create a class named Rectangle with constructor taking width and height.\n  Add a method getArea() that returns the area.\n  Add a method getPerimeter() that returns the perimeter.\n  Create instance and call the specified method.\n  Examples:\n    createRectangleAndCalculate(5, 10, \"getArea\") => 50\n    createRectangleAndCalculate(5, 10, \"getPerimeter\") => 30\n    createRectangleAndCalculate(7, 3, \"getArea\") => 21\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction createRectangleAndCalculate(width, height, method) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "createRectangleAndCalculate",
             "testCases": [
               {
                 "input": { "width": 5, "height": 10, "method": "getArea" },
@@ -9212,8 +9242,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a class named Counter with a constructor that initializes count to 0\n// Add method increment() that increases count by 1\n// Add method decrement() that decreases count by 1\n// Add method getValue() that returns current count\n// Create instance, call increment twice, then getValue and print result\n// Your output should be: 2",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that creates a Counter class and performs operations.\n  Create a class named Counter with a constructor that initializes count to 0.\n  Add methods increment(), decrement(), and getValue().\n  Create instance, perform operations, and return final value.\n  Examples:\n    createCounterAndOperate([\"increment\", \"increment\", \"getValue\"]) => 2\n    createCounterAndOperate([\"increment\", \"decrement\", \"getValue\"]) => 0\n    createCounterAndOperate([\"increment\", \"increment\", \"increment\", \"getValue\"]) => 3\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction createCounterAndOperate(operations) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "createCounterAndOperate",
             "testCases": [
               {
                 "input": { "operations": ["increment", "increment", "getValue"] },
@@ -9230,8 +9261,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a class named BankAccount with constructor taking accountHolder and balance\n// Add method deposit(amount) that adds to balance and returns new balance\n// Add method withdraw(amount) that subtracts from balance and returns new balance\n// Add method getBalance() that returns current balance\n// Create account with holder \"Alice\" and balance 100, deposit 50, print balance\n// Your output should be: 150",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that creates a BankAccount class and performs operations.\n  Create a class named BankAccount with constructor taking accountHolder and balance.\n  Add methods deposit(amount), withdraw(amount), and getBalance().\n  Create account, perform operations, and return final balance.\n  Examples:\n    createBankAccountAndOperate(\"Alice\", 100, [{\"type\": \"deposit\", \"amount\": 50}]) => 150\n    createBankAccountAndOperate(\"Bob\", 200, [{\"type\": \"withdraw\", \"amount\": 50}]) => 150\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction createBankAccountAndOperate(accountHolder, initialBalance, operations) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "createBankAccountAndOperate",
             "testCases": [
               {
                 "input": { "accountHolder": "Alice", "initialBalance": 100, "operations": [{ "type": "deposit", "amount": 50 }] },
@@ -9248,8 +9280,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a class named Circle with constructor taking radius\n// Add a static property PI with value 3.14159\n// Add method getArea() that calculates area using Circle.PI\n// Add method getCircumference() that calculates circumference using Circle.PI\n// Create circle with radius 5, print the area\n// Your output should be: 78.53975",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that creates a Circle class with static PI.\n  Create a class named Circle with constructor taking radius.\n  Add a static property PI with value 3.14159.\n  Add methods getArea() and getCircumference() using Circle.PI.\n  Examples:\n    createCircleAndCalculate(5, \"getArea\") => 78.53975\n    createCircleAndCalculate(5, \"getCircumference\") => 31.4159\n    createCircleAndCalculate(10, \"getArea\") => 314.159\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction createCircleAndCalculate(radius, method) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "createCircleAndCalculate",
             "testCases": [
               {
                 "input": { "radius": 5, "method": "getArea" },
@@ -9266,8 +9299,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a class named Temperature with constructor taking celsius\n// Add getter fahrenheit that converts celsius to fahrenheit: (C × 9/5) + 32\n// Add setter fahrenheit that converts fahrenheit to celsius: (F - 32) × 5/9\n// Create instance with 0 celsius, access fahrenheit getter and print\n// Your output should be: 32",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that creates a Temperature class with getter/setter.\n  Create a class named Temperature with constructor taking celsius.\n  Add getter fahrenheit that converts celsius to fahrenheit: (C × 9/5) + 32.\n  Add setter fahrenheit that converts fahrenheit to celsius: (F - 32) × 5/9.\n  Examples:\n    createTemperatureAndConvert(0, \"get\") => 32\n    createTemperatureAndConvert(100, \"get\") => 212\n    createTemperatureAndConvert(32, \"set\") => 0\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction createTemperatureAndConvert(value, operation) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "createTemperatureAndConvert",
             "testCases": [
               {
                 "input": { "celsius": 0, "operation": "get" },
@@ -9284,8 +9318,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a class named Animal with constructor taking name\n// Add method speak() that returns \"{name} makes a sound\"\n// Create a class Dog that extends Animal\n// Override speak() to return \"{name} barks\"\n// Create Dog instance with name \"Rex\", call speak() and print\n// Your output should be: Rex barks",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that creates Animal and Dog classes with inheritance.\n  Create a class named Animal with constructor taking name.\n  Add method speak() that returns \"{name} makes a sound\".\n  Create a class Dog that extends Animal.\n  Override speak() to return \"{name} barks\".\n  Examples:\n    createDogAndSpeak(\"Rex\") => \"Rex barks\"\n    createDogAndSpeak(\"Buddy\") => \"Buddy barks\"\n    createDogAndSpeak(\"Max\") => \"Max barks\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction createDogAndSpeak(name) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "createDogAndSpeak",
             "testCases": [
               {
                 "input": { "name": "Rex" },
@@ -9302,8 +9337,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a class Vehicle with constructor taking brand\n// Add method getInfo() that returns \"Brand: {brand}\"\n// Create class Car that extends Vehicle\n// Car constructor takes brand and model, calls super(brand)\n// Override getInfo() to return \"Brand: {brand}, Model: {model}\"\n// Create Car with brand \"Toyota\" and model \"Camry\", print getInfo()\n// Your output should be: Brand: Toyota, Model: Camry",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that creates Vehicle and Car classes with inheritance.\n  Create a class Vehicle with constructor taking brand.\n  Create class Car that extends Vehicle with constructor taking brand and model.\n  Override getInfo() to return \"Brand: {brand}, Model: {model}\".\n  Examples:\n    createCarAndGetInfo(\"Toyota\", \"Camry\") => \"Brand: Toyota, Model: Camry\"\n    createCarAndGetInfo(\"Honda\", \"Civic\") => \"Brand: Honda, Model: Civic\"\n    createCarAndGetInfo(\"Ford\", \"Mustang\") => \"Brand: Ford, Model: Mustang\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction createCarAndGetInfo(brand, model) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "createCarAndGetInfo",
             "testCases": [
               {
                 "input": { "brand": "Toyota", "model": "Camry" },
@@ -9320,8 +9356,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a class Shape with method getArea() that returns 0\n// Create class Square that extends Shape with constructor taking side\n// Override getArea() to return side * side\n// Create class Circle that extends Shape with constructor taking radius\n// Override getArea() to return 3.14159 * radius * radius\n// Create Square with side 4, print getArea()\n// Your output should be: 16",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that creates Shape hierarchy with polymorphism.\n  Create a class Shape with method getArea() that returns 0.\n  Create class Square that extends Shape with constructor taking side.\n  Create class Circle that extends Shape with constructor taking radius.\n  Override getArea() methods appropriately.\n  Examples:\n    createShapeAndGetArea(\"Square\", 4) => 16\n    createShapeAndGetArea(\"Circle\", 5) => 78.53975\n    createShapeAndGetArea(\"Square\", 10) => 100\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction createShapeAndGetArea(type, value) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "createShapeAndGetArea",
             "testCases": [
               {
                 "input": { "type": "Square", "value": 4 },
@@ -9338,8 +9375,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a class Person with constructor taking name\n// Create a class Student that extends Person\n// Create an instance of Student with name \"Alice\"\n// Use instanceof to check if the instance is a Student\n// Print the result\n// Your output should be: true",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that demonstrates instanceof with inheritance.\n  Create a class Person with constructor taking name.\n  Create a class Student that extends Person.\n  Create an instance of Student and use instanceof to check class type.\n  Examples:\n    checkInstanceType(\"Alice\", \"Student\") => true\n    checkInstanceType(\"Bob\", \"Person\") => true\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction checkInstanceType(name, checkClass) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "checkInstanceType",
             "testCases": [
               {
                 "input": { "name": "Alice", "checkClass": "Student" },
@@ -9352,8 +9390,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a class Calculator with static method add(a, b) that returns a + b\n// Add static method multiply(a, b) that returns a * b\n// Call Calculator.add(5, 3) without creating an instance\n// Print the result\n// Your output should be: 8",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that creates Calculator class with static methods.\n  Create a class Calculator with static method add(a, b) that returns a + b.\n  Add static method multiply(a, b) that returns a * b.\n  Call the specified static method without creating an instance.\n  Examples:\n    useCalculatorStatic(\"add\", 5, 3) => 8\n    useCalculatorStatic(\"multiply\", 5, 3) => 15\n    useCalculatorStatic(\"add\", 10, 20) => 30\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction useCalculatorStatic(method, a, b) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "useCalculatorStatic",
             "testCases": [
               {
                 "input": { "method": "add", "a": 5, "b": 3 },
@@ -9370,8 +9409,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a class User with constructor taking username\n// Add private property _password (initialized to empty string)\n// Add setter password that stores the value\n// Add getter password that returns \"*****\" (always hides actual password)\n// Create user, set password to \"secret123\", access password getter and print\n// Your output should be: *****",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that creates User class with password encapsulation.\n  Create a class User with constructor taking username.\n  Add private property _password and getter/setter for password.\n  Getter always returns \"*****\" to hide actual password.\n  Examples:\n    createUserAndGetPassword(\"alice\", \"secret123\") => \"*****\"\n    createUserAndGetPassword(\"bob\", \"pass456\") => \"*****\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction createUserAndGetPassword(username, password) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "createUserAndGetPassword",
             "testCases": [
               {
                 "input": { "username": "alice", "password": "secret123" },
@@ -9384,8 +9424,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a class Book with constructor taking title, author, pages\n// Add method getSummary() that returns \"{title} by {author}, {pages} pages\"\n// Add static method comparePages(book1, book2) that returns the book with more pages\n// Create two books and use comparePages to find which has more pages\n// Book1: \"1984\", \"Orwell\", 328\n// Book2: \"Dune\", \"Herbert\", 412\n// Print the title of the book with more pages\n// Your output should be: Dune",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that creates Book class with static comparison.\n  Create a class Book with constructor taking title, author, pages.\n  Add static method comparePages(book1, book2) that returns the book with more pages.\n  Create two books and use comparePages to find which has more pages.\n  Examples:\n    compareBooksAndGetTitle({\"title\": \"1984\", \"author\": \"Orwell\", \"pages\": 328}, {\"title\": \"Dune\", \"author\": \"Herbert\", \"pages\": 412}) => \"Dune\"\n    compareBooksAndGetTitle({\"title\": \"Hobbit\", \"author\": \"Tolkien\", \"pages\": 500}, {\"title\": \"Harry Potter\", \"author\": \"Rowling\", \"pages\": 300}) => \"Hobbit\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction compareBooksAndGetTitle(book1, book2) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "compareBooksAndGetTitle",
             "testCases": [
               {
                 "input": {
@@ -9404,8 +9445,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a class Employee with constructor taking name and salary\n// Create class Manager that extends Employee\n// Manager constructor takes name, salary, and department\n// Add method getDetails() in Manager that returns \"{name}, Salary: {salary}, Department: {department}\"\n// Create Manager with name \"Alice\", salary 80000, department \"IT\"\n// Print getDetails()\n// Your output should be: Alice, Salary: 80000, Department: IT",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that creates Employee and Manager classes.\n  Create a class Employee with constructor taking name and salary.\n  Create class Manager that extends Employee.\n  Manager constructor takes name, salary, and department.\n  Add method getDetails() that returns \"{name}, Salary: {salary}, Department: {department}\".\n  Examples:\n    createManagerAndGetDetails(\"Alice\", 80000, \"IT\") => \"Alice, Salary: 80000, Department: IT\"\n    createManagerAndGetDetails(\"Bob\", 90000, \"HR\") => \"Bob, Salary: 90000, Department: HR\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction createManagerAndGetDetails(name, salary, department) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "createManagerAndGetDetails",
             "testCases": [
               {
                 "input": { "name": "Alice", "salary": 80000, "department": "IT" },
@@ -9418,8 +9460,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a class Product with constructor taking name and price\n// Add getter formattedPrice that returns \"$\" + price\n// Add method applyDiscount(percentage) that reduces price by that percentage\n// Create product with name \"Laptop\" and price 1000\n// Apply 10% discount, then print formattedPrice\n// Your output should be: $900",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that creates Product class with discount functionality.\n  Create a class Product with constructor taking name and price.\n  Add getter formattedPrice that returns \"$\" + price.\n  Add method applyDiscount(percentage) that reduces price by that percentage.\n  Examples:\n    createProductApplyDiscountAndFormat(\"Laptop\", 1000, 10) => \"$900\"\n    createProductApplyDiscountAndFormat(\"Phone\", 500, 20) => \"$400\"\n    createProductApplyDiscountAndFormat(\"Tablet\", 300, 15) => \"$255\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction createProductApplyDiscountAndFormat(name, price, discount) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "createProductApplyDiscountAndFormat",
             "testCases": [
               {
                 "input": { "name": "Laptop", "price": 1000, "discount": 10 },
@@ -9452,8 +9495,9 @@ export const courses = [
         ],
         "tasks": [
           {
-            "description": "// Create a module that exports a function named greet\n// greet should take a name parameter and return \"Hello, {name}!\"\n// Export using named export syntax\n// In another file, import and call greet(\"Alice\")\n// Print the result\n// Your output should be: Hello, Alice!",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates module export and import.\n  Create a function named greet that takes a name parameter and returns \"Hello, {name}!\".\n  Simulate the module export/import pattern.\n  Examples:\n    simulateModuleGreet(\"Alice\") => \"Hello, Alice!\"\n    simulateModuleGreet(\"Bob\") => \"Hello, Bob!\"\n    simulateModuleGreet(\"Charlie\") => \"Hello, Charlie!\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateModuleGreet(name) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateModuleGreet",
             "testCases": [
               {
                 "input": { "name": "Alice" },
@@ -9470,8 +9514,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a module that exports two functions: add and subtract\n// add(a, b) returns a + b\n// subtract(a, b) returns a - b\n// Use named exports for both\n// Import both functions and call add(10, 5)\n// Print the result\n// Your output should be: 15",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates multiple named exports.\n  Create functions add(a, b) and subtract(a, b).\n  Simulate the named export/import pattern and call the specified function.\n  Examples:\n    simulateNamedExports(\"add\", 10, 5) => 15\n    simulateNamedExports(\"subtract\", 10, 5) => 5\n    simulateNamedExports(\"add\", 20, 30) => 50\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateNamedExports(functionName, a, b) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateNamedExports",
             "testCases": [
               {
                 "input": { "function": "add", "a": 10, "b": 5 },
@@ -9488,8 +9533,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a module with a default export of a function multiply(a, b)\n// multiply should return a * b\n// Import the default export and call it with arguments 6 and 7\n// Print the result\n// Your output should be: 42",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates default export.\n  Create a function multiply(a, b) that returns a * b.\n  Simulate the default export/import pattern.\n  Examples:\n    simulateDefaultExport(6, 7) => 42\n    simulateDefaultExport(8, 9) => 72\n    simulateDefaultExport(5, 10) => 50\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateDefaultExport(a, b) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateDefaultExport",
             "testCases": [
               {
                 "input": { "a": 6, "b": 7 },
@@ -9506,8 +9552,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a module that exports constant PI = 3.14159\n// Export it as a named export\n// Import PI using an alias: import { PI as pi }\n// Calculate the area of circle with radius 5 using the imported pi\n// Print the result\n// Your output should be: 78.53975",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates aliased imports.\n  Create a constant PI = 3.14159 and simulate import with alias.\n  Calculate the area of circle with given radius using the aliased pi.\n  Examples:\n    simulateAliasedImport(5) => 78.53975\n    simulateAliasedImport(10) => 314.159\n    simulateAliasedImport(2) => 12.56636\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateAliasedImport(radius) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateAliasedImport",
             "testCases": [
               {
                 "input": { "radius": 5 },
@@ -9524,8 +9571,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a module that exports multiple math constants:\n// export const E = 2.71828\n// export const PHI = 1.61803\n// export const SQRT2 = 1.41421\n// Import all exports as a namespace: import * as constants\n// Access constants.E and print it\n// Your output should be: 2.71828",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates namespace imports.\n  Create math constants E = 2.71828, PHI = 1.61803, SQRT2 = 1.41421.\n  Simulate namespace import and access the specified constant.\n  Examples:\n    simulateNamespaceImport(\"E\") => 2.71828\n    simulateNamespaceImport(\"PHI\") => 1.61803\n    simulateNamespaceImport(\"SQRT2\") => 1.41421\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateNamespaceImport(constant) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateNamespaceImport",
             "testCases": [
               {
                 "input": { "constant": "E" },
@@ -9542,8 +9590,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a module that exports a class Calculator\n// Calculator has methods add(a, b) and multiply(a, b)\n// Export Calculator as default export\n// Import the class, create an instance, and call add(8, 2)\n// Print the result\n// Your output should be: 10",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates class default export.\n  Create a class Calculator with methods add(a, b) and multiply(a, b).\n  Simulate default export/import and call the specified method.\n  Examples:\n    simulateClassDefaultExport(\"add\", 8, 2) => 10\n    simulateClassDefaultExport(\"multiply\", 8, 2) => 16\n    simulateClassDefaultExport(\"add\", 15, 5) => 20\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateClassDefaultExport(method, a, b) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateClassDefaultExport",
             "testCases": [
               {
                 "input": { "method": "add", "a": 8, "b": 2 },
@@ -9560,8 +9609,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a module with both named and default exports\n// Default export: function divide(a, b)\n// Named export: function modulo(a, b)\n// Import both and call divide(20, 4)\n// Print the result\n// Your output should be: 5",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates mixed exports.\n  Create functions divide(a, b) as default and modulo(a, b) as named export.\n  Simulate mixed import and call the specified function.\n  Examples:\n    simulateMixedExports(\"divide\", 20, 4) => 5\n    simulateMixedExports(\"modulo\", 20, 6) => 2\n    simulateMixedExports(\"divide\", 100, 10) => 10\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateMixedExports(functionName, a, b) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateMixedExports",
             "testCases": [
               {
                 "input": { "function": "divide", "a": 20, "b": 4 },
@@ -9578,8 +9628,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a module that has a private variable count = 0\n// Export a function increment() that increases count and returns it\n// Export a function getCount() that returns current count\n// Import both functions, call increment() twice, then getCount()\n// Print the result\n// Your output should be: 2",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates module with private state.\n  Create a module that has a private variable count = 0.\n  Export functions increment() and getCount().\n  Simulate the operations and return the final result.\n  Examples:\n    simulateModuleWithState([\"increment\", \"increment\", \"getCount\"]) => 2\n    simulateModuleWithState([\"increment\", \"getCount\"]) => 1\n    simulateModuleWithState([\"increment\", \"increment\", \"increment\", \"getCount\"]) => 3\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateModuleWithState(operations) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateModuleWithState",
             "testCases": [
               {
                 "input": { "operations": ["increment", "increment", "getCount"] },
@@ -9596,8 +9647,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a module utils.js that exports:\n// export function square(n) - returns n * n\n// export function cube(n) - returns n * n * n\n// Import only square using named import\n// Call square(5) and print result\n// Your output should be: 25",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates selective named imports.\n  Create functions square(n) and cube(n).\n  Simulate selective import and call the specified function.\n  Examples:\n    simulateSelectiveImport(\"square\", 5) => 25\n    simulateSelectiveImport(\"cube\", 3) => 27\n    simulateSelectiveImport(\"square\", 10) => 100\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateSelectiveImport(functionName, n) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateSelectiveImport",
             "testCases": [
               {
                 "input": { "function": "square", "n": 5 },
@@ -9614,8 +9666,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a module that exports an object as default:\n// export default { name: \"John\", age: 30, city: \"NYC\" }\n// Import the default object and access the name property\n// Print the name\n// Your output should be: John",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates default object export.\n  Create an object { name: \"John\", age: 30, city: \"NYC\" } as default export.\n  Simulate import and access the specified property.\n  Examples:\n    simulateDefaultObjectExport(\"name\") => \"John\"\n    simulateDefaultObjectExport(\"age\") => 30\n    simulateDefaultObjectExport(\"city\") => \"NYC\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateDefaultObjectExport(property) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateDefaultObjectExport",
             "testCases": [
               {
                 "input": { "property": "name" },
@@ -9649,8 +9702,9 @@ export const courses = [
         ],
         "tasks": [
           {
-            "description": "// Use setTimeout to print \"Hello\" after 1 second (1000ms)\n// Note: For testing purposes, the delay will be simulated\n// Your output should be: Hello",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates setTimeout behavior.\n  Return the message that would be printed after the delay.\n  Examples:\n    simulateTimeout(\"Hello\", 1000) => \"Hello\"\n    simulateTimeout(\"World\", 1000) => \"World\"\n    simulateTimeout(\"Test\", 500) => \"Test\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateTimeout(message, delay) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateTimeout",
             "testCases": [
               {
                 "input": { "message": "Hello", "delay": 1000 },
@@ -9667,8 +9721,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Print \"Start\" immediately\n// Use setTimeout to print \"End\" after 0ms\n// Observe execution order due to event loop\n// Your output should be:\n// Start\n// End",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates event loop execution order.\n  Return the execution order as a string with newlines.\n  Examples:\n    simulateEventLoop() => \"Start\\nEnd\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateEventLoop() {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateEventLoop",
             "testCases": [
               {
                 "input": {},
@@ -9677,8 +9732,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a function countdown that takes a number n\n// Use setTimeout to print each number from n down to 1\n// Each number should be printed 1 second apart\n// Call countdown(3)\n// Your output should be:\n// 3\n// 2\n// 1",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates countdown with setTimeout.\n  Return the countdown sequence as a string with newlines.\n  Examples:\n    simulateCountdown(3) => \"3\\n2\\n1\"\n    simulateCountdown(2) => \"2\\n1\"\n    simulateCountdown(5) => \"5\\n4\\n3\\n2\\n1\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateCountdown(n) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateCountdown",
             "testCases": [
               {
                 "input": { "n": 3 },
@@ -9695,8 +9751,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Use setInterval to print \"Tick\" every 1 second\n// After 3 ticks, use clearInterval to stop it\n// Your output should be:\n// Tick\n// Tick\n// Tick",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates setInterval behavior.\n  Return the repeated message as a string with newlines.\n  Examples:\n    simulateInterval(\"Tick\", 3) => \"Tick\\nTick\\nTick\"\n    simulateInterval(\"Test\", 2) => \"Test\\nTest\"\n    simulateInterval(\"Count\", 4) => \"Count\\nCount\\nCount\\nCount\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateInterval(message, times) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateInterval",
             "testCases": [
               {
                 "input": { "message": "Tick", "times": 3 },
@@ -9713,8 +9770,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a function delayedGreeting that takes name and callback\n// Use setTimeout to call the callback with \"Hello, {name}\" after 1 second\n// Call delayedGreeting(\"Alice\", (msg) => console.log(msg))\n// Your output should be: Hello, Alice",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates delayed greeting with callback.\n  Return the greeting message that would be passed to the callback.\n  Examples:\n    simulateDelayedGreeting(\"Alice\") => \"Hello, Alice\"\n    simulateDelayedGreeting(\"Bob\") => \"Hello, Bob\"\n    simulateDelayedGreeting(\"Charlie\") => \"Hello, Charlie\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateDelayedGreeting(name) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateDelayedGreeting",
             "testCases": [
               {
                 "input": { "name": "Alice" },
@@ -9731,8 +9789,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a function processArray that takes an array and callback\n// Use setTimeout to process each element after a delay\n// Call the callback with each element\n// Test with array [1, 2, 3] and callback that prints each number\n// Your output should be:\n// 1\n// 2\n// 3",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates array processing with callbacks.\n  Return the processed array elements as a string with newlines.\n  Examples:\n    simulateProcessArray([1, 2, 3]) => \"1\\n2\\n3\"\n    simulateProcessArray([5, 10]) => \"5\\n10\"\n    simulateProcessArray([7]) => \"7\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateProcessArray(arr) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateProcessArray",
             "testCases": [
               {
                 "input": { "arr": [1, 2, 3] },
@@ -9749,8 +9808,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create nested callbacks to simulate callback hell\n// First setTimeout prints \"Step 1\" after 1s\n// Inside its callback, another setTimeout prints \"Step 2\" after 1s\n// Inside that callback, print \"Step 3\"\n// Your output should be:\n// Step 1\n// Step 2\n// Step 3",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates callback hell pattern.\n  Return the nested callback execution sequence as a string with newlines.\n  Examples:\n    simulateCallbackHell() => \"Step 1\\nStep 2\\nStep 3\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateCallbackHell() {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateCallbackHell",
             "testCases": [
               {
                 "input": {},
@@ -9759,8 +9819,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a function executeAfterDelay that takes a callback and delay\n// Use setTimeout to execute the callback after the delay\n// The function should return the timer ID\n// Call it with a callback that prints \"Executed\" and delay 1000\n// Then immediately clear the timeout using clearTimeout\n// If cleared successfully, print \"Cancelled\"\n// Your output should be: Cancelled",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates timeout cancellation.\n  Return \"Cancelled\" if shouldCancel is true, otherwise \"Executed\".\n  Examples:\n    simulateTimeoutCancellation(true) => \"Cancelled\"\n    simulateTimeoutCancellation(false) => \"Executed\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateTimeoutCancellation(shouldCancel) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateTimeoutCancellation",
             "testCases": [
               {
                 "input": { "shouldCancel": true },
@@ -9773,8 +9834,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Demonstrate execution order:\n// Print \"1\" immediately\n// Use setTimeout to print \"3\" after 0ms\n// Print \"2\" immediately after setting timeout\n// Your output should be:\n// 1\n// 2\n// 3",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that demonstrates JavaScript execution order.\n  Return the execution sequence as a string with newlines.\n  Examples:\n    demonstrateExecutionOrder() => \"1\\n2\\n3\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction demonstrateExecutionOrder() {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "demonstrateExecutionOrder",
             "testCases": [
               {
                 "input": {},
@@ -9783,8 +9845,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a function repeat that takes message, times, and interval\n// Use setInterval to print message every interval milliseconds\n// After printing 'times' number of times, clear the interval\n// Call repeat(\"Hello\", 3, 1000)\n// Your output should be:\n// Hello\n// Hello\n// Hello",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates repeated execution with interval.\n  Return the repeated message as a string with newlines.\n  Examples:\n    simulateRepeat(\"Hello\", 3, 1000) => \"Hello\\nHello\\nHello\"\n    simulateRepeat(\"Test\", 2, 500) => \"Test\\nTest\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateRepeat(message, times, interval) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateRepeat",
             "testCases": [
               {
                 "input": { "message": "Hello", "times": 3, "interval": 1000 },
@@ -9797,8 +9860,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a function fetchData that takes a callback\n// Simulate async data fetching with setTimeout (1 second)\n// After timeout, call callback with data: {id: 1, name: \"User\"}\n// In the callback, print the name property\n// Your output should be: User",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates async data fetching.\n  Return the name property from the provided data object.\n  Examples:\n    simulateFetchData({id: 1, name: \"User\"}) => \"User\"\n    simulateFetchData({id: 2, name: \"Alice\"}) => \"Alice\"\n    simulateFetchData({id: 3, name: \"Bob\"}) => \"Bob\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateFetchData(data) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateFetchData",
             "testCases": [
               {
                 "input": { "data": { "id": 1, "name": "User" } },
@@ -9815,8 +9879,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a stopwatch that counts seconds\n// Use setInterval to increment and print count every 1 second\n// After reaching 5 seconds, clear the interval and print \"Stopped\"\n// Your output should be:\n// 1\n// 2\n// 3\n// 4\n// 5\n// Stopped",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates a stopwatch.\n  Return the counting sequence with \"Stopped\" at the end as a string with newlines.\n  Examples:\n    simulateStopwatch(5) => \"1\\n2\\n3\\n4\\n5\\nStopped\"\n    simulateStopwatch(3) => \"1\\n2\\n3\\nStopped\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateStopwatch(maxSeconds) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateStopwatch",
             "testCases": [
               {
                 "input": { "maxSeconds": 5 },
@@ -9845,8 +9910,9 @@ export const courses = [
         ],
         "tasks": [
           {
-            "description": "// Create a Promise that resolves with \"Success\" after 1 second\n// Use .then() to print the resolved value\n// Your output should be: Success",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates Promise resolution.\n  Return the resolved value that would be printed.\n  Examples:\n    simulatePromiseResolve(\"Success\") => \"Success\"\n    simulatePromiseResolve(\"Done\") => \"Done\"\n    simulatePromiseResolve(\"Complete\") => \"Complete\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulatePromiseResolve(value) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulatePromiseResolve",
             "testCases": [
               {
                 "input": { "value": "Success" },
@@ -9863,8 +9929,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a Promise that rejects with \"Error occurred\" after 1 second\n// Use .catch() to handle the rejection and print the error message\n// Your output should be: Error occurred",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates Promise rejection handling.\n  Return the error message that would be caught and printed.\n  Examples:\n    simulatePromiseReject(\"Error occurred\") => \"Error occurred\"\n    simulatePromiseReject(\"Failed\") => \"Failed\"\n    simulatePromiseReject(\"Not found\") => \"Not found\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulatePromiseReject(error) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulatePromiseReject",
             "testCases": [
               {
                 "input": { "error": "Error occurred" },
@@ -9881,8 +9948,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a Promise that resolves with number 5\n// Use .then() to double the value and return it\n// Chain another .then() to print the doubled value\n// Your output should be: 10",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates Promise chaining with value transformation.\n  Return the doubled value that would result from the chain.\n  Examples:\n    simulatePromiseChain(5) => 10\n    simulatePromiseChain(10) => 20\n    simulatePromiseChain(7) => 14\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulatePromiseChain(value) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulatePromiseChain",
             "testCases": [
               {
                 "input": { "value": 5 },
@@ -9899,8 +9967,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a Promise that resolves with \"Data\"\n// Add .finally() that prints \"Cleanup\" regardless of outcome\n// Add .then() that prints the resolved value\n// Your output should be:\n// Data\n// Cleanup",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates Promise with finally block.\n  Return the output sequence as a string with newlines.\n  Examples:\n    simulatePromiseFinally(\"Data\") => \"Data\\nCleanup\"\n    simulatePromiseFinally(\"Result\") => \"Result\\nCleanup\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulatePromiseFinally(value) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulatePromiseFinally",
             "testCases": [
               {
                 "input": { "value": "Data" },
@@ -9913,8 +9982,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a function that returns a Promise\n// The Promise should resolve with \"Hello\" if input is true\n// Otherwise reject with \"Error\"\n// Call the function with true, handle with .then() and print result\n// Your output should be: Hello",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates conditional Promise behavior.\n  Return \"Hello\" if condition is true, otherwise \"Error\".\n  Examples:\n    simulateConditionalPromise(true) => \"Hello\"\n    simulateConditionalPromise(false) => \"Error\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateConditionalPromise(condition) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateConditionalPromise",
             "testCases": [
               {
                 "input": { "condition": true },
@@ -9927,8 +9997,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create three Promises that resolve with 1, 2, and 3 respectively\n// Use Promise.all() to wait for all promises\n// Print the array of results\n// Your output should be: [1,2,3]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates Promise.all() behavior.\n  Return the array of values as a JSON string.\n  Examples:\n    simulatePromiseAll([1, 2, 3]) => \"[1,2,3]\"\n    simulatePromiseAll([5, 10, 15]) => \"[5,10,15]\"\n    simulatePromiseAll([7, 14]) => \"[7,14]\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulatePromiseAll(values) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulatePromiseAll",
             "testCases": [
               {
                 "input": { "values": [1, 2, 3] },
@@ -9945,8 +10016,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create two Promises:\n// First resolves with \"Fast\" after 1 second\n// Second resolves with \"Slow\" after 2 seconds\n// Use Promise.race() to get the fastest result\n// Print the result\n// Your output should be: Fast",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates Promise.race() behavior.\n  Return the faster value (first parameter).\n  Examples:\n    simulatePromiseRace(\"Fast\", \"Slow\") => \"Fast\"\n    simulatePromiseRace(\"Quick\", \"Delayed\") => \"Quick\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulatePromiseRace(fast, slow) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulatePromiseRace",
             "testCases": [
               {
                 "input": { "fast": "Fast", "slow": "Slow" },
@@ -9959,8 +10031,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Chain three Promises:\n// First resolves with 10\n// Second .then() adds 5 and returns result\n// Third .then() multiplies by 2 and prints result\n// Your output should be: 30",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates Promise chaining with calculations.\n  Perform the chain: add 5, then multiply by 2.\n  Examples:\n    simulatePromiseCalculation(10) => 30\n    simulatePromiseCalculation(5) => 20\n    simulatePromiseCalculation(20) => 50\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulatePromiseCalculation(initial) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulatePromiseCalculation",
             "testCases": [
               {
                 "input": { "initial": 10 },
@@ -9977,8 +10050,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a Promise that randomly resolves or rejects\n// If Math.random() > 0.5, resolve with \"Success\"\n// Otherwise reject with \"Failure\"\n// Handle both cases and print the appropriate message\n// For testing: assume it resolves\n// Your output should be: Success",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates random Promise resolution.\n  Return \"Success\" if shouldResolve is true, otherwise \"Failure\".\n  Examples:\n    simulateRandomPromise(true) => \"Success\"\n    simulateRandomPromise(false) => \"Failure\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateRandomPromise(shouldResolve) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateRandomPromise",
             "testCases": [
               {
                 "input": { "shouldResolve": true },
@@ -9991,8 +10065,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create two Promises: one resolves with \"A\", one rejects with \"B\"\n// Use Promise.allSettled() to handle both\n// Print the status and value/reason of each\n// Format: \"fulfilled: A\" and \"rejected: B\"\n// Your output should be:\n// fulfilled: A\n// rejected: B",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates Promise.allSettled() behavior.\n  Return the formatted results as a string with newlines.\n  Examples:\n    simulatePromiseAllSettled(\"A\", \"B\") => \"fulfilled: A\\nrejected: B\"\n    simulatePromiseAllSettled(\"Success\", \"Error\") => \"fulfilled: Success\\nrejected: Error\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulatePromiseAllSettled(resolveValue, rejectValue) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulatePromiseAllSettled",
             "testCases": [
               {
                 "input": { "resolveValue": "A", "rejectValue": "B" },
@@ -10005,8 +10080,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a function fetchUser that returns a Promise resolving with {id: 1, name: \"Alice\"}\n// Create a function fetchPosts that takes userId and returns Promise resolving with [\"Post1\", \"Post2\"]\n// Chain them: fetch user, then fetch posts using user id\n// Print the posts array as JSON string\n// Your output should be: [\"Post1\",\"Post2\"]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates chained data fetching.\n  Return the posts array as a JSON string.\n  Examples:\n    simulateChainedFetch(1, [\"Post1\", \"Post2\"]) => \"[\\\"Post1\\\",\\\"Post2\\\"]\"\n    simulateChainedFetch(2, [\"Article1\", \"Article2\", \"Article3\"]) => \"[\\\"Article1\\\",\\\"Article2\\\",\\\"Article3\\\"]\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateChainedFetch(userId, posts) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateChainedFetch",
             "testCases": [
               {
                 "input": { "userId": 1, "posts": ["Post1", "Post2"] },
@@ -10019,8 +10095,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a Promise that resolves with \"Step 1\"\n// Chain .then() to print it and return \"Step 2\"\n// Chain another .then() to print it and return \"Step 3\"\n// Chain final .then() to print it\n// Your output should be:\n// Step 1\n// Step 2\n// Step 3",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates sequential Promise steps.\n  Return the step sequence as a string with newlines.\n  Examples:\n    simulateSequentialSteps() => \"Step 1\\nStep 2\\nStep 3\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateSequentialSteps() {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateSequentialSteps",
             "testCases": [
               {
                 "input": {},
@@ -10029,8 +10106,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create three Promises with different delays:\n// Promise 1 resolves with 1 after 3 seconds\n// Promise 2 resolves with 2 after 1 second  \n// Promise 3 resolves with 3 after 2 seconds\n// Use Promise.all() to wait for all\n// Print the results in order (should be [1,2,3] not by completion time)\n// Your output should be: [1,2,3]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates Promise.all() with different delays.\n  Return the values in original order as JSON string (not completion order).\n  Examples:\n    simulatePromiseAllOrder([1, 2, 3]) => \"[1,2,3]\"\n    simulatePromiseAllOrder([5, 10, 15]) => \"[5,10,15]\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulatePromiseAllOrder(values) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulatePromiseAllOrder",
             "testCases": [
               {
                 "input": { "values": [1, 2, 3] },
@@ -10043,8 +10121,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a Promise chain that can handle errors mid-chain\n// First Promise resolves with 10\n// Second .then() divides by 0 (creates Infinity) and returns it\n// Third .then() checks if value is Infinity, if yes throw error \"Invalid calculation\"\n// Use .catch() to handle the error and print the message\n// Your output should be: Invalid calculation",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates Promise error handling.\n  Return the error message that would be caught.\n  Examples:\n    simulatePromiseErrorHandling() => \"Invalid calculation\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulatePromiseErrorHandling() {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulatePromiseErrorHandling",
             "testCases": [
               {
                 "input": {},
@@ -10053,8 +10132,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Use Promise.all() with an array of Promises where one rejects\n// Promise 1 resolves with \"A\"\n// Promise 2 rejects with \"Error\"\n// Promise 3 resolves with \"C\"\n// Handle the rejection with .catch() and print the error\n// Your output should be: Error",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates Promise.all() with rejection.\n  Return the error message that would cause the rejection.\n  Examples:\n    simulatePromiseAllRejection(\"Error\") => \"Error\"\n    simulatePromiseAllRejection(\"Failed\") => \"Failed\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulatePromiseAllRejection(error) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulatePromiseAllRejection",
             "testCases": [
               {
                 "input": { "error": "Error" },
@@ -10083,8 +10163,9 @@ export const courses = [
         ],
         "tasks": [
           {
-            "description": "// Create an async function that returns \"Hello\"\n// Call the function and use .then() to print the result\n// Your output should be: Hello",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates async function behavior.\n  Return the value that would be resolved by the async function.\n  Examples:\n    simulateAsyncFunction(\"Hello\") => \"Hello\"\n    simulateAsyncFunction(\"World\") => \"World\"\n    simulateAsyncFunction(\"Test\") => \"Test\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateAsyncFunction(value) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateAsyncFunction",
             "testCases": [
               {
                 "input": { "value": "Hello" },
@@ -10101,8 +10182,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create a function that returns a Promise resolving with \"Data\" after 1 second\n// Create an async function that awaits this Promise and prints the result\n// Your output should be: Data",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates await behavior.\n  Return the value that would be awaited and printed.\n  Examples:\n    simulateAwait(\"Data\") => \"Data\"\n    simulateAwait(\"Result\") => \"Result\"\n    simulateAwait(\"Info\") => \"Info\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateAwait(value) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateAwait",
             "testCases": [
               {
                 "input": { "value": "Data" },
@@ -10119,8 +10201,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create an async function that awaits two Promises sequentially\n// First Promise resolves with 5 after 1 second\n// Second Promise resolves with 10 after 1 second\n// Return the sum of both values\n// Print the result\n// Your output should be: 15",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates sequential async operations.\n  Return the sum of both values.\n  Examples:\n    simulateSequentialAsync(5, 10) => 15\n    simulateSequentialAsync(20, 30) => 50\n    simulateSequentialAsync(7, 3) => 10\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateSequentialAsync(value1, value2) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateSequentialAsync",
             "testCases": [
               {
                 "input": { "value1": 5, "value2": 10 },
@@ -10137,8 +10220,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create an async function with try-catch\n// In try block, await a Promise that rejects with \"Error occurred\"\n// In catch block, print the error message\n// Your output should be: Error occurred",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates async error handling.\n  Return the error message that would be caught.\n  Examples:\n    simulateAsyncErrorHandling(\"Error occurred\") => \"Error occurred\"\n    simulateAsyncErrorHandling(\"Failed\") => \"Failed\"\n    simulateAsyncErrorHandling(\"Not found\") => \"Not found\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateAsyncErrorHandling(error) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateAsyncErrorHandling",
             "testCases": [
               {
                 "input": { "error": "Error occurred" },
@@ -10155,8 +10239,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create an async function that demonstrates sequential execution\n// Await three Promises that resolve with \"First\", \"Second\", \"Third\"\n// Print each result as it arrives\n// Your output should be:\n// First\n// Second\n// Third",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates sequential async execution.\n  Return the values sequence as a string with newlines.\n  Examples:\n    simulateSequentialExecution([\"First\", \"Second\", \"Third\"]) => \"First\\nSecond\\nThird\"\n    simulateSequentialExecution([\"A\", \"B\", \"C\"]) => \"A\\nB\\nC\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateSequentialExecution(values) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateSequentialExecution",
             "testCases": [
               {
                 "input": { "values": ["First", "Second", "Third"] },
@@ -10169,8 +10254,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create an async function that demonstrates parallel execution\n// Create two Promises that resolve with 10 and 20\n// Use Promise.all() with await to get both results simultaneously\n// Print the sum of results\n// Your output should be: 30",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates parallel async execution.\n  Return the sum of both values.\n  Examples:\n    simulateParallelExecution(10, 20) => 30\n    simulateParallelExecution(5, 15) => 20\n    simulateParallelExecution(100, 200) => 300\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateParallelExecution(value1, value2) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateParallelExecution",
             "testCases": [
               {
                 "input": { "value1": 10, "value2": 20 },
@@ -10187,8 +10273,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create an async arrow function that awaits a Promise resolving with \"Arrow\"\n// Call it and print the result\n// Your output should be: Arrow",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates async arrow function.\n  Return the value that would be awaited.\n  Examples:\n    simulateAsyncArrow(\"Arrow\") => \"Arrow\"\n    simulateAsyncArrow(\"Function\") => \"Function\"\n    simulateAsyncArrow(\"Async\") => \"Async\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nconst simulateAsyncArrow = (value) => {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateAsyncArrow",
             "testCases": [
               {
                 "input": { "value": "Arrow" },
@@ -10205,8 +10292,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create an async function fetchData that returns {id: 1, name: \"User\"}\n// Create an async function processData that awaits fetchData\n// Extract and print the name property\n// Your output should be: User",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates async data processing.\n  Return the name property from the data object.\n  Examples:\n    simulateAsyncDataProcessing({id: 1, name: \"User\"}) => \"User\"\n    simulateAsyncDataProcessing({id: 2, name: \"Alice\"}) => \"Alice\"\n    simulateAsyncDataProcessing({id: 3, name: \"Bob\"}) => \"Bob\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateAsyncDataProcessing(data) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateAsyncDataProcessing",
             "testCases": [
               {
                 "input": { "data": { "id": 1, "name": "User" } },
@@ -10223,8 +10311,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create an async function with try-catch-finally\n// In try: await a Promise that resolves with \"Success\"\n// In try: print the result\n// In finally: print \"Cleanup\"\n// Your output should be:\n// Success\n// Cleanup",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates async try-catch-finally.\n  Return the result and cleanup message as a string with newlines.\n  Examples:\n    simulateAsyncTryCatchFinally(\"Success\") => \"Success\\nCleanup\"\n    simulateAsyncTryCatchFinally(\"Done\") => \"Done\\nCleanup\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateAsyncTryCatchFinally(value) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateAsyncTryCatchFinally",
             "testCases": [
               {
                 "input": { "value": "Success" },
@@ -10237,8 +10326,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create an async function that chains async operations\n// First await returns 5\n// Second await doubles the previous result\n// Third await adds 10 to the previous result\n// Print final result\n// Your output should be: 20",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates chained async operations.\n  Perform: double the initial value, then add 10.\n  Examples:\n    simulateChainedAsync(5) => 20\n    simulateChainedAsync(10) => 30\n    simulateChainedAsync(3) => 16\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateChainedAsync(initial) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateChainedAsync",
             "testCases": [
               {
                 "input": { "initial": 5 },
@@ -10255,8 +10345,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create two async functions:\n// fetchUser() returns Promise resolving with {id: 1, name: \"Alice\"}\n// fetchPosts(userId) returns Promise resolving with [\"Post1\", \"Post2\"]\n// Create main async function that awaits both in sequence\n// Print the posts array as JSON string\n// Your output should be: [\"Post1\",\"Post2\"]",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates async user and posts fetching.\n  Return the posts array as a JSON string.\n  Examples:\n    simulateAsyncUserPosts(1, [\"Post1\", \"Post2\"]) => \"[\\\"Post1\\\",\\\"Post2\\\"]\"\n    simulateAsyncUserPosts(2, [\"Article1\", \"Article2\"]) => \"[\\\"Article1\\\",\\\"Article2\\\"]\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateAsyncUserPosts(userId, posts) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateAsyncUserPosts",
             "testCases": [
               {
                 "input": { "userId": 1, "posts": ["Post1", "Post2"] },
@@ -10269,8 +10360,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create an async function that handles multiple errors\n// Try to await a Promise that rejects with \"Network error\"\n// Catch the error and throw a new error \"Failed to fetch data\"\n// In outer try-catch, catch this new error and print it\n// Your output should be: Failed to fetch data",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates nested error handling.\n  Return the final error message that would be caught.\n  Examples:\n    simulateNestedErrorHandling() => \"Failed to fetch data\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateNestedErrorHandling() {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateNestedErrorHandling",
             "testCases": [
               {
                 "input": {},
@@ -10279,8 +10371,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create an async function that uses Promise.race() with await\n// First Promise resolves with \"Fast\" after 1 second\n// Second Promise resolves with \"Slow\" after 2 seconds\n// Await Promise.race() and print the fastest result\n// Your output should be: Fast",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates async Promise.race().\n  Return the faster value (first parameter).\n  Examples:\n    simulateAsyncRace(\"Fast\", \"Slow\") => \"Fast\"\n    simulateAsyncRace(\"Quick\", \"Delayed\") => \"Quick\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateAsyncRace(fast, slow) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateAsyncRace",
             "testCases": [
               {
                 "input": { "fast": "Fast", "slow": "Slow" },
@@ -10293,8 +10386,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create an async function that validates and processes data\n// Await a Promise that resolves with a number\n// If number is negative, throw error \"Invalid number\"\n// Otherwise return number * 2\n// Use try-catch to handle errors\n// Test with number -5\n// Your output should be: Invalid number",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates async validation.\n  Return \"Invalid number\" if number is negative, otherwise return number * 2.\n  Examples:\n    simulateAsyncValidation(-5) => \"Invalid number\"\n    simulateAsyncValidation(10) => 20\n    simulateAsyncValidation(-1) => \"Invalid number\"\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateAsyncValidation(number) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateAsyncValidation",
             "testCases": [
               {
                 "input": { "number": -5 },
@@ -10311,8 +10405,9 @@ export const courses = [
             ]
           },
           {
-            "description": "// Create an async function that processes an array of Promises\n// Array contains three Promises resolving with 1, 2, 3\n// Use await with Promise.all() to get all results\n// Use reduce to sum all values\n// Print the sum\n// Your output should be: 6",
-            "solution_type": "script",
+            "description": "/*\n  Implement the below function that simulates async array processing.\n  Return the sum of all values in the array.\n  Examples:\n    simulateAsyncArrayProcessing([1, 2, 3]) => 6\n    simulateAsyncArrayProcessing([5, 10, 15]) => 30\n    simulateAsyncArrayProcessing([2, 4, 6, 8]) => 20\n\n  YOUR FUNCTION MUST RETURN THE ANSWER\n  TO TEST YOUR FUNCTION YOU ARE FREE TO PRINT THE RESULT\n*/\n\nfunction simulateAsyncArrayProcessing(values) {\n  // Implementation here\n}",
+            "solution_type": "function",
+            "function_name": "simulateAsyncArrayProcessing",
             "testCases": [
               {
                 "input": { "values": [1, 2, 3] },
