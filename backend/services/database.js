@@ -543,17 +543,27 @@ export async function updateUserPassword(userId, hashedPassword) {
 
 // ============ SESSION MANAGEMENT ============
 
-export async function createUserSession(userId, token, expiresAt, ipAddress, userAgent) {
+export async function createUserSession(userId, token, expiresAt, ipAddress, userAgent, refreshToken, refreshExpiresAt) {
   const client = initializeDatabase()
+  
+  // Build the insert object
+  const sessionData = {
+    user_id: userId,
+    token,
+    expires_at: expiresAt,
+    ip_address: ipAddress,
+    user_agent: userAgent
+  }
+  
+  // Add refresh token fields if provided
+  if (refreshToken && refreshExpiresAt) {
+    sessionData.refresh_token = refreshToken
+    sessionData.refresh_expires_at = refreshExpiresAt
+  }
+  
   const { data, error } = await client
     .from('user_sessions')
-    .insert({
-      user_id: userId,
-      token,
-      expires_at: expiresAt,
-      ip_address: ipAddress,
-      user_agent: userAgent
-    })
+    .insert(sessionData)
     .select()
     .single()
 

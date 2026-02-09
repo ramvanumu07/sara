@@ -28,21 +28,73 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 )
 
-// Response interceptor for error handling
+// Response interceptor for error handling with automatic token refresh
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      // Only redirect if we're not already on login/signup pages
+  async (error) => {
+    const originalRequest = error.config
+    
+    // Handle 401/403 errors with token refresh
+    if ((error.response?.status === 401 || error.response?.status === 403) && !originalRequest._retry) {
       const currentPath = window.location.pathname
       const isAuthPage = ['/login', '/signup', '/forgot-password'].includes(currentPath)
       
-      if (!isAuthPage) {
+      // Don't try to refresh on auth pages or refresh endpoint
+      if (isAuthPage || originalRequest.url?.includes('/refresh')) {
+        return Promise.reject(error)
+      }
+      
+      originalRequest._retry = true
+      
+      try {
+        const refreshToken = localStorage.getItem('sara_refresh_token')
+        if (!refreshToken) {
+          throw new Error('No refresh token available')
+        }
+        
+        console.log('🔄 Access token expired, refreshing...')
+        
+        // Call refresh endpoint
+        const refreshResponse = await api.post('/auth/refresh', { refreshToken })
+        
+        if (refreshResponse.data.success) {
+          const { accessToken, refreshToken: newRefreshToken } = refreshResponse.data.data
+          
+          // Update stored tokens
+          localStorage.setItem('sara_token', accessToken)
+          localStorage.setItem('sara_refresh_token', newRefreshToken)
+          
+          // Update the original request with new token
+          originalRequest.headers.Authorization = `Bearer ${accessToken}`
+          
+          console.log('✅ Tokens refreshed successfully, retrying original request')
+          
+          // Retry the original request
+          return api(originalRequest)
+        }
+      } catch (refreshError) {
+        console.log('🚫 Token refresh failed:', refreshError.message)
+        
+        // Clear all tokens and redirect to login
         localStorage.removeItem('sara_token')
+        localStorage.removeItem('sara_refresh_token')
         localStorage.removeItem('sara_user')
-        window.location.href = '/login'
+        
+        // Show user-friendly message (this should rarely happen now)
+        console.log('Session could not be refreshed. Please log in again.')
+        
+        // Dispatch event for user notification
+        const event = new CustomEvent('auth-session-expired', {
+          detail: { message: 'Your session has expired. Please log in again.' }
+        })
+        window.dispatchEvent(event)
+        
+        setTimeout(() => {
+          window.location.href = '/login'
+        }, 2000)
       }
     }
+    
     return Promise.reject(error)
   }
 )

@@ -88,15 +88,22 @@ export const AuthProvider = ({ children }) => {
       console.log('🔐 AuthContext - Login response:', response.data)
       
       if (response.data.success) {
-        const { user: userData, token } = response.data.data
+        const { user: userData, accessToken, refreshToken, token } = response.data.data
         console.log('🔐 AuthContext - User data from login:', userData)
         console.log('🔐 AuthContext - User name from login:', userData.name)
         
-        // Store token and user data
-        setToken(token)
+        // Store both tokens and user data
+        const tokenToStore = accessToken || token // Use accessToken if available, fallback to token for backward compatibility
+        setToken(tokenToStore)
         setUser(userData)
         setUserState(userData)
         setIsAuthenticated(true)
+        
+        // Store refresh token if provided
+        if (refreshToken) {
+          localStorage.setItem('sara_refresh_token', refreshToken)
+          console.log('🔄 Refresh token stored')
+        }
         
         console.log('🔐 AuthContext - Login successful, user state set to:', userData)
         return { success: true, user: userData }
@@ -165,6 +172,7 @@ export const AuthProvider = ({ children }) => {
       // Clear local storage and state
       removeToken()
       removeUser()
+      localStorage.removeItem('sara_refresh_token') // Clear refresh token
       setUserState(null)
       setIsAuthenticated(false)
     }

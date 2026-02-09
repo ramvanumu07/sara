@@ -184,7 +184,7 @@ function validateName(name) {
 
 // ============ UTILITY FUNCTIONS ============
 
-async function generateToken(user) {
+async function generateTokens(user) {
   const payload = {
     userId: user.id,
     username: user.username,
@@ -192,25 +192,112 @@ async function generateToken(user) {
     name: user.name
   }
 
-  const token = jwt.sign(payload, process.env.JWT_SECRET, {
-    expiresIn: process.env.SESSION_TIMEOUT_HOURS ? `${process.env.SESSION_TIMEOUT_HOURS}h` : '24h'
+  // Generate short-lived access token (1 hour)
+  const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
+    expiresIn: '1h'
   })
 
-  // Create session in database
-  const expiresAt = new Date()
-  expiresAt.setHours(expiresAt.getHours() + parseInt(process.env.SESSION_TIMEOUT_HOURS || '24'))
+  // Generate long-lived refresh token (6 months - industry standard)
+  const refreshToken = jwt.sign(
+    { userId: user.id, type: 'refresh' }, 
+    process.env.JWT_SECRET,
+    { expiresIn: '6M' } // 6 months - secure but user-friendly
+  )
+
+  // Create session in database with both tokens
+  const accessExpiresAt = new Date()
+  accessExpiresAt.setHours(accessExpiresAt.getHours() + 1)
+  
+  // Set refresh token to expire in 6 months (industry standard)
+  const refreshExpiresAt = new Date()
+  refreshExpiresAt.setMonth(refreshExpiresAt.getMonth() + 6)
 
   await createUserSession(
     user.id,
-    token,
-    expiresAt.toISOString(),
+    accessToken,
+    accessExpiresAt.toISOString(),
     null, // IP address - could be added from req.ip
-    null  // User agent - could be added from req.get('User-Agent')
+    null, // User agent - could be added from req.get('User-Agent')
+    refreshToken,
+    refreshExpiresAt.toISOString()
   )
 
-  return token
+  return {
+    accessToken,
+    refreshToken,
+    expiresIn: 3600 // 1 hour in seconds
+  }
 }
 
+// Keep old function for backward compatibility
+async function generateToken(user) {
+  const tokens = await generateTokens(user)
+  return tokens.accessToken
+}
+
+
+// ============ SESSION MANAGEMENT FUNCTIONS ============
+
+// Invalidate all sessions for a user (for security events)
+async function invalidateAllUserSessions(userId) {
+  const client = initializeDatabase()
+  const { error } = await client
+    .from('user_sessions')
+    .delete()
+    .eq('user_id', userId)
+
+  if (error) throw new Error(`Failed to invalidate user sessions: ${error.message}`)
+  console.log(`🔒 All sessions invalidated for user: ${userId}`)
+}
+
+// Invalidate specific session
+async function invalidateSession(sessionId) {
+  const client = initializeDatabase()
+  const { error } = await client
+    .from('user_sessions')
+    .delete()
+    .eq('id', sessionId)
+
+  if (error) throw new Error(`Failed to invalidate session: ${error.message}`)
+  console.log(`🔒 Session invalidated: ${sessionId}`)
+}
+
+// ============ REFRESH TOKEN FUNCTIONS ============
+
+async function getUserByRefreshToken(refreshToken) {
+  const client = initializeDatabase()
+  const { data, error } = await client
+    .from('user_sessions')
+    .select('*, users(*)')
+    .eq('refresh_token', refreshToken)
+    .gt('refresh_expires_at', new Date().toISOString())
+    .single()
+
+  if (error && error.code !== 'PGRST116') {
+    throw new Error(`Failed to get user by refresh token: ${error.message}`)
+  }
+  
+  return data
+}
+
+async function updateSessionTokens(sessionId, newAccessToken, newAccessExpiresAt, newRefreshToken, newRefreshExpiresAt) {
+  const client = initializeDatabase()
+  const { data, error } = await client
+    .from('user_sessions')
+    .update({
+      token: newAccessToken,
+      expires_at: newAccessExpiresAt,
+      refresh_token: newRefreshToken,
+      refresh_expires_at: newRefreshExpiresAt,
+      last_accessed: new Date().toISOString()
+    })
+    .eq('id', sessionId)
+    .select()
+    .single()
+
+  if (error) throw new Error(`Failed to update session tokens: ${error.message}`)
+  return data
+}
 
 // ============ AUTHENTICATION ROUTES ============
 
@@ -538,8 +625,8 @@ router.post('/login', rateLimitMiddleware, async (req, res) => {
       return res.status(403).json(createErrorResponse('Account access has expired'))
     }
 
-    // Generate token and create session
-    const token = await generateToken(user)
+    // Generate tokens and create session
+    const tokens = await generateTokens(user)
 
     // Update last login
     await updateLastLogin(user.id)
@@ -567,7 +654,11 @@ router.post('/login', rateLimitMiddleware, async (req, res) => {
     res.json(createSuccessResponse({
       message: 'Login successful',
       user: responseUserData,
-      token
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+      expiresIn: tokens.expiresIn,
+      // Keep old token field for backward compatibility
+      token: tokens.accessToken
     }))
   } catch (error) {
     handleErrorResponse(res, error, 'login')
@@ -732,6 +823,10 @@ router.put('/profile', authenticateToken, rateLimitMiddleware, async (req, res) 
 
       const saltRounds = parseInt(process.env.BCRYPT_ROUNDS || '12')
       updates.password = await bcrypt.hash(newPassword, saltRounds)
+      
+      // Invalidate all sessions when password changes (security measure)
+      await invalidateAllUserSessions(userId)
+      console.log(`🔒 All sessions invalidated due to password change for user: ${userId}`)
     }
 
     // Update user profile
@@ -1026,5 +1121,129 @@ router.get('/profile/password', authenticateToken, async (req, res) => {
   }
 })
 
+// ============ REFRESH TOKEN ENDPOINT ============
+
+router.post('/refresh', async (req, res) => {
+  try {
+    const { refreshToken } = req.body
+
+    if (!refreshToken) {
+      return res.status(400).json(createErrorResponse('Refresh token is required'))
+    }
+
+    // Validate refresh token and get user session
+    const session = await getUserByRefreshToken(refreshToken)
+    if (!session) {
+      return res.status(403).json(createErrorResponse('Invalid or expired refresh token'))
+    }
+
+    const user = session.users
+    if (!user) {
+      return res.status(403).json(createErrorResponse('User not found'))
+    }
+
+    // Generate new tokens
+    const tokens = await generateTokens(user)
+    
+    // Update the session with new tokens
+    const newAccessExpiresAt = new Date(Date.now() + 60 * 60 * 1000) // 1 hour from now
+    const newRefreshExpiresAt = new Date()
+    newRefreshExpiresAt.setMonth(newRefreshExpiresAt.getMonth() + 6) // 6 months
+    
+    await updateSessionTokens(
+      session.id,
+      tokens.accessToken,
+      newAccessExpiresAt.toISOString(),
+      tokens.refreshToken,
+      newRefreshExpiresAt.toISOString()
+    )
+
+    console.log(`🔄 Tokens refreshed for user: ${user.username}`)
+
+    res.json(createSuccessResponse({
+      message: 'Tokens refreshed successfully',
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+      expiresIn: tokens.expiresIn
+    }))
+
+  } catch (error) {
+    console.error('Refresh token error:', error)
+    handleErrorResponse(res, error, 'refresh token')
+  }
+})
+
+// ============ SESSION MANAGEMENT ENDPOINTS ============
+
+// Get all active sessions for current user
+router.get('/sessions', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId
+    const client = initializeDatabase()
+    
+    const { data: sessions, error } = await client
+      .from('user_sessions')
+      .select('id, created_at, last_accessed, ip_address, user_agent')
+      .eq('user_id', userId)
+      .gt('refresh_expires_at', new Date().toISOString())
+      .order('last_accessed', { ascending: false })
+
+    if (error) throw new Error(`Failed to get user sessions: ${error.message}`)
+
+    res.json(createSuccessResponse({
+      sessions: sessions || []
+    }))
+  } catch (error) {
+    handleErrorResponse(res, error, 'get user sessions')
+  }
+})
+
+// Revoke specific session
+router.delete('/sessions/:sessionId', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId
+    const { sessionId } = req.params
+    
+    const client = initializeDatabase()
+    const { error } = await client
+      .from('user_sessions')
+      .delete()
+      .eq('id', sessionId)
+      .eq('user_id', userId) // Ensure user can only revoke their own sessions
+
+    if (error) throw new Error(`Failed to revoke session: ${error.message}`)
+
+    console.log(`🔒 Session revoked by user: ${sessionId}`)
+    res.json(createSuccessResponse({
+      message: 'Session revoked successfully'
+    }))
+  } catch (error) {
+    handleErrorResponse(res, error, 'revoke session')
+  }
+})
+
+// Revoke all other sessions (keep current one)
+router.post('/sessions/revoke-others', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId
+    const currentToken = req.headers.authorization?.split(' ')[1]
+    
+    const client = initializeDatabase()
+    const { error } = await client
+      .from('user_sessions')
+      .delete()
+      .eq('user_id', userId)
+      .neq('token', currentToken) // Keep current session
+
+    if (error) throw new Error(`Failed to revoke other sessions: ${error.message}`)
+
+    console.log(`🔒 All other sessions revoked for user: ${userId}`)
+    res.json(createSuccessResponse({
+      message: 'All other sessions revoked successfully'
+    }))
+  } catch (error) {
+    handleErrorResponse(res, error, 'revoke other sessions')
+  }
+})
 
 export default router
