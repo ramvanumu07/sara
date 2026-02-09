@@ -238,17 +238,17 @@ const Learn = () => {
           if (assignments.length > 0) {
             // Create assignment code with question in comments
             const assignment = assignments[0]
-            let codeWithComments = `// Assignment ${1}: ${assignment.title || ''}\n`
-            codeWithComments += `// ${assignment.description || 'Complete the assignment below'}\n`
+            const description = assignment.description || 'Complete the assignment below'
+            let codeWithComments = description.startsWith('//') ? `${description}\n` : `// ${description}\n`
 
             if (assignment.requirements && assignment.requirements.length > 0) {
-              codeWithComments += `\n// Requirements:\n`
               assignment.requirements.forEach(req => {
-                codeWithComments += `// - ${req}\n`
+                const requirement = req.startsWith('//') ? `${req}\n` : `// ${req}\n`
+                codeWithComments += requirement
               })
             }
 
-            codeWithComments += `\n// Start your code below this line:\n\n`
+            codeWithComments += `// START YOUR CODE AFTER THIS LINE. DO NOT REMOVE THIS LINE\n`
             codeWithComments += assignment.starter_code || ''
 
             setAssignmentCode(codeWithComments)
@@ -912,17 +912,17 @@ const Learn = () => {
 
           // Create next assignment code with question in comments
           const nextAssignment = assignments[nextAssignmentIndex]
-          let codeWithComments = `// ${nextAssignment.description || 'Complete the assignment below'}\n`
-          codeWithComments += `// ${nextAssignment.description || 'Complete the assignment below'}\n`
+          const description = nextAssignment.description || 'Complete the assignment below'
+          let codeWithComments = description.startsWith('//') ? `${description}\n` : `// ${description}\n`
 
           if (nextAssignment.requirements && nextAssignment.requirements.length > 0) {
-            codeWithComments += `\n// Requirements:\n`
             nextAssignment.requirements.forEach(req => {
-              codeWithComments += `// - ${req}\n`
+              const requirement = req.startsWith('//') ? `${req}\n` : `// ${req}\n`
+              codeWithComments += requirement
             })
           }
 
-          codeWithComments += `\n// Start your code below this line`
+          codeWithComments += `// START YOUR CODE AFTER THIS LINE. DO NOT REMOVE THIS LINE\n`
           codeWithComments += nextAssignment.starter_code || ''
 
           setAssignmentCode(codeWithComments)
@@ -1275,7 +1275,7 @@ const Learn = () => {
                     e.preventDefault()
                     handleRunPlayground()
                   }
-                  
+
                   // Handle Tab key for indentation
                   if (e.key === 'Tab') {
                     e.preventDefault()
@@ -1283,17 +1283,17 @@ const Learn = () => {
                     const start = textarea.selectionStart
                     const end = textarea.selectionEnd
                     const value = textarea.value
-                    
+
                     // Insert 4 spaces at cursor position
                     const newValue = value.substring(0, start) + '    ' + value.substring(end)
                     setUserCode(newValue)
-                    
+
                     // Move cursor after the inserted spaces
                     setTimeout(() => {
                       textarea.selectionStart = textarea.selectionEnd = start + 4
                     }, 0)
                   }
-                  
+
                   // Handle auto-closing brackets, braces, parentheses, and quotes
                   const autoClosingPairs = {
                     '(': ')',
@@ -1303,17 +1303,17 @@ const Learn = () => {
                     "'": "'",
                     '`': '`'
                   }
-                  
+
                   if (autoClosingPairs[e.key]) {
                     const textarea = e.target
                     const start = textarea.selectionStart
                     const end = textarea.selectionEnd
                     const value = textarea.value
                     const selectedText = value.substring(start, end)
-                    
+
                     // Get the character after cursor
                     const nextChar = value.charAt(start)
-                    
+
                     // For quotes, check if we should close or just move cursor
                     if (['"', "'", '`'].includes(e.key)) {
                       // If next character is the same quote, just move cursor (don't add another)
@@ -1324,28 +1324,28 @@ const Learn = () => {
                         }, 0)
                         return
                       }
-                      
+
                       // Check if we're inside a string (basic check)
                       const beforeCursor = value.substring(0, start)
                       const quoteCount = (beforeCursor.match(new RegExp('\\' + e.key, 'g')) || []).length
-                      
+
                       // If odd number of quotes before cursor, we're closing a string
                       if (quoteCount % 2 === 1) {
                         // Let the default behavior happen (just add the closing quote)
                         return
                       }
                     }
-                    
+
                     e.preventDefault()
-                    
+
                     const openChar = e.key
                     const closeChar = autoClosingPairs[e.key]
-                    
+
                     if (selectedText) {
                       // If text is selected, wrap it with the pair
                       const newValue = value.substring(0, start) + openChar + selectedText + closeChar + value.substring(end)
                       setUserCode(newValue)
-                      
+
                       // Select the wrapped text
                       setTimeout(() => {
                         textarea.selectionStart = start + 1
@@ -1355,21 +1355,21 @@ const Learn = () => {
                       // Insert the pair and position cursor between them
                       const newValue = value.substring(0, start) + openChar + closeChar + value.substring(start)
                       setUserCode(newValue)
-                      
+
                       // Position cursor between the pair
                       setTimeout(() => {
                         textarea.selectionStart = textarea.selectionEnd = start + 1
                       }, 0)
                     }
                   }
-                  
+
                   // Handle closing bracket navigation (skip over closing bracket if it's already there)
                   if ([')', ']', '}'].includes(e.key)) {
                     const textarea = e.target
                     const start = textarea.selectionStart
                     const value = textarea.value
                     const nextChar = value.charAt(start)
-                    
+
                     // If the next character is the same closing bracket, just move cursor
                     if (nextChar === e.key) {
                       e.preventDefault()
@@ -1378,34 +1378,34 @@ const Learn = () => {
                       }, 0)
                     }
                   }
-                  
+
                   // Handle Backspace key for smart indentation removal
                   if (e.key === 'Backspace') {
                     const textarea = e.target
                     const start = textarea.selectionStart
                     const end = textarea.selectionEnd
                     const value = textarea.value
-                    
+
                     // Only handle smart backspace if no text is selected
                     if (start === end) {
                       // Get the current line
                       const beforeCursor = value.substring(0, start)
                       const currentLineStart = beforeCursor.lastIndexOf('\n') + 1
                       const currentLine = beforeCursor.substring(currentLineStart)
-                      
+
                       // Check if cursor is at the end of indentation (only spaces before cursor on current line)
                       const isAtIndentEnd = /^\s+$/.test(currentLine) && currentLine.length > 0
-                      
+
                       // Check if we have at least 4 spaces to remove
                       const hasEnoughSpaces = currentLine.length >= 4 && currentLine.endsWith('    ')
-                      
+
                       if (isAtIndentEnd && hasEnoughSpaces) {
                         e.preventDefault()
-                        
+
                         // Remove 4 spaces
                         const newValue = value.substring(0, start - 4) + value.substring(start)
                         setUserCode(newValue)
-                        
+
                         // Position cursor
                         setTimeout(() => {
                           textarea.selectionStart = textarea.selectionEnd = start - 4
@@ -1414,44 +1414,44 @@ const Learn = () => {
                       // If not at indent end or not enough spaces, let default backspace behavior happen
                     }
                   }
-                  
+
                   // Handle Enter key for smart auto-indentation
                   if (e.key === 'Enter') {
                     e.preventDefault()
                     const textarea = e.target
                     const start = textarea.selectionStart
                     const value = textarea.value
-                    
+
                     // Get the current line
                     const beforeCursor = value.substring(0, start)
                     const currentLineStart = beforeCursor.lastIndexOf('\n') + 1
                     const currentLine = beforeCursor.substring(currentLineStart)
-                    
+
                     // Calculate current indentation
                     const currentIndent = currentLine.match(/^(\s*)/)[1]
-                    
+
                     // Check if we need to increase indentation
                     let newIndent = currentIndent
-                    
+
                     // Increase indentation after opening braces or certain keywords
-                    if (currentLine.trim().endsWith('{') || 
-                        currentLine.trim().match(/\b(if|else|for|while|do|switch|case|function|try|catch|finally)\s*\([^)]*\)\s*$/) ||
-                        currentLine.trim().match(/\b(else|try|finally)\s*$/) ||
-                        currentLine.trim().match(/\bcase\s+.+:\s*$/) ||
-                        currentLine.trim().match(/\bdefault\s*:\s*$/)) {
+                    if (currentLine.trim().endsWith('{') ||
+                      currentLine.trim().match(/\b(if|else|for|while|do|switch|case|function|try|catch|finally)\s*\([^)]*\)\s*$/) ||
+                      currentLine.trim().match(/\b(else|try|finally)\s*$/) ||
+                      currentLine.trim().match(/\bcase\s+.+:\s*$/) ||
+                      currentLine.trim().match(/\bdefault\s*:\s*$/)) {
                       newIndent += '    ' // Add 4 spaces
                     }
-                    
+
                     // Check if the next character is a closing brace
                     const afterCursor = value.substring(start)
                     const nextChar = afterCursor.charAt(0)
-                    
+
                     if (nextChar === '}') {
                       // If next char is closing brace, add extra line with reduced indent
                       const reducedIndent = newIndent.length >= 4 ? newIndent.substring(4) : ''
                       const newValue = value.substring(0, start) + '\n' + newIndent + '\n' + reducedIndent + value.substring(start)
                       setUserCode(newValue)
-                      
+
                       // Position cursor on the middle line
                       setTimeout(() => {
                         textarea.selectionStart = textarea.selectionEnd = start + 1 + newIndent.length
@@ -1460,7 +1460,7 @@ const Learn = () => {
                       // Normal case - just add new line with proper indentation
                       const newValue = value.substring(0, start) + '\n' + newIndent + value.substring(start)
                       setUserCode(newValue)
-                      
+
                       // Position cursor after the indentation
                       setTimeout(() => {
                         textarea.selectionStart = textarea.selectionEnd = start + 1 + newIndent.length
@@ -1784,7 +1784,7 @@ const Learn = () => {
                     e.preventDefault()
                     handleRunAssignment()
                   }
-                  
+
                   // Handle Tab key for indentation
                   if (e.key === 'Tab') {
                     e.preventDefault()
@@ -1792,17 +1792,17 @@ const Learn = () => {
                     const start = textarea.selectionStart
                     const end = textarea.selectionEnd
                     const value = textarea.value
-                    
+
                     // Insert 4 spaces at cursor position
                     const newValue = value.substring(0, start) + '    ' + value.substring(end)
                     setAssignmentCode(newValue)
-                    
+
                     // Move cursor after the inserted spaces
                     setTimeout(() => {
                       textarea.selectionStart = textarea.selectionEnd = start + 4
                     }, 0)
                   }
-                  
+
                   // Handle auto-closing brackets, braces, parentheses, and quotes
                   const autoClosingPairs = {
                     '(': ')',
@@ -1812,17 +1812,17 @@ const Learn = () => {
                     "'": "'",
                     '`': '`'
                   }
-                  
+
                   if (autoClosingPairs[e.key]) {
                     const textarea = e.target
                     const start = textarea.selectionStart
                     const end = textarea.selectionEnd
                     const value = textarea.value
                     const selectedText = value.substring(start, end)
-                    
+
                     // Get the character after cursor
                     const nextChar = value.charAt(start)
-                    
+
                     // For quotes, check if we should close or just move cursor
                     if (['"', "'", '`'].includes(e.key)) {
                       // If next character is the same quote, just move cursor (don't add another)
@@ -1833,28 +1833,28 @@ const Learn = () => {
                         }, 0)
                         return
                       }
-                      
+
                       // Check if we're inside a string (basic check)
                       const beforeCursor = value.substring(0, start)
                       const quoteCount = (beforeCursor.match(new RegExp('\\' + e.key, 'g')) || []).length
-                      
+
                       // If odd number of quotes before cursor, we're closing a string
                       if (quoteCount % 2 === 1) {
                         // Let the default behavior happen (just add the closing quote)
                         return
                       }
                     }
-                    
+
                     e.preventDefault()
-                    
+
                     const openChar = e.key
                     const closeChar = autoClosingPairs[e.key]
-                    
+
                     if (selectedText) {
                       // If text is selected, wrap it with the pair
                       const newValue = value.substring(0, start) + openChar + selectedText + closeChar + value.substring(end)
                       setAssignmentCode(newValue)
-                      
+
                       // Select the wrapped text
                       setTimeout(() => {
                         textarea.selectionStart = start + 1
@@ -1864,21 +1864,21 @@ const Learn = () => {
                       // Insert the pair and position cursor between them
                       const newValue = value.substring(0, start) + openChar + closeChar + value.substring(start)
                       setAssignmentCode(newValue)
-                      
+
                       // Position cursor between the pair
                       setTimeout(() => {
                         textarea.selectionStart = textarea.selectionEnd = start + 1
                       }, 0)
                     }
                   }
-                  
+
                   // Handle closing bracket navigation (skip over closing bracket if it's already there)
                   if ([')', ']', '}'].includes(e.key)) {
                     const textarea = e.target
                     const start = textarea.selectionStart
                     const value = textarea.value
                     const nextChar = value.charAt(start)
-                    
+
                     // If the next character is the same closing bracket, just move cursor
                     if (nextChar === e.key) {
                       e.preventDefault()
@@ -1887,34 +1887,34 @@ const Learn = () => {
                       }, 0)
                     }
                   }
-                  
+
                   // Handle Backspace key for smart indentation removal
                   if (e.key === 'Backspace') {
                     const textarea = e.target
                     const start = textarea.selectionStart
                     const end = textarea.selectionEnd
                     const value = textarea.value
-                    
+
                     // Only handle smart backspace if no text is selected
                     if (start === end) {
                       // Get the current line
                       const beforeCursor = value.substring(0, start)
                       const currentLineStart = beforeCursor.lastIndexOf('\n') + 1
                       const currentLine = beforeCursor.substring(currentLineStart)
-                      
+
                       // Check if cursor is at the end of indentation (only spaces before cursor on current line)
                       const isAtIndentEnd = /^\s+$/.test(currentLine) && currentLine.length > 0
-                      
+
                       // Check if we have at least 4 spaces to remove
                       const hasEnoughSpaces = currentLine.length >= 4 && currentLine.endsWith('    ')
-                      
+
                       if (isAtIndentEnd && hasEnoughSpaces) {
                         e.preventDefault()
-                        
+
                         // Remove 4 spaces
                         const newValue = value.substring(0, start - 4) + value.substring(start)
                         setAssignmentCode(newValue)
-                        
+
                         // Position cursor
                         setTimeout(() => {
                           textarea.selectionStart = textarea.selectionEnd = start - 4
@@ -1923,44 +1923,44 @@ const Learn = () => {
                       // If not at indent end or not enough spaces, let default backspace behavior happen
                     }
                   }
-                  
+
                   // Handle Enter key for smart auto-indentation
                   if (e.key === 'Enter') {
                     e.preventDefault()
                     const textarea = e.target
                     const start = textarea.selectionStart
                     const value = textarea.value
-                    
+
                     // Get the current line
                     const beforeCursor = value.substring(0, start)
                     const currentLineStart = beforeCursor.lastIndexOf('\n') + 1
                     const currentLine = beforeCursor.substring(currentLineStart)
-                    
+
                     // Calculate current indentation
                     const currentIndent = currentLine.match(/^(\s*)/)[1]
-                    
+
                     // Check if we need to increase indentation
                     let newIndent = currentIndent
-                    
+
                     // Increase indentation after opening braces or certain keywords
-                    if (currentLine.trim().endsWith('{') || 
-                        currentLine.trim().match(/\b(if|else|for|while|do|switch|case|function|try|catch|finally)\s*\([^)]*\)\s*$/) ||
-                        currentLine.trim().match(/\b(else|try|finally)\s*$/) ||
-                        currentLine.trim().match(/\bcase\s+.+:\s*$/) ||
-                        currentLine.trim().match(/\bdefault\s*:\s*$/)) {
+                    if (currentLine.trim().endsWith('{') ||
+                      currentLine.trim().match(/\b(if|else|for|while|do|switch|case|function|try|catch|finally)\s*\([^)]*\)\s*$/) ||
+                      currentLine.trim().match(/\b(else|try|finally)\s*$/) ||
+                      currentLine.trim().match(/\bcase\s+.+:\s*$/) ||
+                      currentLine.trim().match(/\bdefault\s*:\s*$/)) {
                       newIndent += '    ' // Add 4 spaces
                     }
-                    
+
                     // Check if the next character is a closing brace
                     const afterCursor = value.substring(start)
                     const nextChar = afterCursor.charAt(0)
-                    
+
                     if (nextChar === '}') {
                       // If next char is closing brace, add extra line with reduced indent
                       const reducedIndent = newIndent.length >= 4 ? newIndent.substring(4) : ''
                       const newValue = value.substring(0, start) + '\n' + newIndent + '\n' + reducedIndent + value.substring(start)
                       setAssignmentCode(newValue)
-                      
+
                       // Position cursor on the middle line
                       setTimeout(() => {
                         textarea.selectionStart = textarea.selectionEnd = start + 1 + newIndent.length
@@ -1969,7 +1969,7 @@ const Learn = () => {
                       // Normal case - just add new line with proper indentation
                       const newValue = value.substring(0, start) + '\n' + newIndent + value.substring(start)
                       setAssignmentCode(newValue)
-                      
+
                       // Position cursor after the indentation
                       setTimeout(() => {
                         textarea.selectionStart = textarea.selectionEnd = start + 1 + newIndent.length

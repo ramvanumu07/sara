@@ -19,110 +19,102 @@ export const courses = [
         ],
         tasks: [
           {
-            description: 'Print the following three lines exactly as shown:\n// JavaScript\n// is\n// awesome',
+            description: '// Print the result of 147 + 289\n// Your output should be:\n// 436',
+            solution_type: 'script',
             testCases: [
               {
-                input: null,
-                expectedOutput: 'JavaScript\nis\nawesome'
+                input: {},
+                expectedOutput: '436'
               }
             ]
           },
           {
-            description: '// Given values below, calculate and print only the final result\nconst a = 25;\nconst b = 17;\nconst c = 8;\n// Print the result of: (a + b) * c - 50',
+            description: '// Print the result of 100 divided by 8\n// Your output should be:\n// 12.5',
+            solution_type: 'script',
             testCases: [
               {
-                input: null,
-                expectedOutput: '286'
+                input: {},
+                expectedOutput: '12.5'
               }
             ]
           },
           {
-            description: '// Print this sentence with quotes intact:\n// The book\'s title is "1984"',
+            description: '// Print the result of (15 + 25) * 3 - 10\n// Your output should be:\n// 110',
+            solution_type: 'script',
             testCases: [
               {
-                input: null,
-                expectedOutput: 'The book\'s title is "1984"'
+                input: {},
+                expectedOutput: '110'
               }
             ]
           },
           {
-            description: '// Do not modify the variables, use them in your solution\nconst product = "Laptop";\nconst price = 45000;\n// Print: Product: Laptop costs Rs. 45000\n// Use string concatenation (+) with proper spacing',
+            description: '// Print three separate calculations, each on a new line:\n// 45 + 78\n// 200 - 63\n// 12 * 9\n// Your output should be:\n// 123\n// 137\n// 108',
+            solution_type: 'script',
             testCases: [
               {
-                input: null,
-                expectedOutput: 'Product: Laptop costs Rs. 45000'
+                input: {},
+                expectedOutput: '123\n137\n108'
               }
             ]
           },
           {
-            description: '// Print this EXACT text (it should NOT calculate):\n// 15 + 25',
+            description: '// Print "Hello" and "World" with exactly one space between them using the + operator\n// Your output should be:\n// Hello World',
+            solution_type: 'script',
             testCases: [
               {
-                input: null,
-                expectedOutput: '15 + 25'
+                input: {},
+                expectedOutput: 'Hello World'
               }
             ]
           },
           {
-            description: '// Do not modify the variables\nconst length = 12.5;\nconst width = 8.4;\n// Print the area calculation in this format:\n// Area: 105\n// Use comma-separated logging (not concatenation)',
+            description: '// Print the text "The answer is" followed by the calculation 7 * 6\n// Your output should be:\n// The answer is 42',
+            solution_type: 'script',
             testCases: [
               {
-                input: null,
-                expectedOutput: 'Area: 105'
+                input: {},
+                expectedOutput: 'The answer is 42'
               }
             ]
           },
           {
-            description: '// Do not modify the variables\nconst num1 = 100;\nconst num2 = 47;\n// Print in format: 100 - 47 = 53\n// Use template literals with ${} for all three values',
+            description: '// Use a template literal to print "15 plus 28 equals" followed by the actual sum\n// Your output should be:\n// 15 plus 28 equals 43',
+            solution_type: 'script',
             testCases: [
               {
-                input: null,
-                expectedOutput: '100 - 47 = 53'
+                input: {},
+                expectedOutput: '15 plus 28 equals 43'
               }
             ]
           },
           {
-            description: '// Do not modify the variables\nconst quantity = 7;\nconst pricePerUnit = 12.99;\n// Print: Total amount: $90.93\n// Use template literals to calculate and embed the total',
+            description: '// Print: He said "JavaScript is amazing"\n// (Include the double quotes in the output)\n// Your output should be:\n// He said "JavaScript is amazing"',
+            solution_type: 'script',
             testCases: [
               {
-                input: null,
-                expectedOutput: 'Total amount: $90.93'
+                input: {},
+                expectedOutput: 'He said "JavaScript is amazing"'
               }
             ]
           },
           {
-            description: '// Do not modify the variables\nconst marks1 = 85;\nconst marks2 = 92;\nconst marks3 = 78;\n// Calculate average and print: Your average is 85\n// Use template literals (result will have decimals)',
+            description: '// Print three values using comma separation: the number 100, the text "items", and the calculation 50 * 2\n// Your output should be:\n// 100 items 100',
+            solution_type: 'script',
             testCases: [
               {
-                input: null,
-                expectedOutput: 'Your average is 85'
+                input: {},
+                expectedOutput: '100 items 100'
               }
             ]
           },
           {
-            description: '// Do not modify the variables\nconst celsius = 25;\n// Convert to Fahrenheit using formula: (C * 9/5) + 32\n// Print: 25°C equals 77°F\n// Use template literals for both values',
+            description: '// Print a formatted statement showing both the expression and result\n// Use template literals to print: "Expression: 20 + 30 * 2 = " followed by the calculated result\n// Your output should be:\n// Expression: 20 + 30 * 2 = 80',
+            solution_type: 'script',
             testCases: [
               {
-                input: null,
-                expectedOutput: '25°C equals 77°F'
-              }
-            ]
-          },
-          {
-            description: '// Do not modify the variables\nconst name = "Alice";\nconst score = 94;\nconst total = 100;\n// Print these three lines using three console.log statements:\n// Student: Alice\n// Score: 94/100\n// Percentage: 94%\n// Use template literals for lines 2 and 3',
-            testCases: [
-              {
-                input: null,
-                expectedOutput: 'Student: Alice\nScore: 94/100\nPercentage: 94%'
-              }
-            ]
-          },
-          {
-            description: '// Do not modify the variables\nconst hours = 2;\nconst minutes = 45;\n// Convert total time to minutes and print:\n// Total: 165 minutes\n// Use comma-separated logging',
-            testCases: [
-              {
-                input: null,
-                expectedOutput: 'Total: 165 minutes'
+                input: {},
+                expectedOutput: 'Expression: 20 + 30 * 2 = 80'
               }
             ]
           }
@@ -143,64 +135,190 @@ export const courses = [
         ],
         tasks: [
           {
-            description: 'Store the number 100 in a constant and print it',
+            description: '// Do not rename a and b, use them as input for your program.\n// While testing we will change their values.\nconst a = 15;\nconst b = 27;\n\n// Swap the values of a and b using a third variable\n// Print both values after swapping\n// For example, if a = 15 and b = 27, your output should be:\n// 27\n// 15',
+            solution_type: 'script',
             testCases: [
               {
-                input: null,
-                expectedOutput: '100'
+                input: { a: 15, b: 27 },
+                expectedOutput: '27\n15'
+              },
+              {
+                input: { a: 100, b: 200 },
+                expectedOutput: '200\n100'
+              },
+              {
+                input: { a: 7, b: 3 },
+                expectedOutput: '3\n7'
               }
             ]
           },
           {
-            description: 'Store the text "JavaScript" in a constant and print it',
+            description: '// Do not rename num1, num2, num3, use them as input for your program.\n// While testing we will change their values.\nconst num1 = 5;\nconst num2 = 12;\nconst num3 = 8;\n\n// Calculate a running sum: start with num1, add num2, then add num3\n// Print the sum after each addition\n// For example, if num1 = 5, num2 = 12, num3 = 8, your output should be:\n// 5\n// 17\n// 25',
+            solution_type: 'script',
             testCases: [
               {
-                input: null,
-                expectedOutput: 'JavaScript'
+                input: { num1: 5, num2: 12, num3: 8 },
+                expectedOutput: '5\n17\n25'
+              },
+              {
+                input: { num1: 10, num2: 20, num3: 30 },
+                expectedOutput: '10\n30\n60'
+              },
+              {
+                input: { num1: 1, num2: 2, num3: 3 },
+                expectedOutput: '1\n3\n6'
               }
             ]
           },
           {
-            description: 'Store 15 and 27 in two constants, then print their sum',
+            description: '// Do not rename start and increment, use them as input for your program.\n// While testing we will change their values.\nconst start = 10;\nconst increment = 3;\n\n// Create a counter starting at \'start\' and increment it 4 times by \'increment\'\n// Print the counter value after each increment\n// For example, if start = 10 and increment = 3, your output should be:\n// 13\n// 16\n// 19\n// 22',
+            solution_type: 'script',
             testCases: [
               {
-                input: null,
-                expectedOutput: '42'
+                input: { start: 10, increment: 3 },
+                expectedOutput: '13\n16\n19\n22'
+              },
+              {
+                input: { start: 0, increment: 5 },
+                expectedOutput: '5\n10\n15\n20'
+              },
+              {
+                input: { start: 100, increment: 10 },
+                expectedOutput: '110\n120\n130\n140'
               }
             ]
           },
           {
-            description: 'Create a variable with value 10, add 5 to it, then print the result',
+            description: '// Do not rename celsius, use it as input for your program.\n// While testing we will change its value.\nconst celsius = 100;\n\n// Convert celsius to Fahrenheit using: (celsius * 9/5) + 32, then store that result\n// Convert the Fahrenheit value to Kelvin using: (F - 32) * 5/9 + 273.15\n// Print both converted values (Fahrenheit first, then Kelvin)\n// For example, if celsius = 100, your output should be:\n// 212\n// 373.15',
+            solution_type: 'script',
             testCases: [
               {
-                input: null,
-                expectedOutput: '15'
+                input: { celsius: 100 },
+                expectedOutput: '212\n373.15'
+              },
+              {
+                input: { celsius: 0 },
+                expectedOutput: '32\n273.15'
+              },
+              {
+                input: { celsius: 25 },
+                expectedOutput: '77\n298.15'
               }
             ]
           },
           {
-            description: 'Create a variable with value 2, double it 3 times, then print the final value',
+            description: '// Do not rename principal, rate, time, use them as input for your program.\n// While testing we will change their values.\nconst principal = 1000;\nconst rate = 5;\nconst time = 2;\n\n// Calculate simple interest: (principal * rate * time) / 100\n// Calculate total amount: principal + interest\n// Print the interest and then the total amount\n// For example, if principal = 1000, rate = 5, time = 2, your output should be:\n// 100\n// 1100',
+            solution_type: 'script',
             testCases: [
               {
-                input: null,
-                expectedOutput: '16'
+                input: { principal: 1000, rate: 5, time: 2 },
+                expectedOutput: '100\n1100'
+              },
+              {
+                input: { principal: 5000, rate: 10, time: 3 },
+                expectedOutput: '1500\n6500'
+              },
+              {
+                input: { principal: 2000, rate: 7, time: 1 },
+                expectedOutput: '140\n2140'
               }
             ]
           },
           {
-            description: 'Create a constant with value 100 and a variable starting at 0. Add the constant to the variable twice, then print the variable',
+            description: '// Do not rename length and width, use them as input for your program.\n// While testing we will change their values.\nconst length = 8;\nconst width = 5;\n\n// Calculate the area and perimeter of a rectangle\n// Area = length * width\n// Perimeter = 2 * (length + width)\n// Print area first, then perimeter\n// For example, if length = 8 and width = 5, your output should be:\n// 40\n// 26',
+            solution_type: 'script',
             testCases: [
               {
-                input: null,
-                expectedOutput: '200'
+                input: { length: 8, width: 5 },
+                expectedOutput: '40\n26'
+              },
+              {
+                input: { length: 10, width: 10 },
+                expectedOutput: '100\n40'
+              },
+              {
+                input: { length: 12, width: 7 },
+                expectedOutput: '84\n38'
+              }
+            ]
+          },
+          {
+            description: '// Do not rename score1, score2, score3, use them as input for your program.\n// While testing we will change their values.\nconst score1 = 85;\nconst score2 = 92;\nconst score3 = 78;\n\n// Calculate the sum of all scores\n// Calculate the average (sum divided by 3)\n// Print the sum and then the average\n// For example, if scores are 85, 92, 78, your output should be:\n// 255\n// 85',
+            solution_type: 'script',
+            testCases: [
+              {
+                input: { score1: 85, score2: 92, score3: 78 },
+                expectedOutput: '255\n85'
+              },
+              {
+                input: { score1: 90, score2: 90, score3: 90 },
+                expectedOutput: '270\n90'
+              },
+              {
+                input: { score1: 70, score2: 80, score3: 100 },
+                expectedOutput: '250\n83.33333333333333'
+              }
+            ]
+          },
+          {
+            description: '// Do not rename distance and time, use them as input for your program.\n// While testing we will change their values.\nconst distance = 150;\nconst time = 3;\n\n// Calculate speed: distance / time\n// Calculate double the speed\n// Print original speed and then doubled speed\n// For example, if distance = 150 and time = 3, your output should be:\n// 50\n// 100',
+            solution_type: 'script',
+            testCases: [
+              {
+                input: { distance: 150, time: 3 },
+                expectedOutput: '50\n100'
+              },
+              {
+                input: { distance: 200, time: 4 },
+                expectedOutput: '50\n100'
+              },
+              {
+                input: { distance: 360, time: 6 },
+                expectedOutput: '60\n120'
+              }
+            ]
+          },
+          {
+            description: '// Do not rename num, use it as input for your program.\n// num will be a two-digit number.\n// While testing we will change its value.\nconst num = 47;\n\n// Extract and store the tens digit and units digit separately\n// Print tens digit first, then units digit\n// Hint: Use Math.floor(num / 10) for tens, num % 10 for units\n// For example, if num = 47, your output should be:\n// 4\n// 7',
+            solution_type: 'script',
+            testCases: [
+              {
+                input: { num: 47 },
+                expectedOutput: '4\n7'
+              },
+              {
+                input: { num: 93 },
+                expectedOutput: '9\n3'
+              },
+              {
+                input: { num: 10 },
+                expectedOutput: '1\n0'
+              }
+            ]
+          },
+          {
+            description: '// Do not rename x, y, z, use them as input for your program.\n// While testing we will change their values.\nconst x = 6;\nconst y = 4;\nconst z = 2;\n\n// Calculate: (x + y) * z\n// Store the result and then calculate: result - x\n// Print both values\n// For example, if x = 6, y = 4, z = 2, your output should be:\n// 20\n// 14',
+            solution_type: 'script',
+            testCases: [
+              {
+                input: { x: 6, y: 4, z: 2 },
+                expectedOutput: '20\n14'
+              },
+              {
+                input: { x: 10, y: 5, z: 3 },
+                expectedOutput: '45\n35'
+              },
+              {
+                input: { x: 8, y: 2, z: 5 },
+                expectedOutput: '50\n42'
               }
             ]
           }
         ]
       },
       {
-        id: 'numbers-arithmetic',
-        title: 'Numbers and basic arithmetic',
+        id: 'numbers-and-basic-arithmetic',
+        title: 'Numbers and Basic Arithmetic',
         outcomes: [
           'Number Types: Integers and Floating-points',
           'Basic Arithmetic: Addition and Subtraction',
@@ -212,74 +330,436 @@ export const courses = [
         ],
         tasks: [
           {
-            description: 'A rectangle has length 24 and width 15. Print its area on the first line and perimeter on the second line',
+            description: '// Do not rename dividend and divisor, use them as input for your program.\n// While testing we will change their values.\nconst dividend = 47;\nconst divisor = 6;\n\n// Calculate the quotient (without decimals) and remainder\n// Use Math.floor for quotient and % for remainder\n// Print quotient first, then remainder\n// For example, if dividend = 47 and divisor = 6, your output should be:\n// 7\n// 5',
+            solution_type: 'script',
             testCases: [
               {
-                input: null,
-                expectedOutput: '360\n78'
+                input: { dividend: 47, divisor: 6 },
+                expectedOutput: '7\n5'
+              },
+              {
+                input: { dividend: 100, divisor: 7 },
+                expectedOutput: '14\n2'
+              },
+              {
+                input: { dividend: 15, divisor: 5 },
+                expectedOutput: '3\n0'
+              },
+              {
+                input: { dividend: 7, divisor: 10 },
+                expectedOutput: '0\n7'
+              },
+              {
+                input: { dividend: 1000, divisor: 3 },
+                expectedOutput: '333\n1'
               }
             ]
           },
           {
-            description: 'Convert 185 minutes to hours and remaining minutes. Print hours on the first line, remaining minutes on the second line',
+            description: '// Do not rename a, b, c, use them as input for your program.\n// While testing we will change their values.\nconst a = 12;\nconst b = 25;\nconst c = 18;\n\n// Calculate and print:\n// 1. Sum of all three numbers\n// 2. Product of all three numbers\n// 3. Average of all three numbers\n// For example, if a = 12, b = 25, c = 18, your output should be:\n// 55\n// 5400\n// 18.333333333333332',
+            solution_type: 'script',
             testCases: [
               {
-                input: null,
-                expectedOutput: '3\n5'
+                input: { a: 12, b: 25, c: 18 },
+                expectedOutput: '55\n5400\n18.333333333333332'
+              },
+              {
+                input: { a: 10, b: 20, c: 30 },
+                expectedOutput: '60\n6000\n20'
+              },
+              {
+                input: { a: 0, b: 5, c: 10 },
+                expectedOutput: '15\n0\n5'
+              },
+              {
+                input: { a: -5, b: 10, c: 15 },
+                expectedOutput: '20\n-750\n6.666666666666667'
+              },
+              {
+                input: { a: 100, b: 200, c: 300 },
+                expectedOutput: '600\n6000000\n200'
               }
             ]
           },
           {
-            description: 'Three test scores are 78, 85, and 92. Print their average',
+            description: '// Do not rename obtained and total, use them as input for your program.\n// While testing we will change their values.\nconst obtained = 427;\nconst total = 500;\n\n// Calculate the percentage: (obtained / total) * 100\n// Print the percentage value\n// For example, if obtained = 427 and total = 500, your output should be:\n// 85.4',
+            solution_type: 'script',
             testCases: [
               {
-                input: null,
-                expectedOutput: '85'
+                input: { obtained: 427, total: 500 },
+                expectedOutput: '85.4'
+              },
+              {
+                input: { obtained: 360, total: 400 },
+                expectedOutput: '90'
+              },
+              {
+                input: { obtained: 75, total: 150 },
+                expectedOutput: '50'
+              },
+              {
+                input: { obtained: 500, total: 500 },
+                expectedOutput: '100'
+              },
+              {
+                input: { obtained: 0, total: 100 },
+                expectedOutput: '0'
+              },
+              {
+                input: { obtained: 33, total: 100 },
+                expectedOutput: '33'
               }
             ]
           },
           {
-            description: 'An item costs 1250 with a 20% discount. Print the discount amount on the first line, final price on the second line',
+            description: '// Do not rename num, use it as input for your program.\n// num will be a positive integer.\n// While testing we will change its value.\nconst num = 5847;\n\n// Extract and print the last digit of num\n// Hint: Use the modulo operator\n// For example, if num = 5847, your output should be:\n// 7',
+            solution_type: 'script',
             testCases: [
               {
-                input: null,
-                expectedOutput: '250\n1000'
+                input: { num: 5847 },
+                expectedOutput: '7'
+              },
+              {
+                input: { num: 1234 },
+                expectedOutput: '4'
+              },
+              {
+                input: { num: 9990 },
+                expectedOutput: '0'
+              },
+              {
+                input: { num: 5 },
+                expectedOutput: '5'
+              },
+              {
+                input: { num: 10000 },
+                expectedOutput: '0'
               }
             ]
           },
           {
-            description: 'Given the number 9472, print its last digit on the first line, and the number without the last digit on the second line',
+            description: '// Do not rename amount, use it as input for your program.\n// amount will be a positive integer representing total rupees.\n// While testing we will change its value.\nconst amount = 1847;\n\n// Break down the amount into 500, 100, 50, and remaining rupees\n// Calculate how many 500 notes, then from remainder how many 100 notes,\n// then from that remainder how many 50 notes, and finally the remaining amount\n// Print all four values in order\n// For example, if amount = 1847, your output should be:\n// 3\n// 3\n// 0\n// 47',
+            solution_type: 'script',
             testCases: [
               {
-                input: null,
-                expectedOutput: '2\n947'
+                input: { amount: 1847 },
+                expectedOutput: '3\n3\n0\n47'
+              },
+              {
+                input: { amount: 2750 },
+                expectedOutput: '5\n2\n1\n0'
+              },
+              {
+                input: { amount: 649 },
+                expectedOutput: '1\n1\n0\n49'
+              },
+              {
+                input: { amount: 25 },
+                expectedOutput: '0\n0\n0\n25'
+              },
+              {
+                input: { amount: 500 },
+                expectedOutput: '1\n0\n0\n0'
+              },
+              {
+                input: { amount: 3999 },
+                expectedOutput: '7\n4\n1\n49'
               }
             ]
           },
           {
-            description: 'Convert 25 Celsius to Fahrenheit. Formula: (celsius × 9 / 5) + 32. Print the result',
+            description: '// Do not rename num, use it as input for your program.\n// While testing we will change its value.\nconst num = 47;\n\n// Calculate the remainder when num is divided by 2\n// Print the remainder (0 for even, 1 for odd)\n// For example, if num = 47, your output should be:\n// 1',
+            solution_type: 'script',
             testCases: [
               {
-                input: null,
-                expectedOutput: '77'
+                input: { num: 47 },
+                expectedOutput: '1'
+              },
+              {
+                input: { num: 100 },
+                expectedOutput: '0'
+              },
+              {
+                input: { num: 89 },
+                expectedOutput: '1'
+              },
+              {
+                input: { num: 0 },
+                expectedOutput: '0'
+              },
+              {
+                input: { num: 1 },
+                expectedOutput: '1'
+              },
+              {
+                input: { num: 1000 },
+                expectedOutput: '0'
               }
             ]
           },
           {
-            description: 'Given two numbers 37 and 58, print their sum, difference, product, and quotient on separate lines (use larger minus smaller for difference, larger divided by smaller for quotient)',
+            description: '// Do not rename num, use it as input for your program.\n// num will be a two-digit number.\n// While testing we will change its value.\nconst num = 73;\n\n// Reverse the digits and print the reversed number\n// Extract tens and units digits, then form reversed number\n// For example, if num = 73, your output should be:\n// 37',
+            solution_type: 'script',
             testCases: [
               {
-                input: null,
-                expectedOutput: '95\n21\n2146\n1.5675675675675675'
+                input: { num: 73 },
+                expectedOutput: '37'
+              },
+              {
+                input: { num: 45 },
+                expectedOutput: '54'
+              },
+              {
+                input: { num: 91 },
+                expectedOutput: '19'
+              },
+              {
+                input: { num: 10 },
+                expectedOutput: '1'
+              },
+              {
+                input: { num: 99 },
+                expectedOutput: '99'
+              },
+              {
+                input: { num: 20 },
+                expectedOutput: '2'
               }
             ]
           },
           {
-            description: 'Convert 7384 seconds to hours, minutes, and remaining seconds. Print each on separate lines',
+            description: '// Do not rename principal and rate, use them as input for your program.\n// While testing we will change their values.\nconst principal = 10000;\nconst rate = 8;\n\n// Calculate the amount after 1 year with compound interest\n// Formula: principal * (1 + rate/100)\n// Print the final amount\n// For example, if principal = 10000 and rate = 8, your output should be:\n// 10800',
+            solution_type: 'script',
             testCases: [
               {
-                input: null,
-                expectedOutput: '2\n3\n4'
+                input: { principal: 10000, rate: 8 },
+                expectedOutput: '10800'
+              },
+              {
+                input: { principal: 5000, rate: 10 },
+                expectedOutput: '5500'
+              },
+              {
+                input: { principal: 20000, rate: 5 },
+                expectedOutput: '21000'
+              },
+              {
+                input: { principal: 1000, rate: 0 },
+                expectedOutput: '1000'
+              },
+              {
+                input: { principal: 15000, rate: 12 },
+                expectedOutput: '16800'
+              }
+            ]
+          },
+          {
+            description: '// Do not rename a, b, c, d, use them as input for your program.\n// While testing we will change their values.\nconst a = 10;\nconst b = 5;\nconst c = 3;\nconst d = 2;\n\n// Calculate: a + b * c - d\n// Then calculate: (a + b) * (c - d)\n// Print both results\n// For example, if a = 10, b = 5, c = 3, d = 2, your output should be:\n// 23\n// 15',
+            solution_type: 'script',
+            testCases: [
+              {
+                input: { a: 10, b: 5, c: 3, d: 2 },
+                expectedOutput: '23\n15'
+              },
+              {
+                input: { a: 20, b: 4, c: 5, d: 3 },
+                expectedOutput: '37\n48'
+              },
+              {
+                input: { a: 8, b: 6, c: 2, d: 1 },
+                expectedOutput: '19\n14'
+              },
+              {
+                input: { a: 0, b: 0, c: 0, d: 0 },
+                expectedOutput: '0\n0'
+              },
+              {
+                input: { a: 100, b: 10, c: 2, d: 1 },
+                expectedOutput: '119\n110'
+              },
+              {
+                input: { a: 5, b: 3, c: 3, d: 3 },
+                expectedOutput: '11\n0'
+              }
+            ]
+          },
+          {
+            description: '// Do not rename hours, minutes, seconds, use them as input for your program.\n// While testing we will change their values.\nconst hours = 2;\nconst minutes = 15;\nconst seconds = 30;\n\n// Convert the total time to seconds\n// 1 hour = 3600 seconds, 1 minute = 60 seconds\n// Print total seconds\n// For example, if hours = 2, minutes = 15, seconds = 30, your output should be:\n// 8130',
+            solution_type: 'script',
+            testCases: [
+              {
+                input: { hours: 2, minutes: 15, seconds: 30 },
+                expectedOutput: '8130'
+              },
+              {
+                input: { hours: 1, minutes: 0, seconds: 0 },
+                expectedOutput: '3600'
+              },
+              {
+                input: { hours: 0, minutes: 45, seconds: 20 },
+                expectedOutput: '2720'
+              },
+              {
+                input: { hours: 0, minutes: 0, seconds: 0 },
+                expectedOutput: '0'
+              },
+              {
+                input: { hours: 24, minutes: 0, seconds: 0 },
+                expectedOutput: '86400'
+              },
+              {
+                input: { hours: 0, minutes: 1, seconds: 1 },
+                expectedOutput: '61'
+              }
+            ]
+          },
+          {
+            description: '// Do not rename radius, use it as input for your program.\n// While testing we will change its value.\nconst radius = 7;\n\n// Calculate the area of a circle: π * radius * radius\n// Use 3.14159 as the value of π\n// Print the area\n// For example, if radius = 7, your output should be:\n// 153.93804',
+            solution_type: 'script',
+            testCases: [
+              {
+                input: { radius: 7 },
+                expectedOutput: '153.93804'
+              },
+              {
+                input: { radius: 10 },
+                expectedOutput: '314.159'
+              },
+              {
+                input: { radius: 5 },
+                expectedOutput: '78.53975'
+              },
+              {
+                input: { radius: 1 },
+                expectedOutput: '3.14159'
+              },
+              {
+                input: { radius: 0 },
+                expectedOutput: '0'
+              },
+              {
+                input: { radius: 100 },
+                expectedOutput: '31415.9'
+              }
+            ]
+          },
+          {
+            description: '// Do not rename num, use it as input for your program.\n// num will be a three-digit number.\n// While testing we will change its value.\nconst num = 456;\n\n// Extract all three digits and calculate their sum\n// Use division and modulo operations\n// Print the sum of digits\n// For example, if num = 456, your output should be:\n// 15',
+            solution_type: 'script',
+            testCases: [
+              {
+                input: { num: 456 },
+                expectedOutput: '15'
+              },
+              {
+                input: { num: 123 },
+                expectedOutput: '6'
+              },
+              {
+                input: { num: 999 },
+                expectedOutput: '27'
+              },
+              {
+                input: { num: 100 },
+                expectedOutput: '1'
+              },
+              {
+                input: { num: 505 },
+                expectedOutput: '10'
+              },
+              {
+                input: { num: 111 },
+                expectedOutput: '3'
+              }
+            ]
+          },
+          {
+            description: '// Do not rename costPrice and sellingPrice, use them as input for your program.\n// While testing we will change their values.\nconst costPrice = 850;\nconst sellingPrice = 1020;\n\n// Calculate the profit or loss amount (sellingPrice - costPrice)\n// Then calculate the profit/loss percentage: (difference / costPrice) * 100\n// Print the amount first, then the percentage\n// For example, if costPrice = 850 and sellingPrice = 1020, your output should be:\n// 170\n// 20',
+            solution_type: 'script',
+            testCases: [
+              {
+                input: { costPrice: 850, sellingPrice: 1020 },
+                expectedOutput: '170\n20'
+              },
+              {
+                input: { costPrice: 1000, sellingPrice: 1200 },
+                expectedOutput: '200\n20'
+              },
+              {
+                input: { costPrice: 500, sellingPrice: 400 },
+                expectedOutput: '-100\n-20'
+              },
+              {
+                input: { costPrice: 1000, sellingPrice: 1000 },
+                expectedOutput: '0\n0'
+              },
+              {
+                input: { costPrice: 200, sellingPrice: 300 },
+                expectedOutput: '100\n50'
+              },
+              {
+                input: { costPrice: 1500, sellingPrice: 1200 },
+                expectedOutput: '-300\n-20'
+              }
+            ]
+          },
+          {
+            description: '// Do not rename n1, n2, n3, n4, n5, use them as input for your program.\n// While testing we will change their values.\nconst n1 = 23;\nconst n2 = 45;\nconst n3 = 67;\nconst n4 = 12;\nconst n5 = 89;\n\n// Calculate the sum of all five numbers\n// Calculate the average by dividing sum by 5\n// Print the average\n// For example, if numbers are 23, 45, 67, 12, 89, your output should be:\n// 47.2',
+            solution_type: 'script',
+            testCases: [
+              {
+                input: { n1: 23, n2: 45, n3: 67, n4: 12, n5: 89 },
+                expectedOutput: '47.2'
+              },
+              {
+                input: { n1: 10, n2: 20, n3: 30, n4: 40, n5: 50 },
+                expectedOutput: '30'
+              },
+              {
+                input: { n1: 100, n2: 200, n3: 300, n4: 400, n5: 500 },
+                expectedOutput: '300'
+              },
+              {
+                input: { n1: 0, n2: 0, n3: 0, n4: 0, n5: 0 },
+                expectedOutput: '0'
+              },
+              {
+                input: { n1: 5, n2: 5, n3: 5, n4: 5, n5: 5 },
+                expectedOutput: '5'
+              },
+              {
+                input: { n1: -10, n2: 10, n3: 20, n4: 30, n5: 50 },
+                expectedOutput: '20'
+              }
+            ]
+          },
+          {
+            description: '// Do not rename weight and height, use them as input for your program.\n// weight is in kilograms, height is in meters.\n// While testing we will change their values.\nconst weight = 70;\nconst height = 1.75;\n\n// Calculate BMI: weight / (height * height)\n// Print the BMI value\n// For example, if weight = 70 and height = 1.75, your output should be:\n// 22.857142857142858',
+            solution_type: 'script',
+            testCases: [
+              {
+                input: { weight: 70, height: 1.75 },
+                expectedOutput: '22.857142857142858'
+              },
+              {
+                input: { weight: 80, height: 1.8 },
+                expectedOutput: '24.691358024691358'
+              },
+              {
+                input: { weight: 60, height: 1.65 },
+                expectedOutput: '22.038567493112947'
+              },
+              {
+                input: { weight: 100, height: 2.0 },
+                expectedOutput: '25'
+              },
+              {
+                input: { weight: 50, height: 1.5 },
+                expectedOutput: '22.22222222222222'
+              },
+              {
+                input: { weight: 90, height: 1.9 },
+                expectedOutput: '24.930747922437675'
               }
             ]
           }

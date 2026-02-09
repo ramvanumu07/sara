@@ -23,7 +23,6 @@ Data Serialization (JSON)
 Functions
 Arrow Functions
 Recursion (Functions calling themselves)
-Callbacks
 Closures (Functions remembering scope)
 forEach
 map
@@ -41,5 +40,6 @@ Nested Arrays / Multidimensional Data
 Error Handling (try-catch)
 Object-Oriented Programming (Classes)
 Organizing Code (Modules)
+
 Async Concepts (Timers/Promises)
 Writing Cleaner Async (Async/Await)
