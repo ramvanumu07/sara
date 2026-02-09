@@ -1766,6 +1766,81 @@ export const courses = [
         ]
       },
       {
+        "id": "operators-comparison-and-logical",
+        "title": "Operators (Comparison & Logical)",
+        "outcomes": [
+          "Abstract vs. Strict Equality: == vs ===",
+          "Relational Operators: >, <, >=, <=",
+          "Logical Gates: AND (&&), OR (||), and NOT (!)",
+          "Short-circuiting: How JS optimizes logical checks"
+        ],
+        "tasks": [
+          {
+            "description": "// Use a and b as input.\n// Print the result of (a == b) followed by (a === b).\nconst a = 10;\nconst b = \"10\";\n\n// For a = 10, b = \"10\", output:\n// true\n// false",
+            "solution_type": "script",
+            "testCases": [
+              { "input": { "a": 10, "b": "10" }, "expectedOutput": "true\nfalse" },
+              { "input": { "a": 0, "b": false }, "expectedOutput": "true\nfalse" },
+              { "input": { "a": 1, "b": true }, "expectedOutput": "true\nfalse" }
+            ]
+          },
+          {
+            "description": "// Use x as input.\n// Use comparison and logical operators to check if x is between 50 and 100 (inclusive).\n// Print the boolean result.\nconst x = 75;\n\n// For x = 75, output: true",
+            "solution_type": "script",
+            "testCases": [
+              { "input": { "x": 75 }, "expectedOutput": "true" },
+              { "input": { "x": 50 }, "expectedOutput": "true" },
+              { "input": { "x": 101 }, "expectedOutput": "false" },
+              { "input": { "x": 49 }, "expectedOutput": "false" }
+            ]
+          },
+          {
+            "description": "// Use val as input.\n// Use the NOT (!) operator to print the opposite of the value's truthiness.\n// Then print the 'double NOT' (!!) to show its actual boolean value.\nconst val = \"Hello\";\n\n// For val = \"Hello\", output:\n// false\n// true",
+            "solution_type": "script",
+            "testCases": [
+              { "input": { "val": "Hello" }, "expectedOutput": "false\ntrue" },
+              { "input": { "val": "" }, "expectedOutput": "true\nfalse" },
+              { "input": { "val": 0 }, "expectedOutput": "true\nfalse" }
+            ]
+          },
+          {
+            "description": "// Short-circuiting OR (||)\n// Print the value of (input || \"Default\").\n// This mimics assigning a fallback value without an if-statement.\nconst input = \"\";\n\n// For input = \"\", output: Default",
+            "solution_type": "script",
+            "testCases": [
+              { "input": { "input": "" }, "expectedOutput": "Default" },
+              { "input": { "input": "User123" }, "expectedOutput": "User123" },
+              { "input": { "input": null }, "expectedOutput": "Default" }
+            ]
+          },
+          {
+            "description": "// Short-circuiting AND (&&)\n// Print the value of (isValid && \"Success\").\n// If isValid is false, it should print false. If true, it should print \"Success\".\nconst isValid = true;\n\n// For isValid = true, output: Success",
+            "solution_type": "script",
+            "testCases": [
+              { "input": { "isValid": true }, "expectedOutput": "Success" },
+              { "input": { "isValid": false }, "expectedOutput": "false" }
+            ]
+          },
+          {
+            "description": "// Relational Strings\n// Print the result of (str1 > str2).\n// This checks alphabetical (Unicode) priority.\nconst str1 = \"apple\";\nconst str2 = \"banana\";\n\n// For \"apple\" > \"banana\", output: false",
+            "solution_type": "script",
+            "testCases": [
+              { "input": { "str1": "apple", "str2": "banana" }, "expectedOutput": "false" },
+              { "input": { "str1": "cat", "str2": "can" }, "expectedOutput": "true" },
+              { "input": { "str1": "Alpha", "str2": "alpha" }, "expectedOutput": "false" }
+            ]
+          },
+          {
+            "description": "// Multiple Logic Gates\n// Check if (a is even) AND (b is even).\n// Print the boolean result.\nconst a = 4;\nconst b = 8;\n\n// For 4 and 8, output: true",
+            "solution_type": "script",
+            "testCases": [
+              { "input": { "a": 4, "b": 8 }, "expectedOutput": "true" },
+              { "input": { "a": 3, "b": 8 }, "expectedOutput": "false" },
+              { "input": { "a": 7, "b": 5 }, "expectedOutput": "false" }
+            ]
+          }
+        ]
+      },
+      {
         "id": "if-statement",
         "title": "if Statement",
         "outcomes": [
@@ -9085,7 +9160,1176 @@ export const courses = [
           }
         ]
       },
-      
+      {
+        "id": "classes",
+        "title": "Object-oriented programming",
+        "outcomes": [
+          "Classes as Blueprints: Defining the Template",
+          "The constructor Method: Initializing Instance State",
+          "this in Classes: Referencing the Current Instance",
+          "Methods: Defining Shared Behavior",
+          "Static Members: Properties and Methods belonging to the Blueprint",
+          "Encapsulation: Using Getters and Setters for Data Control",
+          "Inheritance: Extending Logic with \"extends\" and \"super\"",
+          "Polymorphism: Overriding Methods for Specialized Logic",
+          "Type Checking: Identifying Instances with \"instanceof\""
+        ],
+        "tasks": [
+          {
+            "description": "// Create a class named Person with a constructor that takes name and age\n// Add a method introduce() that returns \"Hi, I'm {name} and I'm {age} years old\"\n// Create an instance with name \"Alice\" and age 25\n// Call introduce() and print the result\n// Your output should be: Hi, I'm Alice and I'm 25 years old",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "name": "Alice", "age": 25 },
+                "expectedOutput": "Hi, I'm Alice and I'm 25 years old"
+              },
+              {
+                "input": { "name": "Bob", "age": 30 },
+                "expectedOutput": "Hi, I'm Bob and I'm 30 years old"
+              },
+              {
+                "input": { "name": "Charlie", "age": 22 },
+                "expectedOutput": "Hi, I'm Charlie and I'm 22 years old"
+              }
+            ]
+          },
+          {
+            "description": "// Create a class named Rectangle with constructor taking width and height\n// Add a method getArea() that returns the area\n// Add a method getPerimeter() that returns the perimeter\n// Create instance with width 5 and height 10, print the area\n// Your output should be: 50",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "width": 5, "height": 10, "method": "getArea" },
+                "expectedOutput": "50"
+              },
+              {
+                "input": { "width": 5, "height": 10, "method": "getPerimeter" },
+                "expectedOutput": "30"
+              },
+              {
+                "input": { "width": 7, "height": 3, "method": "getArea" },
+                "expectedOutput": "21"
+              }
+            ]
+          },
+          {
+            "description": "// Create a class named Counter with a constructor that initializes count to 0\n// Add method increment() that increases count by 1\n// Add method decrement() that decreases count by 1\n// Add method getValue() that returns current count\n// Create instance, call increment twice, then getValue and print result\n// Your output should be: 2",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "operations": ["increment", "increment", "getValue"] },
+                "expectedOutput": "2"
+              },
+              {
+                "input": { "operations": ["increment", "decrement", "getValue"] },
+                "expectedOutput": "0"
+              },
+              {
+                "input": { "operations": ["increment", "increment", "increment", "getValue"] },
+                "expectedOutput": "3"
+              }
+            ]
+          },
+          {
+            "description": "// Create a class named BankAccount with constructor taking accountHolder and balance\n// Add method deposit(amount) that adds to balance and returns new balance\n// Add method withdraw(amount) that subtracts from balance and returns new balance\n// Add method getBalance() that returns current balance\n// Create account with holder \"Alice\" and balance 100, deposit 50, print balance\n// Your output should be: 150",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "accountHolder": "Alice", "initialBalance": 100, "operations": [{ "type": "deposit", "amount": 50 }] },
+                "expectedOutput": "150"
+              },
+              {
+                "input": { "accountHolder": "Bob", "initialBalance": 200, "operations": [{ "type": "withdraw", "amount": 50 }] },
+                "expectedOutput": "150"
+              },
+              {
+                "input": { "accountHolder": "Charlie", "initialBalance": 500, "operations": [{ "type": "deposit", "amount": 100 }, { "type": "withdraw", "amount": 50 }] },
+                "expectedOutput": "550"
+              }
+            ]
+          },
+          {
+            "description": "// Create a class named Circle with constructor taking radius\n// Add a static property PI with value 3.14159\n// Add method getArea() that calculates area using Circle.PI\n// Add method getCircumference() that calculates circumference using Circle.PI\n// Create circle with radius 5, print the area\n// Your output should be: 78.53975",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "radius": 5, "method": "getArea" },
+                "expectedOutput": "78.53975"
+              },
+              {
+                "input": { "radius": 5, "method": "getCircumference" },
+                "expectedOutput": "31.4159"
+              },
+              {
+                "input": { "radius": 10, "method": "getArea" },
+                "expectedOutput": "314.159"
+              }
+            ]
+          },
+          {
+            "description": "// Create a class named Temperature with constructor taking celsius\n// Add getter fahrenheit that converts celsius to fahrenheit: (C × 9/5) + 32\n// Add setter fahrenheit that converts fahrenheit to celsius: (F - 32) × 5/9\n// Create instance with 0 celsius, access fahrenheit getter and print\n// Your output should be: 32",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "celsius": 0, "operation": "get" },
+                "expectedOutput": "32"
+              },
+              {
+                "input": { "celsius": 100, "operation": "get" },
+                "expectedOutput": "212"
+              },
+              {
+                "input": { "fahrenheit": 32, "operation": "set" },
+                "expectedOutput": "0"
+              }
+            ]
+          },
+          {
+            "description": "// Create a class named Animal with constructor taking name\n// Add method speak() that returns \"{name} makes a sound\"\n// Create a class Dog that extends Animal\n// Override speak() to return \"{name} barks\"\n// Create Dog instance with name \"Rex\", call speak() and print\n// Your output should be: Rex barks",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "name": "Rex" },
+                "expectedOutput": "Rex barks"
+              },
+              {
+                "input": { "name": "Buddy" },
+                "expectedOutput": "Buddy barks"
+              },
+              {
+                "input": { "name": "Max" },
+                "expectedOutput": "Max barks"
+              }
+            ]
+          },
+          {
+            "description": "// Create a class Vehicle with constructor taking brand\n// Add method getInfo() that returns \"Brand: {brand}\"\n// Create class Car that extends Vehicle\n// Car constructor takes brand and model, calls super(brand)\n// Override getInfo() to return \"Brand: {brand}, Model: {model}\"\n// Create Car with brand \"Toyota\" and model \"Camry\", print getInfo()\n// Your output should be: Brand: Toyota, Model: Camry",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "brand": "Toyota", "model": "Camry" },
+                "expectedOutput": "Brand: Toyota, Model: Camry"
+              },
+              {
+                "input": { "brand": "Honda", "model": "Civic" },
+                "expectedOutput": "Brand: Honda, Model: Civic"
+              },
+              {
+                "input": { "brand": "Ford", "model": "Mustang" },
+                "expectedOutput": "Brand: Ford, Model: Mustang"
+              }
+            ]
+          },
+          {
+            "description": "// Create a class Shape with method getArea() that returns 0\n// Create class Square that extends Shape with constructor taking side\n// Override getArea() to return side * side\n// Create class Circle that extends Shape with constructor taking radius\n// Override getArea() to return 3.14159 * radius * radius\n// Create Square with side 4, print getArea()\n// Your output should be: 16",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "type": "Square", "value": 4 },
+                "expectedOutput": "16"
+              },
+              {
+                "input": { "type": "Circle", "value": 5 },
+                "expectedOutput": "78.53975"
+              },
+              {
+                "input": { "type": "Square", "value": 10 },
+                "expectedOutput": "100"
+              }
+            ]
+          },
+          {
+            "description": "// Create a class Person with constructor taking name\n// Create a class Student that extends Person\n// Create an instance of Student with name \"Alice\"\n// Use instanceof to check if the instance is a Student\n// Print the result\n// Your output should be: true",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "name": "Alice", "checkClass": "Student" },
+                "expectedOutput": "true"
+              },
+              {
+                "input": { "name": "Bob", "checkClass": "Person" },
+                "expectedOutput": "true"
+              }
+            ]
+          },
+          {
+            "description": "// Create a class Calculator with static method add(a, b) that returns a + b\n// Add static method multiply(a, b) that returns a * b\n// Call Calculator.add(5, 3) without creating an instance\n// Print the result\n// Your output should be: 8",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "method": "add", "a": 5, "b": 3 },
+                "expectedOutput": "8"
+              },
+              {
+                "input": { "method": "multiply", "a": 5, "b": 3 },
+                "expectedOutput": "15"
+              },
+              {
+                "input": { "method": "add", "a": 10, "b": 20 },
+                "expectedOutput": "30"
+              }
+            ]
+          },
+          {
+            "description": "// Create a class User with constructor taking username\n// Add private property _password (initialized to empty string)\n// Add setter password that stores the value\n// Add getter password that returns \"*****\" (always hides actual password)\n// Create user, set password to \"secret123\", access password getter and print\n// Your output should be: *****",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "username": "alice", "password": "secret123" },
+                "expectedOutput": "*****"
+              },
+              {
+                "input": { "username": "bob", "password": "pass456" },
+                "expectedOutput": "*****"
+              }
+            ]
+          },
+          {
+            "description": "// Create a class Book with constructor taking title, author, pages\n// Add method getSummary() that returns \"{title} by {author}, {pages} pages\"\n// Add static method comparePages(book1, book2) that returns the book with more pages\n// Create two books and use comparePages to find which has more pages\n// Book1: \"1984\", \"Orwell\", 328\n// Book2: \"Dune\", \"Herbert\", 412\n// Print the title of the book with more pages\n// Your output should be: Dune",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": {
+                  "book1": { "title": "1984", "author": "Orwell", "pages": 328 },
+                  "book2": { "title": "Dune", "author": "Herbert", "pages": 412 }
+                },
+                "expectedOutput": "Dune"
+              },
+              {
+                "input": {
+                  "book1": { "title": "Hobbit", "author": "Tolkien", "pages": 500 },
+                  "book2": { "title": "Harry Potter", "author": "Rowling", "pages": 300 }
+                },
+                "expectedOutput": "Hobbit"
+              }
+            ]
+          },
+          {
+            "description": "// Create a class Employee with constructor taking name and salary\n// Create class Manager that extends Employee\n// Manager constructor takes name, salary, and department\n// Add method getDetails() in Manager that returns \"{name}, Salary: {salary}, Department: {department}\"\n// Create Manager with name \"Alice\", salary 80000, department \"IT\"\n// Print getDetails()\n// Your output should be: Alice, Salary: 80000, Department: IT",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "name": "Alice", "salary": 80000, "department": "IT" },
+                "expectedOutput": "Alice, Salary: 80000, Department: IT"
+              },
+              {
+                "input": { "name": "Bob", "salary": 90000, "department": "HR" },
+                "expectedOutput": "Bob, Salary: 90000, Department: HR"
+              }
+            ]
+          },
+          {
+            "description": "// Create a class Product with constructor taking name and price\n// Add getter formattedPrice that returns \"$\" + price\n// Add method applyDiscount(percentage) that reduces price by that percentage\n// Create product with name \"Laptop\" and price 1000\n// Apply 10% discount, then print formattedPrice\n// Your output should be: $900",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "name": "Laptop", "price": 1000, "discount": 10 },
+                "expectedOutput": "$900"
+              },
+              {
+                "input": { "name": "Phone", "price": 500, "discount": 20 },
+                "expectedOutput": "$400"
+              },
+              {
+                "input": { "name": "Tablet", "price": 300, "discount": 15 },
+                "expectedOutput": "$255"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "modules",
+        "title": "Organizing code with modules",
+        "outcomes": [
+          "Module Fundamentals: Encapsulation and Code Separation",
+          "Named Exports: Sharing Multiple Values per File",
+          "Default Exports: Defining the Primary Module Export",
+          "Import Logic: Named vs. Default Syntax",
+          "Alias Management: Renaming Imports to avoid Conflicts",
+          "Namespace Imports: Importing Everything as a Single Object (* as)",
+          "Module Scope: Why variables stay private by default",
+          "Modern Patterns: Dynamic Imports for Performance"
+        ],
+        "tasks": [
+          {
+            "description": "// Create a module that exports a function named greet\n// greet should take a name parameter and return \"Hello, {name}!\"\n// Export using named export syntax\n// In another file, import and call greet(\"Alice\")\n// Print the result\n// Your output should be: Hello, Alice!",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "name": "Alice" },
+                "expectedOutput": "Hello, Alice!"
+              },
+              {
+                "input": { "name": "Bob" },
+                "expectedOutput": "Hello, Bob!"
+              },
+              {
+                "input": { "name": "Charlie" },
+                "expectedOutput": "Hello, Charlie!"
+              }
+            ]
+          },
+          {
+            "description": "// Create a module that exports two functions: add and subtract\n// add(a, b) returns a + b\n// subtract(a, b) returns a - b\n// Use named exports for both\n// Import both functions and call add(10, 5)\n// Print the result\n// Your output should be: 15",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "function": "add", "a": 10, "b": 5 },
+                "expectedOutput": "15"
+              },
+              {
+                "input": { "function": "subtract", "a": 10, "b": 5 },
+                "expectedOutput": "5"
+              },
+              {
+                "input": { "function": "add", "a": 20, "b": 30 },
+                "expectedOutput": "50"
+              }
+            ]
+          },
+          {
+            "description": "// Create a module with a default export of a function multiply(a, b)\n// multiply should return a * b\n// Import the default export and call it with arguments 6 and 7\n// Print the result\n// Your output should be: 42",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "a": 6, "b": 7 },
+                "expectedOutput": "42"
+              },
+              {
+                "input": { "a": 5, "b": 5 },
+                "expectedOutput": "25"
+              },
+              {
+                "input": { "a": 10, "b": 3 },
+                "expectedOutput": "30"
+              }
+            ]
+          },
+          {
+            "description": "// Create a module that exports constant PI = 3.14159\n// Export it as a named export\n// Import PI using an alias: import { PI as pi }\n// Calculate the area of circle with radius 5 using the imported pi\n// Print the result\n// Your output should be: 78.53975",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "radius": 5 },
+                "expectedOutput": "78.53975"
+              },
+              {
+                "input": { "radius": 10 },
+                "expectedOutput": "314.159"
+              },
+              {
+                "input": { "radius": 2 },
+                "expectedOutput": "12.56636"
+              }
+            ]
+          },
+          {
+            "description": "// Create a module that exports multiple math constants:\n// export const E = 2.71828\n// export const PHI = 1.61803\n// export const SQRT2 = 1.41421\n// Import all exports as a namespace: import * as constants\n// Access constants.E and print it\n// Your output should be: 2.71828",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "constant": "E" },
+                "expectedOutput": "2.71828"
+              },
+              {
+                "input": { "constant": "PHI" },
+                "expectedOutput": "1.61803"
+              },
+              {
+                "input": { "constant": "SQRT2" },
+                "expectedOutput": "1.41421"
+              }
+            ]
+          },
+          {
+            "description": "// Create a module that exports a class Calculator\n// Calculator has methods add(a, b) and multiply(a, b)\n// Export Calculator as default export\n// Import the class, create an instance, and call add(8, 2)\n// Print the result\n// Your output should be: 10",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "method": "add", "a": 8, "b": 2 },
+                "expectedOutput": "10"
+              },
+              {
+                "input": { "method": "multiply", "a": 8, "b": 2 },
+                "expectedOutput": "16"
+              },
+              {
+                "input": { "method": "add", "a": 15, "b": 5 },
+                "expectedOutput": "20"
+              }
+            ]
+          },
+          {
+            "description": "// Create a module with both named and default exports\n// Default export: function divide(a, b)\n// Named export: function modulo(a, b)\n// Import both and call divide(20, 4)\n// Print the result\n// Your output should be: 5",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "function": "divide", "a": 20, "b": 4 },
+                "expectedOutput": "5"
+              },
+              {
+                "input": { "function": "modulo", "a": 20, "b": 6 },
+                "expectedOutput": "2"
+              },
+              {
+                "input": { "function": "divide", "a": 100, "b": 10 },
+                "expectedOutput": "10"
+              }
+            ]
+          },
+          {
+            "description": "// Create a module that has a private variable count = 0\n// Export a function increment() that increases count and returns it\n// Export a function getCount() that returns current count\n// Import both functions, call increment() twice, then getCount()\n// Print the result\n// Your output should be: 2",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "operations": ["increment", "increment", "getCount"] },
+                "expectedOutput": "2"
+              },
+              {
+                "input": { "operations": ["increment", "getCount"] },
+                "expectedOutput": "1"
+              },
+              {
+                "input": { "operations": ["increment", "increment", "increment", "getCount"] },
+                "expectedOutput": "3"
+              }
+            ]
+          },
+          {
+            "description": "// Create a module utils.js that exports:\n// export function square(n) - returns n * n\n// export function cube(n) - returns n * n * n\n// Import only square using named import\n// Call square(5) and print result\n// Your output should be: 25",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "function": "square", "n": 5 },
+                "expectedOutput": "25"
+              },
+              {
+                "input": { "function": "cube", "n": 3 },
+                "expectedOutput": "27"
+              },
+              {
+                "input": { "function": "square", "n": 10 },
+                "expectedOutput": "100"
+              }
+            ]
+          },
+          {
+            "description": "// Create a module that exports an object as default:\n// export default { name: \"John\", age: 30, city: \"NYC\" }\n// Import the default object and access the name property\n// Print the name\n// Your output should be: John",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "property": "name" },
+                "expectedOutput": "John"
+              },
+              {
+                "input": { "property": "age" },
+                "expectedOutput": "30"
+              },
+              {
+                "input": { "property": "city" },
+                "expectedOutput": "NYC"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "async-basics",
+        "title": "Callbacks, timers, and async concepts",
+        "outcomes": [
+          "Execution Models: Synchronous vs. Asynchronous",
+          "The Single Thread: Why JS can only do one thing at a time",
+          "The Event Loop: Managing the Task Queue",
+          "Timer Logic: setTimeout() and setInterval() Syntax",
+          "Resource Management: Clearing Timers (clearTimeout/clearInterval)",
+          "Callback Pattern: Passing logic to the future",
+          "Control Flow: Understanding Non-blocking Execution Order",
+          "Callback Hell: The limitation of nested callbacks",
+          "Evolution: Why we need Promises"
+        ],
+        "tasks": [
+          {
+            "description": "// Use setTimeout to print \"Hello\" after 1 second (1000ms)\n// Note: For testing purposes, the delay will be simulated\n// Your output should be: Hello",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "message": "Hello", "delay": 1000 },
+                "expectedOutput": "Hello"
+              },
+              {
+                "input": { "message": "World", "delay": 1000 },
+                "expectedOutput": "World"
+              },
+              {
+                "input": { "message": "Test", "delay": 500 },
+                "expectedOutput": "Test"
+              }
+            ]
+          },
+          {
+            "description": "// Print \"Start\" immediately\n// Use setTimeout to print \"End\" after 0ms\n// Observe execution order due to event loop\n// Your output should be:\n// Start\n// End",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": {},
+                "expectedOutput": "Start\nEnd"
+              }
+            ]
+          },
+          {
+            "description": "// Create a function countdown that takes a number n\n// Use setTimeout to print each number from n down to 1\n// Each number should be printed 1 second apart\n// Call countdown(3)\n// Your output should be:\n// 3\n// 2\n// 1",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "n": 3 },
+                "expectedOutput": "3\n2\n1"
+              },
+              {
+                "input": { "n": 2 },
+                "expectedOutput": "2\n1"
+              },
+              {
+                "input": { "n": 5 },
+                "expectedOutput": "5\n4\n3\n2\n1"
+              }
+            ]
+          },
+          {
+            "description": "// Use setInterval to print \"Tick\" every 1 second\n// After 3 ticks, use clearInterval to stop it\n// Your output should be:\n// Tick\n// Tick\n// Tick",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "message": "Tick", "times": 3 },
+                "expectedOutput": "Tick\nTick\nTick"
+              },
+              {
+                "input": { "message": "Test", "times": 2 },
+                "expectedOutput": "Test\nTest"
+              },
+              {
+                "input": { "message": "Count", "times": 4 },
+                "expectedOutput": "Count\nCount\nCount\nCount"
+              }
+            ]
+          },
+          {
+            "description": "// Create a function delayedGreeting that takes name and callback\n// Use setTimeout to call the callback with \"Hello, {name}\" after 1 second\n// Call delayedGreeting(\"Alice\", (msg) => console.log(msg))\n// Your output should be: Hello, Alice",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "name": "Alice" },
+                "expectedOutput": "Hello, Alice"
+              },
+              {
+                "input": { "name": "Bob" },
+                "expectedOutput": "Hello, Bob"
+              },
+              {
+                "input": { "name": "Charlie" },
+                "expectedOutput": "Hello, Charlie"
+              }
+            ]
+          },
+          {
+            "description": "// Create a function processArray that takes an array and callback\n// Use setTimeout to process each element after a delay\n// Call the callback with each element\n// Test with array [1, 2, 3] and callback that prints each number\n// Your output should be:\n// 1\n// 2\n// 3",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "arr": [1, 2, 3] },
+                "expectedOutput": "1\n2\n3"
+              },
+              {
+                "input": { "arr": [5, 10] },
+                "expectedOutput": "5\n10"
+              },
+              {
+                "input": { "arr": [7] },
+                "expectedOutput": "7"
+              }
+            ]
+          },
+          {
+            "description": "// Create nested callbacks to simulate callback hell\n// First setTimeout prints \"Step 1\" after 1s\n// Inside its callback, another setTimeout prints \"Step 2\" after 1s\n// Inside that callback, print \"Step 3\"\n// Your output should be:\n// Step 1\n// Step 2\n// Step 3",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": {},
+                "expectedOutput": "Step 1\nStep 2\nStep 3"
+              }
+            ]
+          },
+          {
+            "description": "// Create a function executeAfterDelay that takes a callback and delay\n// Use setTimeout to execute the callback after the delay\n// The function should return the timer ID\n// Call it with a callback that prints \"Executed\" and delay 1000\n// Then immediately clear the timeout using clearTimeout\n// If cleared successfully, print \"Cancelled\"\n// Your output should be: Cancelled",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "shouldCancel": true },
+                "expectedOutput": "Cancelled"
+              },
+              {
+                "input": { "shouldCancel": false },
+                "expectedOutput": "Executed"
+              }
+            ]
+          },
+          {
+            "description": "// Demonstrate execution order:\n// Print \"1\" immediately\n// Use setTimeout to print \"3\" after 0ms\n// Print \"2\" immediately after setting timeout\n// Your output should be:\n// 1\n// 2\n// 3",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": {},
+                "expectedOutput": "1\n2\n3"
+              }
+            ]
+          },
+          {
+            "description": "// Create a function repeat that takes message, times, and interval\n// Use setInterval to print message every interval milliseconds\n// After printing 'times' number of times, clear the interval\n// Call repeat(\"Hello\", 3, 1000)\n// Your output should be:\n// Hello\n// Hello\n// Hello",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "message": "Hello", "times": 3, "interval": 1000 },
+                "expectedOutput": "Hello\nHello\nHello"
+              },
+              {
+                "input": { "message": "Test", "times": 2, "interval": 500 },
+                "expectedOutput": "Test\nTest"
+              }
+            ]
+          },
+          {
+            "description": "// Create a function fetchData that takes a callback\n// Simulate async data fetching with setTimeout (1 second)\n// After timeout, call callback with data: {id: 1, name: \"User\"}\n// In the callback, print the name property\n// Your output should be: User",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "data": { "id": 1, "name": "User" } },
+                "expectedOutput": "User"
+              },
+              {
+                "input": { "data": { "id": 2, "name": "Alice" } },
+                "expectedOutput": "Alice"
+              },
+              {
+                "input": { "data": { "id": 3, "name": "Bob" } },
+                "expectedOutput": "Bob"
+              }
+            ]
+          },
+          {
+            "description": "// Create a stopwatch that counts seconds\n// Use setInterval to increment and print count every 1 second\n// After reaching 5 seconds, clear the interval and print \"Stopped\"\n// Your output should be:\n// 1\n// 2\n// 3\n// 4\n// 5\n// Stopped",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "maxSeconds": 5 },
+                "expectedOutput": "1\n2\n3\n4\n5\nStopped"
+              },
+              {
+                "input": { "maxSeconds": 3 },
+                "expectedOutput": "1\n2\n3\nStopped"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "promises",
+        "title": "Creating and consuming promises",
+        "outcomes": [
+          "Promise States: Pending, Fulfilled, and Rejected",
+          "Constructor Logic: Using resolve and reject",
+          "Consumption: Handling values with .then() and .catch()",
+          "The finally Handler: Closing the loop",
+          "Promise Chaining: Sequential Async Execution",
+          "Value Passing: Why returning from .then() creates a new Promise",
+          "Static Methods: Promise.all() and allSettled() for concurrency",
+          "Optimization: Using Promise.race() for speed-based logic"
+        ],
+        "tasks": [
+          {
+            "description": "// Create a Promise that resolves with \"Success\" after 1 second\n// Use .then() to print the resolved value\n// Your output should be: Success",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "value": "Success" },
+                "expectedOutput": "Success"
+              },
+              {
+                "input": { "value": "Done" },
+                "expectedOutput": "Done"
+              },
+              {
+                "input": { "value": "Complete" },
+                "expectedOutput": "Complete"
+              }
+            ]
+          },
+          {
+            "description": "// Create a Promise that rejects with \"Error occurred\" after 1 second\n// Use .catch() to handle the rejection and print the error message\n// Your output should be: Error occurred",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "error": "Error occurred" },
+                "expectedOutput": "Error occurred"
+              },
+              {
+                "input": { "error": "Failed" },
+                "expectedOutput": "Failed"
+              },
+              {
+                "input": { "error": "Not found" },
+                "expectedOutput": "Not found"
+              }
+            ]
+          },
+          {
+            "description": "// Create a Promise that resolves with number 5\n// Use .then() to double the value and return it\n// Chain another .then() to print the doubled value\n// Your output should be: 10",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "value": 5 },
+                "expectedOutput": "10"
+              },
+              {
+                "input": { "value": 10 },
+                "expectedOutput": "20"
+              },
+              {
+                "input": { "value": 7 },
+                "expectedOutput": "14"
+              }
+            ]
+          },
+          {
+            "description": "// Create a Promise that resolves with \"Data\"\n// Add .finally() that prints \"Cleanup\" regardless of outcome\n// Add .then() that prints the resolved value\n// Your output should be:\n// Data\n// Cleanup",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "value": "Data" },
+                "expectedOutput": "Data\nCleanup"
+              },
+              {
+                "input": { "value": "Result" },
+                "expectedOutput": "Result\nCleanup"
+              }
+            ]
+          },
+          {
+            "description": "// Create a function that returns a Promise\n// The Promise should resolve with \"Hello\" if input is true\n// Otherwise reject with \"Error\"\n// Call the function with true, handle with .then() and print result\n// Your output should be: Hello",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "condition": true },
+                "expectedOutput": "Hello"
+              },
+              {
+                "input": { "condition": false },
+                "expectedOutput": "Error"
+              }
+            ]
+          },
+          {
+            "description": "// Create three Promises that resolve with 1, 2, and 3 respectively\n// Use Promise.all() to wait for all promises\n// Print the array of results\n// Your output should be: [1,2,3]",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "values": [1, 2, 3] },
+                "expectedOutput": "[1,2,3]"
+              },
+              {
+                "input": { "values": [5, 10, 15] },
+                "expectedOutput": "[5,10,15]"
+              },
+              {
+                "input": { "values": [7, 14] },
+                "expectedOutput": "[7,14]"
+              }
+            ]
+          },
+          {
+            "description": "// Create two Promises:\n// First resolves with \"Fast\" after 1 second\n// Second resolves with \"Slow\" after 2 seconds\n// Use Promise.race() to get the fastest result\n// Print the result\n// Your output should be: Fast",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "fast": "Fast", "slow": "Slow" },
+                "expectedOutput": "Fast"
+              },
+              {
+                "input": { "fast": "Quick", "slow": "Delayed" },
+                "expectedOutput": "Quick"
+              }
+            ]
+          },
+          {
+            "description": "// Chain three Promises:\n// First resolves with 10\n// Second .then() adds 5 and returns result\n// Third .then() multiplies by 2 and prints result\n// Your output should be: 30",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "initial": 10 },
+                "expectedOutput": "30"
+              },
+              {
+                "input": { "initial": 5 },
+                "expectedOutput": "20"
+              },
+              {
+                "input": { "initial": 20 },
+                "expectedOutput": "50"
+              }
+            ]
+          },
+          {
+            "description": "// Create a Promise that randomly resolves or rejects\n// If Math.random() > 0.5, resolve with \"Success\"\n// Otherwise reject with \"Failure\"\n// Handle both cases and print the appropriate message\n// For testing: assume it resolves\n// Your output should be: Success",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "shouldResolve": true },
+                "expectedOutput": "Success"
+              },
+              {
+                "input": { "shouldResolve": false },
+                "expectedOutput": "Failure"
+              }
+            ]
+          },
+          {
+            "description": "// Create two Promises: one resolves with \"A\", one rejects with \"B\"\n// Use Promise.allSettled() to handle both\n// Print the status and value/reason of each\n// Format: \"fulfilled: A\" and \"rejected: B\"\n// Your output should be:\n// fulfilled: A\n// rejected: B",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "resolveValue": "A", "rejectValue": "B" },
+                "expectedOutput": "fulfilled: A\nrejected: B"
+              },
+              {
+                "input": { "resolveValue": "Success", "rejectValue": "Error" },
+                "expectedOutput": "fulfilled: Success\nrejected: Error"
+              }
+            ]
+          },
+          {
+            "description": "// Create a function fetchUser that returns a Promise resolving with {id: 1, name: \"Alice\"}\n// Create a function fetchPosts that takes userId and returns Promise resolving with [\"Post1\", \"Post2\"]\n// Chain them: fetch user, then fetch posts using user id\n// Print the posts array as JSON string\n// Your output should be: [\"Post1\",\"Post2\"]",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "userId": 1, "posts": ["Post1", "Post2"] },
+                "expectedOutput": "[\"Post1\",\"Post2\"]"
+              },
+              {
+                "input": { "userId": 2, "posts": ["Article1", "Article2", "Article3"] },
+                "expectedOutput": "[\"Article1\",\"Article2\",\"Article3\"]"
+              }
+            ]
+          },
+          {
+            "description": "// Create a Promise that resolves with \"Step 1\"\n// Chain .then() to print it and return \"Step 2\"\n// Chain another .then() to print it and return \"Step 3\"\n// Chain final .then() to print it\n// Your output should be:\n// Step 1\n// Step 2\n// Step 3",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": {},
+                "expectedOutput": "Step 1\nStep 2\nStep 3"
+              }
+            ]
+          },
+          {
+            "description": "// Create three Promises with different delays:\n// Promise 1 resolves with 1 after 3 seconds\n// Promise 2 resolves with 2 after 1 second  \n// Promise 3 resolves with 3 after 2 seconds\n// Use Promise.all() to wait for all\n// Print the results in order (should be [1,2,3] not by completion time)\n// Your output should be: [1,2,3]",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "values": [1, 2, 3] },
+                "expectedOutput": "[1,2,3]"
+              },
+              {
+                "input": { "values": [5, 10, 15] },
+                "expectedOutput": "[5,10,15]"
+              }
+            ]
+          },
+          {
+            "description": "// Create a Promise chain that can handle errors mid-chain\n// First Promise resolves with 10\n// Second .then() divides by 0 (creates Infinity) and returns it\n// Third .then() checks if value is Infinity, if yes throw error \"Invalid calculation\"\n// Use .catch() to handle the error and print the message\n// Your output should be: Invalid calculation",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": {},
+                "expectedOutput": "Invalid calculation"
+              }
+            ]
+          },
+          {
+            "description": "// Use Promise.all() with an array of Promises where one rejects\n// Promise 1 resolves with \"A\"\n// Promise 2 rejects with \"Error\"\n// Promise 3 resolves with \"C\"\n// Handle the rejection with .catch() and print the error\n// Your output should be: Error",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "error": "Error" },
+                "expectedOutput": "Error"
+              },
+              {
+                "input": { "error": "Failed" },
+                "expectedOutput": "Failed"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "async-await",
+        "title": "Writing cleaner asynchronous code",
+        "outcomes": [
+          "async Keyword: Automatically Wrapping Functions in Promises",
+          "await Keyword: Pausing Execution for Asynchronous Values",
+          "Context Rules: Why await requires an async environment",
+          "Return Logic: Understanding the Implicit Promise wrapper",
+          "Error Handling: Integrating try...catch with Async flows",
+          "Performance: Sequential vs. Parallel Await execution",
+          "Modern Syntax: Async with Arrow Functions",
+          "Propagation: How errors bubble through async chains"
+        ],
+        "tasks": [
+          {
+            "description": "// Create an async function that returns \"Hello\"\n// Call the function and use .then() to print the result\n// Your output should be: Hello",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "value": "Hello" },
+                "expectedOutput": "Hello"
+              },
+              {
+                "input": { "value": "World" },
+                "expectedOutput": "World"
+              },
+              {
+                "input": { "value": "Test" },
+                "expectedOutput": "Test"
+              }
+            ]
+          },
+          {
+            "description": "// Create a function that returns a Promise resolving with \"Data\" after 1 second\n// Create an async function that awaits this Promise and prints the result\n// Your output should be: Data",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "value": "Data" },
+                "expectedOutput": "Data"
+              },
+              {
+                "input": { "value": "Result" },
+                "expectedOutput": "Result"
+              },
+              {
+                "input": { "value": "Info" },
+                "expectedOutput": "Info"
+              }
+            ]
+          },
+          {
+            "description": "// Create an async function that awaits two Promises sequentially\n// First Promise resolves with 5 after 1 second\n// Second Promise resolves with 10 after 1 second\n// Return the sum of both values\n// Print the result\n// Your output should be: 15",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "value1": 5, "value2": 10 },
+                "expectedOutput": "15"
+              },
+              {
+                "input": { "value1": 20, "value2": 30 },
+                "expectedOutput": "50"
+              },
+              {
+                "input": { "value1": 7, "value2": 3 },
+                "expectedOutput": "10"
+              }
+            ]
+          },
+          {
+            "description": "// Create an async function with try-catch\n// In try block, await a Promise that rejects with \"Error occurred\"\n// In catch block, print the error message\n// Your output should be: Error occurred",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "error": "Error occurred" },
+                "expectedOutput": "Error occurred"
+              },
+              {
+                "input": { "error": "Failed" },
+                "expectedOutput": "Failed"
+              },
+              {
+                "input": { "error": "Not found" },
+                "expectedOutput": "Not found"
+              }
+            ]
+          },
+          {
+            "description": "// Create an async function that demonstrates sequential execution\n// Await three Promises that resolve with \"First\", \"Second\", \"Third\"\n// Print each result as it arrives\n// Your output should be:\n// First\n// Second\n// Third",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "values": ["First", "Second", "Third"] },
+                "expectedOutput": "First\nSecond\nThird"
+              },
+              {
+                "input": { "values": ["A", "B", "C"] },
+                "expectedOutput": "A\nB\nC"
+              }
+            ]
+          },
+          {
+            "description": "// Create an async function that demonstrates parallel execution\n// Create two Promises that resolve with 10 and 20\n// Use Promise.all() with await to get both results simultaneously\n// Print the sum of results\n// Your output should be: 30",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "value1": 10, "value2": 20 },
+                "expectedOutput": "30"
+              },
+              {
+                "input": { "value1": 5, "value2": 15 },
+                "expectedOutput": "20"
+              },
+              {
+                "input": { "value1": 100, "value2": 200 },
+                "expectedOutput": "300"
+              }
+            ]
+          },
+          {
+            "description": "// Create an async arrow function that awaits a Promise resolving with \"Arrow\"\n// Call it and print the result\n// Your output should be: Arrow",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "value": "Arrow" },
+                "expectedOutput": "Arrow"
+              },
+              {
+                "input": { "value": "Function" },
+                "expectedOutput": "Function"
+              },
+              {
+                "input": { "value": "Async" },
+                "expectedOutput": "Async"
+              }
+            ]
+          },
+          {
+            "description": "// Create an async function fetchData that returns {id: 1, name: \"User\"}\n// Create an async function processData that awaits fetchData\n// Extract and print the name property\n// Your output should be: User",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "data": { "id": 1, "name": "User" } },
+                "expectedOutput": "User"
+              },
+              {
+                "input": { "data": { "id": 2, "name": "Alice" } },
+                "expectedOutput": "Alice"
+              },
+              {
+                "input": { "data": { "id": 3, "name": "Bob" } },
+                "expectedOutput": "Bob"
+              }
+            ]
+          },
+          {
+            "description": "// Create an async function with try-catch-finally\n// In try: await a Promise that resolves with \"Success\"\n// In try: print the result\n// In finally: print \"Cleanup\"\n// Your output should be:\n// Success\n// Cleanup",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "value": "Success" },
+                "expectedOutput": "Success\nCleanup"
+              },
+              {
+                "input": { "value": "Done" },
+                "expectedOutput": "Done\nCleanup"
+              }
+            ]
+          },
+          {
+            "description": "// Create an async function that chains async operations\n// First await returns 5\n// Second await doubles the previous result\n// Third await adds 10 to the previous result\n// Print final result\n// Your output should be: 20",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "initial": 5 },
+                "expectedOutput": "20"
+              },
+              {
+                "input": { "initial": 10 },
+                "expectedOutput": "30"
+              },
+              {
+                "input": { "initial": 3 },
+                "expectedOutput": "16"
+              }
+            ]
+          },
+          {
+            "description": "// Create two async functions:\n// fetchUser() returns Promise resolving with {id: 1, name: \"Alice\"}\n// fetchPosts(userId) returns Promise resolving with [\"Post1\", \"Post2\"]\n// Create main async function that awaits both in sequence\n// Print the posts array as JSON string\n// Your output should be: [\"Post1\",\"Post2\"]",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "userId": 1, "posts": ["Post1", "Post2"] },
+                "expectedOutput": "[\"Post1\",\"Post2\"]"
+              },
+              {
+                "input": { "userId": 2, "posts": ["Article1", "Article2"] },
+                "expectedOutput": "[\"Article1\",\"Article2\"]"
+              }
+            ]
+          },
+          {
+            "description": "// Create an async function that handles multiple errors\n// Try to await a Promise that rejects with \"Network error\"\n// Catch the error and throw a new error \"Failed to fetch data\"\n// In outer try-catch, catch this new error and print it\n// Your output should be: Failed to fetch data",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": {},
+                "expectedOutput": "Failed to fetch data"
+              }
+            ]
+          },
+          {
+            "description": "// Create an async function that uses Promise.race() with await\n// First Promise resolves with \"Fast\" after 1 second\n// Second Promise resolves with \"Slow\" after 2 seconds\n// Await Promise.race() and print the fastest result\n// Your output should be: Fast",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "fast": "Fast", "slow": "Slow" },
+                "expectedOutput": "Fast"
+              },
+              {
+                "input": { "fast": "Quick", "slow": "Delayed" },
+                "expectedOutput": "Quick"
+              }
+            ]
+          },
+          {
+            "description": "// Create an async function that validates and processes data\n// Await a Promise that resolves with a number\n// If number is negative, throw error \"Invalid number\"\n// Otherwise return number * 2\n// Use try-catch to handle errors\n// Test with number -5\n// Your output should be: Invalid number",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "number": -5 },
+                "expectedOutput": "Invalid number"
+              },
+              {
+                "input": { "number": 10 },
+                "expectedOutput": "20"
+              },
+              {
+                "input": { "number": -1 },
+                "expectedOutput": "Invalid number"
+              }
+            ]
+          },
+          {
+            "description": "// Create an async function that processes an array of Promises\n// Array contains three Promises resolving with 1, 2, 3\n// Use await with Promise.all() to get all results\n// Use reduce to sum all values\n// Print the sum\n// Your output should be: 6",
+            "solution_type": "script",
+            "testCases": [
+              {
+                "input": { "values": [1, 2, 3] },
+                "expectedOutput": "6"
+              },
+              {
+                "input": { "values": [5, 10, 15] },
+                "expectedOutput": "30"
+              },
+              {
+                "input": { "values": [2, 4, 6, 8] },
+                "expectedOutput": "20"
+              }
+            ]
+          }
+        ]
+      }
     ]
   },
 ];
