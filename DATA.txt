@@ -7,7 +7,6 @@ Strings and Basic Operations
 Type Conversion
 Operators (Comparison & Logical)
 if / else Statements
-
 else-if Chains
 Nested Conditions
 Working with Dates

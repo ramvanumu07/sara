@@ -74,74 +74,52 @@ function validateBody(schema) {
 
 // ============ UTILITY FUNCTIONS ============
 
-// Secure code execution function
-async function executeCodeSecurely(code, testCases = []) {
-  console.log('🔧 Executing code:', code.substring(0, 100) + '...')
+import SecureCodeExecutor from '../services/SecureCodeExecutor.js';
+const codeExecutor = new SecureCodeExecutor();
+
+// Industry-level secure code execution function
+async function executeCodeSecurely(code, testCases = [], functionName = null, solutionType = 'script') {
+  console.log('🔧 Executing code securely:', code.substring(0, 100) + '...')
+  
   try {
-    // Create a safe execution context
-    const vm = await import('vm')
-    const context = {
-      console: {
-        log: (...args) => {
-          context.__output = (context.__output || '') + args.join(' ') + '\n'
-        }
-      },
-      __output: '',
-      __error: null
+    // Validate inputs
+    if (!code || typeof code !== 'string') {
+      throw new Error('Invalid code provided');
     }
     
-    // Set up the context
-    vm.createContext(context)
-    
-    try {
-      // Execute the code in the safe context
-      vm.runInContext(code, context, { timeout: 5000 })
-      
-      const output = context.__output.trim()
-      const results = []
-      
-      // Run test cases if provided
-      for (let i = 0; i < testCases.length; i++) {
-        const testCase = testCases[i]
-        const expected = testCase.expectedOutput
-        const passed = output.includes(expected) || output === expected
-        
-        results.push({
-          testIndex: i,
-          expected,
-          actual: output,
-          passed,
-          description: testCase.description || `Test ${i + 1}`
-        })
-      }
-      
-      const result = {
-        success: true,
-        output,
-        testResults: results,
-        allTestsPassed: results.length === 0 || results.every(r => r.passed)
-      }
-      console.log('✅ Code execution successful:', result)
-      return result
-    } catch (execError) {
-      console.error('❌ Code execution error:', execError.message)
-      return {
-        success: false,
-        error: execError.message,
-        output: '',
-        testResults: [],
-        allTestsPassed: false
-      }
+    if (!Array.isArray(testCases)) {
+      throw new Error('Test cases must be an array');
     }
-  } catch (importError) {
-    // Fallback to basic validation if vm module not available
+    
+    // Execute code with new secure executor
+    const result = await codeExecutor.execute(code, testCases, functionName, solutionType);
+    
+    console.log('✅ Secure code execution completed:', {
+      success: result.success,
+      allPassed: result.allPassed,
+      executionTime: result.executionTime,
+      testCount: result.results?.length || 0
+    });
+    
     return {
-      success: true,
-      output: 'Code execution not available on this server',
+      success: result.success,
+      output: result.results?.map(r => r.output || r.result).join('\n') || '',
+      testResults: result.results || [],
+      allTestsPassed: result.allPassed || false,
+      executionTime: result.executionTime,
+      error: result.error
+    };
+    
+  } catch (error) {
+    console.error('❌ Secure code execution error:', error.message);
+    return {
+      success: false,
+      error: error.message,
+      output: '',
       testResults: [],
-      allTestsPassed: true,
-      warning: 'Server-side execution disabled'
-    }
+      allTestsPassed: false,
+      executionTime: 0
+    };
   }
 }
 
@@ -573,9 +551,11 @@ router.post('/assignment/complete', authenticateToken, rateLimitMiddleware, asyn
 
     const currentTask = tasks[assignmentIndex]
     const testCases = currentTask.testCases || []
+    const solutionType = currentTask.solution_type || 'script'
+    const functionName = currentTask.function_name || null
 
-    // Execute code and validate against test cases
-    const executionResult = await executeCodeSecurely(code, testCases)
+    // Execute code and validate against test cases with proper parameters
+    const executionResult = await executeCodeSecurely(code, testCases, functionName, solutionType)
 
     // Check if all tests passed (only if there are test cases)
     if (testCases.length > 0 && !executionResult.allTestsPassed) {
@@ -645,8 +625,13 @@ router.post('/execute', authenticateToken, async (req, res) => {
       testCases = topic.tasks[assignmentIndex].testCases || []
     }
 
-    // Execute code securely
-    const result = await executeCodeSecurely(code, testCases)
+    // Get task details for proper execution
+    const task = assignmentIndex !== undefined && topic.tasks ? topic.tasks[assignmentIndex] : null;
+    const solutionType = task?.solution_type || 'script';
+    const functionName = task?.function_name || null;
+
+    // Execute code securely with proper parameters
+    const result = await executeCodeSecurely(code, testCases, functionName, solutionType)
 
     res.json(createSuccessResponse({
       execution: result,
@@ -656,13 +641,70 @@ router.post('/execute', authenticateToken, async (req, res) => {
       },
       assignment: assignmentIndex !== undefined ? {
         index: assignmentIndex,
-        total: topic.tasks?.length || 0
+        total: topic.tasks?.length || 0,
+        solutionType: solutionType,
+        functionName: functionName
       } : null
     }))
 
   } catch (error) {
     console.error('Code execution error:', error)
     res.status(500).json(createErrorResponse('Code execution failed'))
+  }
+})
+
+// New secure execution endpoint with enhanced validation
+router.post('/execute-secure', authenticateToken, async (req, res) => {
+  try {
+    const { code, testCases, functionName, solutionType, topicId, assignmentIndex } = req.body;
+    
+    console.log('🔒 Secure execution request:', {
+      solutionType,
+      functionName,
+      testCaseCount: testCases?.length || 0,
+      codeLength: code?.length || 0
+    });
+
+    // Validate required parameters
+    if (!code) {
+      return res.status(400).json(createErrorResponse('Code is required'));
+    }
+
+    if (!testCases || !Array.isArray(testCases)) {
+      return res.status(400).json(createErrorResponse('Valid test cases are required'));
+    }
+
+    if (solutionType === 'function' && !functionName) {
+      return res.status(400).json(createErrorResponse('Function name is required for function-type tasks'));
+    }
+
+    // Execute with enhanced security
+    const result = await executeCodeSecurely(code, testCases, functionName, solutionType);
+    
+    // Additional validation for function tasks
+    if (solutionType === 'function' && result.success) {
+      const hasValidResults = result.testResults.every(test => 
+        test.hasOwnProperty('result') || test.hasOwnProperty('error')
+      );
+      
+      if (!hasValidResults) {
+        return res.status(400).json(createErrorResponse('Function execution did not return valid results'));
+      }
+    }
+
+    res.json(createSuccessResponse({
+      execution: result,
+      validation: {
+        secure: true,
+        executionTime: result.executionTime,
+        solutionType: solutionType,
+        functionName: functionName
+      }
+    }));
+
+  } catch (error) {
+    console.error('❌ Secure execution error:', error);
+    res.status(500).json(createErrorResponse('Secure code execution failed'));
   }
 })
 

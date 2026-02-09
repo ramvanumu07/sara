@@ -3,6 +3,7 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { learning, chat } from '../config/api'
 import { ToastContainer } from '../components/Toast'
 import { useToast } from '../hooks/useToast'
+import CodeExecutor from '../services/CodeExecutor'
 import './Learn.css'
 import './Learn-responsive.css'
 
@@ -321,196 +322,46 @@ const Learn = () => {
     }
   }
 
-  // Professional code execution system
-  const handleRunPlayground = () => {
+  // Industry-level secure code execution system
+  const handleRunPlayground = async () => {
     const outputDiv = document.getElementById('terminal-output')
     if (!outputDiv) return
 
     try {
       // Clear previous output
-      outputDiv.innerHTML = ''
+      outputDiv.innerHTML = '<div style="color: #10a37f; font-family: Monaco, Consolas, monospace; padding: 8px;">🔄 Executing code securely...</div>'
 
-      // Capture console.log output with limits
-      const outputs = []
-      let outputCount = 0
-      const MAX_OUTPUTS = 1000 // Limit outputs to prevent memory issues
-      const originalConsoleLog = console.log
-      const originalConsoleError = console.error
-      const originalConsoleWarn = console.warn
-
-      // Override console methods with output limiting
-      console.log = (...args) => {
-        if (outputCount >= MAX_OUTPUTS) {
-          if (outputCount === MAX_OUTPUTS) {
-            outputs.push({ type: 'warn', content: `⚠️ Output limit reached (${MAX_OUTPUTS} lines). Further output truncated to prevent browser freeze.` })
-            outputCount++
-          }
-          return
-        }
-        outputs.push({ type: 'log', content: args.map(arg => String(arg)).join(' ') })
-        outputCount++
-      }
-      console.error = (...args) => {
-        if (outputCount < MAX_OUTPUTS) {
-          outputs.push({ type: 'error', content: args.map(arg => String(arg)).join(' ') })
-          outputCount++
-        }
-      }
-      console.warn = (...args) => {
-        if (outputCount < MAX_OUTPUTS) {
-          outputs.push({ type: 'warn', content: args.map(arg => String(arg)).join(' ') })
-          outputCount++
-        }
-      }
-
-      // Execute user code with timeout protection
       const startTime = Date.now()
-      const EXECUTION_TIMEOUT = 5000 // 5 seconds
 
-      try {
-        // Set up timeout mechanism
-        let timedOut = false
-        const timeoutId = setTimeout(() => {
-          timedOut = true
-          outputs.push({ type: 'error', content: '⏱️ Execution timeout: Code took too long (>5s). Check for infinite loops or reduce iterations.' })
-        }, EXECUTION_TIMEOUT)
+      // Execute code using secure Web Worker
+      const result = await CodeExecutor.executeForTesting(
+        userCode, 
+        [], // No test cases for playground
+        null, // No function name for playground
+        'script' // Always script type for playground
+      )
 
-        // Comprehensive security sandbox
-        const createSecureSandbox = (code) => {
-          let iterationCount = 0
-          const MAX_ITERATIONS = 100000
-          const MAX_ARRAY_SIZE = 1000000
-          const MAX_STRING_REPEAT = 1000000
+      const executionTime = Date.now() - startTime
 
-          // Block dangerous APIs and operations
-          const dangerousAPIs = {
-            // Network APIs
-            'fetch': 'Network requests are not allowed for security reasons',
-            'XMLHttpRequest': 'Network requests are not allowed for security reasons',
-            'WebSocket': 'WebSocket connections are not allowed for security reasons',
+      // Process results
+      let outputText = ''
+      let outputColor = '#10a37f'
 
-            // Storage APIs
-            'localStorage': 'Local storage access is not allowed for security reasons',
-            'sessionStorage': 'Session storage access is not allowed for security reasons',
-            'indexedDB': 'IndexedDB access is not allowed for security reasons',
-
-            // Navigation APIs
-            'location': 'Location manipulation is not allowed for security reasons',
-            'history': 'History manipulation is not allowed for security reasons',
-
-            // Dangerous functions
-            'eval': 'eval() is not allowed for security reasons',
-            'Function': 'Function constructor is not allowed for security reasons',
-            'setTimeout': 'setTimeout is not allowed for security reasons',
-            'setInterval': 'setInterval is not allowed for security reasons',
-
-            // Import/Export
-            'import': 'Dynamic imports are not allowed for security reasons'
-          }
-
-          // DOM protection patterns
-          const domProtectedPatterns = [
-            { pattern: /document\.write\s*\(/g, message: 'document.write is not allowed for security reasons' },
-            { pattern: /document\.writeln\s*\(/g, message: 'document.writeln is not allowed for security reasons' },
-            { pattern: /document\.cookie/g, message: 'Cookie access is not allowed for security reasons' },
-            { pattern: /window\.open\s*\(/g, message: 'Opening new windows is not allowed for security reasons' },
-            { pattern: /window\.close\s*\(/g, message: 'Closing windows is not allowed for security reasons' },
-            { pattern: /alert\s*\(/g, message: 'alert() is not allowed to prevent spam' },
-            { pattern: /confirm\s*\(/g, message: 'confirm() is not allowed to prevent spam' },
-            { pattern: /prompt\s*\(/g, message: 'prompt() is not allowed to prevent spam' }
-          ]
-
-          let wrappedCode = code
-
-          // Block dangerous APIs
-          Object.keys(dangerousAPIs).forEach(api => {
-            const regex = new RegExp(`\\b${api}\\b`, 'g')
-            wrappedCode = wrappedCode.replace(regex, `(() => { throw new Error("🚫 ${dangerousAPIs[api]}"); })()`)
-          })
-
-          // Block DOM manipulation patterns
-          domProtectedPatterns.forEach(({ pattern, message }) => {
-            wrappedCode = wrappedCode.replace(pattern, `(() => { throw new Error("🚫 ${message}"); })()`)
-          })
-
-          // Comprehensive loop protection with better nested loop handling
-          wrappedCode = wrappedCode
-            // For loops - inject counter at the beginning of each iteration
-            .replace(/for\s*\(\s*[^;]*;\s*[^;]*;\s*[^)]*\)\s*\{/g,
-              (match) => match.replace('{', `{ 
-                if(typeof iterationCount === 'undefined') iterationCount = 0;
-                if(++iterationCount > ${MAX_ITERATIONS}) 
-                  throw new Error("🔄 For loop iteration limit exceeded (${MAX_ITERATIONS}). Reduce iterations to prevent browser freeze."); 
-              `))
-            // While loops
-            .replace(/while\s*\([^)]*\)\s*\{/g,
-              (match) => match.replace('{', `{ 
-                if(typeof iterationCount === 'undefined') iterationCount = 0;
-                if(++iterationCount > ${MAX_ITERATIONS}) 
-                  throw new Error("🔄 While loop iteration limit exceeded (${MAX_ITERATIONS}). Check your loop condition to avoid infinite loops."); 
-              `))
-            // Do-while loops
-            .replace(/do\s*\{/g,
-              `do { 
-                if(typeof iterationCount === 'undefined') iterationCount = 0;
-                if(++iterationCount > ${MAX_ITERATIONS}) 
-                  throw new Error("🔄 Do-while loop iteration limit exceeded (${MAX_ITERATIONS}). Check your loop condition to avoid infinite loops."); 
-              `)
-
-          // Memory protection for arrays
-          wrappedCode = wrappedCode.replace(/new Array\s*\(\s*([^)]+)\s*\)/g, (match, size) => {
-            return `(() => { 
-              const size = ${size}; 
-              if(typeof size === 'number' && size > ${MAX_ARRAY_SIZE}) 
-                throw new Error("💾 Array size too large (" + size + "). Maximum allowed: ${MAX_ARRAY_SIZE.toLocaleString()} elements to prevent memory overflow."); 
-              return new Array(size); 
-            })()`
-          })
-
-          // Memory protection for string operations
-          wrappedCode = wrappedCode.replace(/\.repeat\s*\(\s*([^)]+)\s*\)/g, (match, count) => {
-            return `.repeat((() => { 
-              const count = ${count}; 
-              if(typeof count === 'number' && count > ${MAX_STRING_REPEAT}) 
-                throw new Error("💾 String repeat count too large (" + count + "). Maximum allowed: ${MAX_STRING_REPEAT.toLocaleString()} to prevent memory overflow."); 
-              return count; 
-            })())`
-          })
-
-          return wrappedCode
+      if (result.success) {
+        if (result.results && result.results.length > 0) {
+          outputText = result.results.map(r => r.output || r.result || '').join('\n')
+        } else {
+          outputText = 'Code executed successfully (no output)'
         }
-
-        const sandboxedCode = createSecureSandbox(userCode)
-        // Create a more robust execution environment
-        const executionScope = `
-          // Global iteration counter for loop protection
-          let iterationCount = 0;
-          
-          // Reset counter function for nested scenarios
-          const resetIterationCount = () => { iterationCount = 0; };
-          
-          // User code execution
-          ${sandboxedCode}
-        `;
-        eval(executionScope)
-
-        clearTimeout(timeoutId)
-        if (!timedOut && Date.now() - startTime > 1000) {
-          outputs.push({ type: 'info', content: `✅ Execution completed in ${Date.now() - startTime}ms` })
+        
+        if (executionTime > 1000) {
+          outputText += `\n✅ Execution completed in ${executionTime}ms`
         }
-      } catch (executionError) {
-        outputs.push({ type: 'error', content: `Error: ${executionError.message}` })
+      } else {
+        outputText = `Error: ${result.error || 'Code execution failed'}`
+        outputColor = '#ef4444'
       }
 
-      // Restore console methods
-      console.log = originalConsoleLog
-      console.error = originalConsoleError
-      console.warn = originalConsoleWarn
-
-      // Process output
-      const outputText = outputs.length > 0
-        ? outputs.map(out => out.content).join('\n')
-        : 'No output'
       const outputLines = outputText.split('\n')
 
       // Update line numbers
@@ -523,12 +374,12 @@ const Learn = () => {
         lineNumbersDiv.innerHTML = lineNumbersHTML
       }
 
-      // Update output content with color coding
+      // Update output content
       let formattedOutput = ''
       outputLines.forEach((line) => {
-        const output = outputs.find(out => out.content.includes(line))
-        const color = output?.type === 'error' ? '#ef4444' :
-          output?.type === 'warn' ? '#f59e0b' : '#10a37f'
+        const color = line.includes('Error:') ? '#ef4444' : 
+                     line.includes('⚠️') ? '#f59e0b' : 
+                     line.includes('✅') ? '#10a37f' : outputColor
         formattedOutput += `<div style="line-height: 1.4; color: ${color}; white-space: pre; padding-left: 2px; font-size: 0.875rem;">${line || ' '}</div>`
       })
 
@@ -540,6 +391,10 @@ const Learn = () => {
 
       // Set output for reference
       setPlaygroundOutput(outputText)
+
+      if (!result.success) {
+        showError('Code execution failed. Check the output for details.', 3000)
+      }
 
     } catch (error) {
       console.error('Code execution failed:', error)
@@ -670,196 +525,89 @@ const Learn = () => {
     setPlaygroundOutput('')
   }
 
-  // Handle running code in assignment - Similar to playground execution
+  // Industry-level secure assignment code execution
   const handleRunAssignment = async () => {
     const outputDiv = document.getElementById('terminal-output')
     if (!outputDiv) return
 
     try {
       // Clear previous output
-      outputDiv.innerHTML = ''
+      outputDiv.innerHTML = '<div style="color: #10a37f; font-family: Monaco, Consolas, monospace; padding: 8px;">🔄 Executing assignment code securely...</div>'
 
-      // Capture console.log output with limits
-      const outputs = []
-      let outputCount = 0
-      const MAX_OUTPUTS = 1000 // Limit outputs to prevent memory issues
-      const originalConsoleLog = console.log
-      const originalConsoleError = console.error
-      const originalConsoleWarn = console.warn
-
-      // Override console methods with output limiting
-      console.log = (...args) => {
-        if (outputCount >= MAX_OUTPUTS) {
-          if (outputCount === MAX_OUTPUTS) {
-            outputs.push({ type: 'warn', content: `⚠️ Output limit reached (${MAX_OUTPUTS} lines). Further output truncated to prevent browser freeze.` })
-            outputCount++
-          }
-          return
-        }
-        outputs.push({ type: 'log', content: args.map(arg => String(arg)).join(' ') })
-        outputCount++
-      }
-      console.error = (...args) => {
-        if (outputCount < MAX_OUTPUTS) {
-          outputs.push({ type: 'error', content: args.map(arg => String(arg)).join(' ') })
-          outputCount++
-        }
-      }
-      console.warn = (...args) => {
-        if (outputCount < MAX_OUTPUTS) {
-          outputs.push({ type: 'warn', content: args.map(arg => String(arg)).join(' ') })
-          outputCount++
-        }
-      }
-
-      // Execute assignment code with timeout protection
       const startTime = Date.now()
-      const EXECUTION_TIMEOUT = 5000 // 5 seconds
 
-      try {
-        // Set up timeout mechanism
-        let timedOut = false
-        const timeoutId = setTimeout(() => {
-          timedOut = true
-          outputs.push({ type: 'error', content: '⏱️ Execution timeout: Code took too long (>5s). Check for infinite loops or reduce iterations.' })
-        }, EXECUTION_TIMEOUT)
+      // Get current assignment details
+      const currentTask = assignments[currentAssignment]
+      const testCases = currentTask?.testCases || []
+      const solutionType = currentTask?.solution_type || 'script'
+      const functionName = currentTask?.function_name || null
 
-        // Comprehensive security sandbox (same as playground)
-        const createSecureSandbox = (code) => {
-          let iterationCount = 0
-          const MAX_ITERATIONS = 100000
-          const MAX_ARRAY_SIZE = 1000000
-          const MAX_STRING_REPEAT = 1000000
+      // Execute code using secure Web Worker with test cases
+      const result = await CodeExecutor.executeForTesting(
+        assignmentCode,
+        testCases,
+        functionName,
+        solutionType
+      )
 
-          // Block dangerous APIs and operations
-          const dangerousAPIs = {
-            // Network APIs
-            'fetch': 'Network requests are not allowed for security reasons',
-            'XMLHttpRequest': 'Network requests are not allowed for security reasons',
-            'WebSocket': 'WebSocket connections are not allowed for security reasons',
+      const executionTime = Date.now() - startTime
 
-            // Storage APIs
-            'localStorage': 'Local storage access is not allowed for security reasons',
-            'sessionStorage': 'Session storage access is not allowed for security reasons',
-            'indexedDB': 'IndexedDB access is not allowed for security reasons',
+      // Process results
+      let outputText = ''
+      let outputColor = '#10a37f'
+      let allTestsPassed = false
 
-            // Navigation APIs
-            'location': 'Location manipulation is not allowed for security reasons',
-            'history': 'History manipulation is not allowed for security reasons',
-
-            // Dangerous functions
-            'eval': 'eval() is not allowed for security reasons',
-            'Function': 'Function constructor is not allowed for security reasons',
-            'setTimeout': 'setTimeout is not allowed for security reasons',
-            'setInterval': 'setInterval is not allowed for security reasons',
-
-            // Import/Export
-            'import': 'Dynamic imports are not allowed for security reasons'
+      if (result.success) {
+        allTestsPassed = result.allPassed
+        
+        if (testCases.length > 0) {
+          // Show test results
+          const passedTests = result.results.filter(r => r.passed).length
+          const totalTests = result.results.length
+          
+          outputText = `Test Results: ${passedTests}/${totalTests} passed\n\n`
+          
+          result.results.forEach((testResult, index) => {
+            const status = testResult.passed ? '✅' : '❌'
+            const input = JSON.stringify(testResult.input || {})
+            const expected = testResult.expected
+            const actual = testResult.output || testResult.result || testResult.error || 'No output'
+            
+            outputText += `${status} Test ${index + 1}: Input: ${input}\n`
+            outputText += `   Expected: ${expected}\n`
+            outputText += `   Actual: ${actual}\n`
+            if (!testResult.passed && testResult.error) {
+              outputText += `   Error: ${testResult.error}\n`
+            }
+            outputText += '\n'
+          })
+          
+          if (allTestsPassed) {
+            outputText += '🎉 All tests passed! Ready to submit.'
+            outputColor = '#10a37f'
+          } else {
+            outputText += '❌ Some tests failed. Please review your code.'
+            outputColor = '#ef4444'
           }
-
-          // DOM protection patterns
-          const domProtectedPatterns = [
-            { pattern: /document\.write\s*\(/g, message: 'document.write is not allowed for security reasons' },
-            { pattern: /document\.writeln\s*\(/g, message: 'document.writeln is not allowed for security reasons' },
-            { pattern: /document\.cookie/g, message: 'Cookie access is not allowed for security reasons' },
-            { pattern: /window\.open\s*\(/g, message: 'Opening new windows is not allowed for security reasons' },
-            { pattern: /window\.close\s*\(/g, message: 'Closing windows is not allowed for security reasons' },
-            { pattern: /alert\s*\(/g, message: 'alert() is not allowed to prevent spam' },
-            { pattern: /confirm\s*\(/g, message: 'confirm() is not allowed to prevent spam' },
-            { pattern: /prompt\s*\(/g, message: 'prompt() is not allowed to prevent spam' }
-          ]
-
-          let wrappedCode = code
-
-          // Block dangerous APIs
-          Object.keys(dangerousAPIs).forEach(api => {
-            const regex = new RegExp(`\\b${api}\\b`, 'g')
-            wrappedCode = wrappedCode.replace(regex, `(() => { throw new Error("🚫 ${dangerousAPIs[api]}"); })()`)
-          })
-
-          // Block DOM manipulation patterns
-          domProtectedPatterns.forEach(({ pattern, message }) => {
-            wrappedCode = wrappedCode.replace(pattern, `(() => { throw new Error("🚫 ${message}"); })()`)
-          })
-
-          // Comprehensive loop protection with better nested loop handling
-          wrappedCode = wrappedCode
-            // For loops - inject counter at the beginning of each iteration
-            .replace(/for\s*\(\s*[^;]*;\s*[^;]*;\s*[^)]*\)\s*\{/g,
-              (match) => match.replace('{', `{ 
-                if(typeof iterationCount === 'undefined') iterationCount = 0;
-                if(++iterationCount > ${MAX_ITERATIONS}) 
-                  throw new Error("🔄 For loop iteration limit exceeded (${MAX_ITERATIONS}). Reduce iterations to prevent browser freeze."); 
-              `))
-            // While loops
-            .replace(/while\s*\([^)]*\)\s*\{/g,
-              (match) => match.replace('{', `{ 
-                if(typeof iterationCount === 'undefined') iterationCount = 0;
-                if(++iterationCount > ${MAX_ITERATIONS}) 
-                  throw new Error("🔄 While loop iteration limit exceeded (${MAX_ITERATIONS}). Check your loop condition to avoid infinite loops."); 
-              `))
-            // Do-while loops
-            .replace(/do\s*\{/g,
-              `do { 
-                if(typeof iterationCount === 'undefined') iterationCount = 0;
-                if(++iterationCount > ${MAX_ITERATIONS}) 
-                  throw new Error("🔄 Do-while loop iteration limit exceeded (${MAX_ITERATIONS}). Check your loop condition to avoid infinite loops."); 
-              `)
-
-          // Memory protection for arrays
-          wrappedCode = wrappedCode.replace(/new Array\s*\(\s*([^)]+)\s*\)/g, (match, size) => {
-            return `(() => { 
-              const size = ${size}; 
-              if(typeof size === 'number' && size > ${MAX_ARRAY_SIZE}) 
-                throw new Error("💾 Array size too large (" + size + "). Maximum allowed: ${MAX_ARRAY_SIZE.toLocaleString()} elements to prevent memory overflow."); 
-              return new Array(size); 
-            })()`
-          })
-
-          // Memory protection for string operations
-          wrappedCode = wrappedCode.replace(/\.repeat\s*\(\s*([^)]+)\s*\)/g, (match, count) => {
-            return `.repeat((() => { 
-              const count = ${count}; 
-              if(typeof count === 'number' && count > ${MAX_STRING_REPEAT}) 
-                throw new Error("💾 String repeat count too large (" + count + "). Maximum allowed: ${MAX_STRING_REPEAT.toLocaleString()} to prevent memory overflow."); 
-              return count; 
-            })())`
-          })
-
-          return wrappedCode
+        } else {
+          // No test cases, just show execution output
+          if (result.results && result.results.length > 0) {
+            outputText = result.results.map(r => r.output || r.result || '').join('\n')
+          } else {
+            outputText = 'Code executed successfully (no output)'
+          }
+          allTestsPassed = true // No tests to fail
         }
-
-        const sandboxedCode = createSecureSandbox(assignmentCode)
-        // Create a more robust execution environment
-        const executionScope = `
-          // Global iteration counter for loop protection
-          let iterationCount = 0;
-          
-          // Reset counter function for nested scenarios
-          const resetIterationCount = () => { iterationCount = 0; };
-          
-          // User code execution
-          ${sandboxedCode}
-        `;
-        eval(executionScope)
-
-        clearTimeout(timeoutId)
-        if (!timedOut && Date.now() - startTime > 1000) {
-          outputs.push({ type: 'info', content: `✅ Execution completed in ${Date.now() - startTime}ms` })
+        
+        if (executionTime > 1000) {
+          outputText += `\n✅ Execution completed in ${executionTime}ms`
         }
-      } catch (executionError) {
-        outputs.push({ type: 'error', content: `Error: ${executionError.message}` })
+      } else {
+        outputText = `Error: ${result.error || 'Code execution failed'}`
+        outputColor = '#ef4444'
+        allTestsPassed = false
       }
 
-      // Restore console methods
-      console.log = originalConsoleLog
-      console.error = originalConsoleError
-      console.warn = originalConsoleWarn
-
-      // Process output
-      const outputText = outputs.length > 0
-        ? outputs.map(out => out.content).join('\n')
-        : 'No output'
       const outputLines = outputText.split('\n')
 
       // Update line numbers
@@ -875,9 +623,12 @@ const Learn = () => {
       // Update output content with color coding
       let formattedOutput = ''
       outputLines.forEach((line) => {
-        const output = outputs.find(out => out.content.includes(line))
-        const color = output?.type === 'error' ? '#ef4444' :
-          output?.type === 'warn' ? '#f59e0b' : '#10a37f'
+        let color = outputColor
+        if (line.includes('✅')) color = '#10a37f'
+        else if (line.includes('❌') || line.includes('Error:')) color = '#ef4444'
+        else if (line.includes('Test Results:')) color = '#3b82f6'
+        else if (line.includes('Expected:') || line.includes('Actual:')) color = '#6b7280'
+        
         formattedOutput += `<div style="line-height: 1.4; color: ${color}; white-space: pre; padding-left: 2px; font-size: 0.875rem;">${line || ' '}</div>`
       })
 
@@ -889,7 +640,14 @@ const Learn = () => {
 
       // Set output for reference
       setAssignmentOutput(outputText)
-      success('Assignment code executed successfully!', 2000)
+      
+      if (result.success && allTestsPassed) {
+        success('Assignment code executed successfully! All tests passed.', 2000)
+      } else if (result.success) {
+        showError('Code executed but some tests failed. Please review the output.', 3000)
+      } else {
+        showError('Assignment code execution failed. Check the output for details.', 3000)
+      }
 
     } catch (error) {
       console.error('Assignment code execution failed:', error)
@@ -899,9 +657,31 @@ const Learn = () => {
     }
   }
 
-  // Handle submitting assignment
+  // Handle submitting assignment with enhanced validation
   const handleSubmitAssignment = async () => {
     try {
+      // First validate code locally before submission
+      const currentTask = assignments[currentAssignment]
+      const testCases = currentTask?.testCases || []
+      const solutionType = currentTask?.solution_type || 'script'
+      const functionName = currentTask?.function_name || null
+
+      if (testCases.length > 0) {
+        // Run local validation first
+        const localResult = await CodeExecutor.executeForTesting(
+          assignmentCode,
+          testCases,
+          functionName,
+          solutionType
+        )
+
+        if (!localResult.success || !localResult.allPassed) {
+          showError('Please fix the failing tests before submitting.', 3000)
+          return
+        }
+      }
+
+      // Submit to backend with enhanced validation
       const response = await learning.completeAssignment(topicId, currentAssignment, assignmentCode)
 
       if (response.data.data.success) {
@@ -934,11 +714,25 @@ const Learn = () => {
           setAssignmentComplete(true)
           success('🎉 All assignments completed! Excellent work!', 4000)
         }
+      } else {
+        // Handle backend validation failure
+        const errorMessage = response.data.data.execution?.error || 'Assignment validation failed'
+        showError(errorMessage, 4000)
       }
     } catch (err) {
       console.error('Error submitting assignment:', err)
+      const errorMessage = err.response?.data?.message || 'Failed to submit assignment'
+      showError(errorMessage, 3000)
     }
   }
+
+  // Cleanup on component unmount
+  useEffect(() => {
+    return () => {
+      // Cleanup CodeExecutor resources
+      CodeExecutor.destroy()
+    }
+  }, [])
 
   if (loading) {
     return (
