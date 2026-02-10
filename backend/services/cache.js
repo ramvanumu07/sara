@@ -3,8 +3,29 @@
  * Distributed caching for production scalability
  */
 
-import Redis from 'ioredis'
-import { logInfo, logError, logWarn } from './logger.js'
+// Graceful import with fallback for missing dependencies
+let Redis = null
+
+try {
+  const redisModule = await import('ioredis')
+  Redis = redisModule.default
+} catch (error) {
+  console.warn('⚠️  Redis module not installed. Using in-memory cache fallback.')
+}
+
+// Import logger with fallback
+let logInfo, logError, logWarn
+try {
+  const loggerModule = await import('./logger.js')
+  logInfo = loggerModule.logInfo
+  logError = loggerModule.logError
+  logWarn = loggerModule.logWarn
+} catch (error) {
+  // Fallback logging functions
+  logInfo = (msg, meta) => console.log(`INFO: ${msg}`, meta)
+  logError = (msg, err, meta) => console.error(`ERROR: ${msg}`, err, meta)
+  logWarn = (msg, meta) => console.warn(`WARN: ${msg}`, meta)
+}
 
 let redisClient = null
 let isConnected = false

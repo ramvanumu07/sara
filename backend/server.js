@@ -12,6 +12,13 @@ import helmet from 'helmet'
 import compression from 'compression'
 import { createServer } from 'http'
 
+// Initialize industry-grade services
+import { initializeErrorTracking } from './services/errorTracking.js'
+import { initializeCache } from './services/cache.js'
+import { logInfo, logError } from './services/logger.js'
+import requestIdMiddleware from './middleware/requestId.js'
+import { performanceMiddleware } from './services/performanceMonitor.js'
+
 // Import routes
 import authRoutes from './routes/auth.js'
 import chatRoutes from './routes/chat.js'
@@ -23,9 +30,17 @@ import debugChatRoutes from './routes/debug-chat.js'
 // Import middleware
 import { performanceMonitor } from './middleware/performance.js'
 import { errorHandler } from './middleware/errorHandler.js'
+import { getPerformanceStats } from './services/performanceMonitor.js'
+
+// Import utilities
+import { getSafePort } from './utils/portManager.js'
+
+// Initialize services
+initializeErrorTracking()
+initializeCache()
 
 const app = express()
-const PORT = process.env.PORT || 5000
+const PREFERRED_PORT = parseInt(process.env.PORT) || 5000
 
 // ============ CORS CONFIGURATION ============
 app.use(cors({
@@ -62,6 +77,10 @@ app.use(cors({
   ],
   optionsSuccessStatus: 200
 }))
+
+// ============ REQUEST TRACKING ============
+app.use(requestIdMiddleware)
+app.use(performanceMiddleware)
 
 // ============ SECURITY MIDDLEWARE ============
 app.use(helmet({
@@ -107,7 +126,17 @@ app.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
     uptime: process.uptime(),
     environment: process.env.NODE_ENV || 'development',
-    version: '2.0.1'
+    version: '2.0.1',
+    memory: process.memoryUsage()
+  })
+})
+
+// Performance metrics endpoint
+app.get('/metrics', (req, res) => {
+  res.json({
+    status: 'success',
+    data: getPerformanceStats(),
+    timestamp: new Date().toISOString()
   })
 })
 
@@ -133,40 +162,86 @@ app.use('*', (req, res) => {
   })
 })
 
-// ============ SERVER STARTUP ============
-const server = createServer(app)
-
-server.listen(PORT, () => {
+// ============ SERVER STARTUP WITH ROBUST PORT MANAGEMENT ============
+const startServer = async () => {
+  try {
+    // Get a safe port (try preferred, find alternative if needed)
+    const PORT = await getSafePort(PREFERRED_PORT, true)
+    
+    const server = createServer(app)
+    
+    server.listen(PORT, () => {
+  // Log server startup with structured logging
+  logInfo('Sara Learning Platform API Server started', {
+    port: PORT,
+    environment: process.env.NODE_ENV || 'development',
+    cors: process.env.NODE_ENV === 'production' ? 'production domains' : 'localhost development',
+    services: {
+      errorTracking: !!process.env.SENTRY_DSN,
+      redis: !!process.env.REDIS_URL,
+      database: !!process.env.SUPABASE_URL,
+      logging: 'winston',
+      caching: process.env.REDIS_URL ? 'redis' : 'memory'
+    }
+  })
+  
   console.log(`
 ╔══════════════════════════════════════════════════════════════╗
-║                        EduBridge API                         ║
-║                    Industry Level v2.0                      ║
+║                    Sara Learning Platform                    ║
+║                    Industry Grade v2.0                      ║
 ╠══════════════════════════════════════════════════════════════╣
 ║  Server:      http://localhost:${PORT.toString().padEnd(29)} ║
 ║  Environment: ${(process.env.NODE_ENV || 'development').padEnd(29)} ║
 ║  Status:      Production Ready                               ║
 ║  Health:      http://localhost:${PORT}/health${' '.repeat(18)} ║
+║  Services:    ${(process.env.REDIS_URL ? 'Redis' : 'Memory').padEnd(29)} ║
+║  Monitoring:  ${(process.env.SENTRY_DSN ? 'Sentry' : 'Console').padEnd(29)} ║
 ╚══════════════════════════════════════════════════════════════╝
   `)
-})
+    })
 
-// ============ GRACEFUL SHUTDOWN ============
-const gracefulShutdown = (signal) => {
-  console.log(`\n[${new Date().toISOString()}] Received ${signal}. Starting graceful shutdown...`)
+    server.on('error', (error) => {
+      if (error.code === 'EADDRINUSE') {
+        logError(`Port ${PORT} is already in use after cleanup attempt`, {
+          solutions: [
+            `Kill the process manually: taskkill /PID <pid> /F`,
+            `Use different port: PORT=5001 npm run dev`,
+            `Check running processes: netstat -ano | findstr :${PORT}`
+          ]
+        })
+      } else {
+        logError('Server startup error', { error: error.message })
+      }
+      process.exit(1)
+    })
 
-  server.close(() => {
-    console.log(`[${new Date().toISOString()}] Server closed successfully.`)
-    process.exit(0)
-  })
+    // ============ GRACEFUL SHUTDOWN ============
+    const gracefulShutdown = (signal) => {
+      console.log(`\n[${new Date().toISOString()}] Received ${signal}. Starting graceful shutdown...`)
 
-  // Force close after 10 seconds
-  setTimeout(() => {
-    console.log(`[${new Date().toISOString()}] Force closing server.`)
+      server.close(() => {
+        console.log(`[${new Date().toISOString()}] Server closed successfully.`)
+        process.exit(0)
+      })
+
+      // Force close after 10 seconds
+      setTimeout(() => {
+        console.log(`[${new Date().toISOString()}] Force closing server.`)
+        process.exit(1)
+      }, 10000)
+    }
+
+    process.on('SIGTERM', () => gracefulShutdown('SIGTERM'))
+    process.on('SIGINT', () => gracefulShutdown('SIGINT'))
+    
+  } catch (error) {
+    logError('Failed to start server', { error: error.message })
+    console.error('❌ Could not find an available port. Please check your system.')
     process.exit(1)
-  }, 10000)
+  }
 }
 
-process.on('SIGTERM', () => gracefulShutdown('SIGTERM'))
-process.on('SIGINT', () => gracefulShutdown('SIGINT'))
+// Start the server
+startServer()
 
 export default app

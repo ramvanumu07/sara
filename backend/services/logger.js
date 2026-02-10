@@ -3,10 +3,41 @@
  * Professional logging with different levels and structured output
  */
 
-import winston from 'winston'
 import path from 'path'
+import fs from 'fs'
 
-const { combine, timestamp, errors, json, printf, colorize } = winston.format
+// Graceful import with fallback for missing dependencies
+let winston = null
+let winstonFormats = null
+
+try {
+  const winstonModule = await import('winston')
+  winston = winstonModule.default
+  winstonFormats = winstonModule.format
+} catch (error) {
+  console.warn('⚠️  Winston module not installed. Using console logging fallback.')
+}
+
+// Ensure logs directory exists
+const logsDir = path.join(process.cwd(), 'logs')
+if (!fs.existsSync(logsDir)) {
+  fs.mkdirSync(logsDir, { recursive: true })
+}
+
+// Initialize formats with fallback
+let combine, timestamp, errors, json, printf, colorize
+
+if (winston && winstonFormats) {
+  ({ combine, timestamp, errors, json, printf, colorize } = winstonFormats)
+} else {
+  // Fallback format functions
+  combine = (...args) => args
+  timestamp = () => ({ timestamp: new Date().toISOString() })
+  errors = () => ({})
+  json = () => ({})
+  printf = (fn) => fn
+  colorize = () => ({})
+}
 
 // Custom format for development
 const devFormat = printf(({ level, message, timestamp, requestId, ...meta }) => {
@@ -25,8 +56,11 @@ const devFormat = printf(({ level, message, timestamp, requestId, ...meta }) => 
   return log
 })
 
-// Create logger instance
-const logger = winston.createLogger({
+// Create logger instance with fallback
+let logger
+
+if (winston) {
+  logger = winston.createLogger({
   level: process.env.LOG_LEVEL || 'info',
   format: combine(
     timestamp(),
@@ -51,10 +85,37 @@ const logger = winston.createLogger({
       maxFiles: 5
     })
   ]
-})
+  })
+} else {
+  // Fallback logger using console
+  logger = {
+    info: (message, meta = {}) => {
+      const timestamp = new Date().toISOString()
+      console.log(`${timestamp} [INFO]: ${message}`, meta)
+    },
+    error: (message, meta = {}) => {
+      const timestamp = new Date().toISOString()
+      console.error(`${timestamp} [ERROR]: ${message}`, meta)
+    },
+    warn: (message, meta = {}) => {
+      const timestamp = new Date().toISOString()
+      console.warn(`${timestamp} [WARN]: ${message}`, meta)
+    },
+    debug: (message, meta = {}) => {
+      const timestamp = new Date().toISOString()
+      console.debug(`${timestamp} [DEBUG]: ${message}`, meta)
+    },
+    log: (level, message, meta = {}) => {
+      const timestamp = new Date().toISOString()
+      console.log(`${timestamp} [${level.toUpperCase()}]: ${message}`, meta)
+    },
+    add: () => {}, // No-op for fallback
+    remove: () => {} // No-op for fallback
+  }
+}
 
-// Add console transport for development
-if (process.env.NODE_ENV !== 'production') {
+// Add console transport for development (only if winston is available)
+if (process.env.NODE_ENV !== 'production' && winston) {
   logger.add(new winston.transports.Console({
     format: combine(
       colorize(),
