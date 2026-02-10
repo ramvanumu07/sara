@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { learning, progress } from '../config/api'
+import EditorToggle, { getEditorToggleFromStorage } from '../components/EditorToggle'
 import './Dashboard.css'
 
 const Dashboard = () => {
@@ -22,6 +23,7 @@ const Dashboard = () => {
   const [progressSummary, setProgressSummary] = useState({})
   const [lastAccessed, setLastAccessed] = useState(null)
   const [showMobileMenu, setShowMobileMenu] = useState(false)
+  const [editorToggleOn, setEditorToggleOn] = useState(getEditorToggleFromStorage)
 
   useEffect(() => {
     loadDashboardData()
@@ -226,39 +228,16 @@ const Dashboard = () => {
         topic_completed: recentTopic.topic_completed
       })
 
-      // SIMPLIFIED LOGIC: Use phase + status for compatibility with current schema
-      if (phase === 'session' && status === 'completed') {
-        // Session completed → Go to playtime
-        targetPhase = 'playtime'
-        targetUrl = `/learn/${topicId}?phase=playtime`
-        console.log('🎯 Session completed → Redirecting to playtime')
-      } else if (phase === 'playtime' && status === 'completed') {
-        // Playtime completed → Go to assignments
+      // Playtime removed: session ↔ editor (toggle) → assignment only
+      if (phase === 'assignment') {
         targetPhase = 'assignment'
         targetUrl = `/learn/${topicId}?phase=assignment`
-        console.log('🎯 Playtime completed → Redirecting to assignments')
-      } else if (phase === 'playtime' && status === 'in_progress') {
-        // User is in playtime → Continue playtime
-        targetPhase = 'playtime'
-        targetUrl = `/learn/${topicId}?phase=playtime`
-        console.log('🎯 User in playtime → Continue playtime')
-      } else if (phase === 'assignment') {
-        // User is in assignments → Continue assignment
-        targetPhase = 'assignment'
-        targetUrl = `/learn/${topicId}?phase=assignment`
-        console.log(`🎯 User in assignments → Continue assignment ${currentAssignment + 1}`)
-      } else if (phase === 'session' && status === 'in_progress') {
-        // Session in progress → Continue session
+        console.log('🎯 Continue assignment')
+      } else {
+        // Session or playtime (legacy) → session; practice is inline via Code editor toggle
         targetPhase = 'session'
         targetUrl = `/learn/${topicId}`
-        console.log('🎯 Session in progress → Continue session')
-      } else {
-        // Default fallback
-        targetPhase = phase || 'session'
-        targetUrl = phase === 'playtime' ? `/learn/${topicId}?phase=playtime` : 
-                   phase === 'assignment' ? `/learn/${topicId}?phase=assignment` : 
-                   `/learn/${topicId}`
-        console.log(`🎯 Fallback → Continue current phase: ${targetPhase}`)
+        console.log('🎯 Continue session')
       }
 
       navigate(targetUrl)
@@ -473,6 +452,8 @@ const Dashboard = () => {
 
   return (
     <div className={`dashboard ${showMobileMenu ? 'mobile-menu-open' : ''}`}>
+      {/* Fixed code-editor toggle (shared with Learn session) */}
+      <EditorToggle isOn={editorToggleOn} onToggle={setEditorToggleOn} />
       {/* Mobile Menu Toggle */}
       <button
         className="mobile-menu-toggle"

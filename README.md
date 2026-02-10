@@ -4,7 +4,7 @@ An interactive JavaScript learning platform that transforms beginners into job-r
 
 ## Features
 
-- **4-Phase Learning System**: Session → PlayTime → Assignment → Feedback
+- **3-Phase Learning System**: Session (teach outcomes) → Play (try code) → Assignment (tasks + run + test + AI review)
 - **AI Mentor**: Interactive Socratic teaching with Pro-Mentor JS
 - **Code Playground**: Real-time JavaScript execution and experimentation
 - **Assignments**: Practical coding tasks with automated feedback

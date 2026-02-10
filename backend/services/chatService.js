@@ -35,47 +35,47 @@ function parseTextToMessages(textHistory) {
 
   const messages = []
   const lines = textHistory.split('\n')
-  
+
   let currentMessage = null
   let currentContent = []
 
   for (const line of lines) {
     const trimmedLine = line.trim()
-    
+
     if (trimmedLine.startsWith('USER: ')) {
       // Save previous message if exists
       if (currentMessage) {
         currentMessage.content = currentContent.join('\n').trim()
         messages.push(currentMessage)
       }
-      
+
       // Start new user message
       currentMessage = {
         role: 'user',
         timestamp: new Date().toISOString()
       }
       currentContent = [trimmedLine.substring(6).trim()] // Remove "USER: " prefix
-      
+
     } else if (trimmedLine.startsWith('AGENT: ')) {
       // Save previous message if exists
       if (currentMessage) {
         currentMessage.content = currentContent.join('\n').trim()
         messages.push(currentMessage)
       }
-      
+
       // Start new assistant message
       currentMessage = {
         role: 'assistant',
         timestamp: new Date().toISOString()
       }
       currentContent = [trimmedLine.substring(7).trim()] // Remove "AGENT: " prefix
-      
+
     } else if (trimmedLine !== '' && currentMessage) {
       // Continuation line for current message
       currentContent.push(trimmedLine)
     }
   }
-  
+
   // Don't forget the last message
   if (currentMessage) {
     currentMessage.content = currentContent.join('\n').trim()
@@ -96,15 +96,15 @@ function parseTextToMessagesOptimized(textHistory) {
 
   const messages = []
   const text = textHistory.trim()
-  
+
   if (!text) return messages
 
   // Use regex for faster parsing - split on message boundaries
   const messageBlocks = text.split(/(?=(?:USER|AGENT): )/).filter(block => block.trim())
-  
+
   for (const block of messageBlocks) {
     const trimmedBlock = block.trim()
-    
+
     if (trimmedBlock.startsWith('USER: ')) {
       messages.push({
         role: 'user',
@@ -129,7 +129,7 @@ function parseTextToMessagesOptimized(textHistory) {
  */
 export async function getChatHistory(userId, topicId) {
   const startTime = Date.now()
-  
+
   try {
     // Try cache first
     const cachedMessages = await getCachedChatHistory(userId, topicId)
@@ -161,7 +161,7 @@ export async function getChatHistory(userId, topicId) {
     }
 
     let messages = []
-    
+
     // Fast path: Try JSON first (most common case)
     if (rawMessages.startsWith('[') || rawMessages.startsWith('{')) {
       try {
@@ -202,9 +202,9 @@ export async function getChatHistory(userId, topicId) {
  */
 export async function saveChatTurn(userId, topicId, userMessage, aiResponse, phase = 'session') {
   const client = getSupabaseClient()
-  
+
   console.log(`💾 Saving chat turn in text format: ${userId}/${topicId}`)
-  
+
   try {
     // Get current conversation history as text
     const { data: currentData, error: fetchError } = await client
@@ -216,7 +216,7 @@ export async function saveChatTurn(userId, topicId, userMessage, aiResponse, pha
 
     let currentHistory = ''
     let currentMessageCount = 0
-    
+
     if (!fetchError && currentData?.messages) {
       currentHistory = currentData.messages
       currentMessageCount = currentData.message_count || 0
@@ -224,12 +224,12 @@ export async function saveChatTurn(userId, topicId, userMessage, aiResponse, pha
 
     // Add new conversation turn in text format
     const newTurn = `USER: ${userMessage.trim()}\nAGENT: ${aiResponse.trim()}`
-    
+
     // Append to existing history
-    const updatedHistory = currentHistory 
+    const updatedHistory = currentHistory
       ? `${currentHistory}\n${newTurn}`
       : newTurn
-    
+
     const newMessageCount = currentMessageCount + 2 // User + AI message
 
     // Keep conversation manageable (limit to ~50 turns = 100 messages)
@@ -259,9 +259,9 @@ export async function saveChatTurn(userId, topicId, userMessage, aiResponse, pha
 
     // Invalidate cache after saving new messages
     await invalidateChatHistoryCache(userId, topicId)
-    
+
     console.log(`✅ Chat turn saved successfully: ${finalMessageCount} total messages`)
-    
+
     // Return messages in array format for frontend compatibility
     return parseTextToMessagesOptimized(finalHistory)
 
@@ -276,9 +276,9 @@ export async function saveChatTurn(userId, topicId, userMessage, aiResponse, pha
  */
 export async function saveInitialMessage(userId, topicId, message, phase = 'session') {
   const client = getSupabaseClient()
-  
+
   console.log(`💾 Checking for existing conversation: ${userId}/${topicId}`)
-  
+
   try {
     // Check if conversation already exists
     const { data: existing, error: checkError } = await client
@@ -320,9 +320,9 @@ export async function saveInitialMessage(userId, topicId, message, phase = 'sess
 
     // Invalidate cache after creating initial message
     await invalidateChatHistoryCache(userId, topicId)
-    
+
     console.log(`✅ Initial message created successfully`)
-    
+
     return {
       wasCreated: true,
       conversationHistory: initialHistory,
@@ -340,7 +340,7 @@ export async function saveInitialMessage(userId, topicId, message, phase = 'sess
  */
 export async function clearChatHistory(userId, topicId) {
   const client = getSupabaseClient()
-  
+
   try {
     const { error } = await client
       .from('chat_sessions')
@@ -354,7 +354,7 @@ export async function clearChatHistory(userId, topicId) {
 
     // Invalidate cache after clearing
     await invalidateChatHistoryCache(userId, topicId)
-    
+
     console.log(`✅ Chat history cleared and cache invalidated`)
 
   } catch (error) {
@@ -369,7 +369,7 @@ export async function clearChatHistory(userId, topicId) {
 export async function getChatHistoryString(userId, topicId) {
   try {
     const messages = await getChatHistory(userId, topicId)
-    
+
     if (messages.length === 0) {
       return ''
     }
@@ -389,33 +389,10 @@ export async function getChatHistoryString(userId, topicId) {
   }
 }
 
-/**
- * Get recent messages for context
- */
-export async function getLastMessages(userId, topicId, count = 10) {
-  try {
-    const messages = await getChatHistory(userId, topicId)
-    return messages.slice(-count)
-  } catch (error) {
-    console.error('Error getting last messages:', error)
-    return []
-  }
-}
-
-/**
- * Parse history to messages (for compatibility)
- */
-export function parseHistoryToMessages(historyString) {
-  if (!historyString) return []
-  return parseTextToMessages(historyString)
-}
-
 export default {
   getChatHistory,
   saveChatTurn,
   saveInitialMessage,
   clearChatHistory,
-  getChatHistoryString,
-  getLastMessages,
-  parseHistoryToMessages
+  getChatHistoryString
 }

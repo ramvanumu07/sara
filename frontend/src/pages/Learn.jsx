@@ -3,6 +3,7 @@ import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { learning, chat } from '../config/api'
 import { ToastContainer } from '../components/Toast'
 import { useToast } from '../hooks/useToast'
+import EditorToggle from '../components/EditorToggle'
 import CodeExecutor from '../services/CodeExecutor'
 import './Learn.css'
 import './Learn-responsive.css'
@@ -107,7 +108,9 @@ const Learn = () => {
   const { topicId } = useParams()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const phase = searchParams.get('phase') || 'session'
+  // Playtime removed: practice is inline in session via toggle; playtime URL treated as session
+  const phaseParam = searchParams.get('phase') || 'session'
+  const phase = phaseParam === 'playtime' ? 'session' : phaseParam
   const { toasts, warning, error: showError, success, info } = useToast()
 
   const [topic, setTopic] = useState(null)
@@ -121,7 +124,11 @@ const Learn = () => {
   const [sessionComplete, setSessionComplete] = useState(false)
   const messagesEndRef = useRef(null)
 
-  // Playground phase states
+  // Session: code editor visibility — synced with fixed toggle and localStorage
+  const [showEditorInSession, setShowEditorInSession] = useState(() =>
+    typeof window !== 'undefined' && localStorage.getItem('sara_editor_toggle') === 'on'
+  )
+
   const [userCode, setUserCode] = useState('')
   const [playgroundOutput, setPlaygroundOutput] = useState('')
   const [playgroundReady, setPlaygroundReady] = useState(false)
@@ -139,7 +146,6 @@ const Learn = () => {
   const [assignmentComplete, setAssignmentComplete] = useState(false)
 
   // Feedback phase states
-  const [feedback, setFeedback] = useState(null)
 
   // Scroll to bottom of messages
   const scrollToBottom = () => {
@@ -174,10 +180,12 @@ const Learn = () => {
           throw new Error('Invalid topic response structure')
         }
 
-        setTopic(topicResponse.data.data.topic)
+        const topicData = topicResponse.data.data.topic
+        setTopic(topicData)
 
-        // Trust the database progress table - if phase is advanced, allow access
-        if (phase === 'playtime' || phase === 'assignment') {
+        // Session complete if progress is playtime (legacy) or assignment
+        const progressPhase = topicData?.phase || phase
+        if (progressPhase === 'playtime' || progressPhase === 'assignment') {
           setSessionComplete(true)
         }
 
@@ -229,9 +237,6 @@ const Learn = () => {
               setError('Failed to initialize chat session')
             }
           }
-        } else if (phase === 'playtime') {
-          // Initialize playground
-          setUserCode('')
         } else if (phase === 'assignment') {
           // Load assignments from topic data
           const assignments = topicResponse.data.data.topic.tasks || []
@@ -254,10 +259,6 @@ const Learn = () => {
 
             setAssignmentCode(codeWithComments)
           }
-        } else if (phase === 'feedback') {
-          // Load feedback
-          const feedbackResponse = await learning.getFeedback(topicId)
-          setFeedback(feedbackResponse.data.data.feedback)
         }
 
       } catch (err) {
@@ -526,23 +527,20 @@ const Learn = () => {
     }
   }
 
-  // Handle reset code
-  const handleResetCode = () => {
-    setUserCode('')
-    const outputDiv = document.getElementById('terminal-output')
-    if (outputDiv) {
-      outputDiv.innerHTML = '<div style="color: #6b7280; font-style: italic; padding: 16px;">Click "Run" to execute your code</div>'
+  // Copy code to clipboard (replaces Reset in session editor)
+  const handleCopyCode = async () => {
+    if (!userCode.trim()) return
+    try {
+      await navigator.clipboard.writeText(userCode)
+      success('Code copied to clipboard.', 1500)
+    } catch (e) {
+      showError('Copy failed.', 2000)
     }
-    const lineNumbersDiv = document.querySelector('.terminal-line-numbers')
-    if (lineNumbersDiv) {
-      lineNumbersDiv.innerHTML = ''
-    }
-    setPlaygroundOutput('')
   }
 
-  // Industry-level secure assignment code execution
+  // Industry-level secure assignment code execution (uses assignment-only output area)
   const handleRunAssignment = async () => {
-    const outputDiv = document.getElementById('terminal-output')
+    const outputDiv = document.getElementById('assignment-output')
     if (!outputDiv) return
 
     try {
@@ -625,8 +623,8 @@ const Learn = () => {
 
       const outputLines = outputText.split('\n')
 
-      // Update line numbers
-      const lineNumbersDiv = outputDiv.parentElement.querySelector('.terminal-line-numbers')
+      // Update line numbers (assignment panel)
+      const lineNumbersDiv = outputDiv.parentElement.querySelector('.assignment-terminal-line-numbers')
       if (lineNumbersDiv) {
         let lineNumbersHTML = ''
         outputLines.forEach((_, index) => {
@@ -741,6 +739,26 @@ const Learn = () => {
     }
   }
 
+  // Get AI review for current assignment code (assignment phase only)
+  const [reviewLoading, setReviewLoading] = useState(false)
+  const handleGetReview = async () => {
+    if (!assignmentCode.trim() || !assignments.length) return
+    setReviewLoading(true)
+    setAssignmentReview('')
+    try {
+      const currentTask = assignments[currentAssignment]
+      const res = await learning.getFeedback(topicId, assignmentCode, currentTask)
+      const text = res?.data?.data?.feedback || ''
+      setAssignmentReview(text)
+      if (text) success('Review loaded.', 2000)
+    } catch (err) {
+      console.error('Get review error:', err)
+      showError(err.response?.data?.message || 'Failed to get review', 3000)
+    } finally {
+      setReviewLoading(false)
+    }
+  }
+
   // Cleanup on component unmount
   useEffect(() => {
     return () => {
@@ -823,54 +841,77 @@ const Learn = () => {
 
   return (
     <div className="learn-container">
-      {/* Header */}
-      <header className="learn-header">
-        <button
-          className="back-btn"
-          onClick={() => navigate('/dashboard')}
-        >
-          Back
-        </button>
-
-        <div className="header-center">
-          <span className="header-title">{topic.title}</span>
-          <div className="phase-text">
-            {phase === 'session' && 'Learning Session'}
-            {phase === 'playtime' && 'Practice Mode'}
-            {phase === 'assignment' && `Assignment ${currentAssignment + 1} of ${assignments.length}`}
-            {phase === 'feedback' && 'Feedback'}
-          </div>
-        </div>
-
-        <button
-          className="code-btn"
-          onClick={() => {
-            if (sessionComplete) {
-              info('Loading assignments...', 1500)
-              navigate(`/learn/${topicId}?phase=assignment`)
-            } else {
-              warning('Complete the learning session first to unlock assignments!', 4000)
-            }
-          }}
-          style={{
-            padding: '8px 16px',
-            backgroundColor: sessionComplete ? '#10a37f' : '#9ca3af',
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            cursor: sessionComplete ? 'pointer' : 'not-allowed',
-            opacity: sessionComplete ? 1 : 0.7
-          }}
-          title={sessionComplete ? 'Go to Assignments' : 'Complete the session first'}
-        >
-          Code
-        </button>
-      </header>
-
-      {/* Session Phase */}
+      {/* Session: fixed toggle only; editor view has no header */}
       {phase === 'session' && (
-        <div className="session-container">
-          <div className="messages-area">
+        <EditorToggle
+          isOn={showEditorInSession}
+          onToggle={setShowEditorInSession}
+        />
+      )}
+
+      {/* Header only where needed (chat view, assignment view); editor view has no header */}
+      {((phase === 'session' && !showEditorInSession) || phase === 'assignment') && (
+        <header className="learn-header">
+          <button
+            className="back-btn"
+            onClick={() => navigate('/dashboard')}
+          >
+            Back
+          </button>
+
+          <div className="header-center">
+            <span className="header-title">{topic.title}</span>
+            <div className="phase-text">
+              {phase === 'session' && 'Learning Session'}
+              {phase === 'assignment' && `Assignment ${currentAssignment + 1} of ${assignments.length}`}
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {phase === 'session' && sessionComplete && (
+              <button
+                type="button"
+                onClick={() => { info('Loading assignments...', 1500); navigate(`/learn/${topicId}?phase=assignment`) }}
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: '#10a37f',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem'
+                }}
+                title="Go to Assignments"
+              >
+                Assignments
+              </button>
+            )}
+            {phase === 'assignment' && (
+              <button
+                type="button"
+                onClick={() => navigate(`/learn/${topicId}`)}
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: '#6b7280',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '8px',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem'
+                }}
+                title="Back to Session"
+              >
+                Session
+              </button>
+            )}
+          </div>
+        </header>
+      )}
+
+      {/* Session chat view */}
+      {phase === 'session' && !showEditorInSession && (
+        <div className="session-container" style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+          <div className="messages-area" style={{ flex: 1, minHeight: 0 }}>
             {messages.map((message, index) => (
               <div key={index} className="message-row">
                 <div className={`avatar ${message.role === 'user' ? 'avatar-user' : 'avatar-assistant'}`}>
@@ -896,7 +937,6 @@ const Learn = () => {
             <div ref={messagesEndRef} />
           </div>
 
-
           <form className="input-form" onSubmit={handleSendMessage}>
             <textarea
               className="text-input"
@@ -908,7 +948,7 @@ const Learn = () => {
                   handleSendMessage(e)
                 }
               }}
-              placeholder="Type your message... (Press Enter to send, Shift+Enter for new line)"
+              placeholder="Type your message..."
               rows="1"
               disabled={isTyping}
             />
@@ -923,8 +963,8 @@ const Learn = () => {
         </div>
       )}
 
-      {/* Professional Responsive Playground Phase */}
-      {phase === 'playtime' && (
+      {/* Code editor + terminal: same full-screen layout as before; only visible when toggle on in session */}
+      {phase === 'session' && showEditorInSession && (
         <div className="playground-main-content" style={{
           flex: 1,
           display: 'flex',
@@ -1001,26 +1041,25 @@ const Learn = () => {
                   Run
                 </button>
                 <button
-                  onClick={handleResetCode}
-                  className="playground-reset-btn"
+                  onClick={handleCopyCode}
+                  className="playground-copy-btn"
                   style={{
-                    backgroundColor: '#6b7280',
-                    color: 'white',
+                    backgroundColor: userCode.trim() ? '#3b82f6' : '#d1d5db',
+                    color: userCode.trim() ? 'white' : '#9ca3af',
                     border: 'none',
                     borderRadius: '6px',
                     padding: '6px 12px',
                     fontSize: '0.75rem',
                     fontWeight: '500',
-                    cursor: 'pointer',
+                    cursor: userCode.trim() ? 'pointer' : 'not-allowed',
                     transition: 'all 0.2s ease',
-                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
                     minWidth: '60px',
                     height: '28px',
                     alignSelf: 'flex-start'
                   }}
-                  title="Reset Code"
+                  title="Copy code to clipboard"
                 >
-                  Reset
+                  Copy
                 </button>
               </div>
             </div>
@@ -1531,6 +1570,28 @@ const Learn = () => {
                 >
                   Submit
                 </button>
+                <button
+                  onClick={handleGetReview}
+                  disabled={!assignmentCode.trim() || reviewLoading}
+                  className="playground-review-btn"
+                  style={{
+                    backgroundColor: assignmentCode.trim() && !reviewLoading ? '#3b82f6' : '#d1d5db',
+                    color: assignmentCode.trim() && !reviewLoading ? 'white' : '#9ca3af',
+                    border: 'none',
+                    borderRadius: '6px',
+                    padding: '6px 12px',
+                    fontSize: '0.75rem',
+                    fontWeight: '500',
+                    cursor: assignmentCode.trim() && !reviewLoading ? 'pointer' : 'not-allowed',
+                    transition: 'all 0.2s ease',
+                    minWidth: '72px',
+                    height: '28px',
+                    alignSelf: 'flex-start'
+                  }}
+                  title="Get AI review of your code"
+                >
+                  {reviewLoading ? '...' : 'Get review'}
+                </button>
               </div>
             </div>
 
@@ -1882,7 +1943,7 @@ const Learn = () => {
               </div>
             </div>
 
-            {/* Terminal Content */}
+            {/* Terminal Content (assignment only — shared run terminal is id="terminal-output") */}
             <div style={{
               flex: 1,
               backgroundColor: '#1e1e1e',
@@ -1891,8 +1952,7 @@ const Learn = () => {
               display: 'flex',
               minHeight: 0
             }}>
-              {/* Terminal Line Numbers */}
-              <div className="terminal-line-numbers" style={{
+              <div className="assignment-terminal-line-numbers" style={{
                 width: '50px',
                 backgroundColor: '#2d2d2d',
                 borderRight: '1px solid #404040',
@@ -1909,12 +1969,11 @@ const Learn = () => {
               }}>
               </div>
 
-              {/* Terminal Output */}
               <div
-                id="terminal-output"
+                id="assignment-output"
                 className="playground-output"
                 onScroll={(e) => {
-                  const lineNumbers = e.target.parentElement.querySelector('.terminal-line-numbers')
+                  const lineNumbers = e.target.parentElement.querySelector('.assignment-terminal-line-numbers')
                   if (lineNumbers) {
                     lineNumbers.scrollTop = e.target.scrollTop
                   }
@@ -1941,54 +2000,27 @@ const Learn = () => {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* Feedback Phase */}
-      {phase === 'feedback' && (
-        <div className="feedback-container">
-          <div className="feedback-header">
-            <h2>🎉 Congratulations!</h2>
-            <span className="time-taken">Completed in 25 minutes</span>
-          </div>
-
-          <div className="feedback-section">
-            <h3 className="section-title">Your Performance</h3>
-            <div className="test-results">
-              <div className="test-score passed">
-                <span className="test-score-number">85%</span>
-                <span className="test-score-label">Overall Score</span>
+            {assignmentReview && (
+              <div style={{
+                marginTop: '12px',
+                padding: '12px 16px',
+                backgroundColor: '#f0f9ff',
+                border: '1px solid #bae6fd',
+                borderRadius: '8px',
+                fontSize: '0.875rem',
+                lineHeight: '1.5',
+                color: '#0c4a6e',
+                whiteSpace: 'pre-wrap'
+              }}>
+                <strong>AI Review</strong>
+                <div style={{ marginTop: '8px' }}>{assignmentReview}</div>
               </div>
-            </div>
+            )}
           </div>
-
-          <div className="feedback-section">
-            <h3 className="section-title">What You've Learned</h3>
-            <div style={{ marginBottom: '24px' }}>
-              <h4 style={{ fontSize: '0.95rem', fontWeight: '600', marginBottom: '12px', color: '#111827' }}>
-                Key Concepts Mastered:
-              </h4>
-              <ul style={{ paddingLeft: '20px', color: '#6b7280' }}>
-                {topic.concepts?.map((concept, index) => (
-                  <li key={index} style={{ marginBottom: '8px' }}>
-                    {concept}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          <button
-            className="continue-btn"
-            onClick={() => navigate('/dashboard')}
-          >
-            Back to Dashboard
-          </button>
         </div>
       )}
 
-      {/* Completed Phase */}
+      {/* Completed Phase — 3 phases only: session → play → assignment */}
       {assignmentComplete && (
         <div className="completed-container">
           <div className="completed-content">
@@ -1999,9 +2031,9 @@ const Learn = () => {
             </p>
             <button
               className="back-to-dashboard-btn"
-              onClick={() => navigate(`/learn/${topicId}?phase=feedback`)}
+              onClick={() => navigate('/dashboard')}
             >
-              View Feedback
+              Back to Dashboard
             </button>
           </div>
         </div>

@@ -321,32 +321,3 @@ function countMessages(conversation) {
   
   return count
 }
-
-// ============ LEGACY COMPATIBILITY ============
-
-/**
- * Legacy function for compatibility - redirects to getChatHistoryString
- * @deprecated Use getChatHistoryString directly
- */
-export async function getChatMessages(userId, topicId, subtopicId = null) {
-  // Ignore subtopicId in new architecture
-  return await getChatHistoryString(userId, topicId)
-}
-
-/**
- * Legacy function for compatibility - redirects to saveChatTurn
- * @deprecated Use saveChatTurn directly
- */
-export async function saveChatMessage(userId, topicId, subtopicId, role, content, phase = 'session') {
-  // For backward compatibility during migration
-  // In new architecture, we don't save individual messages
-  console.warn('saveChatMessage is deprecated, use saveChatTurn for complete interactions')
-  
-  if (role === 'assistant') {
-    // If it's an assistant message, assume it's an initial message
-    return await saveInitialMessage(userId, topicId, content)
-  } else {
-    // If it's a user message, we can't save it alone - need the AI response
-    throw new Error('saveChatMessage for user messages is not supported in new architecture')
-  }
-}

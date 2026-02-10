@@ -1,7 +1,7 @@
 import express from 'express'
 import { authenticateToken } from './auth.js'
 import { getAllProgress, upsertProgress } from '../services/database.js'
-import { handleErrorResponse } from '../utils/responses.js'
+import { handleErrorResponse, createErrorResponse, createSuccessResponse } from '../utils/responses.js'
 
 const router = express.Router()
 
@@ -26,7 +26,7 @@ router.get('/', authenticateToken, async (req, res) => {
       }
     }
 
-    res.json({ success: true, progress: formatted })
+    res.json(createSuccessResponse({ progress: formatted }))
   } catch (error) {
     handleErrorResponse(res, error, 'get progress')
   }
@@ -51,10 +51,7 @@ router.post('/update', authenticateToken, async (req, res) => {
     } = req.body
 
     if (!topicId) {
-      return res.status(400).json({
-        success: false,
-        message: 'Topic ID is required'
-      })
+      return res.status(400).json(createErrorResponse('Topic ID is required'))
     }
 
     // Prepare progress data
@@ -78,11 +75,7 @@ router.post('/update', authenticateToken, async (req, res) => {
 
     console.log(`📊 Progress updated for user ${userId}, topic ${topicId}:`, progressData)
 
-    res.json({
-      success: true,
-      message: 'Progress updated successfully',
-      data: progressData
-    })
+    res.json(createSuccessResponse(progressData, 'Progress updated successfully'))
 
   } catch (error) {
     console.error('❌ Progress update error:', error)

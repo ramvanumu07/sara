@@ -6,14 +6,17 @@
 import express from 'express'
 import { authenticateToken } from './auth.js'
 import { callAI } from '../services/ai.js'
-import { getChatHistory, saveChatTurn, saveInitialMessage, getLastMessages, parseHistoryToMessages, clearChatHistory, getChatHistoryString } from '../services/chatService.js'
+import { getChatHistory, saveChatTurn, saveInitialMessage, clearChatHistory, getChatHistoryString } from '../services/chatService.js'
+import { updateChatPhase } from '../services/chatHistory.js'
 import { getSupabaseClient } from '../services/database.js'
 import { courses } from '../../data/curriculum.js'
 import { formatLearningObjectives, findTopicById } from '../utils/curriculum.js'
+import { getTopicOrRespond } from '../utils/topicHelper.js'
 import { getCompletedTopics, upsertProgress } from '../services/database.js'
 import progressManager from '../services/progressManager.js'
 import { handleErrorResponse, createSuccessResponse, createErrorResponse } from '../utils/responses.js'
 import { rateLimitMiddleware } from '../middleware/rateLimiting.js'
+import { buildSessionPrompt as buildSessionPromptFromShared } from '../prompts/sessionPrompt.js'
 
 const router = express.Router()
 
@@ -43,89 +46,17 @@ function buildEmbeddedSessionPrompt(topicId, conversationHistory, completedTopic
   if (!topic) {
     throw new Error(`Topic not found: ${topicId}`)
   }
-
   const goals = formatLearningObjectives(topic.outcomes)
   const completedList = completedTopics.length > 0
     ? `\n\nCompleted Topics: ${completedTopics.join(', ')}`
     : ''
-
-  return `You are Sara, a friendly JavaScript tutor teaching "${topic.title}".
-
-Goals to Cover:
-${goals}
-
-Conversation History:
-${conversationHistory || 'Starting conversation...'}${completedList}
-
-Required Response Format:
-For each new concept:
-1. One sentence: what it does (explain as simple as you can)
-2. "Here's an example:" + minimal code example  
-3. "Your turn!" + specific practice task
-4. STOP
-
-After student responds:
-1. Celebrate if correct (🎉)
-2. Use their code to teach when natural, otherwise just move forward
-3. Introduce next goal
-
-Response rules:
-- 3-4 short paragraphs max
-- Conversational, friendly tone
-- Use meaningful variable names (userName, not x)
-- Always end with a question
-- NEVER continue past "Your turn!" - wait for them
-- Use "terminal" instead of "browser console"
-
-Adaptive Behaviors:
-- If student asks "What is X?": Explain immediately, then return to lesson
-- If wrong: Point out issue gently + why + hint (not answer) + ask retry
-- If stuck after 2 tries: Give more explicit guidance
-
-🚨 CRITICAL: SEND COMPLETION SIGNAL 🚨
-
-When ALL goals are taught and practiced, send this EXACT completion signal:
-SESSION_COMPLETE_SIGNAL
-
-Then immediately follow with:
-🏆 Congratulations! You've Mastered ${topic.title}!
-
-You have successfully completed all learning objectives. Ready for the next phase!
-
-STOP. No more questions or teaching.
-
-IMPORTANT: Before generating your response, count how many goals have been taught and practiced. If all ${goals.split('\n').length} goals are complete, use the completion message above.
-
-Generate the response now.`
-}
-
-function buildPlaytimePrompt(topicId, conversationHistory, completedTopics = []) {
-  const topic = findTopicById(courses, topicId)
-  const outcomes = topic ? formatLearningObjectives(topic.outcomes) : 'Learn programming concepts'
-
-  return `You are Sara, a creative JavaScript mentor for "${topic?.title || 'JavaScript'}" playtime!
-
-Student has learned: ${outcomes}
-Completed topics: ${completedTopics.join(', ') || 'None yet'}
-
-Conversation History:
-${conversationHistory || 'Starting playtime...'}
-
-Your role in PLAYTIME:
-- Suggest fun, creative coding challenges using ${topic.title}
-- Make challenges progressively more interesting
-- Encourage experimentation and creativity
-- Be supportive and enthusiastic
-- Help debug when they get stuck
-- Build on their ideas and code
-
-Challenge ideas should be:
-- Fun and engaging (games, art, interactive)
-- Use the concepts they just learned
-- Build on each other
-- Appropriate for their level
-
-Respond to their message and guide them through creative coding!`
+  return buildSessionPromptFromShared({
+    topicTitle: topic.title,
+    goals,
+    conversationHistory,
+    completedList,
+    variant: 'chat'
+  })
 }
 
 function buildAssignmentPrompt(topicId, conversationHistory, assignment) {
@@ -166,14 +97,9 @@ router.post('/session', authenticateToken, rateLimitMiddleware, async (req, res)
     const userId = req.user.userId
 
     console.log(`💬 Session chat: ${userId} -> ${topicId}`)
-    console.log('🔍 Debug - req.user:', req.user)
-    console.log('🔍 Debug - userId type:', typeof userId, 'value:', userId)
-
     // Validate topic exists
-    const topic = findTopicById(courses, topicId)
-    if (!topic) {
-      return res.status(404).json(createErrorResponse('Topic not found'))
-    }
+    const topic = getTopicOrRespond(res, courses, topicId, createErrorResponse)
+    if (!topic) return
 
     // Get conversation history and completed topics in parallel
     const [conversationHistory, completedTopics] = await Promise.all([
@@ -183,13 +109,6 @@ router.post('/session', authenticateToken, rateLimitMiddleware, async (req, res)
 
     // Build embedded prompt with conversation history
     const embeddedPrompt = buildEmbeddedSessionPrompt(topicId, conversationHistory, completedTopics)
-
-    console.log('🔍 System Prompt Debug:')
-    console.log('   - Topic ID:', topicId)
-    console.log('   - Conversation History Type:', typeof conversationHistory)
-    console.log('   - Conversation History Length:', conversationHistory?.length || 0)
-    console.log('   - Conversation History Preview:', conversationHistory?.substring(0, 200) + '...')
-    console.log('   - System Prompt (first 500 chars):', embeddedPrompt.substring(0, 500) + '...')
 
     const messages = [
       { role: 'system', content: embeddedPrompt }
@@ -211,19 +130,19 @@ router.post('/session', authenticateToken, rateLimitMiddleware, async (req, res)
 
     // Simple and reliable completion detection - look for the exact signal
     let isSessionComplete = aiResponse.includes('SESSION_COMPLETE_SIGNAL')
-    
+
     // Clean the response by removing the signal (don't show it to user)
     let cleanedResponse = aiResponse.replace('SESSION_COMPLETE_SIGNAL\n\n', '').replace('SESSION_COMPLETE_SIGNAL', '')
-    
+
     // Fallback: Force completion if conversation is too long (8+ messages) and student has shown console.log usage
     if (!isSessionComplete) {
       const messageCount = conversationHistory.split(/(?=AGENT:|USER:)/).filter(msg => msg.trim()).length
       const hasConsoleLogUsage = conversationHistory.toLowerCase().includes('console.log')
-      
+
       // Count console.log occurrences in user messages
       const userMessages = conversationHistory.split('USER:').slice(1) // Remove first empty element
       const consoleLogCount = userMessages.filter(msg => msg.toLowerCase().includes('console.log')).length
-      
+
       if ((messageCount >= 8 && hasConsoleLogUsage) || consoleLogCount >= 3) {
         console.log(`🔄 Forcing session completion - messageCount: ${messageCount}, consoleLogCount: ${consoleLogCount}`)
         isSessionComplete = true
@@ -246,13 +165,13 @@ router.post('/session', authenticateToken, rateLimitMiddleware, async (req, res)
       console.error('Failed to save chat turn')
       return res.status(500).json(createErrorResponse('Failed to save conversation'))
     }
-    
+
     console.log('🔍 Completion Detection Debug:')
     console.log('   - AI Response length:', aiResponse?.length)
     console.log('   - Contains SESSION_COMPLETE_SIGNAL:', aiResponse.includes('SESSION_COMPLETE_SIGNAL'))
     console.log('   - Is Complete:', isSessionComplete)
     console.log('   - AI Response preview:', aiResponse?.substring(0, 400) + '...')
-    
+
     // Update progress - direct database call for compatibility
     try {
       if (isSessionComplete) {
@@ -308,60 +227,6 @@ router.post('/session', authenticateToken, rateLimitMiddleware, async (req, res)
   }
 })
 
-router.post('/playtime', authenticateToken, rateLimitMiddleware, async (req, res) => {
-  try {
-    if (!validateChatRequest(req, res)) return
-
-    const { message, topicId } = req.body
-    const userId = req.user.userId
-
-    console.log(`🎮 Playtime chat: ${userId} -> ${topicId}`)
-
-    // Validate topic exists
-    const topic = findTopicById(courses, topicId)
-    if (!topic) {
-      return res.status(404).json(createErrorResponse('Topic not found'))
-    }
-
-    // For playtime, we don't need chat history - just provide a simple practice environment
-    // Get completed topics for context
-    const completedTopics = await getCompletedTopics(userId)
-
-    // Build playtime prompt - no history needed, just practice guidance
-    const embeddedPrompt = buildPlaytimePrompt(topicId, '', completedTopics)
-
-    const messages = [
-      { role: 'system', content: embeddedPrompt },
-      { role: 'user', content: message.trim() }
-    ]
-
-    // Get AI response with higher creativity for playtime
-    const aiResponse = await callAI(messages, 1500, 0.6, 'llama-3.3-70b-versatile')
-
-    // Save the conversation turn
-    const saveResult = await saveChatTurn(userId, topicId, message.trim(), aiResponse)
-
-    // Update chat phase to playtime
-    await updateChatPhase(userId, topicId, 'playtime')
-
-    console.log(`✅ Playtime chat: User ${userId}, Topic ${topicId}`)
-
-    res.json(createSuccessResponse({
-      response: aiResponse,
-      messageCount: saveResult.messageCount,
-      conversationHistory: saveResult.conversationHistory,
-      phase: 'playtime',
-      topic: {
-        id: topicId,
-        title: topic.title,
-        category: topic.category
-      }
-    }))
-  } catch (error) {
-    handleErrorResponse(res, error, 'playtime chat')
-  }
-})
-
 router.post('/assignment/hint', authenticateToken, rateLimitMiddleware, async (req, res) => {
   try {
     const { topicId, assignment, userCode } = req.body
@@ -374,10 +239,8 @@ router.post('/assignment/hint', authenticateToken, rateLimitMiddleware, async (r
     console.log(`💡 Assignment hint: ${userId} -> ${topicId}`)
 
     // Validate topic exists
-    const topic = findTopicById(courses, topicId)
-    if (!topic) {
-      return res.status(404).json(createErrorResponse('Topic not found'))
-    }
+    const topic = getTopicOrRespond(res, courses, topicId, createErrorResponse)
+    if (!topic) return
 
     // Get conversation history for assignment context
     const conversationHistory = await getChatHistoryString(userId, topicId)
@@ -428,10 +291,8 @@ router.post('/feedback', authenticateToken, rateLimitMiddleware, async (req, res
     console.log(`📝 Code feedback: ${userId} -> ${topicId}`)
 
     // Validate topic exists
-    const topic = findTopicById(courses, topicId)
-    if (!topic) {
-      return res.status(404).json(createErrorResponse('Topic not found'))
-    }
+    const topic = getTopicOrRespond(res, courses, topicId, createErrorResponse)
+    if (!topic) return
 
     // Build feedback prompt
     const feedbackPrompt = `You are Sara, a JavaScript tutor providing code feedback for "${topic.title}".
@@ -461,17 +322,14 @@ Provide detailed feedback on their code:`
       { role: 'user', content: `Please review my code for the assignment: "${assignment.description}"\n\nMy code:\n${userCode}` }
     ]
 
-    // Get AI response
+    // Get AI response (assignment review only — no phase change)
     const aiResponse = await callAI(messages, 1200, 0.4, 'llama-3.3-70b-versatile')
-
-    // Update chat phase to feedback
-    await updateChatPhase(userId, topicId, 'feedback')
 
     console.log(`✅ Code feedback: User ${userId}, Topic ${topicId}`)
 
     res.json(createSuccessResponse({
       feedback: aiResponse,
-      phase: 'feedback',
+      phase: 'assignment',
       topic: {
         id: topicId,
         title: topic.title,
@@ -516,16 +374,14 @@ router.get('/debug/history/:topicId', authenticateToken, async (req, res) => {
 
 router.get('/history/:topicId', authenticateToken, async (req, res) => {
   const startTime = Date.now()
-  
+
   try {
     const { topicId } = req.params
     const userId = req.user.userId
 
     // Validate topic exists
-    const topic = findTopicById(courses, topicId)
-    if (!topic) {
-      return res.status(404).json(createErrorResponse('Topic not found'))
-    }
+    const topic = getTopicOrRespond(res, courses, topicId, createErrorResponse)
+    if (!topic) return
 
     const messages = await getChatHistory(userId, topicId)
     const duration = Date.now() - startTime
@@ -556,7 +412,7 @@ router.get('/cache/stats', authenticateToken, async (req, res) => {
   try {
     const { getCacheStats } = await import('../services/chatCache.js')
     const stats = await getCacheStats()
-    
+
     res.json(createSuccessResponse({
       cache: stats,
       timestamp: new Date().toISOString()
@@ -572,10 +428,8 @@ router.delete('/history/:topicId', authenticateToken, async (req, res) => {
     const userId = req.user.userId
 
     // Validate topic exists
-    const topic = findTopicById(courses, topicId)
-    if (!topic) {
-      return res.status(404).json(createErrorResponse('Topic not found'))
-    }
+    const topic = getTopicOrRespond(res, courses, topicId, createErrorResponse)
+    if (!topic) return
 
     await clearChatHistory(userId, topicId)
 
@@ -620,7 +474,7 @@ router.post('/complete/:topicId', authenticateToken, async (req, res) => {
 
     // Add completion message to chat history
     const completionMessage = `🏆 Congratulations! You've Mastered ${topicId}!\n\nYou have successfully completed all learning objectives. Ready for the next phase!`
-    
+
     await saveChatTurn(userId, topicId, 'MANUAL_COMPLETION', completionMessage)
 
     res.json(createSuccessResponse({

@@ -15,19 +15,19 @@ export function createSuccessResponse(data, message = null, meta = null) {
     success: true,
     timestamp: new Date().toISOString()
   }
-  
+
   if (message) {
     response.message = message
   }
-  
+
   if (data !== null && data !== undefined) {
     response.data = data
   }
-  
+
   if (meta) {
     response.meta = meta
   }
-  
+
   return response
 }
 
@@ -44,15 +44,15 @@ export function createErrorResponse(message, code = null, details = null) {
     message,
     timestamp: new Date().toISOString()
   }
-  
+
   if (code) {
     response.code = code
   }
-  
+
   if (details) {
     response.details = details
   }
-  
+
   return response
 }
 
@@ -116,25 +116,13 @@ export function createNotFoundErrorResponse(resource = 'Resource') {
  */
 export function createServerErrorResponse(message = 'Internal server error', details = null) {
   const response = createErrorResponse(message, 'SERVER_ERROR')
-  
+
   // Only include details in development environment
   if (process.env.NODE_ENV === 'development' && details) {
     response.details = details
   }
-  
-  return response
-}
 
-/**
- * Send a standardized success response
- * @param {Object} res - Express response object
- * @param {any} data - Response data
- * @param {string} message - Optional success message
- * @param {number} statusCode - HTTP status code (default: 200)
- * @param {Object} meta - Optional metadata
- */
-export function sendSuccessResponse(res, data, message = null, statusCode = 200, meta = null) {
-  res.status(statusCode).json(createSuccessResponse(data, message, meta))
+  return response
 }
 
 /**
@@ -158,12 +146,12 @@ export function sendErrorResponse(res, message, statusCode = 500, code = null, d
  */
 export function handleErrorResponse(res, error, operation = 'operation', defaultStatusCode = 500) {
   console.error(`${operation} error:`, error)
-  
+
   // Determine status code based on error type
   let statusCode = defaultStatusCode
   let message = `Failed to process ${operation}`
   let code = 'SERVER_ERROR'
-  
+
   if (error.name === 'ValidationError') {
     statusCode = 400
     message = 'Validation failed'
@@ -183,7 +171,7 @@ export function handleErrorResponse(res, error, operation = 'operation', default
   } else if (error.message) {
     message = error.message
   }
-  
-  sendErrorResponse(res, message, statusCode, code, 
+
+  sendErrorResponse(res, message, statusCode, code,
     process.env.NODE_ENV === 'development' ? error.stack : null)
 }

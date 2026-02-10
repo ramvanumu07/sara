@@ -153,9 +153,6 @@ export const learning = {
   completePlaytime: (topicId) => 
     api.post('/learn/playtime/complete', { topicId }),
 
-  playtimeChat: (topicId, message) => 
-    api.post('/chat/playtime', { topicId, message }),
-
   // Assignments
   startAssignments: (topicId) => 
     api.post('/learn/assignment/start', { topicId }),
