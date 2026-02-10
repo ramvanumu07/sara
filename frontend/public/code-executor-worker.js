@@ -33,24 +33,47 @@ class CodeExecutor {
   executeScript(code, testCases) {
     const results = [];
     
-    for (const testCase of testCases) {
+    // Handle playground execution (no test cases)
+    if (!testCases || testCases.length === 0) {
       try {
-        const result = this.runScriptWithInputs(code, testCase.input);
-        const passed = this.compareOutput(result, testCase.expectedOutput);
-        
+        const output = this.runScriptWithInputs(code, {});
         results.push({
-          passed,
-          output: result,
-          expected: testCase.expectedOutput,
-          input: testCase.input
+          passed: true,
+          output: output,
+          result: output,
+          input: {},
+          expected: null
         });
       } catch (error) {
         results.push({
           passed: false,
           error: error.message,
-          expected: testCase.expectedOutput,
-          input: testCase.input
+          output: '',
+          input: {},
+          expected: null
         });
+      }
+    } else {
+      // Handle assignment execution (with test cases)
+      for (const testCase of testCases) {
+        try {
+          const result = this.runScriptWithInputs(code, testCase.input);
+          const passed = this.compareOutput(result, testCase.expectedOutput);
+          
+          results.push({
+            passed,
+            output: result,
+            expected: testCase.expectedOutput,
+            input: testCase.input
+          });
+        } catch (error) {
+          results.push({
+            passed: false,
+            error: error.message,
+            expected: testCase.expectedOutput,
+            input: testCase.input
+          });
+        }
       }
     }
 
@@ -116,27 +139,78 @@ class CodeExecutor {
 
   runScriptWithInputs(code, inputs) {
     // Inject input variables
-    const inputCode = Object.entries(inputs)
+    const inputCode = Object.entries(inputs || {})
       .map(([key, value]) => `const ${key} = ${JSON.stringify(value)};`)
       .join('\n');
     
-    const fullCode = inputCode + '\n' + code;
+    const fullCode = inputCode + (inputCode ? '\n' : '') + code;
     
-    // Capture console output
+    // Capture console output with enhanced logging
     const outputs = [];
     const originalConsole = self.console;
     
     self.console = {
       log: (...args) => {
         if (outputs.length < this.maxOutputLines) {
-          outputs.push(args.map(arg => String(arg)).join(' '));
+          // Handle different types of arguments better
+          const formattedArgs = args.map(arg => {
+            if (typeof arg === 'object' && arg !== null) {
+              try {
+                return JSON.stringify(arg, null, 2);
+              } catch (e) {
+                return String(arg);
+              }
+            }
+            return String(arg);
+          });
+          outputs.push(formattedArgs.join(' '));
+        }
+      },
+      // Also capture other console methods
+      info: (...args) => {
+        if (outputs.length < this.maxOutputLines) {
+          outputs.push('[INFO] ' + args.map(arg => String(arg)).join(' '));
+        }
+      },
+      warn: (...args) => {
+        if (outputs.length < this.maxOutputLines) {
+          outputs.push('[WARN] ' + args.map(arg => String(arg)).join(' '));
+        }
+      },
+      error: (...args) => {
+        if (outputs.length < this.maxOutputLines) {
+          outputs.push('[ERROR] ' + args.map(arg => String(arg)).join(' '));
         }
       }
     };
 
     try {
       this.executeCodeSafely(fullCode);
-      return outputs.join('\n');
+      
+      // If no console output, check if there's a return value or expression result
+      if (outputs.length === 0) {
+        // Try to evaluate as expression if it's a simple statement
+        try {
+          const trimmedCode = code.trim();
+          if (!trimmedCode.includes('console.log') && 
+              !trimmedCode.includes('function') && 
+              !trimmedCode.includes('var ') && 
+              !trimmedCode.includes('let ') && 
+              !trimmedCode.includes('const ') &&
+              !trimmedCode.includes('{') &&
+              !trimmedCode.includes(';')) {
+            // Might be a simple expression
+            const result = new Function(`return (${trimmedCode})`)();
+            if (result !== undefined) {
+              outputs.push(String(result));
+            }
+          }
+        } catch (e) {
+          // Not an expression, that's fine
+        }
+      }
+      
+      return outputs.length > 0 ? outputs.join('\n') : '';
     } finally {
       self.console = originalConsole;
     }

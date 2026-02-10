@@ -1,3 +1,88 @@
+/* ========== COMPREHENSIVE LOADING SYSTEM ========== */
+
+/* Full-Screen Loading States - Always Centered */
+.loading-container,
+.dashboard-loading,
+.app-loading {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(255, 255, 255, 0.98) !important;
+  backdrop-filter: blur(2px) !important;
+  z-index: 9999 !important;
+  gap: 16px !important;
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+/* Full-Screen Loading Spinners */
+.loading-container .loading-spinner,
+.dashboard-loading .loading-spinner,
+.app-loading .loading-spinner {
+  width: 32px !important;
+  height: 32px !important;
+  border: 3px solid #e5e7eb !important;
+  border-top-color: #10a37f !important;
+  border-radius: 50% !important;
+  animation: loadingSpin 1s linear infinite !important;
+  flex-shrink: 0 !important;
+}
+
+/* Full-Screen Loading Text */
+.loading-container p,
+.dashboard-loading p,
+.app-loading p {
+  color: #6b7280 !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  text-align: center !important;
+  margin: 0 !important;
+  line-height: 1.4 !important;
+}
+
+/* Keyframes for loading animations */
+@keyframes loadingSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Ensure button loading states work correctly */
+.auth-submit-btn .spinner {
+  display: inline-block !important;
+  width: 20px !important;
+  height: 20px !important;
+  border: 2px solid rgba(255, 255, 255, 0.3) !important;
+  border-top: 2px solid white !important;
+  border-radius: 50% !important;
+  animation: loadingSpin 1s linear infinite !important;
+  margin-right: 8px !important;
+}
+
+/* Fix any loading state positioning issues */
+.loading-container,
+.dashboard-loading,
+.app-loading {
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+/* Ensure loading states are not affected by other CSS */
+.loading-container *,
+.dashboard-loading *,
+.app-loading * {
+  box-sizing: border-box !important;
+}
+
 :root {
     /* Sara Color Scheme - GPT Style */
     --sara-primary: #10a37f;

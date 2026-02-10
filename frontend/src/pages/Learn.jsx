@@ -343,18 +343,33 @@ const Learn = () => {
 
       const executionTime = Date.now() - startTime
 
-      // Process results
+      // Process results with enhanced output handling
       let outputText = ''
       let outputColor = '#10a37f'
 
       if (result.success) {
         if (result.results && result.results.length > 0) {
-          outputText = result.results.map(r => r.output || r.result || '').join('\n')
+          // Extract output from results
+          const outputs = result.results.map(r => {
+            if (r.error) {
+              return `Error: ${r.error}`
+            }
+            return r.output || r.result || ''
+          }).filter(output => output !== '')
+          
+          if (outputs.length > 0) {
+            outputText = outputs.join('\n')
+          } else {
+            outputText = 'Code executed successfully (no output)'
+          }
         } else {
           outputText = 'Code executed successfully (no output)'
         }
         
+        // Add execution time for longer operations
         if (executionTime > 1000) {
+          outputText += `\n✅ Execution completed in ${executionTime}ms`
+        } else if (executionTime > 100) {
           outputText += `\n✅ Execution completed in ${executionTime}ms`
         }
       } else {
@@ -739,12 +754,6 @@ const Learn = () => {
       <div className="loading-container">
         <div className="loading-spinner"></div>
         <p>Loading topic...</p>
-        <style>{`
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}</style>
       </div>
     )
   }

@@ -41,14 +41,9 @@ const AppRoutes = () => {
   // Show loading while checking authentication
   if (loading) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '100vh',
-        fontFamily: 'Outfit, sans-serif'
-      }}>
-        <div>Loading Sara...</div>
+      <div className="app-loading">
+        <div className="loading-spinner"></div>
+        <p>Loading Sara...</p>
       </div>
     )
   }
