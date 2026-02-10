@@ -190,9 +190,28 @@ export const progress = {
   debugTopic: (topicId) => api.get(`/learn/debug/progress/${topicId}`)
 }
 
-// Chat History API
+// Chat History API with performance monitoring
 export const chat = {
-  getHistory: (topicId) => api.get(`/chat/history/${topicId}`),
+  getHistory: async (topicId) => {
+    const startTime = Date.now()
+    try {
+      const response = await api.get(`/chat/history/${topicId}`)
+      const duration = Date.now() - startTime
+      
+      // Log performance for monitoring
+      if (duration > 2000) {
+        console.warn(`🐌 Slow chat history API: ${duration}ms for topic ${topicId}`)
+      } else if (duration > 1000) {
+        console.log(`⏱️  Chat history API: ${duration}ms for topic ${topicId}`)
+      }
+      
+      return response
+    } catch (error) {
+      const duration = Date.now() - startTime
+      console.error(`❌ Chat history API failed after ${duration}ms:`, error.message)
+      throw error
+    }
+  },
   clearHistory: (topicId) => api.delete(`/chat/history/${topicId}`)
 }
 

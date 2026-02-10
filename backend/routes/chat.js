@@ -515,6 +515,8 @@ router.get('/debug/history/:topicId', authenticateToken, async (req, res) => {
 })
 
 router.get('/history/:topicId', authenticateToken, async (req, res) => {
+  const startTime = Date.now()
+  
   try {
     const { topicId } = req.params
     const userId = req.user.userId
@@ -526,7 +528,9 @@ router.get('/history/:topicId', authenticateToken, async (req, res) => {
     }
 
     const messages = await getChatHistory(userId, topicId)
+    const duration = Date.now() - startTime
 
+    // Add performance metrics to response
     res.json(createSuccessResponse({
       messages: messages,
       messageCount: messages.length,
@@ -534,10 +538,31 @@ router.get('/history/:topicId', authenticateToken, async (req, res) => {
         id: topicId,
         title: topic.title,
         category: topic.category
+      },
+      performance: {
+        retrievalTime: duration,
+        cached: duration < 100 // Likely cached if very fast
       }
     }))
   } catch (error) {
+    const duration = Date.now() - startTime
+    console.error(`❌ Chat history retrieval failed after ${duration}ms:`, error.message)
     handleErrorResponse(res, error, 'get chat history')
+  }
+})
+
+// Cache statistics endpoint
+router.get('/cache/stats', authenticateToken, async (req, res) => {
+  try {
+    const { getCacheStats } = await import('../services/chatCache.js')
+    const stats = await getCacheStats()
+    
+    res.json(createSuccessResponse({
+      cache: stats,
+      timestamp: new Date().toISOString()
+    }))
+  } catch (error) {
+    handleErrorResponse(res, error, 'get cache stats')
   }
 })
 
