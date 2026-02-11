@@ -523,6 +523,21 @@ router.post('/assignment/complete', authenticateToken, rateLimitMiddleware, asyn
 
 // ============ CODE EXECUTION ============
 
+// Playground execution (no topic required) - for dashboard and standalone editor
+router.post('/execute-playground', authenticateToken, async (req, res) => {
+  try {
+    const { code } = req.body
+    if (!code || typeof code !== 'string') {
+      return res.status(400).json(createErrorResponse('Code is required'))
+    }
+    const result = await executeCodeSecurely(code, [], null, 'script')
+    return res.json(createSuccessResponse({ execution: result }))
+  } catch (error) {
+    console.error('Playground execution error:', error)
+    return res.status(500).json(createErrorResponse('Code execution failed'))
+  }
+})
+
 router.post('/execute', authenticateToken, async (req, res) => {
   try {
     const { code, topicId, assignmentIndex } = req.body
@@ -970,7 +985,17 @@ router.get('/topic/:topicId', authenticateToken, async (req, res) => {
     const topic = getTopicOrRespond(res, courses, topicId, createErrorResponse)
     if (!topic) return
 
-    const progress = await getProgress(userId, topicId)
+    let progress = await getProgress(userId, topicId)
+
+    // Normalize legacy state: completed + session → assignment + in_progress (2-phase model)
+    if (progress?.phase === 'session' && progress?.status === 'completed') {
+      await upsertProgress(userId, topicId, {
+        phase: 'assignment',
+        status: 'in_progress',
+        updated_at: new Date().toISOString()
+      })
+      progress = { ...progress, phase: 'assignment', status: 'in_progress' }
+    }
 
     // Get all topics to find next topic
     const allTopics = getAllTopics(courses)

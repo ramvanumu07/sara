@@ -41,7 +41,7 @@ const Terms = () => {
           <section className="terms-section">
             <h2>2. Description of Service</h2>
             <p>
-              Sara is an AI-powered JavaScript learning platform that provides personalized 
+              Sara is an AI-powered learning platform that provides personalized 
               tutoring through conversational AI, interactive coding exercises, and adaptive 
               learning experiences. Our service includes:
             </p>

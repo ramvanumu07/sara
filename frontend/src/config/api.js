@@ -164,6 +164,8 @@ export const learning = {
   executeCode: (code, topicId, assignmentIndex = null) => 
     api.post('/learn/execute', { code, topicId, assignmentIndex }),
 
+  executePlayground: (code) => api.post('/learn/execute-playground', { code }),
+
   getHint: (topicId, assignment, userCode = '') => 
     api.post('/chat/assignment/hint', { topicId, assignment, userCode }),
 

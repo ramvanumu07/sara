@@ -973,7 +973,8 @@
 .toast-container {
   position: fixed;
   top: 1rem;
-  right: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 9999;
   display: flex;
   flex-direction: column;
@@ -1119,12 +1120,13 @@
     justify-content: flex-start;
   }
 
-  /* Toast Notifications - Mobile */
+  /* Toast Notifications - Mobile (keep centered) */
   .toast-container {
-    left: 1rem;
-    right: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
     top: 0.5rem;
-    max-width: none;
+    width: calc(100% - 2rem);
+    max-width: 400px;
   }
 
   .toast {

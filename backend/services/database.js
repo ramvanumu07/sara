@@ -80,7 +80,7 @@ export async function createUser(username, email, name, hashedPassword, security
       password: hashedPassword,
       security_question: securityQuestion,
       security_answer: securityAnswer,
-      has_access: true,
+      has_access: false,
       email_verified: false, // Match schema default
       created_at: new Date().toISOString()
     }
@@ -95,7 +95,7 @@ export async function createUser(username, email, name, hashedPassword, security
     email,
     name,
     password: hashedPassword,
-    has_access: true, // Default access for Sara
+    has_access: false, // Default false; set true after payment/subscription
     email_verified: false // Explicit default
   }
 

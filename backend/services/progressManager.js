@@ -68,8 +68,8 @@ export async function completeSessionPhase(userId, topicId) {
     console.log(`🔍 Current progress before session completion:`, currentProgress)
     
     const progressUpdate = {
-      phase: PHASES.PLAYTIME,  // Set phase to playtime since that's next
-      status: 'in_progress',   // Keep as in_progress until topic fully complete
+      phase: PHASES.ASSIGNMENT,  // 2-phase model: (session<->play) done → assignment
+      status: 'in_progress',     // Keep as in_progress until topic fully complete
       updated_at: new Date().toISOString()
     }
 
@@ -81,7 +81,7 @@ export async function completeSessionPhase(userId, topicId) {
     }
 
     await upsertProgress(userId, topicId, progressUpdate)
-    console.log(`✅ Session completed for topic ${topicId}, user should go to playtime next`)
+    console.log(`✅ Session completed for topic ${topicId}, user should go to assignment next`)
     
     return progressUpdate
   } catch (error) {

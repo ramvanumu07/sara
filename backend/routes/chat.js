@@ -173,14 +173,15 @@ router.post('/session', authenticateToken, rateLimitMiddleware, async (req, res)
     console.log('   - AI Response preview:', aiResponse?.substring(0, 400) + '...')
 
     // Update progress - direct database call for compatibility
+    // 2-phase model: (session <-> play) then (assignment <-> review). Session complete → assignment.
     try {
       if (isSessionComplete) {
         await upsertProgress(userId, topicId, {
-          phase: 'playtime',  // Move to playtime phase
-          status: 'completed', // Session is completed
+          phase: 'assignment',  // Move to assignment phase (session+play combined done)
+          status: 'in_progress', // Topic still in progress until assignments done
           updated_at: new Date().toISOString()
         })
-        console.log(`🎉 Session completed! User moved to playtime phase for topic: ${topicId}`)
+        console.log(`🎉 Session completed! User moved to assignment phase for topic: ${topicId}`)
       }
       // If session not complete, progress is already tracked from session start
     } catch (progressError) {
@@ -211,7 +212,7 @@ router.post('/session', authenticateToken, rateLimitMiddleware, async (req, res)
       conversationHistory: updatedConversation,
       phase: 'session', // Always return 'session' for this endpoint
       sessionComplete: isSessionComplete,
-      nextPhase: isSessionComplete ? 'playtime' : null, // Indicate what phase comes next
+      nextPhase: isSessionComplete ? 'assignment' : null, // Indicate what phase comes next
       topic: {
         id: topicId,
         title: topic.title,
@@ -464,11 +465,10 @@ router.post('/complete/:topicId', authenticateToken, async (req, res) => {
 
     console.log(`🎯 Manual completion triggered for user ${userId}, topic ${topicId}`)
 
-    // Update progress to completed
+    // Update progress: session complete → assignment phase (2-phase model)
     await upsertProgress(userId, topicId, {
-      status: 'completed',
-      phase: 'playtime',
-      completed_at: new Date().toISOString(),
+      status: 'in_progress',
+      phase: 'assignment',
       updated_at: new Date().toISOString()
     })
 
@@ -479,7 +479,7 @@ router.post('/complete/:topicId', authenticateToken, async (req, res) => {
 
     res.json(createSuccessResponse({
       message: 'Session completed successfully',
-      phase: 'playtime',
+      phase: 'assignment',
       sessionComplete: true
     }))
 
