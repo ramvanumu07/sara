@@ -12,11 +12,13 @@ export function setEditorToggleInStorage(on) {
   }
 }
 
-// Semicircle radius; width = radius, height = 2*radius
-const SEMI_R = 28
+// Pill / stadium shape (rounded, not semicircle) – same on desktop and mobile
+const PILL_HEIGHT = 44
+const PILL_WIDTH = 52
+const PILL_RADIUS = PILL_HEIGHT / 2
 
 /**
- * Fixed-position toggle: semicircle attached to right edge; one icon at a time, shown vertically.
+ * Fixed-position toggle: pill shape attached to right edge.
  * Book = editor on (back to chat), Keyboard = editor off (open editor).
  */
 const EditorToggle = ({ isOn, onToggle }) => {
@@ -38,13 +40,13 @@ const EditorToggle = ({ isOn, onToggle }) => {
         top: '50%',
         transform: 'translateY(-50%)',
         zIndex: 9999,
-        width: SEMI_R,
-        height: SEMI_R * 2,
+        width: PILL_WIDTH,
+        height: PILL_HEIGHT,
         padding: 0,
         backgroundColor: '#374151',
         color: 'white',
         border: 'none',
-        borderRadius: `${SEMI_R}px 0 0 ${SEMI_R}px`,
+        borderRadius: `${PILL_RADIUS}px 0 0 ${PILL_RADIUS}px`,
         cursor: 'pointer',
         boxShadow: '-2px 0 8px rgba(0,0,0,0.15)',
         display: 'flex',
