@@ -26,7 +26,7 @@ const Dashboard = () => {
   const [showMobileMenu, setShowMobileMenu] = useState(false)
   // Always show dashboard on load/reload; editor toggle state is not persisted for this page
   const [editorToggleOn, setEditorToggleOn] = useState(false)
-  const [playgroundCode, setPlaygroundCode] = useState('// Try some code here\nconsole.log("Hello from Dashboard!");')
+  const [playgroundCode, setPlaygroundCode] = useState('')
 
   useEffect(() => {
     loadDashboardData()
