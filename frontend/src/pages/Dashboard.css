@@ -391,6 +391,90 @@
   transform: translateY(-1px);
 }
 
+/* Session completed: view conversation or assignments */
+.session-completed-section {
+  margin-top: 24px;
+  text-align: left;
+  padding: 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.session-completed-heading {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 4px 0;
+}
+
+.session-completed-hint {
+  font-size: 0.8125rem;
+  color: #64748b;
+  margin: 0 0 12px 0;
+}
+
+.session-completed-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.session-completed-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.session-completed-row:last-child {
+  margin-bottom: 0;
+}
+
+.session-completed-title {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #111827;
+  flex: 1;
+  min-width: 0;
+}
+
+.session-completed-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.session-completed-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  color: #475569;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.session-completed-icon-btn:hover {
+  background: #e2e8f0;
+  color: #10a37f;
+}
+
+.session-completed-icon-btn svg {
+  flex-shrink: 0;
+}
+
 .last-topic {
   display: inline-flex;
   flex-direction: column;

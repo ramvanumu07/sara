@@ -126,9 +126,8 @@ const Learn = () => {
   const messagesEndRef = useRef(null)
 
   // Session: code editor visibility — synced with fixed toggle and localStorage
-  const [showEditorInSession, setShowEditorInSession] = useState(() =>
-    typeof window !== 'undefined' && localStorage.getItem('sara_editor_toggle') === 'on'
-  )
+  // Always show chat on load/reload; editor toggle state is not persisted for session phase
+  const [showEditorInSession, setShowEditorInSession] = useState(false)
 
   const [userCode, setUserCode] = useState('')
   const [playgroundOutput, setPlaygroundOutput] = useState('')
