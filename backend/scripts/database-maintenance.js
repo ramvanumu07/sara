@@ -24,7 +24,7 @@ function getSupabaseClient() {
   const supabaseKey = process.env.SUPABASE_SERVICE_KEY
 
   if (!supabaseUrl || !supabaseKey) {
-    console.error('❌ Missing database configuration')
+    console.error('Missing database configuration')
     console.error('   Please set SUPABASE_URL and SUPABASE_SERVICE_KEY in your .env file')
     process.exit(1)
   }
@@ -52,7 +52,7 @@ async function healthCheck() {
       throw new Error(`Connection failed: ${connectionError.message}`)
     }
     
-    console.log('✅ Database connection: OK')
+    console.log('Database connection: OK')
     
     // Check table structures
     const tables = ['users', 'progress', 'chat_sessions', 'admins', 'password_reset_tokens', 'user_sessions', 'learning_analytics']
@@ -64,14 +64,14 @@ async function healthCheck() {
         .limit(1)
       
       if (error) {
-        console.log(`❌ Table ${table}: ERROR - ${error.message}`)
+        console.log(`Table ${table}: ERROR - ${error.message}`)
       } else {
-        console.log(`✅ Table ${table}: OK`)
+        console.log(`Table ${table}: OK`)
       }
     }
     
     // Check for critical issues
-    console.log('\n🔍 Checking for critical issues...')
+    console.log('\nChecking for critical issues...')
     
     // Check progress table structure
     const { data: progressCheck, error: progressError } = await client
@@ -79,7 +79,7 @@ async function healthCheck() {
       .catch(() => null) // Function might not exist
     
     if (!progressError) {
-      console.log('✅ Progress table structure: OK')
+      console.log('Progress table structure: OK')
     }
     
     // Check for NULL critical fields
@@ -90,15 +90,15 @@ async function healthCheck() {
     
     const nullCount = nullCheck?.[0]?.count || 0
     if (nullCount > 0) {
-      console.log(`⚠️  Found ${nullCount} progress records with NULL critical fields`)
+      console.log(`Found ${nullCount} progress records with NULL critical fields`)
     } else {
-      console.log('✅ Progress table integrity: OK')
+      console.log('Progress table integrity: OK')
     }
     
-    console.log('\n🎉 Health check complete!')
+    console.log('\nHealth check complete!')
     
   } catch (error) {
-    console.error('❌ Health check failed:', error.message)
+    console.error('Health check failed:', error.message)
     process.exit(1)
   }
 }
@@ -106,7 +106,7 @@ async function healthCheck() {
 // Run comprehensive fix
 async function runComprehensiveFix() {
   console.log('🔧 Running comprehensive database fix...\n')
-  console.log('⚠️  This will modify your database structure.')
+  console.log('This will modify your database structure.')
   console.log('   Make sure you have a backup before proceeding!\n')
   
   // In a real implementation, you'd want to confirm before proceeding
@@ -127,13 +127,13 @@ async function runComprehensiveFix() {
       throw new Error(`Fix failed: ${error.message}`)
     }
     
-    console.log('✅ Comprehensive fix completed successfully!')
-    console.log('\n📊 Running post-fix health check...')
+    console.log('Comprehensive fix completed successfully!')
+    console.log('\nRunning post-fix health check...')
     
     await healthCheck()
     
   } catch (error) {
-    console.error('❌ Comprehensive fix failed:', error.message)
+    console.error('Comprehensive fix failed:', error.message)
     console.error('\n💡 You may need to run the SQL manually in Supabase SQL Editor')
     process.exit(1)
   }
@@ -152,7 +152,7 @@ async function cleanup() {
       .delete()
       .lt('expires_at', new Date().toISOString())
     
-    console.log(`✅ Cleaned up expired user sessions`)
+    console.log(`Cleaned up expired user sessions`)
     
     // Clean up expired password reset tokens
     const { data: tokenCleanup } = await client
@@ -160,7 +160,7 @@ async function cleanup() {
       .delete()
       .lt('expires_at', new Date().toISOString())
     
-    console.log(`✅ Cleaned up expired password reset tokens`)
+    console.log(`Cleaned up expired password reset tokens`)
     
     // Clean up old analytics data (older than 1 year)
     const oneYearAgo = new Date()
@@ -171,19 +171,19 @@ async function cleanup() {
       .delete()
       .lt('session_date', oneYearAgo.toISOString().split('T')[0])
     
-    console.log(`✅ Cleaned up old analytics data`)
+    console.log(`Cleaned up old analytics data`)
     
-    console.log('\n🎉 Cleanup complete!')
+    console.log('\nCleanup complete!')
     
   } catch (error) {
-    console.error('❌ Cleanup failed:', error.message)
+    console.error('Cleanup failed:', error.message)
     process.exit(1)
   }
 }
 
 // Show statistics
 async function showStats() {
-  console.log('📊 Database Statistics\n')
+  console.log('Database Statistics\n')
   
   const client = getSupabaseClient()
   
@@ -199,7 +199,7 @@ async function showStats() {
       .eq('has_access', true)
     
     console.log(`👥 Total Users: ${users?.[0]?.count || 0}`)
-    console.log(`✅ Active Users: ${activeUsers?.[0]?.count || 0}`)
+    console.log(`Active Users: ${activeUsers?.[0]?.count || 0}`)
     
     // Progress statistics
     const { data: progress } = await client
@@ -212,7 +212,7 @@ async function showStats() {
       .eq('status', 'completed')
     
     console.log(`📚 Total Progress Records: ${progress?.[0]?.count || 0}`)
-    console.log(`🎯 Completed Topics: ${completedTopics?.[0]?.count || 0}`)
+    console.log(`Completed Topics: ${completedTopics?.[0]?.count || 0}`)
     
     // Chat statistics
     const { data: chatSessions } = await client
@@ -227,10 +227,10 @@ async function showStats() {
       .select('count(*)')
       .gte('last_login', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
     
-    console.log(`🔄 Users active in last 7 days: ${recentLogins?.[0]?.count || 0}`)
+    console.log(`Users active in last 7 days: ${recentLogins?.[0]?.count || 0}`)
     
   } catch (error) {
-    console.error('❌ Failed to get statistics:', error.message)
+    console.error('Failed to get statistics:', error.message)
   }
 }
 
@@ -238,7 +238,7 @@ async function showStats() {
 async function main() {
   const command = process.argv[2]
   
-  console.log('🗄️  Sara Learning Platform - Database Maintenance\n')
+  console.log('Sara Learning Platform - Database Maintenance\n')
   
   switch (command) {
     case 'health':

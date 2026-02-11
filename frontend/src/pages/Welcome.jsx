@@ -16,7 +16,7 @@ const Welcome = () => {
   useEffect(() => {
     // If user is authenticated, redirect to dashboard
     if (isAuthenticated) {
-      console.log('🔄 Welcome: User is authenticated, redirecting to dashboard')
+      console.log('Welcome: User is authenticated, redirecting to dashboard')
       navigate('/dashboard', { replace: true })
       return
     }

@@ -30,7 +30,7 @@ const Login = () => {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      console.log('🔄 Login: User already authenticated, redirecting to dashboard')
+      console.log('Login: User already authenticated, redirecting to dashboard')
       navigate('/dashboard', { replace: true })
     }
   }, [isAuthenticated, navigate])
@@ -111,11 +111,11 @@ const Login = () => {
     setLastAttemptTime(now)
 
     try {
-      console.log('🔐 Login Page - Starting login process')
+      console.log('Login Page - Starting login process')
       const result = await login(formData.usernameOrEmail.trim(), formData.password)
 
       if (result.success) {
-        console.log('🔐 Login Page - Login successful:', result.user)
+        console.log('Login Page - Login successful:', result.user)
         // Reset login attempts on success
         setLoginAttempts(0)
         
@@ -127,12 +127,12 @@ const Login = () => {
           navigate('/dashboard')
         }, 500)
       } else {
-        console.log('🔐 Login Page - Login failed:', result.error)
+        console.log('Login Page - Login failed:', result.error)
         
         // Handle specific error types with field-specific errors when possible
         const errorMessage = result.error || 'Login failed'
         
-        console.log('🔐 Login Page - Processing error message:', errorMessage)
+        console.log('Login Page - Processing error message:', errorMessage)
         
         // Check for specific error patterns and set appropriate field errors
         if (errorMessage.includes('Username or email not found') || 
@@ -157,7 +157,7 @@ const Login = () => {
         setLoginAttempts(prev => prev + 1)
       }
     } catch (error) {
-      console.error('🔐 Login Page - Unexpected error:', error)
+      console.error('Login Page - Unexpected error:', error)
       
       // Handle network and other errors with specific messages
       let errorMessage = 'Something went wrong. Please try again.'

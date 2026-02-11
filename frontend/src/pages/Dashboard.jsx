@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { learning, progress } from '../config/api'
 import EditorToggle, { getEditorToggleFromStorage } from '../components/EditorToggle'
+import SessionPlayground from '../components/SessionPlayground'
 import './Dashboard.css'
 
 const Dashboard = () => {
@@ -10,10 +11,10 @@ const Dashboard = () => {
   const { user, logout } = useAuth()
   
   // Debug user data
-  console.log('🏠 Dashboard - Current user object:', user)
-  console.log('🏠 Dashboard - User name specifically:', user?.name)
-  console.log('🏠 Dashboard - User name type:', typeof user?.name)
-  console.log('🏠 Dashboard - User name length:', user?.name?.length)
+  console.log('Dashboard - Current user object:', user)
+  console.log('Dashboard - User name specifically:', user?.name)
+  console.log('Dashboard - User name type:', typeof user?.name)
+  console.log('Dashboard - User name length:', user?.name?.length)
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -24,6 +25,7 @@ const Dashboard = () => {
   const [lastAccessed, setLastAccessed] = useState(null)
   const [showMobileMenu, setShowMobileMenu] = useState(false)
   const [editorToggleOn, setEditorToggleOn] = useState(getEditorToggleFromStorage)
+  const [playgroundCode, setPlaygroundCode] = useState('// Try some code here\nconsole.log("Hello from Dashboard!");')
 
   useEffect(() => {
     loadDashboardData()
@@ -60,7 +62,7 @@ const Dashboard = () => {
       setLoading(true)
       setError(null)
 
-      console.log('🔄 Loading dashboard data...')
+      console.log('Loading dashboard data...')
       
       // Clear any frontend caches
       if (window.clearCache) {
@@ -73,7 +75,7 @@ const Dashboard = () => {
         learning.getCourses()
       ])
 
-      console.log('📡 Raw API responses:')
+      console.log('Raw API responses:')
       console.log('Progress API:', progressRes)
       console.log('Continue API:', continueRes)
       console.log('Courses API:', coursesRes)
@@ -82,9 +84,9 @@ const Dashboard = () => {
         const progressData = progressRes.data.data.progress || []
         setUserProgress(progressData)
         setProgressSummary(progressRes.data.data.summary || {})
-        console.log('📊 User progress loaded:', progressData.length, 'topics')
-        console.log('📊 Progress data:', progressData)
-        console.log('📊 Full API response:', progressRes.data)
+        console.log('User progress loaded:', progressData.length, 'topics')
+        console.log('Progress data:', progressData)
+        console.log('Full API response:', progressRes.data)
         
         // Store globally for debugging
         window.lastProgressData = progressData
@@ -92,7 +94,7 @@ const Dashboard = () => {
         
         // Log each record individually
         progressData.forEach((record, index) => {
-          console.log(`📊 Progress Record ${index + 1}:`, {
+          console.log(`Progress Record ${index + 1}:`, {
             topic_id: record.topic_id,
             status: record.status,
             phase: record.phase,
@@ -102,14 +104,14 @@ const Dashboard = () => {
           })
         })
       } else {
-        console.log('❌ Progress API failed:', progressRes.data)
+        console.log('Progress API failed:', progressRes.data)
       }
 
       if (continueRes.data.success && continueRes.data.data.lastAccessed) {
         setLastAccessed(continueRes.data.data.lastAccessed)
-        console.log('🎯 Last accessed:', continueRes.data.data.lastAccessed)
+        console.log('Last accessed:', continueRes.data.data.lastAccessed)
       } else {
-        console.log('📭 No last accessed data found')
+        console.log('No last accessed data found')
       }
 
       if (coursesRes.data.success) {
@@ -130,7 +132,7 @@ const Dashboard = () => {
       courseTopics.some(topic => topic.id === p.topic_id)
     )
 
-    console.log(`🔍 FRONTEND DEBUG: updateProgressForCourse(${courseId})`)
+    console.log(`FRONTEND DEBUG: updateProgressForCourse(${courseId})`)
     console.log(`   - Course topics count: ${courseTopics.length}`)
     console.log(`   - User progress count: ${userProgress.length}`)
     console.log(`   - Course progress count: ${courseProgress.length}`)
@@ -180,8 +182,8 @@ const Dashboard = () => {
   }
 
   const handleContinueLearning = () => {
-    console.log('🎯 Smart Continue Learning - Analyzing progress...')
-    console.log('📊 User Progress:', userProgress)
+    console.log('Smart Continue Learning - Analyzing progress...')
+    console.log('User Progress:', userProgress)
 
     // Find the most recent topic with progress
     const recentTopic = userProgress
@@ -194,7 +196,7 @@ const Dashboard = () => {
       const currentAssignment = recentTopic.current_assignment || 0
       const topicCompleted = recentTopic.topic_completed
 
-      console.log(`🎯 Most recent topic: ${topicId}, Phase: ${phase}, Status: ${status}`)
+      console.log(`Most recent topic: ${topicId}, Phase: ${phase}, Status: ${status}`)
 
       // If topic is completed, find next topic
       if (topicCompleted === true || (status === 'completed' && phase === 'assignment')) {
@@ -204,12 +206,12 @@ const Dashboard = () => {
         if (currentTopicIndex !== -1 && currentTopicIndex < (selectedCourseData?.topics?.length - 1)) {
           // Move to next topic's session phase
           const nextTopic = selectedCourseData.topics[currentTopicIndex + 1]
-          console.log(`🎯 Topic completed, moving to next topic: ${nextTopic.id}`)
+          console.log(`Topic completed, moving to next topic: ${nextTopic.id}`)
           navigate(`/learn/${nextTopic.id}`)
           return
         } else {
           // Course completed or no more topics
-          console.log('🎉 Course completed! Starting from first topic.')
+          console.log('Course completed! Starting from first topic.')
           navigate(`/learn/${selectedCourseData?.topics?.[0]?.id}`)
           return
         }
@@ -219,7 +221,7 @@ const Dashboard = () => {
       let targetPhase = 'session'
       let targetUrl = `/learn/${topicId}`
 
-      console.log('🔍 Progress Debug:', {
+      console.log('Progress Debug:', {
         phase: recentTopic.phase,
         status: recentTopic.status,
         session_completed: recentTopic.session_completed,
@@ -232,12 +234,12 @@ const Dashboard = () => {
       if (phase === 'assignment') {
         targetPhase = 'assignment'
         targetUrl = `/learn/${topicId}?phase=assignment`
-        console.log('🎯 Continue assignment')
+        console.log('Continue assignment')
       } else {
         // Session or playtime (legacy) → session; practice is inline via Code editor toggle
         targetPhase = 'session'
         targetUrl = `/learn/${topicId}`
-        console.log('🎯 Continue session')
+        console.log('Continue session')
       }
 
       navigate(targetUrl)
@@ -248,7 +250,7 @@ const Dashboard = () => {
     const selectedCourseData = courses.find(c => c.id === selectedCourse)
     const firstTopic = selectedCourseData?.topics?.[0]
     if (firstTopic) {
-      console.log('🎯 No progress found, starting with first topic:', firstTopic.id)
+      console.log('No progress found, starting with first topic:', firstTopic.id)
       navigate(`/learn/${firstTopic.id}`)
     }
   }
@@ -302,7 +304,7 @@ const Dashboard = () => {
   }
 
   const getCurrentActiveTopic = () => {
-    console.log('🔍 getCurrentActiveTopic - Debug Info:')
+    console.log('getCurrentActiveTopic - Debug Info:')
     console.log('   - userProgress length:', userProgress.length)
     console.log('   - userProgress data:', userProgress)
     
@@ -451,9 +453,34 @@ const Dashboard = () => {
   )
 
   return (
-    <div className={`dashboard ${showMobileMenu ? 'mobile-menu-open' : ''}`}>
+    <div className={`dashboard ${showMobileMenu && !editorToggleOn ? 'mobile-menu-open' : ''}`}>
       {/* Fixed code-editor toggle (shared with Learn session) */}
       <EditorToggle isOn={editorToggleOn} onToggle={setEditorToggleOn} />
+      {editorToggleOn ? (
+        /* Full-screen playground only — same layout as Learn session (no sidebar, no menu) */
+        <div
+          className="dashboard-playground-fullscreen"
+          style={{
+            position: 'fixed',
+            left: 0,
+            top: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: 0,
+            backgroundColor: '#fff'
+          }}
+        >
+<SessionPlayground
+              code={playgroundCode}
+              onCodeChange={setPlaygroundCode}
+              placeholder="Practice here or try something from your lessons!"
+            />
+        </div>
+      ) : (
+        <>
       {/* Mobile Menu Toggle */}
       <button
         className="mobile-menu-toggle"
@@ -572,7 +599,7 @@ const Dashboard = () => {
           {/* Current Learning Status Card - Above Button */}
           {(() => {
             const currentTopic = getCurrentActiveTopic()
-            console.log('🎯 Rendering current topic card:', currentTopic)
+            console.log('Rendering current topic card:', currentTopic)
             
             if (currentTopic) {
               return (
@@ -594,7 +621,7 @@ const Dashboard = () => {
                 </div>
               )
             } else {
-              console.log('🎯 No current topic found - card will not render')
+              console.log('No current topic found - card will not render')
               return null
             }
           })()}
@@ -638,6 +665,8 @@ const Dashboard = () => {
         )}
 
       </div>
+        </>
+      )}
     </div>
   )
 }

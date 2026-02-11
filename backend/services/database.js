@@ -26,7 +26,7 @@ function initializeDatabase() {
     supabaseUrl.includes('your_') || supabaseKey.includes('your_')
 
   if (isPlaceholderConfig) {
-    console.log(`[${new Date().toISOString()}] ⚠️  Running in DEVELOPMENT MODE - Using in-memory database`)
+    console.log(`[${new Date().toISOString()}] Running in DEVELOPMENT MODE - Using in-memory database`)
     console.log(`[${new Date().toISOString()}] 📝 To use Supabase, update SUPABASE_URL and SUPABASE_SERVICE_KEY in .env`)
     return 'DEV_MODE' // Special marker for development mode
   }
@@ -46,10 +46,10 @@ function initializeDatabase() {
         }
       }
     })
-    console.log(`[${new Date().toISOString()}] ✅ Sara database connected with performance optimizations`)
+    console.log(`[${new Date().toISOString()}] Sara database connected with performance optimizations`)
     return supabase
   } catch (error) {
-    console.error(`[${new Date().toISOString()}] ❌ Database connection failed:`, error)
+    console.error(`[${new Date().toISOString()}] Database connection failed:`, error)
     throw error
   }
 }
@@ -128,7 +128,7 @@ export async function createUser(username, email, name, hashedPassword, security
 }
 
 export async function getUserById(userId) {
-  console.log(`🔍 [DB] Searching for user with ID: "${userId}"`)
+  console.log(`[DB] Searching for user with ID: "${userId}"`)
   const client = initializeDatabase()
 
   // Development mode fallback
@@ -151,20 +151,20 @@ export async function getUserById(userId) {
 
   if (error) {
     if (error.code === 'PGRST116') {
-      console.log(`🔍 [DB] No user found with ID: "${userId}"`)
+      console.log(`[DB] No user found with ID: "${userId}"`)
       return null
     } else {
-      console.error(`❌ [DB] Database error searching for user ID "${userId}":`, error)
+      console.error(`[DB] Database error searching for user ID "${userId}":`, error)
       throw new Error(`Failed to get user by ID: ${error.message}`)
     }
   }
 
-  console.log(`✅ [DB] User found: ${data.username} (ID: ${data.id})`)
+  console.log(`[DB] User found: ${data.username} (ID: ${data.id})`)
   return data
 }
 
 export async function getUserByUsername(username) {
-  console.log(`🔍 [DB] Searching for user with username: "${username}"`)
+  console.log(`[DB] Searching for user with username: "${username}"`)
   const client = initializeDatabase()
 
   // Development mode fallback
@@ -182,15 +182,15 @@ export async function getUserByUsername(username) {
 
   if (error) {
     if (error.code === 'PGRST116') {
-      console.log(`🔍 [DB] No user found with username: "${username}"`)
+      console.log(`[DB] No user found with username: "${username}"`)
       return null
     } else {
-      console.error(`❌ [DB] Database error searching for username "${username}":`, error)
+      console.error(`[DB] Database error searching for username "${username}":`, error)
       throw new Error(`Failed to get user by username: ${error.message}`)
     }
   }
 
-  console.log(`✅ [DB] User found: ${data.username} (ID: ${data.id})`)
+  console.log(`[DB] User found: ${data.username} (ID: ${data.id})`)
   return data
 }
 
@@ -407,14 +407,14 @@ export async function getAllProgress(userId) {
     .order('updated_at', { ascending: false })
 
   if (error) {
-    console.error('❌ getAllProgress error:', error)
+    console.error('getAllProgress error:', error)
     throw new Error(`Failed to get all progress: ${error.message}`)
   }
-  console.log(`📊 getAllProgress: Found ${data?.length || 0} progress records for user ${userId}`)
+  console.log(`getAllProgress: Found ${data?.length || 0} progress records for user ${userId}`)
   if (data && data.length > 0) {
-    console.log(`📊 getAllProgress RAW DATA:`, JSON.stringify(data, null, 2))
+    console.log(`getAllProgress RAW DATA:`, JSON.stringify(data, null, 2))
     data.forEach((record, index) => {
-      console.log(`📊 Record ${index + 1}:`, {
+      console.log(`Record ${index + 1}:`, {
         topic_id: record.topic_id,
         status: record.status,
         phase: record.phase,
@@ -423,7 +423,7 @@ export async function getAllProgress(userId) {
       })
     })
   } else {
-    console.log(`📊 getAllProgress: No data returned from database`)
+    console.log(`getAllProgress: No data returned from database`)
   }
   return data || []
 }

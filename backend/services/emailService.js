@@ -115,7 +115,7 @@ export async function sendPasswordResetEmail(email, resetToken, userName = '') {
                 <a href="${resetLink}" class="reset-button">Reset My Password</a>
               </div>
               <div class="warning">
-                <strong>⚠️ Important:</strong> This link will expire in 1 hour for security reasons. If you didn't request this reset, please ignore this email.
+                <strong>Important:</strong> This link will expire in 1 hour for security reasons. If you didn't request this reset, please ignore this email.
               </div>
               <div class="message">
                 If the button doesn't work, copy and paste this link into your browser:
@@ -154,13 +154,13 @@ The Sara Team
     // Send email
     const info = await transporter.sendMail(mailOptions)
     
-    console.log(`✅ Password reset email sent successfully to ${email}`)
+    console.log(`Password reset email sent successfully to ${email}`)
     console.log(`📧 Message ID: ${info.messageId}`)
     
     return true
     
   } catch (error) {
-    console.error('❌ Failed to send password reset email:', error)
+    console.error('Failed to send password reset email:', error)
     
     // Log specific error details for debugging
     if (error.code === 'EAUTH') {
@@ -183,10 +183,10 @@ export async function testEmailConfiguration() {
   try {
     const transporter = createTransporter()
     await transporter.verify()
-    console.log('✅ Email configuration is valid')
+    console.log('Email configuration is valid')
     return true
   } catch (error) {
-    console.error('❌ Email configuration test failed:', error.message)
+    console.error('Email configuration test failed:', error.message)
     return false
   }
 }

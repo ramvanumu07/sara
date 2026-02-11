@@ -28,7 +28,7 @@ const ForgotPassword = () => {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      console.log('🔄 ForgotPassword: User already authenticated, redirecting to dashboard')
+      console.log('ForgotPassword: User already authenticated, redirecting to dashboard')
       navigate('/dashboard', { replace: true })
     }
   }, [isAuthenticated, navigate])

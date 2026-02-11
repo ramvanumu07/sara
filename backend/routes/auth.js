@@ -554,7 +554,7 @@ router.post('/signup', rateLimitMiddleware, async (req, res) => {
     // Update last login
     await updateLastLogin(user.id)
 
-    console.log(`✅ New user registered: ${username} (${email})`)
+    console.log(`New user registered: ${username} (${email})`)
 
     res.status(201).json(createSuccessResponse({
       message: 'Account created successfully',
@@ -587,15 +587,15 @@ router.post('/login', rateLimitMiddleware, async (req, res) => {
     const isEmail = validateEmail(usernameOrEmail).isValid
 
     if (isEmail) {
-      console.log(`🔍 Backend - Looking up user by email: ${usernameOrEmail}`)
+      console.log(`Backend - Looking up user by email: ${usernameOrEmail}`)
       user = await getUserByEmail(usernameOrEmail)
     } else {
-      console.log(`🔍 Backend - Looking up user by username: ${usernameOrEmail}`)
+      console.log(`Backend - Looking up user by username: ${usernameOrEmail}`)
       user = await getUserByUsername(usernameOrEmail)
     }
 
     if (user) {
-      console.log(`🔍 Backend - Found user:`, {
+      console.log(`Backend - Found user:`, {
         id: user.id,
         username: user.username,
         email: user.email,
@@ -631,7 +631,7 @@ router.post('/login', rateLimitMiddleware, async (req, res) => {
     // Update last login
     await updateLastLogin(user.id)
 
-    console.log(`✅ User logged in: ${user.username}`)
+    console.log(`User logged in: ${user.username}`)
     console.log(`🔐 Backend - User data from DB:`, {
       id: user.id,
       username: user.username,
@@ -673,7 +673,7 @@ router.post('/logout', authenticateToken, async (req, res) => {
       await deleteUserSession(token)
     }
 
-    console.log(`✅ User logged out: ${req.user.username}`)
+    console.log(`User logged out: ${req.user.username}`)
 
     res.json(createSuccessResponse({
       message: 'Logout successful'
@@ -717,7 +717,7 @@ router.post('/reset-password', rateLimitMiddleware, async (req, res) => {
     // Mark token as used
     await markPasswordResetTokenUsed(resetToken.id)
 
-    console.log(`✅ Password reset completed: ${resetToken.users.username}`)
+    console.log(`Password reset completed: ${resetToken.users.username}`)
 
     res.json(createSuccessResponse({
       message: 'Password reset successful. You can now log in with your new password.'
@@ -752,14 +752,14 @@ router.put('/profile', authenticateToken, rateLimitMiddleware, async (req, res) 
     const userId = req.user.userId
 
     // Get current user data
-    console.log(`🔍 Looking for user with ID: ${req.user.userId}`)
+    console.log(`Looking for user with ID: ${req.user.userId}`)
     const currentUser = await getUserById(req.user.userId)
     if (!currentUser) {
-      console.error(`❌ User not found in database: ${req.user.userId}`)
-      console.error(`🔍 JWT payload:`, req.user)
+      console.error(`User not found in database: ${req.user.userId}`)
+      console.error(`JWT payload:`, req.user)
       return res.status(404).json(createErrorResponse('User not found'))
     }
-    console.log(`✅ User found: ${currentUser.username} (ID: ${currentUser.id})`)
+    console.log(`User found: ${currentUser.username} (ID: ${currentUser.id})`)
 
     // Verify current password only if password is being changed
     if (newPassword) {
@@ -832,7 +832,7 @@ router.put('/profile', authenticateToken, rateLimitMiddleware, async (req, res) 
     // Update user profile
     const updatedUser = await updateUserProfile(userId, updates)
 
-    console.log(`✅ Profile updated: ${updatedUser.username}`)
+    console.log(`Profile updated: ${updatedUser.username}`)
 
     res.json(createSuccessResponse({
       message: 'Profile updated successfully',
@@ -856,15 +856,15 @@ router.put('/profile', authenticateToken, rateLimitMiddleware, async (req, res) 
 router.get('/validate', authenticateToken, async (req, res) => {
   try {
     // Get fresh user data from database instead of JWT
-    console.log(`🔍 Validation - Looking for user with ID: ${req.user.userId}`)
+    console.log(`Validation - Looking for user with ID: ${req.user.userId}`)
     const currentUser = await getUserById(req.user.userId)
 
     if (!currentUser) {
-      console.error(`❌ Validation - User not found: ${req.user.userId}`)
+      console.error(`Validation - User not found: ${req.user.userId}`)
       return res.status(404).json(createErrorResponse('User not found'))
     }
 
-    console.log(`✅ Validation - Fresh user data from DB:`, {
+    console.log(`Validation - Fresh user data from DB:`, {
       id: currentUser.id,
       username: currentUser.username,
       email: currentUser.email,
@@ -883,7 +883,7 @@ router.get('/validate', authenticateToken, async (req, res) => {
       }
     }
 
-    console.log(`🔍 Validation - Sending response:`, responseData)
+    console.log(`Validation - Sending response:`, responseData)
     res.json(createSuccessResponse(responseData))
   } catch (error) {
     handleErrorResponse(res, error, 'validate token')
@@ -1100,14 +1100,14 @@ router.get('/profile/password', authenticateToken, async (req, res) => {
     const userId = req.user.userId
 
     // Get current user data
-    console.log(`🔍 Looking for user with ID: ${req.user.userId}`)
+    console.log(`Looking for user with ID: ${req.user.userId}`)
     const currentUser = await getUserById(req.user.userId)
     if (!currentUser) {
-      console.error(`❌ User not found in database: ${req.user.userId}`)
-      console.error(`🔍 JWT payload:`, req.user)
+      console.error(`User not found in database: ${req.user.userId}`)
+      console.error(`JWT payload:`, req.user)
       return res.status(404).json(createErrorResponse('User not found'))
     }
-    console.log(`✅ User found: ${currentUser.username} (ID: ${currentUser.id})`)
+    console.log(`User found: ${currentUser.username} (ID: ${currentUser.id})`)
 
     // Return password status (we can't return actual password as it's hashed)
     // This endpoint confirms the user has a password set
@@ -1158,7 +1158,7 @@ router.post('/refresh', async (req, res) => {
       newRefreshExpiresAt.toISOString()
     )
 
-    console.log(`🔄 Tokens refreshed for user: ${user.username}`)
+    console.log(`Tokens refreshed for user: ${user.username}`)
 
     res.json(createSuccessResponse({
       message: 'Tokens refreshed successfully',

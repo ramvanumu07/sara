@@ -52,7 +52,7 @@ api.interceptors.response.use(
           throw new Error('No refresh token available')
         }
         
-        console.log('🔄 Access token expired, refreshing...')
+        console.log('Access token expired, refreshing...')
         
         // Call refresh endpoint
         const refreshResponse = await api.post('/auth/refresh', { refreshToken })
@@ -67,13 +67,13 @@ api.interceptors.response.use(
           // Update the original request with new token
           originalRequest.headers.Authorization = `Bearer ${accessToken}`
           
-          console.log('✅ Tokens refreshed successfully, retrying original request')
+          console.log('Tokens refreshed successfully, retrying original request')
           
           // Retry the original request
           return api(originalRequest)
         }
       } catch (refreshError) {
-        console.log('🚫 Token refresh failed:', refreshError.message)
+        console.log('Token refresh failed:', refreshError.message)
         
         // Clear all tokens and redirect to login
         localStorage.removeItem('sara_token')
@@ -199,15 +199,15 @@ export const chat = {
       
       // Log performance for monitoring
       if (duration > 2000) {
-        console.warn(`🐌 Slow chat history API: ${duration}ms for topic ${topicId}`)
+        console.warn(`Slow chat history API: ${duration}ms for topic ${topicId}`)
       } else if (duration > 1000) {
-        console.log(`⏱️  Chat history API: ${duration}ms for topic ${topicId}`)
+        console.log(`Chat history API: ${duration}ms for topic ${topicId}`)
       }
       
       return response
     } catch (error) {
       const duration = Date.now() - startTime
-      console.error(`❌ Chat history API failed after ${duration}ms:`, error.message)
+      console.error(`Chat history API failed after ${duration}ms:`, error.message)
       throw error
     }
   },
@@ -308,7 +308,7 @@ export const cachedRequest = async (key, apiCall, ttl = CACHE_TTL) => {
 // Clear cache
 export const clearCache = () => {
   cache.clear()
-  console.log('🧹 Frontend cache cleared')
+  console.log('Frontend cache cleared')
 }
 
 // Make clearCache available globally for debugging

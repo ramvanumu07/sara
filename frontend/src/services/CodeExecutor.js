@@ -3,6 +3,58 @@
  * Manages secure code execution using Web Workers and backend validation
  */
 
+/**
+ * Map raw execution errors to user-friendly messages for all common cases.
+ * @param {string} message - Raw error message from worker or timeout
+ * @param {boolean} [fromWorker=false] - If true, strip "Worker error: " prefix when present
+ * @returns {string} User-friendly message
+ */
+function normalizeExecutionError(message, fromWorker = false) {
+  const raw = (fromWorker && message && message.startsWith('Worker error: '))
+    ? message.slice(14)
+    : (message || 'Code execution failed');
+  const m = raw.trim();
+
+  // Timeout / infinite loop (main-thread timeout or worker timeout)
+  if (m === 'INFINITE_LOOP_OR_TIMEOUT' || m === 'Code execution timeout' ||
+      m.includes('Execution timeout') || m.includes('took too long')) {
+    return 'Infinite loop or code took too long to run. Check for loops that never end or reduce the amount of work.';
+  }
+
+  // Worker-reported loop limit (if worker ever sends this)
+  if (m.includes('Loop exceeded maximum iterations') || m.includes('maximum iterations')) {
+    return 'Too many loop iterations (possible infinite loop). Limit the number of iterations.';
+  }
+
+  // Blocked operations
+  if (m.includes('Blocked operation')) {
+    return 'This code uses a feature that is not allowed in the playground (e.g. fetch, eval).';
+  }
+
+  // Syntax errors – keep message, often includes line info
+  if (m.includes('SyntaxError') || m.includes('Syntax Error') || m.startsWith('SyntaxError:')) {
+    return m.replace(/^SyntaxError:\s*/i, 'Syntax error: ');
+  }
+
+  // Reference errors (undefined variable, etc.)
+  if (m.includes('ReferenceError') || m.includes('is not defined')) {
+    return m.includes('ReferenceError') ? m.replace(/ReferenceError:\s*/i, 'Reference error: ') : m;
+  }
+
+  // Type errors
+  if (m.includes('TypeError')) {
+    return m.replace(/TypeError:\s*/i, 'Type error: ');
+  }
+
+  // Function not found (assignment)
+  if (m.includes('not found') && m.includes('function')) {
+    return m;
+  }
+
+  // Generic fallback
+  return m;
+}
+
 class CodeExecutionService {
   constructor() {
     this.worker = null;
@@ -23,7 +75,7 @@ class CodeExecutionService {
       const taskId = this.generateTaskId();
       const timeoutId = setTimeout(() => {
         this.cleanup(taskId);
-        reject(new Error('Code execution timeout'));
+        reject(new Error('INFINITE_LOOP_OR_TIMEOUT'));
       }, this.executionTimeout);
 
       // Store pending execution
@@ -76,7 +128,7 @@ class CodeExecutionService {
     } catch (error) {
       return {
         success: false,
-        error: error.message,
+        error: normalizeExecutionError(error.message),
         results: []
       };
     }
@@ -157,7 +209,7 @@ class CodeExecutionService {
       if (data.success) {
         execution.resolve(data);
       } else {
-        execution.reject(new Error(data.error || 'Code execution failed'));
+        execution.reject(new Error(normalizeExecutionError(data.error || 'Code execution failed')));
       }
       
       this.cleanup(taskId);
@@ -173,7 +225,7 @@ class CodeExecutionService {
     if (execution) {
       clearTimeout(execution.timeoutId);
       this.pendingExecutions.delete(taskId);
-      execution.reject(new Error(`Worker error: ${error.message}`));
+      execution.reject(new Error(normalizeExecutionError(error.message, true)));
       this.cleanup(taskId);
     }
   }

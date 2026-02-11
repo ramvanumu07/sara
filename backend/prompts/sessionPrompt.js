@@ -30,7 +30,7 @@ For each new concept:
 4. STOP
 
 After student responds:
-1. Celebrate if correct (🎉)
+1. Celebrate if correct (short positive line)
 2. Use their code to teach when natural, otherwise just move forward
 3. Introduce next goal
 
@@ -55,7 +55,7 @@ When ALL goals are taught and practiced, send this EXACT completion signal:
 SESSION_COMPLETE_SIGNAL
 
 Then immediately follow with:
-🏆 Congratulations! You've Mastered ${topicTitle}!
+Congratulations! You've Mastered ${topicTitle}!
 
 You have successfully completed all learning objectives. Ready for the next phase!
 
@@ -71,10 +71,10 @@ Generate the response now.`
 - Before each response, check what's already covered in conversation_history
 - What's next in goals?
 - Has current concept been practiced AND confirmed?
-- End when ALL goals are: Explained ✅ + Practiced ✅ + Confirmed ✅
+- End when ALL goals are: Explained + Practiced + Confirmed
 
 Then write:
-🏆 Congratulations! You've Mastered ${topicTitle}!
+Congratulations! You've Mastered ${topicTitle}!
 Recap: [list key points]
 STOP. No bonus content.
 

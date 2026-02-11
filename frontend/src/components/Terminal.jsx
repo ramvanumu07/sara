@@ -80,7 +80,7 @@ export default function Terminal({ onExecute, history = [], disabled = false, in
 
       <div ref={terminalRef} style={styles.output}>
         <div style={styles.welcome}>
-          <span style={styles.welcomeText}>🎮 EduBridge Playground</span>
+          <span style={styles.welcomeText}>EduBridge Playground</span>
           <span style={styles.welcomeHint}>Type JavaScript code and press Enter to run</span>
         </div>
 

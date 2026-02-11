@@ -12,7 +12,7 @@ try {
   Sentry = sentryModule
   sentryAvailable = true
 } catch (error) {
-  console.warn('⚠️  Sentry module not installed. Error tracking will use fallback logging.')
+  console.warn('Sentry module not installed. Error tracking will use fallback logging.')
   sentryAvailable = false
 }
 
@@ -25,14 +25,14 @@ export const initializeErrorTracking = () => {
 
   // If Sentry is not available, use fallback logging
   if (!sentryAvailable) {
-    console.warn('⚠️  Sentry not available - using fallback error logging')
+    console.warn('Sentry not available - using fallback error logging')
     isInitialized = true // Mark as initialized to enable fallback logging
     return
   }
 
   const dsn = process.env.SENTRY_DSN
   if (!dsn) {
-    console.warn('⚠️  SENTRY_DSN not configured - using fallback error logging')
+    console.warn('SENTRY_DSN not configured - using fallback error logging')
     isInitialized = true // Mark as initialized to enable fallback logging
     return
   }
@@ -80,9 +80,9 @@ export const initializeErrorTracking = () => {
     })
 
     isInitialized = true
-    console.log('✅ Sentry error tracking initialized')
+    console.log('Sentry error tracking initialized')
   } catch (error) {
-    console.warn('⚠️  Sentry initialization failed - using fallback error logging:', error.message)
+    console.warn('Sentry initialization failed - using fallback error logging:', error.message)
     isInitialized = true // Mark as initialized to enable fallback logging
   }
 }
@@ -217,7 +217,7 @@ export const sentryRequestHandler = () => {
   try {
     return Sentry.requestHandler()
   } catch (error) {
-    console.warn('⚠️  Sentry request handler failed, using passthrough')
+    console.warn('Sentry request handler failed, using passthrough')
     return (req, res, next) => next()
   }
 }
@@ -230,7 +230,7 @@ export const sentryTracingHandler = () => {
   try {
     return Sentry.tracingHandler()
   } catch (error) {
-    console.warn('⚠️  Sentry tracing handler failed, using passthrough')
+    console.warn('Sentry tracing handler failed, using passthrough')
     return (req, res, next) => next()
   }
 }
@@ -253,7 +253,7 @@ export const sentryErrorHandler = () => {
   try {
     return Sentry.errorHandler()
   } catch (sentryError) {
-    console.warn('⚠️  Sentry error handler failed, using fallback')
+    console.warn('Sentry error handler failed, using fallback')
     return (error, req, res, next) => {
       console.error('🚨 EXPRESS ERROR (Sentry failed):', {
         message: error.message,

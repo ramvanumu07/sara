@@ -19,10 +19,10 @@ function initializeAI() {
 
   try {
     groq = new Groq({ apiKey })
-    console.log(`[${new Date().toISOString()}] ✅ AI service connected`)
+    console.log(`[${new Date().toISOString()}] AI service connected`)
     return groq
   } catch (error) {
-    console.error(`[${new Date().toISOString()}] ❌ AI service connection failed:`, error)
+    console.error(`[${new Date().toISOString()}] AI service connection failed:`, error)
     throw error
   }
 }
@@ -56,7 +56,7 @@ export async function callAI(messages, maxTokens = 1000, temperature = 0.5, mode
     return fullResponse.trim()
     
   } catch (error) {
-    console.error(`[${new Date().toISOString()}] ❌ AI API Error:`, error)
+    console.error(`[${new Date().toISOString()}] AI API Error:`, error)
     
     // Return user-friendly error message
     if (error.message.includes('rate limit')) {

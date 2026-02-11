@@ -55,7 +55,7 @@ const Toast = ({
         }
       case 'warning':
         return {
-          icon: '⚠',
+          icon: '!',
           bgColor: '#fffbeb',
           borderColor: '#fed7aa',
           textColor: '#d97706',
@@ -63,7 +63,7 @@ const Toast = ({
         }
       default: // info
         return {
-          icon: 'ℹ',
+          icon: 'i',
           bgColor: '#f0f9ff',
           borderColor: '#bae6fd',
           textColor: '#0369a1',

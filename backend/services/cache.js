@@ -10,7 +10,7 @@ try {
   const redisModule = await import('ioredis')
   Redis = redisModule.default
 } catch (error) {
-  console.warn('⚠️  Redis module not installed. Using in-memory cache fallback.')
+  console.warn('Redis module not installed. Using in-memory cache fallback.')
 }
 
 // Import logger with fallback

@@ -236,7 +236,7 @@ const startServer = async () => {
     
   } catch (error) {
     logError('Failed to start server', { error: error.message })
-    console.error('❌ Could not find an available port. Please check your system.')
+    console.error('Could not find an available port. Please check your system.')
     process.exit(1)
   }
 }

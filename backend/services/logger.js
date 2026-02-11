@@ -15,7 +15,7 @@ try {
   winston = winstonModule.default
   winstonFormats = winstonModule.format
 } catch (error) {
-  console.warn('⚠️  Winston module not installed. Using console logging fallback.')
+  console.warn('Winston module not installed. Using console logging fallback.')
 }
 
 // Ensure logs directory exists

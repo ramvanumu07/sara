@@ -29,7 +29,7 @@ function getSupabaseClient() {
 export async function getChatHistoryString(userId, topicId) {
   const client = getSupabaseClient()
   
-  console.log(`🔍 Fetching chat history: ${userId}/${topicId}`)
+  console.log(`Fetching chat history: ${userId}/${topicId}`)
   
   try {
     const { data, error } = await client
@@ -48,12 +48,12 @@ export async function getChatHistoryString(userId, topicId) {
     }
 
     const conversationString = data?.messages || ''
-    console.log(`✅ Chat history retrieved: ${conversationString.length} characters`)
+    console.log(`Chat history retrieved: ${conversationString.length} characters`)
     
     return conversationString
 
   } catch (error) {
-    console.error(`❌ Failed to get chat history:`, error)
+    console.error(`Failed to get chat history:`, error)
     throw error
   }
 }
@@ -121,7 +121,7 @@ export async function saveChatTurn(userId, topicId, userMessage, aiResponse) {
       throw new Error(`Failed to save conversation: ${upsertError.message}`)
     }
 
-    console.log(`✅ Chat turn saved: ${finalCount} total messages`)
+    console.log(`Chat turn saved: ${finalCount} total messages`)
     
     return { 
       messageCount: finalCount,
@@ -129,7 +129,7 @@ export async function saveChatTurn(userId, topicId, userMessage, aiResponse) {
     }
 
   } catch (error) {
-    console.error(`❌ Failed to save chat turn:`, error)
+    console.error(`Failed to save chat turn:`, error)
     throw error
   }
 }
@@ -147,7 +147,7 @@ export async function saveInitialMessage(userId, topicId, aiMessage) {
     const existingHistory = await getChatHistoryString(userId, topicId)
     
     if (existingHistory && existingHistory.trim().length > 0) {
-      console.log(`✅ Conversation already exists - skipping initial message`)
+      console.log(`Conversation already exists - skipping initial message`)
       return { 
         messageCount: countMessages(existingHistory),
         conversationHistory: existingHistory,
@@ -178,7 +178,7 @@ export async function saveInitialMessage(userId, topicId, aiMessage) {
       throw new Error(`Failed to save initial message: ${error.message}`)
     }
 
-    console.log(`✅ Initial message saved`)
+    console.log(`Initial message saved`)
     
     return { 
       messageCount: 1,
@@ -187,7 +187,7 @@ export async function saveInitialMessage(userId, topicId, aiMessage) {
     }
 
   } catch (error) {
-    console.error(`❌ Failed to save initial message:`, error)
+    console.error(`Failed to save initial message:`, error)
     throw error
   }
 }
@@ -198,7 +198,7 @@ export async function saveInitialMessage(userId, topicId, aiMessage) {
 export async function clearChatHistory(userId, topicId) {
   const client = getSupabaseClient()
   
-  console.log(`🗑️ Clearing chat history: ${userId}/${topicId}`)
+  console.log(`Clearing chat history: ${userId}/${topicId}`)
   
   try {
     const { error } = await client
@@ -211,10 +211,10 @@ export async function clearChatHistory(userId, topicId) {
       throw new Error(`Failed to clear chat history: ${error.message}`)
     }
 
-    console.log(`✅ Chat history cleared`)
+    console.log(`Chat history cleared`)
 
   } catch (error) {
-    console.error(`❌ Failed to clear chat history:`, error)
+    console.error(`Failed to clear chat history:`, error)
     throw error
   }
 }
@@ -244,7 +244,7 @@ export async function getChatHistoryByPhase(userId, topicId, phase) {
     return data?.messages || ''
 
   } catch (error) {
-    console.error(`❌ Failed to get chat history by phase:`, error)
+    console.error(`Failed to get chat history by phase:`, error)
     throw error
   }
 }
@@ -269,10 +269,10 @@ export async function updateChatPhase(userId, topicId, phase) {
       throw new Error(`Failed to update chat phase: ${error.message}`)
     }
 
-    console.log(`✅ Chat phase updated to: ${phase}`)
+    console.log(`Chat phase updated to: ${phase}`)
 
   } catch (error) {
-    console.error(`❌ Failed to update chat phase:`, error)
+    console.error(`Failed to update chat phase:`, error)
     throw error
   }
 }

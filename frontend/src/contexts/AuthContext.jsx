@@ -36,23 +36,23 @@ export const AuthProvider = ({ children }) => {
       if (token) {
         try {
           // Validate token with server and get fresh user data
-          console.log('🔄 AuthContext - Calling /auth/validate...')
+          console.log('AuthContext - Calling /auth/validate...')
           const response = await auth.validate()
-          console.log('🔄 AuthContext - Validate response:', response.data)
+          console.log('AuthContext - Validate response:', response.data)
           
           if (response.data.success && response.data.data.user) {
             const freshUser = response.data.data.user
-            console.log('🔄 AuthContext - Fresh user from server:', freshUser)
-            console.log('🔄 AuthContext - Fresh user name:', freshUser.name)
-            console.log('🔄 AuthContext - Fresh user name type:', typeof freshUser.name)
+            console.log('AuthContext - Fresh user from server:', freshUser)
+            console.log('AuthContext - Fresh user name:', freshUser.name)
+            console.log('AuthContext - Fresh user name type:', typeof freshUser.name)
             
             // Update both state and localStorage with fresh data
-            console.log('🔄 AuthContext - Setting fresh user data:', freshUser)
+            console.log('AuthContext - Setting fresh user data:', freshUser)
             setUser(freshUser)
             setUserState(freshUser)
             setIsAuthenticated(true)
           } else {
-            console.log('🔄 AuthContext - Token validation failed, logging out')
+            console.log('AuthContext - Token validation failed, logging out')
             // Token is invalid, clear storage
             await logout()
           }
@@ -83,14 +83,14 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (usernameOrEmail, password) => {
     try {
-      console.log('🔐 AuthContext - Starting login process for:', usernameOrEmail)
+      console.log('AuthContext - Starting login process for:', usernameOrEmail)
       const response = await auth.login(usernameOrEmail, password)
-      console.log('🔐 AuthContext - Login response:', response.data)
+      console.log('AuthContext - Login response:', response.data)
       
       if (response.data.success) {
         const { user: userData, accessToken, refreshToken, token } = response.data.data
-        console.log('🔐 AuthContext - User data from login:', userData)
-        console.log('🔐 AuthContext - User name from login:', userData.name)
+        console.log('AuthContext - User data from login:', userData)
+        console.log('AuthContext - User name from login:', userData.name)
         
         // Store both tokens and user data
         const tokenToStore = accessToken || token // Use accessToken if available, fallback to token for backward compatibility
@@ -102,10 +102,10 @@ export const AuthProvider = ({ children }) => {
         // Store refresh token if provided
         if (refreshToken) {
           localStorage.setItem('sara_refresh_token', refreshToken)
-          console.log('🔄 Refresh token stored')
+          console.log('Refresh token stored')
         }
         
-        console.log('🔐 AuthContext - Login successful, user state set to:', userData)
+        console.log('AuthContext - Login successful, user state set to:', userData)
         return { success: true, user: userData }
       } else {
         return { success: false, error: response.data.message || response.data.error || 'Login failed' }

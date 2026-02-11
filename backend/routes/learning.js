@@ -96,7 +96,7 @@ async function executeCodeSecurely(code, testCases = [], functionName = null, so
     // Execute code with new secure executor
     const result = await codeExecutor.execute(code, testCases, functionName, solutionType);
 
-    console.log('✅ Secure code execution completed:', {
+    console.log('Secure code execution completed:', {
       success: result.success,
       allPassed: result.allPassed,
       executionTime: result.executionTime,
@@ -113,7 +113,7 @@ async function executeCodeSecurely(code, testCases = [], functionName = null, so
     };
 
   } catch (error) {
-    console.error('❌ Secure code execution error:', error.message);
+    console.error('Secure code execution error:', error.message);
     return {
       success: false,
       error: error.message,
@@ -160,9 +160,9 @@ router.get('/state/:topicId', authenticateToken, async (req, res) => {
     const { topicId } = req.params
     const userId = req.user.userId
 
-    console.log(`🔄 Loading learning state for: "${topicId}" (type: ${typeof topicId}, length: ${topicId?.length})`)
-    console.log(`🔄 Raw params:`, req.params)
-    console.log(`🔄 Full URL:`, req.url)
+    console.log(`Loading learning state for: "${topicId}" (type: ${typeof topicId}, length: ${topicId?.length})`)
+    console.log(`Raw params:`, req.params)
+    console.log(`Full URL:`, req.url)
 
     // Validate topic exists
     const topic = getTopicOrRespond(res, courses, topicId, createErrorResponse)
@@ -174,7 +174,7 @@ router.get('/state/:topicId', authenticateToken, async (req, res) => {
       getChatHistoryString(userId, topicId)
     ])
 
-    console.log(`📊 Progress data:`, {
+    console.log(`Progress data:`, {
       hasProgress: !!progress,
       status: progress?.status,
       phase: progress?.phase,
@@ -356,7 +356,7 @@ router.post('/playtime/complete', authenticateToken, rateLimitMiddleware, valida
     const topic = getTopicOrRespond(res, courses, topicId, createErrorResponse)
     if (!topic) return
 
-    console.log(`✅ Topic found: ${topic.title}`)
+    console.log(`Topic found: ${topic.title}`)
 
     // Complete playtime phase - direct database update for compatibility
     try {
@@ -368,11 +368,11 @@ router.post('/playtime/complete', authenticateToken, rateLimitMiddleware, valida
         updated_at: new Date().toISOString()
       })
 
-      console.log(`✅ Playtime completed - database updated:`, result)
+      console.log(`Playtime completed - database updated:`, result)
     } catch (dbError) {
-      console.error(`❌ Database error in playtime complete:`, dbError)
-      console.error(`❌ Error details:`, dbError.message)
-      console.error(`❌ Error stack:`, dbError.stack)
+      console.error(`Database error in playtime complete:`, dbError)
+      console.error(`Error details:`, dbError.message)
+      console.error(`Error stack:`, dbError.stack)
       throw new Error(`Failed to complete playtime: ${dbError.message}`)
     }
 
@@ -387,7 +387,7 @@ router.post('/playtime/complete', authenticateToken, rateLimitMiddleware, valida
       }
     }))
   } catch (error) {
-    console.error(`❌ Playtime complete error:`, error)
+    console.error(`Playtime complete error:`, error)
     handleErrorResponse(res, error, 'complete playtime')
   }
 })
@@ -633,7 +633,7 @@ router.post('/execute-secure', authenticateToken, async (req, res) => {
     }));
 
   } catch (error) {
-    console.error('❌ Secure execution error:', error);
+    console.error('Secure execution error:', error);
     res.status(500).json(createErrorResponse('Secure code execution failed'));
   }
 })
@@ -643,7 +643,7 @@ router.post('/execute-secure', authenticateToken, async (req, res) => {
 router.get('/progress', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.userId
-    console.log(`📊 Progress API called for user: ${userId}`)
+    console.log(`Progress API called for user: ${userId}`)
 
     // Get progress data directly for compatibility
     const allProgress = await getAllProgress(userId)
@@ -661,8 +661,8 @@ router.get('/progress', authenticateToken, async (req, res) => {
       completion_percentage: totalTopics > 0 ? Math.round((completedTopics / totalTopics) * 100) : 0
     }
 
-    console.log(`📊 Found ${allProgress?.length || 0} progress records from progress table`)
-    console.log(`📊 RAW PROGRESS DATA:`, JSON.stringify(allProgress, null, 2))
+    console.log(`Found ${allProgress?.length || 0} progress records from progress table`)
+    console.log(`RAW PROGRESS DATA:`, JSON.stringify(allProgress, null, 2))
 
     // Find most recent topic for lastAccessed
     const lastAccessed = allProgress.length > 0 ? {
@@ -686,8 +686,8 @@ router.get('/progress', authenticateToken, async (req, res) => {
       }))
     }))
   } catch (error) {
-    console.error('❌ Progress API error:', error)
-    console.error('❌ Error details:', error.message)
+    console.error('Progress API error:', error)
+    console.error('Error details:', error.message)
     handleErrorResponse(res, error, 'get progress')
   }
 })
@@ -696,13 +696,13 @@ router.get('/progress', authenticateToken, async (req, res) => {
 router.get('/debug/progress', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.userId
-    console.log(`🔍 Debug: Checking progress table for user ${userId}`)
+    console.log(`Debug: Checking progress table for user ${userId}`)
 
     // Get progress using the database service
     const data = await getAllProgress(userId)
     const error = null
 
-    console.log(`🔍 Debug results:`)
+    console.log(`Debug results:`)
     console.log(`   - Error:`, error)
     console.log(`   - Data:`, data)
     console.log(`   - Data length:`, data?.length)
@@ -717,7 +717,7 @@ router.get('/debug/progress', authenticateToken, async (req, res) => {
       }
     })
   } catch (error) {
-    console.error('❌ Debug error:', error)
+    console.error('Debug error:', error)
     res.json({
       success: false,
       error: error.message
@@ -748,7 +748,7 @@ router.delete('/debug/reset-progress', authenticateToken, async (req, res) => {
         if (error) {
           console.warn(`Failed to delete from ${table}:`, error.message)
         } else {
-          console.log(`✅ Deleted all records from ${table}`)
+          console.log(`Deleted all records from ${table}`)
         }
       } catch (err) {
         console.warn(`Error deleting from ${table}:`, err.message)
@@ -768,7 +768,7 @@ router.delete('/debug/reset-progress', authenticateToken, async (req, res) => {
       details: result
     })
   } catch (error) {
-    console.error('❌ Reset progress error:', error)
+    console.error('Reset progress error:', error)
     res.status(500).json({
       success: false,
       error: error.message
@@ -790,7 +790,7 @@ router.post('/debug/clear-cache', authenticateToken, async (req, res) => {
       cacheSize: progressCache.size()
     })
   } catch (error) {
-    console.error('❌ Clear cache error:', error)
+    console.error('Clear cache error:', error)
     res.status(500).json({
       success: false,
       error: error.message
@@ -806,7 +806,7 @@ router.get('/debug/progress/:topicId', authenticateToken, async (req, res) => {
 
     const progress = await getProgress(userId, topicId)
 
-    console.log(`🔍 Progress Debug for ${topicId}:`, progress)
+    console.log(`Progress Debug for ${topicId}:`, progress)
 
     res.json({
       success: true,
@@ -818,7 +818,7 @@ router.get('/debug/progress/:topicId', authenticateToken, async (req, res) => {
       }
     })
   } catch (error) {
-    console.error('❌ Progress debug error:', error)
+    console.error('Progress debug error:', error)
     res.status(500).json({
       success: false,
       error: error.message
@@ -830,7 +830,7 @@ router.get('/debug/progress/:topicId', authenticateToken, async (req, res) => {
 router.get('/debug/all-data-sources', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.userId
-    console.log(`🔍 COMPREHENSIVE DEBUG: Checking all data sources for user: ${userId}`)
+    console.log(`COMPREHENSIVE DEBUG: Checking all data sources for user: ${userId}`)
 
     const { getSupabaseClient } = await import('../services/database.js')
     const supabase = getSupabaseClient()
@@ -856,7 +856,7 @@ router.get('/debug/all-data-sources', authenticateToken, async (req, res) => {
     // Check cache
     const { progressCache } = await import('../middleware/performance.js')
 
-    console.log(`🔍 DEBUG RESULTS:`)
+    console.log(`DEBUG RESULTS:`)
     console.log(`   - Progress table: ${progressData?.length || 0} records`)
     console.log(`   - Chat sessions: ${chatSessionsData?.length || 0} records`)
     console.log(`   - Chat history: ${chatHistoryData?.length || 0} records`)
@@ -889,7 +889,7 @@ router.get('/debug/all-data-sources', authenticateToken, async (req, res) => {
       }
     })
   } catch (error) {
-    console.error('❌ Comprehensive debug error:', error)
+    console.error('Comprehensive debug error:', error)
     res.status(500).json({
       success: false,
       error: error.message
@@ -908,7 +908,7 @@ router.get('/continue', authenticateToken, async (req, res) => {
     if (!lastAccessed) {
       // If no progress, start with first topic
       const firstTopic = getAllTopics(courses)[0]
-      console.log(`📭 No progress found for user ${userId}, starting with first topic: ${firstTopic.id}`)
+      console.log(`No progress found for user ${userId}, starting with first topic: ${firstTopic.id}`)
 
       return res.json(createSuccessResponse({
         lastAccessed: {
@@ -919,7 +919,7 @@ router.get('/continue', authenticateToken, async (req, res) => {
     }
 
     const topic = findTopicById(courses, lastAccessed.topic_id)
-    console.log(`🎯 Last accessed topic for user ${userId}: ${lastAccessed.topic_id}, phase: ${lastAccessed.phase}`)
+    console.log(`Last accessed topic for user ${userId}: ${lastAccessed.topic_id}, phase: ${lastAccessed.phase}`)
 
     res.json(createSuccessResponse({
       lastAccessed: {

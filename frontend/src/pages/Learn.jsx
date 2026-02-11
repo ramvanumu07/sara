@@ -4,6 +4,7 @@ import { learning, chat } from '../config/api'
 import { ToastContainer } from '../components/Toast'
 import { useToast } from '../hooks/useToast'
 import EditorToggle from '../components/EditorToggle'
+import SessionPlayground from '../components/SessionPlayground'
 import CodeExecutor from '../services/CodeExecutor'
 import './Learn.css'
 import './Learn-responsive.css'
@@ -201,8 +202,8 @@ const Learn = () => {
               const lastMessage = historyResponse.data.data.messages[historyResponse.data.data.messages.length - 1]
               if (lastMessage.role === 'assistant' &&
                 (lastMessage.content.includes('ready for the playground') ||
-                  lastMessage.content.includes('Congratulations! You\'ve mastered') ||
-                  lastMessage.content.includes('🏆'))) {
+                  lastMessage.content.includes('Congratulations') ||
+                  lastMessage.content.includes('SESSION_COMPLETE_SIGNAL'))) {
                 setSessionComplete(true)
               }
             } else {
@@ -303,8 +304,8 @@ const Learn = () => {
         // Check if session is complete (using backend flag or text detection)
         if (response.data.data.sessionComplete ||
           response.data.data.response.includes('ready for the playground') ||
-          response.data.data.response.includes('Congratulations! You\'ve mastered') ||
-          response.data.data.response.includes('🏆')) {
+          response.data.data.response.includes('Congratulations') ||
+          response.data.data.response.includes('SESSION_COMPLETE_SIGNAL')) {
           setSessionComplete(true)
           success('Session completed! Playground unlocked!', 3000)
         }
@@ -330,7 +331,7 @@ const Learn = () => {
 
     try {
       // Clear previous output
-      outputDiv.innerHTML = '<div style="color: #10a37f; font-family: Monaco, Consolas, monospace; padding: 8px;">🔄 Executing code securely...</div>'
+      outputDiv.innerHTML = '<div style="color: #10a37f; font-family: Monaco, Consolas, monospace; padding: 8px;">Executing code securely...</div>'
 
       const startTime = Date.now()
 
@@ -369,9 +370,9 @@ const Learn = () => {
         
         // Add execution time for longer operations
         if (executionTime > 1000) {
-          outputText += `\n✅ Execution completed in ${executionTime}ms`
+          outputText += `\nExecution completed in ${executionTime}ms`
         } else if (executionTime > 100) {
-          outputText += `\n✅ Execution completed in ${executionTime}ms`
+          outputText += `\nExecution completed in ${executionTime}ms`
         }
       } else {
         outputText = `Error: ${result.error || 'Code execution failed'}`
@@ -394,8 +395,8 @@ const Learn = () => {
       let formattedOutput = ''
       outputLines.forEach((line) => {
         const color = line.includes('Error:') ? '#ef4444' : 
-                     line.includes('⚠️') ? '#f59e0b' : 
-                     line.includes('✅') ? '#10a37f' : outputColor
+                     line.includes('Warning') ? '#f59e0b' : 
+                     line.includes('Execution completed') ? '#10a37f' : outputColor
         formattedOutput += `<div style="line-height: 1.4; color: ${color}; white-space: pre; padding-left: 2px; font-size: 0.875rem;">${line || ' '}</div>`
       })
 
@@ -545,7 +546,7 @@ const Learn = () => {
 
     try {
       // Clear previous output
-      outputDiv.innerHTML = '<div style="color: #10a37f; font-family: Monaco, Consolas, monospace; padding: 8px;">🔄 Executing assignment code securely...</div>'
+      outputDiv.innerHTML = '<div style="color: #10a37f; font-family: Monaco, Consolas, monospace; padding: 8px;">Executing assignment code securely...</div>'
 
       const startTime = Date.now()
 
@@ -581,7 +582,7 @@ const Learn = () => {
           outputText = `Test Results: ${passedTests}/${totalTests} passed\n\n`
           
           result.results.forEach((testResult, index) => {
-            const status = testResult.passed ? '✅' : '❌'
+            const status = testResult.passed ? '[PASS]' : '[FAIL]'
             const input = JSON.stringify(testResult.input || {})
             const expected = testResult.expected
             const actual = testResult.output || testResult.result || testResult.error || 'No output'
@@ -596,10 +597,10 @@ const Learn = () => {
           })
           
           if (allTestsPassed) {
-            outputText += '🎉 All tests passed! Ready to submit.'
+            outputText += 'All tests passed! Ready to submit.'
             outputColor = '#10a37f'
           } else {
-            outputText += '❌ Some tests failed. Please review your code.'
+            outputText += 'Some tests failed. Please review your code.'
             outputColor = '#ef4444'
           }
         } else {
@@ -613,7 +614,7 @@ const Learn = () => {
         }
         
         if (executionTime > 1000) {
-          outputText += `\n✅ Execution completed in ${executionTime}ms`
+          outputText += `\nExecution completed in ${executionTime}ms`
         }
       } else {
         outputText = `Error: ${result.error || 'Code execution failed'}`
@@ -637,8 +638,8 @@ const Learn = () => {
       let formattedOutput = ''
       outputLines.forEach((line) => {
         let color = outputColor
-        if (line.includes('✅')) color = '#10a37f'
-        else if (line.includes('❌') || line.includes('Error:')) color = '#ef4444'
+        if (line.includes('[PASS]') || line.includes('Execution completed')) color = '#10a37f'
+        else if (line.includes('[FAIL]') || line.includes('Error:')) color = '#ef4444'
         else if (line.includes('Test Results:')) color = '#3b82f6'
         else if (line.includes('Expected:') || line.includes('Actual:')) color = '#6b7280'
         
@@ -725,7 +726,7 @@ const Learn = () => {
         } else {
           // All assignments complete
           setAssignmentComplete(true)
-          success('🎉 All assignments completed! Excellent work!', 4000)
+          success('All assignments completed! Excellent work!', 4000)
         }
       } else {
         // Handle backend validation failure
@@ -963,515 +964,16 @@ const Learn = () => {
         </div>
       )}
 
-      {/* Code editor + terminal: same full-screen layout as before; only visible when toggle on in session */}
       {phase === 'session' && showEditorInSession && (
-        <div className="playground-main-content" style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: isDesktop ? 'row' : 'column',
-          height: '100%',
-          minHeight: 0,
-          overflow: 'hidden'
-        }}>
-          {/* Editor Panel */}
-          <div className="playground-editor-panel" style={{
-            ...(isDesktop ? {
-              width: `${editorWidth}%`,
-              height: '100%',
-              minWidth: '300px'
-            } : {
-              height: `${editorHeight}%`,
-              minHeight: '200px'
-            }),
-            display: 'flex',
-            flexDirection: 'column',
-            overflow: 'hidden'
-          }}>
-            {/* Editor Header */}
-            <div className="playground-editor-header" style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '12px 16px',
-              backgroundColor: '#f9fafb',
-              borderBottom: '1px solid #e5e7eb',
-              fontSize: '0.8rem',
-              color: '#6b7280',
-              minHeight: '56px'
-            }}>
-              {/* File Tab */}
-              <div style={{
-                padding: '4px 12px',
-                backgroundColor: '#ffffff',
-                borderRadius: '4px 4px 0 0',
-                borderBottom: '2px solid #10a37f',
-                color: '#111827',
-                fontWeight: '500',
-                fontSize: '0.75rem'
-              }}>
-                playground.js
-              </div>
-
-              {/* Action Buttons */}
-              <div className="playground-header-actions" style={{
-                display: 'flex',
-                gap: '8px',
-                alignItems: 'center'
-              }}>
-                <button
-                  onClick={handleRunPlayground}
-                  className="playground-run-btn"
-                  style={{
-                    backgroundColor: userCode.trim() ? '#10a37f' : '#d1d5db',
-                    color: userCode.trim() ? 'white' : '#9ca3af',
-                    border: 'none',
-                    borderRadius: '6px',
-                    padding: '6px 12px',
-                    fontSize: '0.75rem',
-                    fontWeight: '500',
-                    cursor: userCode.trim() ? 'pointer' : 'not-allowed',
-                    transition: 'all 0.2s ease',
-                    boxShadow: userCode.trim() ? '0 1px 3px rgba(0, 0, 0, 0.1)' : 'none',
-                    minWidth: '60px',
-                    height: '28px',
-                    alignSelf: 'flex-start'
-                  }}
-                  title="Run Code (Ctrl+Enter)"
-                >
-                  Run
-                </button>
-                <button
-                  onClick={handleCopyCode}
-                  className="playground-copy-btn"
-                  style={{
-                    backgroundColor: userCode.trim() ? '#3b82f6' : '#d1d5db',
-                    color: userCode.trim() ? 'white' : '#9ca3af',
-                    border: 'none',
-                    borderRadius: '6px',
-                    padding: '6px 12px',
-                    fontSize: '0.75rem',
-                    fontWeight: '500',
-                    cursor: userCode.trim() ? 'pointer' : 'not-allowed',
-                    transition: 'all 0.2s ease',
-                    minWidth: '60px',
-                    height: '28px',
-                    alignSelf: 'flex-start'
-                  }}
-                  title="Copy code to clipboard"
-                >
-                  Copy
-                </button>
-              </div>
-            </div>
-
-            {/* Editor Content */}
-            <div style={{
-              flex: 1,
-              minHeight: '300px',
-              display: 'flex',
-              backgroundColor: '#ffffff',
-              border: '1px solid #e5e7eb',
-              borderRadius: '6px',
-              overflow: 'hidden'
-            }}>
-              {/* Line Numbers */}
-              <div className="playground-line-numbers" style={{
-                width: '50px',
-                backgroundColor: '#f9fafb',
-                borderRight: '1px solid #e5e7eb',
-                padding: '16px 8px',
-                fontSize: '0.875rem',
-                color: '#9ca3af',
-                fontFamily: 'Monaco, Consolas, "SF Mono", "Courier New", monospace',
-                lineHeight: '1.4',
-                textAlign: 'right',
-                userSelect: 'none',
-                overflow: 'hidden',
-                flexShrink: 0,
-                position: 'relative'
-              }}>
-                {userCode.split('\n').map((_, index) => (
-                  <div key={index} style={{
-                    lineHeight: '1.4',
-                    fontSize: '0.875rem'
-                  }}>
-                    {index + 1}
-                  </div>
-                ))}
-              </div>
-
-              {/* Code Textarea */}
-              <textarea
-                className="playground-textarea"
-                value={userCode}
-                onChange={(e) => setUserCode(e.target.value)}
-                onScroll={(e) => {
-                  // Sync line numbers with textarea scroll
-                  const lineNumbers = e.target.parentElement.querySelector('.playground-line-numbers')
-                  if (lineNumbers) {
-                    lineNumbers.scrollTop = e.target.scrollTop
-                  }
-                }}
-                onKeyDown={(e) => {
-                  if (e.ctrlKey && e.key === 'Enter') {
-                    e.preventDefault()
-                    handleRunPlayground()
-                  }
-
-                  // Handle Tab key for indentation
-                  if (e.key === 'Tab') {
-                    e.preventDefault()
-                    const textarea = e.target
-                    const start = textarea.selectionStart
-                    const end = textarea.selectionEnd
-                    const value = textarea.value
-
-                    // Insert 4 spaces at cursor position
-                    const newValue = value.substring(0, start) + '    ' + value.substring(end)
-                    setUserCode(newValue)
-
-                    // Move cursor after the inserted spaces
-                    setTimeout(() => {
-                      textarea.selectionStart = textarea.selectionEnd = start + 4
-                    }, 0)
-                  }
-
-                  // Handle auto-closing brackets, braces, parentheses, and quotes
-                  const autoClosingPairs = {
-                    '(': ')',
-                    '[': ']',
-                    '{': '}',
-                    '"': '"',
-                    "'": "'",
-                    '`': '`'
-                  }
-
-                  if (autoClosingPairs[e.key]) {
-                    const textarea = e.target
-                    const start = textarea.selectionStart
-                    const end = textarea.selectionEnd
-                    const value = textarea.value
-                    const selectedText = value.substring(start, end)
-
-                    // Get the character after cursor
-                    const nextChar = value.charAt(start)
-
-                    // For quotes, check if we should close or just move cursor
-                    if (['"', "'", '`'].includes(e.key)) {
-                      // If next character is the same quote, just move cursor (don't add another)
-                      if (nextChar === e.key) {
-                        e.preventDefault()
-                        setTimeout(() => {
-                          textarea.selectionStart = textarea.selectionEnd = start + 1
-                        }, 0)
-                        return
-                      }
-
-                      // Check if we're inside a string (basic check)
-                      const beforeCursor = value.substring(0, start)
-                      const quoteCount = (beforeCursor.match(new RegExp('\\' + e.key, 'g')) || []).length
-
-                      // If odd number of quotes before cursor, we're closing a string
-                      if (quoteCount % 2 === 1) {
-                        // Let the default behavior happen (just add the closing quote)
-                        return
-                      }
-                    }
-
-                    e.preventDefault()
-
-                    const openChar = e.key
-                    const closeChar = autoClosingPairs[e.key]
-
-                    if (selectedText) {
-                      // If text is selected, wrap it with the pair
-                      const newValue = value.substring(0, start) + openChar + selectedText + closeChar + value.substring(end)
-                      setUserCode(newValue)
-
-                      // Select the wrapped text
-                      setTimeout(() => {
-                        textarea.selectionStart = start + 1
-                        textarea.selectionEnd = start + 1 + selectedText.length
-                      }, 0)
-                    } else {
-                      // Insert the pair and position cursor between them
-                      const newValue = value.substring(0, start) + openChar + closeChar + value.substring(start)
-                      setUserCode(newValue)
-
-                      // Position cursor between the pair
-                      setTimeout(() => {
-                        textarea.selectionStart = textarea.selectionEnd = start + 1
-                      }, 0)
-                    }
-                  }
-
-                  // Handle closing bracket navigation (skip over closing bracket if it's already there)
-                  if ([')', ']', '}'].includes(e.key)) {
-                    const textarea = e.target
-                    const start = textarea.selectionStart
-                    const value = textarea.value
-                    const nextChar = value.charAt(start)
-
-                    // If the next character is the same closing bracket, just move cursor
-                    if (nextChar === e.key) {
-                      e.preventDefault()
-                      setTimeout(() => {
-                        textarea.selectionStart = textarea.selectionEnd = start + 1
-                      }, 0)
-                    }
-                  }
-
-                  // Handle Backspace key for smart indentation removal
-                  if (e.key === 'Backspace') {
-                    const textarea = e.target
-                    const start = textarea.selectionStart
-                    const end = textarea.selectionEnd
-                    const value = textarea.value
-
-                    // Only handle smart backspace if no text is selected
-                    if (start === end) {
-                      // Get the current line
-                      const beforeCursor = value.substring(0, start)
-                      const currentLineStart = beforeCursor.lastIndexOf('\n') + 1
-                      const currentLine = beforeCursor.substring(currentLineStart)
-
-                      // Check if cursor is at the end of indentation (only spaces before cursor on current line)
-                      const isAtIndentEnd = /^\s+$/.test(currentLine) && currentLine.length > 0
-
-                      // Check if we have at least 4 spaces to remove
-                      const hasEnoughSpaces = currentLine.length >= 4 && currentLine.endsWith('    ')
-
-                      if (isAtIndentEnd && hasEnoughSpaces) {
-                        e.preventDefault()
-
-                        // Remove 4 spaces
-                        const newValue = value.substring(0, start - 4) + value.substring(start)
-                        setUserCode(newValue)
-
-                        // Position cursor
-                        setTimeout(() => {
-                          textarea.selectionStart = textarea.selectionEnd = start - 4
-                        }, 0)
-                      }
-                      // If not at indent end or not enough spaces, let default backspace behavior happen
-                    }
-                  }
-
-                  // Handle Enter key for smart auto-indentation
-                  if (e.key === 'Enter') {
-                    e.preventDefault()
-                    const textarea = e.target
-                    const start = textarea.selectionStart
-                    const value = textarea.value
-
-                    // Get the current line
-                    const beforeCursor = value.substring(0, start)
-                    const currentLineStart = beforeCursor.lastIndexOf('\n') + 1
-                    const currentLine = beforeCursor.substring(currentLineStart)
-
-                    // Calculate current indentation
-                    const currentIndent = currentLine.match(/^(\s*)/)[1]
-
-                    // Check if we need to increase indentation
-                    let newIndent = currentIndent
-
-                    // Increase indentation after opening braces or certain keywords
-                    if (currentLine.trim().endsWith('{') ||
-                      currentLine.trim().match(/\b(if|else|for|while|do|switch|case|function|try|catch|finally)\s*\([^)]*\)\s*$/) ||
-                      currentLine.trim().match(/\b(else|try|finally)\s*$/) ||
-                      currentLine.trim().match(/\bcase\s+.+:\s*$/) ||
-                      currentLine.trim().match(/\bdefault\s*:\s*$/)) {
-                      newIndent += '    ' // Add 4 spaces
-                    }
-
-                    // Check if the next character is a closing brace
-                    const afterCursor = value.substring(start)
-                    const nextChar = afterCursor.charAt(0)
-
-                    if (nextChar === '}') {
-                      // If next char is closing brace, add extra line with reduced indent
-                      const reducedIndent = newIndent.length >= 4 ? newIndent.substring(4) : ''
-                      const newValue = value.substring(0, start) + '\n' + newIndent + '\n' + reducedIndent + value.substring(start)
-                      setUserCode(newValue)
-
-                      // Position cursor on the middle line
-                      setTimeout(() => {
-                        textarea.selectionStart = textarea.selectionEnd = start + 1 + newIndent.length
-                      }, 0)
-                    } else {
-                      // Normal case - just add new line with proper indentation
-                      const newValue = value.substring(0, start) + '\n' + newIndent + value.substring(start)
-                      setUserCode(newValue)
-
-                      // Position cursor after the indentation
-                      setTimeout(() => {
-                        textarea.selectionStart = textarea.selectionEnd = start + 1 + newIndent.length
-                      }, 0)
-                    }
-                  }
-                }}
-                placeholder="Practice what you learned in the session - try out the concepts here!"
-                style={{
-                  flex: 1,
-                  border: 'none',
-                  outline: 'none',
-                  resize: 'none',
-                  padding: '16px',
-                  fontSize: '0.875rem',
-                  fontFamily: 'Monaco, Consolas, "SF Mono", "Courier New", monospace',
-                  lineHeight: '1.4',
-                  backgroundColor: 'transparent',
-                  color: '#111827',
-                  overflow: 'auto',
-                  whiteSpace: 'pre',
-                  tabSize: 4
-                }}
-                spellCheck={false}
-              />
-            </div>
-          </div>
-
-          {/* Resizable Splitter */}
-          <div
-            className="playground-splitter"
-            style={{
-              ...(isDesktop ? {
-                width: '8px',
-                height: '100%',
-                cursor: 'col-resize'
-              } : {
-                height: '8px',
-                width: '100%',
-                cursor: 'row-resize'
-              }),
-              backgroundColor: isDragging ? '#e5e7eb' : 'transparent',
-              position: 'relative',
-              flexShrink: 0,
-              transition: isDragging ? 'none' : 'background-color 0.2s ease'
-            }}
-            onMouseDown={handleMouseDown}
-            onTouchStart={handleTouchStart}
-          >
-            <div style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              ...(isDesktop ? {
-                width: '2px',
-                height: '40px'
-              } : {
-                width: '40px',
-                height: '2px'
-              }),
-              backgroundColor: '#9ca3af',
-              borderRadius: '1px',
-              opacity: isDragging ? 1 : 0.5
-            }} />
-          </div>
-
-          {/* Terminal Panel */}
-          <div className="playground-output-panel" style={{
-            ...(isDesktop ? {
-              width: `${100 - editorWidth}%`,
-              height: '100%',
-              minWidth: '200px'
-            } : {
-              height: `${100 - editorHeight}%`,
-              minHeight: '100px'
-            }),
-            display: 'flex',
-            flexDirection: 'column',
-            backgroundColor: '#ffffff',
-            overflow: 'hidden'
-          }}>
-            {/* Terminal Header */}
-            <div className="playground-output-header" style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '12px 16px',
-              backgroundColor: '#f9fafb',
-              borderBottom: '1px solid #e5e7eb',
-              fontSize: '0.8rem',
-              color: '#6b7280',
-              minHeight: '56px'
-            }}>
-              <div style={{
-                padding: '4px 12px',
-                backgroundColor: '#ffffff',
-                borderRadius: '4px 4px 0 0',
-                fontSize: '0.75rem',
-                fontWeight: '500',
-                color: '#111827',
-                border: '1px solid #e5e7eb',
-                borderBottom: '2px solid #10a37f',
-                marginBottom: '-1px'
-              }}>
-                Terminal Output
-              </div>
-            </div>
-
-            {/* Terminal Content */}
-            <div style={{
-              flex: 1,
-              backgroundColor: '#1e1e1e',
-              border: '1px solid #333',
-              borderTop: 'none',
-              display: 'flex',
-              minHeight: 0
-            }}>
-              {/* Terminal Line Numbers */}
-              <div className="terminal-line-numbers" style={{
-                width: '50px',
-                backgroundColor: '#2d2d2d',
-                borderRight: '1px solid #404040',
-                padding: '16px 8px',
-                fontSize: '0.875rem',
-                color: '#6b7280',
-                fontFamily: 'Monaco, Consolas, "SF Mono", "Courier New", monospace',
-                lineHeight: '1.4',
-                textAlign: 'right',
-                userSelect: 'none',
-                overflow: 'hidden',
-                flexShrink: 0,
-                position: 'relative'
-              }}>
-              </div>
-
-              {/* Terminal Output */}
-              <div
-                id="terminal-output"
-                className="playground-output"
-                onScroll={(e) => {
-                  const lineNumbers = e.target.parentElement.querySelector('.terminal-line-numbers')
-                  if (lineNumbers) {
-                    lineNumbers.scrollTop = e.target.scrollTop
-                  }
-                }}
-                style={{
-                  flex: 1,
-                  padding: '16px',
-                  backgroundColor: '#1e1e1e',
-                  color: '#10a37f',
-                  fontFamily: 'Monaco, Consolas, "SF Mono", "Courier New", monospace',
-                  fontSize: '0.875rem',
-                  lineHeight: '1.4',
-                  overflow: 'auto',
-                  minHeight: 0,
-                  height: '100%'
-                }}
-              >
-                <div style={{ color: '#6b7280', fontStyle: 'italic' }}>
-                  Click "Run" to execute your code
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <SessionPlayground
+          code={userCode}
+          onCodeChange={setUserCode}
+          onCopySuccess={() => success('Code copied to clipboard.', 1500)}
+          onRunError={(msg) => showError(msg || 'Code execution failed.', 3000)}
+        />
       )}
 
-      {/* Assignment Phase - Same Structure as Playground */}
+            {/* Assignment Phase - Same Structure as Playground */}
       {phase === 'assignment' && assignments.length > 0 && (
         <div className="playground-main-content" style={{
           flex: 1,
@@ -2024,7 +1526,7 @@ const Learn = () => {
       {assignmentComplete && (
         <div className="completed-container">
           <div className="completed-content">
-            <span className="completed-emoji">🎉</span>
+            <span className="completed-emoji" aria-hidden></span>
             <h2 className="completed-title">All Done!</h2>
             <p className="completed-text">
               You've completed all assignments for {topic.title}

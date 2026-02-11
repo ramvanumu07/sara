@@ -14,7 +14,7 @@ router.get('/chat-history/:topicId', async (req, res) => {
     const { topicId } = req.params
     const userId = 'beeedf0e-c329-4255-b161-edc5d3d375cd' // Your user ID
     
-    console.log(`🔍 Debug: Checking chat history for ${userId}/${topicId}`)
+    console.log(`Debug: Checking chat history for ${userId}/${topicId}`)
     
     const client = getSupabaseClient()
     

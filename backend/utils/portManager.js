@@ -73,14 +73,14 @@ export const killProcessOnPort = async (port) => {
     
     // Kill the process
     execSync(`taskkill /PID ${pid} /F`, { encoding: 'utf8' })
-    console.log(`✅ Killed process ${pid} using port ${port}`)
+    console.log(`Killed process ${pid} using port ${port}`)
     
     // Wait a bit for the port to be freed
     await new Promise(resolve => setTimeout(resolve, 1000))
     
     return true
   } catch (error) {
-    console.warn(`⚠️  Could not kill process on port ${port}:`, error.message)
+    console.warn(`Could not kill process on port ${port}:`, error.message)
     return false
   }
 }
@@ -99,26 +99,26 @@ export const getSafePort = async (preferredPort = 5000, killExisting = false) =>
     return preferredPort
   }
   
-  console.warn(`⚠️  Port ${preferredPort} is in use`)
+  console.warn(`Port ${preferredPort} is in use`)
   
   // Try to kill existing process if requested
   if (killExisting) {
-    console.log(`🔄 Attempting to free port ${preferredPort}...`)
+    console.log(`Attempting to free port ${preferredPort}...`)
     const killed = await killProcessOnPort(preferredPort)
     
     if (killed) {
       const nowAvailable = await isPortAvailable(preferredPort)
       if (nowAvailable) {
-        console.log(`✅ Port ${preferredPort} is now available`)
+        console.log(`Port ${preferredPort} is now available`)
         return preferredPort
       }
     }
   }
   
   // Find alternative port
-  console.log(`🔍 Finding alternative port...`)
+  console.log(`Finding alternative port...`)
   const alternativePort = await findAvailablePort(preferredPort + 1)
-  console.log(`✅ Using port ${alternativePort} instead`)
+  console.log(`Using port ${alternativePort} instead`)
   
   return alternativePort
 }

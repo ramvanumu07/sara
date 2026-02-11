@@ -24,7 +24,7 @@ export function validateEnv() {
 
   if (missing.length > 0) {
     console.error('\n╔════════════════════════════════════════════╗')
-    console.error('║  ❌ MISSING REQUIRED ENVIRONMENT VARIABLES  ║')
+    console.error('║  MISSING REQUIRED ENVIRONMENT VARIABLES  ║')
     console.error('╠════════════════════════════════════════════╣')
     for (const varName of missing) {
       console.error(`║  - ${varName.padEnd(38)}║`)

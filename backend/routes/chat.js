@@ -144,10 +144,10 @@ router.post('/session', authenticateToken, rateLimitMiddleware, async (req, res)
       const consoleLogCount = userMessages.filter(msg => msg.toLowerCase().includes('console.log')).length
 
       if ((messageCount >= 8 && hasConsoleLogUsage) || consoleLogCount >= 3) {
-        console.log(`🔄 Forcing session completion - messageCount: ${messageCount}, consoleLogCount: ${consoleLogCount}`)
+        console.log(`Forcing session completion - messageCount: ${messageCount}, consoleLogCount: ${consoleLogCount}`)
         isSessionComplete = true
         // Add the completion message that frontend will detect
-        cleanedResponse = cleanedResponse + '\n\n🏆 Congratulations! You\'ve mastered console.log! you\'re ready for the playground.'
+        cleanedResponse = cleanedResponse + '\n\nCongratulations! You\'ve mastered console.log! You\'re ready for the playground.'
       }
     }
 
@@ -166,7 +166,7 @@ router.post('/session', authenticateToken, rateLimitMiddleware, async (req, res)
       return res.status(500).json(createErrorResponse('Failed to save conversation'))
     }
 
-    console.log('🔍 Completion Detection Debug:')
+    console.log('Completion Detection Debug:')
     console.log('   - AI Response length:', aiResponse?.length)
     console.log('   - Contains SESSION_COMPLETE_SIGNAL:', aiResponse.includes('SESSION_COMPLETE_SIGNAL'))
     console.log('   - Is Complete:', isSessionComplete)
@@ -181,16 +181,16 @@ router.post('/session', authenticateToken, rateLimitMiddleware, async (req, res)
           status: 'in_progress', // Topic still in progress until assignments done
           updated_at: new Date().toISOString()
         })
-        console.log(`🎉 Session completed! User moved to assignment phase for topic: ${topicId}`)
+        console.log(`Session completed! User moved to assignment phase for topic: ${topicId}`)
       }
       // If session not complete, progress is already tracked from session start
     } catch (progressError) {
-      console.error('❌ Failed to update progress:', progressError)
-      console.error('❌ Progress error details:', progressError.message)
+      console.error('Failed to update progress:', progressError)
+      console.error('Progress error details:', progressError.message)
       // Don't fail the request if progress update fails
     }
 
-    console.log(`✅ Session chat: User ${userId}, Topic ${topicId}, Topic: "${topic.title}"`)
+    console.log(`Session chat: User ${userId}, Topic ${topicId}, Topic: "${topic.title}"`)
 
     // Get updated conversation history
     const updatedConversation = await getChatHistoryString(userId, topicId)
@@ -264,7 +264,7 @@ router.post('/assignment/hint', authenticateToken, rateLimitMiddleware, async (r
     // Update chat phase to assignment
     await updateChatPhase(userId, topicId, 'assignment')
 
-    console.log(`✅ Assignment hint: User ${userId}, Topic ${topicId}`)
+    console.log(`Assignment hint: User ${userId}, Topic ${topicId}`)
 
     res.json(createSuccessResponse({
       hint: aiResponse,
@@ -326,7 +326,7 @@ Provide detailed feedback on their code:`
     // Get AI response (assignment review only — no phase change)
     const aiResponse = await callAI(messages, 1200, 0.4, 'llama-3.3-70b-versatile')
 
-    console.log(`✅ Code feedback: User ${userId}, Topic ${topicId}`)
+    console.log(`Code feedback: User ${userId}, Topic ${topicId}`)
 
     res.json(createSuccessResponse({
       feedback: aiResponse,
@@ -403,7 +403,7 @@ router.get('/history/:topicId', authenticateToken, async (req, res) => {
     }))
   } catch (error) {
     const duration = Date.now() - startTime
-    console.error(`❌ Chat history retrieval failed after ${duration}ms:`, error.message)
+    console.error(`Chat history retrieval failed after ${duration}ms:`, error.message)
     handleErrorResponse(res, error, 'get chat history')
   }
 })
@@ -434,7 +434,7 @@ router.delete('/history/:topicId', authenticateToken, async (req, res) => {
 
     await clearChatHistory(userId, topicId)
 
-    console.log(`🗑️ Chat history cleared: User ${userId}, Topic ${topicId}`)
+    console.log(`Chat history cleared: User ${userId}, Topic ${topicId}`)
 
     res.json(createSuccessResponse({
       message: 'Chat history cleared successfully',
@@ -463,7 +463,7 @@ router.post('/complete/:topicId', authenticateToken, async (req, res) => {
     const { topicId } = req.params
     const userId = req.user.userId
 
-    console.log(`🎯 Manual completion triggered for user ${userId}, topic ${topicId}`)
+    console.log(`Manual completion triggered for user ${userId}, topic ${topicId}`)
 
     // Update progress: session complete → assignment phase (2-phase model)
     await upsertProgress(userId, topicId, {
@@ -473,7 +473,7 @@ router.post('/complete/:topicId', authenticateToken, async (req, res) => {
     })
 
     // Add completion message to chat history
-    const completionMessage = `🏆 Congratulations! You've Mastered ${topicId}!\n\nYou have successfully completed all learning objectives. Ready for the next phase!`
+    const completionMessage = `Congratulations! You've Mastered ${topicId}!\n\nYou have successfully completed all learning objectives. Ready for the next phase!`
 
     await saveChatTurn(userId, topicId, 'MANUAL_COMPLETION', completionMessage)
 
@@ -484,7 +484,7 @@ router.post('/complete/:topicId', authenticateToken, async (req, res) => {
     }))
 
   } catch (error) {
-    console.error('❌ Manual completion error:', error)
+    console.error('Manual completion error:', error)
     handleErrorResponse(res, error, 'complete session')
   }
 })

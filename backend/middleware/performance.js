@@ -23,9 +23,9 @@ export const performanceMonitor = (req, res, next) => {
     if (duration > 1000) {
       console.warn(`[${logTimestamp}] 🐌 SLOW REQUEST: ${req.method} ${req.path} - ${duration.toFixed(2)}ms`)
     } else if (duration > 500) {
-      console.log(`[${logTimestamp}] ⚠️  ${req.method} ${req.path} - ${duration.toFixed(2)}ms`)
+      console.log(`[${logTimestamp}] ${req.method} ${req.path} - ${duration.toFixed(2)}ms`)
     } else {
-      console.log(`[${logTimestamp}] ✅ ${req.method} ${req.path} - ${duration.toFixed(2)}ms`)
+      console.log(`[${logTimestamp}] ${req.method} ${req.path} - ${duration.toFixed(2)}ms`)
     }
     
     // Add performance headers
@@ -45,7 +45,7 @@ export const withPerformanceLogging = async (operation, operationName) => {
   const timestamp = new Date().toISOString()
   
   try {
-    console.log(`[${timestamp}] 🔍 DB Operation: ${operationName} - Started`)
+    console.log(`[${timestamp}] DB Operation: ${operationName} - Started`)
     
     const result = await operation()
     
@@ -59,7 +59,7 @@ export const withPerformanceLogging = async (operation, operationName) => {
     } else if (duration > 500) {
       console.warn(`[${logTimestamp}] 🐌 DB SLOW: ${operationName} - ${duration.toFixed(2)}ms`)
     } else {
-      console.log(`[${logTimestamp}] ✅ DB: ${operationName} - ${duration.toFixed(2)}ms`)
+      console.log(`[${logTimestamp}] DB: ${operationName} - ${duration.toFixed(2)}ms`)
     }
     
     return result
@@ -69,7 +69,7 @@ export const withPerformanceLogging = async (operation, operationName) => {
     const duration = Number(endTime - startTime) / 1000000
     const logTimestamp = new Date().toISOString()
     
-    console.error(`[${logTimestamp}] ❌ DB ERROR: ${operationName} - ${duration.toFixed(2)}ms - ${error.message}`)
+    console.error(`[${logTimestamp}] DB ERROR: ${operationName} - ${duration.toFixed(2)}ms - ${error.message}`)
     throw error
   }
 }
