@@ -868,22 +868,30 @@ const Learn = () => {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            {phase === 'session' && sessionComplete && (
+            {phase === 'session' && (
               <button
                 type="button"
-                onClick={() => { info('Loading assignments...', 1500); navigate(`/learn/${topicId}?phase=assignment`) }}
+                disabled={!sessionComplete}
+                onClick={() => { info('Loading code tasks...', 1500); navigate(`/learn/${topicId}?phase=assignment`) }}
                 style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
                   padding: '8px 16px',
-                  backgroundColor: '#10a37f',
-                  color: 'white',
+                  backgroundColor: sessionComplete ? '#10a37f' : '#d1d5db',
+                  color: sessionComplete ? 'white' : '#9ca3af',
                   border: 'none',
                   borderRadius: '8px',
-                  cursor: 'pointer',
+                  cursor: sessionComplete ? 'pointer' : 'not-allowed',
                   fontSize: '0.9rem'
                 }}
-                title="Go to Assignments"
+                title={sessionComplete ? 'Go to code tasks' : 'Complete the session to unlock code tasks'}
               >
-                Assignments
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="16,18 22,12 16,6" />
+                  <polyline points="8,6 2,12 8,18" />
+                </svg>
+                Code
               </button>
             )}
             {phase === 'assignment' && (
@@ -967,8 +975,8 @@ const Learn = () => {
         <SessionPlayground
           code={userCode}
           onCodeChange={setUserCode}
-          onCopySuccess={() => success('Code copied to clipboard.', 1500)}
-          onRunError={(msg) => showError(msg || 'Code execution failed.', 3000)}
+          onCopySuccess={() => {}}
+          onRunError={() => {}}
         />
       )}
 

@@ -32,7 +32,7 @@ class CodeExecutor {
 
   executeScript(code, testCases) {
     const results = [];
-    
+
     // Handle playground execution (no test cases)
     if (!testCases || testCases.length === 0) {
       try {
@@ -59,7 +59,7 @@ class CodeExecutor {
         try {
           const result = this.runScriptWithInputs(code, testCase.input);
           const passed = this.compareOutput(result, testCase.expectedOutput);
-          
+
           results.push({
             passed,
             output: result,
@@ -86,7 +86,7 @@ class CodeExecutor {
 
   executeFunction(code, testCases, functionName) {
     const results = [];
-    
+
     // First, execute the code to define functions
     try {
       this.executeCodeSafely(code);
@@ -113,7 +113,7 @@ class CodeExecutor {
         const args = Object.values(testCase.input);
         const result = self[functionName](...args);
         const passed = this.compareOutput(result.toString(), testCase.expectedOutput);
-        
+
         results.push({
           passed,
           result: result,
@@ -142,13 +142,13 @@ class CodeExecutor {
     const inputCode = Object.entries(inputs || {})
       .map(([key, value]) => `const ${key} = ${JSON.stringify(value)};`)
       .join('\n');
-    
+
     const fullCode = inputCode + (inputCode ? '\n' : '') + code;
-    
+
     // Capture console output with enhanced logging
     const outputs = [];
     const originalConsole = self.console;
-    
+
     self.console = {
       log: (...args) => {
         if (outputs.length < this.maxOutputLines) {
@@ -186,19 +186,19 @@ class CodeExecutor {
 
     try {
       this.executeCodeSafely(fullCode);
-      
+
       // If no console output, check if there's a return value or expression result
       if (outputs.length === 0) {
         // Try to evaluate as expression if it's a simple statement
         try {
           const trimmedCode = code.trim();
-          if (!trimmedCode.includes('console.log') && 
-              !trimmedCode.includes('function') && 
-              !trimmedCode.includes('var ') && 
-              !trimmedCode.includes('let ') && 
-              !trimmedCode.includes('const ') &&
-              !trimmedCode.includes('{') &&
-              !trimmedCode.includes(';')) {
+          if (!trimmedCode.includes('console.log') &&
+            !trimmedCode.includes('function') &&
+            !trimmedCode.includes('var ') &&
+            !trimmedCode.includes('let ') &&
+            !trimmedCode.includes('const ') &&
+            !trimmedCode.includes('{') &&
+            !trimmedCode.includes(';')) {
             // Might be a simple expression
             const result = new Function(`return (${trimmedCode})`)();
             if (result !== undefined) {
@@ -209,7 +209,7 @@ class CodeExecutor {
           // Not an expression, that's fine
         }
       }
-      
+
       return outputs.length > 0 ? outputs.join('\n') : '';
     } finally {
       self.console = originalConsole;
@@ -219,7 +219,7 @@ class CodeExecutor {
   executeCodeSafely(code) {
     // Add protection against infinite loops and resource abuse
     const protectedCode = this.addProtections(code);
-    
+
     // Execute with timeout
     const startTime = Date.now();
     const timeoutId = setTimeout(() => {
@@ -302,13 +302,13 @@ class CodeExecutor {
 }
 
 // Web Worker message handler
-self.onmessage = function(event) {
+self.onmessage = function (event) {
   const { code, testCases, functionName, solutionType, taskId } = event.data;
-  
+
   try {
     const executor = new CodeExecutor();
     const result = executor.execute(code, testCases, functionName, solutionType);
-    
+
     self.postMessage({
       taskId,
       ...result
@@ -324,7 +324,7 @@ self.onmessage = function(event) {
 };
 
 // Handle uncaught errors
-self.onerror = function(error) {
+self.onerror = function (error) {
   self.postMessage({
     success: false,
     error: `Runtime error: ${error.message}`,

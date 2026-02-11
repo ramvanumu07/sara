@@ -22,6 +22,7 @@ export default function SessionPlayground({
   const [editorWidth, setEditorWidth] = useState(60)
   const [isDesktop, setIsDesktop] = useState(typeof window !== 'undefined' && window.innerWidth >= 768)
   const [isDragging, setIsDragging] = useState(false)
+  const [copyButtonLabel, setCopyButtonLabel] = useState('Copy')
 
   useEffect(() => {
     const handleResize = () => setIsDesktop(window.innerWidth >= 768)
@@ -29,10 +30,29 @@ export default function SessionPlayground({
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
+  // Reset "Copied!" back to "Copy" when code changes
+  useEffect(() => {
+    setCopyButtonLabel('Copy')
+  }, [code])
+
   const runPlayground = async () => {
     const outputDiv = terminalOutputRef.current
     if (!outputDiv || !code?.trim()) return
     try {
+      // Pre-run syntax check: show syntax errors in terminal (engine would throw same error)
+      try {
+        new Function(code)
+      } catch (parseErr) {
+        if (parseErr instanceof SyntaxError) {
+          const lineNumDiv = outputDiv.parentElement?.querySelector('.terminal-line-numbers')
+          if (lineNumDiv) lineNumDiv.innerHTML = '<div style="line-height: 1.4; color: #6b7280; text-align: right; padding-right: 8px; font-size: 0.875rem;">1</div>'
+          outputDiv.innerHTML = `<div style="font-family: Monaco, Consolas, monospace; line-height: 1.4;"><div style="color: #ef4444; white-space: pre; padding-left: 2px; font-size: 0.875rem;">Syntax error: ${escapeHtml(parseErr.message)}</div></div>`
+          if (onRunError) onRunError(parseErr.message)
+          return
+        }
+        throw parseErr
+      }
+
       outputDiv.innerHTML = '<div style="color: #10a37f; font-family: Monaco, Consolas, monospace; padding: 8px;">Executing code securely...</div>'
       const lineNumDiv = outputDiv.parentElement?.querySelector('.terminal-line-numbers')
       if (lineNumDiv) lineNumDiv.innerHTML = ''
@@ -82,6 +102,7 @@ export default function SessionPlayground({
     if (!code?.trim()) return
     try {
       await navigator.clipboard.writeText(code)
+      setCopyButtonLabel('Copied!')
       if (onCopySuccess) onCopySuccess()
     } catch (e) {
       if (onRunError) onRunError('Copy failed.')
@@ -243,10 +264,10 @@ export default function SessionPlayground({
       const currentIndent = (currentLine.match(/^(\s*)/) || ['', ''])[1]
       let newIndent = currentIndent
       if (currentLine.trim().endsWith('{') ||
-          /\b(if|else|for|while|do|switch|case|function|try|catch|finally)\s*\([^)]*\)\s*$/.test(currentLine.trim()) ||
-          /\b(else|try|finally)\s*$/.test(currentLine.trim()) ||
-          /\bcase\s+.+:\s*$/.test(currentLine.trim()) ||
-          /\bdefault\s*:\s*$/.test(currentLine.trim())) {
+        /\b(if|else|for|while|do|switch|case|function|try|catch|finally)\s*\([^)]*\)\s*$/.test(currentLine.trim()) ||
+        /\b(else|try|finally)\s*$/.test(currentLine.trim()) ||
+        /\bcase\s+.+:\s*$/.test(currentLine.trim()) ||
+        /\bdefault\s*:\s*$/.test(currentLine.trim())) {
         newIndent += '    '
       }
       const afterCursor = value.substring(start)
@@ -332,21 +353,22 @@ export default function SessionPlayground({
               onClick={copyCode}
               className="playground-copy-btn"
               disabled={!code?.trim()}
-              title="Copy code to clipboard"
+              title={copyButtonLabel === 'Copied!' ? 'Copied!' : 'Copy code to clipboard'}
               style={{
-                backgroundColor: code?.trim() ? '#3b82f6' : '#d1d5db',
-                color: code?.trim() ? 'white' : '#9ca3af',
-                border: 'none',
+                backgroundColor: copyButtonLabel === 'Copied!' ? '#ecfdf5' : (code?.trim() ? '#f0fdf4' : '#f3f4f6'),
+                color: copyButtonLabel === 'Copied!' ? '#059669' : (code?.trim() ? '#047857' : '#9ca3af'),
+                border: copyButtonLabel === 'Copied!' ? '1px solid #a7f3d0' : (code?.trim() ? '1px solid #86efac' : '1px solid #e5e7eb'),
                 borderRadius: '6px',
                 padding: '6px 12px',
                 fontSize: '0.75rem',
-                fontWeight: '500',
+                fontWeight: '600',
                 cursor: code?.trim() ? 'pointer' : 'not-allowed',
-                minWidth: '60px',
-                height: '28px'
+                minWidth: '72px',
+                height: '28px',
+                transition: 'background-color 0.2s, color 0.2s, border-color 0.2s'
               }}
             >
-              Copy
+              {copyButtonLabel}
             </button>
           </div>
         </div>
@@ -498,7 +520,7 @@ export default function SessionPlayground({
               height: '100%'
             }}
           >
-            <div style={{ color: '#6b7280', fontStyle: 'italic' }}>Click "Run" to execute your code</div>
+            <div style={{ color: '#6b7280', fontStyle: 'italic' }}>Click "Run" to execute your code. Syntax errors will appear here when you run invalid code.</div>
           </div>
         </div>
       </div>
