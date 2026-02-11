@@ -671,7 +671,6 @@ const Dashboard = () => {
                             <line x1="16" y1="17" x2="8" y2="17" />
                             <polyline points="10,9 9,9 8,9" />
                           </svg>
-                          <span>Session</span>
                         </button>
                         <button
                           type="button"
@@ -684,7 +683,6 @@ const Dashboard = () => {
                             <polyline points="9,11 12,14 22,4" />
                             <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
                           </svg>
-                          <span>Assignments</span>
                         </button>
                       </div>
                     </li>
