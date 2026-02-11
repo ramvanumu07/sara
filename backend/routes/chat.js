@@ -12,7 +12,7 @@ import { getSupabaseClient } from '../services/database.js'
 import { courses } from '../../data/curriculum.js'
 import { formatLearningObjectives, findTopicById } from '../utils/curriculum.js'
 import { getTopicOrRespond } from '../utils/topicHelper.js'
-import { getCompletedTopics, upsertProgress } from '../services/database.js'
+import { getCompletedTopics, getProgress, upsertProgress } from '../services/database.js'
 import progressManager from '../services/progressManager.js'
 import { handleErrorResponse, createSuccessResponse, createErrorResponse } from '../utils/responses.js'
 import { rateLimitMiddleware } from '../middleware/rateLimiting.js'
@@ -100,6 +100,16 @@ router.post('/session', authenticateToken, rateLimitMiddleware, async (req, res)
     // Validate topic exists
     const topic = getTopicOrRespond(res, courses, topicId, createErrorResponse)
     if (!topic) return
+
+    // Ensure progress row exists for this topic (e.g. user opened via Next without submitting)
+    let progress = await getProgress(userId, topicId)
+    if (!progress) {
+      await upsertProgress(userId, topicId, {
+        phase: 'session',
+        status: 'in_progress',
+        updated_at: new Date().toISOString()
+      })
+    }
 
     // Get conversation history and completed topics in parallel
     const [conversationHistory, completedTopics] = await Promise.all([

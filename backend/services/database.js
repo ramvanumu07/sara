@@ -363,7 +363,6 @@ export async function upsertProgress(userId, topicId, updates) {
         topic_id: topicId,
         ...existingProgress,
         ...updates,
-        last_accessed: new Date().toISOString(),
         updated_at: new Date().toISOString()
       }
       DEV_PROGRESS.set(progressKey, newProgress)
@@ -376,15 +375,24 @@ export async function upsertProgress(userId, topicId, updates) {
       return newProgress
     }
 
+    // Only send columns that exist on progress table (after migration 001: no last_accessed, etc.)
+    const allowed = ['phase', 'status', 'current_task', 'total_tasks', 'assignments_completed', 'updated_at', 'topic_id']
+    const safeUpdates = {}
+    for (const key of allowed) {
+      if (Object.prototype.hasOwnProperty.call(updates, key) && updates[key] !== undefined) {
+        safeUpdates[key] = updates[key]
+      }
+    }
+    const payload = {
+      user_id: userId,
+      topic_id: topicId,
+      ...safeUpdates,
+      updated_at: new Date().toISOString()
+    }
+
     const { data, error } = await client
       .from('progress')
-      .upsert({
-        user_id: userId,
-        topic_id: topicId,
-        ...updates,
-        last_accessed: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      }, { onConflict: 'user_id,topic_id' })
+      .upsert(payload, { onConflict: 'user_id,topic_id' })
       .select()
       .single()
 
@@ -400,6 +408,20 @@ export async function upsertProgress(userId, topicId, updates) {
 
 export async function getAllProgress(userId) {
   const client = initializeDatabase()
+
+  // Development mode: read from in-memory map (so /continue and /progress work without Supabase)
+  if (client === 'DEV_MODE') {
+    const list = []
+    for (const [, p] of DEV_PROGRESS.entries()) {
+      if (p && String(p.user_id) === String(userId)) {
+        list.push(p)
+      }
+    }
+    list.sort((a, b) => new Date(b.updated_at || 0) - new Date(a.updated_at || 0))
+    console.log(`[DEV] getAllProgress: ${list.length} records for user ${userId}`)
+    return list
+  }
+
   const { data, error } = await client
     .from('progress')
     .select('*')

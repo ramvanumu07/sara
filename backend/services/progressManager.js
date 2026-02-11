@@ -37,16 +37,11 @@ export async function initializeTopicProgress(userId, topicId) {
   }
 
   const progressData = {
-    status: PROGRESS_STATES.IN_PROGRESS,
     phase: PHASES.SESSION,
     status: 'in_progress',
-    session_completed: false,
-    playtime_completed: false,
-    assignment_completed: false,
-    current_assignment: 0,
-    total_assignments: topic.tasks?.length || 0,
+    current_task: 1,
+    total_tasks: topic.tasks?.length || 0,
     assignments_completed: 0,
-    started_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
   }
 
@@ -69,15 +64,8 @@ export async function completeSessionPhase(userId, topicId) {
     
     const progressUpdate = {
       phase: PHASES.ASSIGNMENT,  // 2-phase model: (session<->play) done → assignment
-      status: 'in_progress',     // Keep as in_progress until topic fully complete
+      status: 'in_progress',
       updated_at: new Date().toISOString()
-    }
-
-    // Try to add session_completed flag if the column exists
-    try {
-      progressUpdate.session_completed = true
-    } catch (columnError) {
-      console.warn('session_completed column may not exist, using phase tracking instead')
     }
 
     await upsertProgress(userId, topicId, progressUpdate)
@@ -120,16 +108,9 @@ export async function completePlaytimePhase(userId, topicId) {
     console.log(`Current progress before playtime completion:`, currentProgress)
     
     const progressUpdate = {
-      phase: PHASES.ASSIGNMENT,  // Set phase to assignment since that's next
-      status: 'in_progress',     // Keep as in_progress until all assignments done
+      phase: PHASES.ASSIGNMENT,
+      status: 'in_progress',
       updated_at: new Date().toISOString()
-    }
-
-    // Try to add playtime_completed flag if the column exists
-    try {
-      progressUpdate.playtime_completed = true
-    } catch (columnError) {
-      console.warn('playtime_completed column may not exist, using phase tracking instead')
     }
 
     await upsertProgress(userId, topicId, progressUpdate)
@@ -153,10 +134,9 @@ export async function startAssignmentPhase(userId, topicId) {
   
   const progressUpdate = {
     phase: PHASES.ASSIGNMENT,
-    total_assignments: totalAssignments,
-    current_assignment: 0,
+    total_tasks: totalAssignments,
+    current_task: 1,
     updated_at: new Date().toISOString()
-    // Keep status as 'in_progress'
   }
 
   await upsertProgress(userId, topicId, progressUpdate)
@@ -177,22 +157,19 @@ export async function completeAssignment(userId, topicId, assignmentIndex) {
   }
 
   const completedAssignments = (currentProgress.assignments_completed || 0) + 1
-  const totalAssignments = currentProgress.total_assignments || 0
-  const isTopicComplete = completedAssignments >= totalAssignments
+  const totalAssignments = currentProgress.total_tasks || 0
+  const isTopicComplete = totalAssignments > 0 && completedAssignments >= totalAssignments
 
   const progressUpdate = {
     phase: PHASES.ASSIGNMENT,
-    current_assignment: Math.min(assignmentIndex + 1, totalAssignments - 1),
+    current_task: Math.min(assignmentIndex + 1, Math.max(0, totalAssignments - 1)),
     assignments_completed: completedAssignments,
     updated_at: new Date().toISOString()
   }
 
-  // CRITICAL: Only mark as fully completed when ALL assignments are done
   if (isTopicComplete) {
     progressUpdate.status = PROGRESS_STATES.COMPLETED
     progressUpdate.status = 'completed'
-    progressUpdate.assignment_completed = true
-    progressUpdate.completed_at = new Date().toISOString()
     
     console.log(`TOPIC FULLY COMPLETED: ${topicId} for user ${userId}`)
     console.log(`   - Completed ${completedAssignments}/${totalAssignments} assignments`)
@@ -253,7 +230,7 @@ export async function resetUserProgress(userId) {
   const supabase = getSupabaseClient()
 
   // Delete from all possible tables
-  const tables = ['progress', 'chat_sessions', 'chat_history']
+  const tables = ['progress', 'chat_sessions']
   
   for (const table of tables) {
     try {
@@ -294,16 +271,14 @@ export async function canAccessPhase(userId, topicId, targetPhase) {
     return targetPhase === PHASES.SESSION
   }
 
+  const { phase, status } = progress
   switch (targetPhase) {
     case PHASES.SESSION:
-      return true // Always can access session
-      
+      return true
     case PHASES.PLAYTIME:
-      return progress.session_completed === true
-      
+      return phase === PHASES.PLAYTIME || (phase === PHASES.SESSION && status === 'completed')
     case PHASES.ASSIGNMENT:
-      return progress.playtime_completed === true
-      
+      return phase === PHASES.ASSIGNMENT || (phase === PHASES.SESSION && status === 'completed') || (phase === PHASES.PLAYTIME && status === 'completed')
     default:
       return false
   }
@@ -320,14 +295,14 @@ export async function getNextPhase(userId, topicId) {
   }
 
   if (progress.status === 'completed') {
-    return null // Topic is complete
+    return null
   }
 
-  if (!progress.session_completed) {
+  if (progress.phase === PHASES.SESSION && progress.status !== 'completed') {
     return PHASES.SESSION
   }
 
-  if (!progress.playtime_completed) {
+  if (progress.phase === PHASES.PLAYTIME && progress.status !== 'completed') {
     return PHASES.PLAYTIME
   }
 

@@ -21,8 +21,12 @@ import {
   createUserSession,
   getUserSession,
   updateSessionLastAccessed,
-  deleteUserSession
+  deleteUserSession,
+  upsertProgress,
+  getAllProgress
 } from '../services/database.js'
+import { getAllTopics } from '../utils/curriculum.js'
+import { courses } from '../../data/curriculum.js'
 import { handleErrorResponse, createSuccessResponse, createErrorResponse } from '../utils/responses.js'
 import { rateLimitMiddleware } from '../middleware/rateLimiting.js'
 
@@ -548,6 +552,25 @@ router.post('/signup', rateLimitMiddleware, async (req, res) => {
     // Create user
     const user = await createUser(username, email, name.trim(), hashedPassword, securityQuestion, hashedSecurityAnswer)
 
+    // Create first-topic progress row so new user has progress as soon as they exist (dashboard/continue work immediately)
+    try {
+      const firstTopic = getAllTopics(courses)[0]
+      if (firstTopic) {
+        const totalTasks = (firstTopic.tasks || []).length
+        await upsertProgress(user.id, firstTopic.id, {
+          phase: 'session',
+          status: 'in_progress',
+          current_task: totalTasks > 0 ? 1 : 0,
+          total_tasks: totalTasks,
+          assignments_completed: 0,
+          updated_at: new Date().toISOString()
+        })
+        console.log(`Created first-topic progress for new user ${user.id}, topic ${firstTopic.id}`)
+      }
+    } catch (progressErr) {
+      console.error('Signup: could not create initial progress (non-fatal):', progressErr.message)
+    }
+
     // Generate token and create session
     const token = await generateToken(user)
 
@@ -630,6 +653,28 @@ router.post('/login', rateLimitMiddleware, async (req, res) => {
 
     // Update last login
     await updateLastLogin(user.id)
+
+    // Ensure at least one progress row exists (covers existing users who never had progress, or any missed creation)
+    try {
+      const existingProgress = await getAllProgress(user.id)
+      if (existingProgress.length === 0) {
+        const firstTopic = getAllTopics(courses)[0]
+        if (firstTopic) {
+          const totalTasks = (firstTopic.tasks || []).length
+          await upsertProgress(user.id, firstTopic.id, {
+            phase: 'session',
+            status: 'in_progress',
+            current_task: totalTasks > 0 ? 1 : 0,
+            total_tasks: totalTasks,
+            assignments_completed: 0,
+            updated_at: new Date().toISOString()
+          })
+          console.log(`Login: created first-topic progress for user ${user.id}, topic ${firstTopic.id}`)
+        }
+      }
+    } catch (progressErr) {
+      console.error('Login: could not ensure initial progress (non-fatal):', progressErr.message)
+    }
 
     console.log(`User logged in: ${user.username}`)
     console.log(`🔐 Backend - User data from DB:`, {

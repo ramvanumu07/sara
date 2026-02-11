@@ -20,9 +20,7 @@ router.get('/', authenticateToken, async (req, res) => {
       formatted[key] = {
         status: p.status,
         phase: p.phase || 'session',
-        tasksCompleted: p.current_task || 0,
-        startedAt: p.started_at,
-        completedAt: p.completed_at
+        tasksCompleted: p.assignments_completed ?? 0
       }
     }
 
@@ -45,8 +43,6 @@ router.post('/update', authenticateToken, async (req, res) => {
       totalAssignments,
       completedAssignments,
       topicCompleted,
-      completedAt,
-      accessedAt,
       updatedAt
     } = req.body
 
@@ -61,14 +57,11 @@ router.post('/update', authenticateToken, async (req, res) => {
       updated_at: updatedAt || new Date().toISOString()
     }
 
-    // Add optional fields if provided
-    if (nextPhase) progressData.next_phase = nextPhase
-    if (currentAssignment !== undefined) progressData.current_assignment = currentAssignment
-    if (totalAssignments !== undefined) progressData.total_assignments = totalAssignments
+    // Add optional fields if provided (match progress table: current_task, total_tasks; no topic_completed column)
+    if (nextPhase) progressData.phase = nextPhase
+    if (currentAssignment !== undefined) progressData.current_task = currentAssignment
+    if (totalAssignments !== undefined) progressData.total_tasks = totalAssignments
     if (completedAssignments !== undefined) progressData.assignments_completed = completedAssignments
-    if (topicCompleted !== undefined) progressData.topic_completed = topicCompleted
-    if (completedAt) progressData.completed_at = completedAt
-    if (accessedAt) progressData.accessed_at = accessedAt
 
     // Update progress in database
     await upsertProgress(userId, topicId, progressData)

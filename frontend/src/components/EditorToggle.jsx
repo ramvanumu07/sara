@@ -20,20 +20,23 @@ const PILL_RADIUS = PILL_HEIGHT / 2
 /**
  * Fixed-position toggle: pill shape attached to right edge.
  * Book = editor on (back to chat), Keyboard = editor off (open editor).
+ * When disabled (session not complete), opening code is blocked; closing back to chat is still allowed.
  */
-const EditorToggle = ({ isOn, onToggle }) => {
+const EditorToggle = ({ isOn, onToggle, disabled = false }) => {
   const handleClick = () => {
     const next = !isOn
+    if (disabled && !isOn) return
     setEditorToggleInStorage(next)
     onToggle(next)
   }
 
+  const canOpen = !disabled || isOn
   return (
     <button
       type="button"
       onClick={handleClick}
-      aria-label={isOn ? 'Back to chat' : 'Open code editor'}
-      title={isOn ? 'Back to chat' : 'Open code editor'}
+      aria-label={isOn ? 'Back to chat' : canOpen ? 'Open code editor' : 'Complete the session to unlock code editor'}
+      title={isOn ? 'Back to chat' : canOpen ? 'Open code editor' : 'Complete the session to unlock code editor'}
       style={{
         position: 'fixed',
         right: 0,
@@ -43,11 +46,11 @@ const EditorToggle = ({ isOn, onToggle }) => {
         width: PILL_WIDTH,
         height: PILL_HEIGHT,
         padding: 0,
-        backgroundColor: '#374151',
+        backgroundColor: disabled && !isOn ? '#9ca3af' : '#374151',
         color: 'white',
         border: 'none',
         borderRadius: `${PILL_RADIUS}px 0 0 ${PILL_RADIUS}px`,
-        cursor: 'pointer',
+        cursor: disabled && !isOn ? 'not-allowed' : 'pointer',
         boxShadow: '-2px 0 8px rgba(0,0,0,0.15)',
         display: 'flex',
         alignItems: 'center',

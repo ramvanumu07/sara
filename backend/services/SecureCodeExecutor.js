@@ -156,15 +156,22 @@ class SecureCodeExecutor {
 
   /**
    * Run script with input variables
+   * Comment out user declarations of input variables (e.g. const length = 8) so test-injected
+   * values are used and we avoid "Identifier has already been declared".
    */
   async runScriptWithInputs(code, inputs) {
     const context = this.createSecureContext();
-    
+
+    const inputKeys = Object.keys(inputs || {});
+    const codeToRun = inputKeys.length > 0
+      ? this.stripInputVariableDeclarations(code, inputKeys)
+      : code;
+
     // Inject input variables
-    Object.entries(inputs).forEach(([key, value]) => {
+    Object.entries(inputs || {}).forEach(([key, value]) => {
       context[key] = value;
     });
-    
+
     // Capture console output
     const outputs = [];
     context.console = {
@@ -174,9 +181,24 @@ class SecureCodeExecutor {
         }
       }
     };
-    
-    await this.executeInContext(code, context);
+
+    await this.executeInContext(codeToRun, context);
     return outputs.join('\n');
+  }
+
+  /**
+   * Comment out lines that declare a variable with the same name as an injected input
+   * (e.g. "const length = 8;" or "let width = 5") so test inputs can override without redeclaration.
+   */
+  stripInputVariableDeclarations(code, inputKeys) {
+    if (!inputKeys || inputKeys.length === 0) return code;
+    const escaped = inputKeys.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    const names = escaped.join('|');
+    const re = new RegExp(
+      `^(\\s*)(const|let|var)\\s+(${names})\\s*=.*;?\\s*$`,
+      'gm'
+    );
+    return code.replace(re, '$1// [test input] $2 $3 = ... ;');
   }
 
   /**

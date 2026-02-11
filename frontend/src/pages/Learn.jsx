@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { learning, chat } from '../config/api'
-import { ToastContainer } from '../components/Toast'
-import { useToast } from '../hooks/useToast'
 import EditorToggle from '../components/EditorToggle'
 import SessionPlayground from '../components/SessionPlayground'
 import CodeExecutor from '../services/CodeExecutor'
@@ -107,13 +105,14 @@ const MessageContent = ({ content, role }) => {
 
 const Learn = () => {
   const { topicId } = useParams()
+  const topicIdRef = useRef(topicId)
+  topicIdRef.current = topicId
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   // Playtime removed: practice is inline in session via toggle; playtime URL treated as session
   const phaseParam = searchParams.get('phase') || 'session'
   const phase = phaseParam === 'playtime' ? 'session' : phaseParam
-  const { toasts, warning, error: showError, success, info } = useToast()
-
+  const startFromFirst = searchParams.get('start') === '1'
   const [topic, setTopic] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -142,8 +141,14 @@ const Learn = () => {
   const [currentAssignment, setCurrentAssignment] = useState(0)
   const [assignmentCode, setAssignmentCode] = useState('')
   const [assignmentOutput, setAssignmentOutput] = useState('')
+  const [assignmentTestResults, setAssignmentTestResults] = useState(null) // [{ passed, expected, actual, error, input }]
+  const assignmentTestResultsRef = useRef(null) // persist so test block stays visible when AI review is shown
   const [assignmentReview, setAssignmentReview] = useState('')
   const [assignmentComplete, setAssignmentComplete] = useState(false)
+  const [assignmentsCompletedCount, setAssignmentsCompletedCount] = useState(0)
+  const [showIncompleteModal, setShowIncompleteModal] = useState(false)
+  const [incompleteModalMessage, setIncompleteModalMessage] = useState('')
+  const [submitLoading, setSubmitLoading] = useState(false)
 
   // Feedback phase states
 
@@ -168,12 +173,16 @@ const Learn = () => {
 
   // Load topic and initialize based on phase
   useEffect(() => {
+    const requestedTopicId = topicId
     const loadTopic = async () => {
       try {
         setLoading(true)
         setError(null)
 
-        const topicResponse = await learning.getTopic(topicId)
+        const topicResponse = await learning.getTopic(requestedTopicId)
+
+        // Ignore response if user navigated to a different topic (avoid stale UI / wrong topic)
+        if (topicIdRef.current !== requestedTopicId) return
 
         // Validate response structure
         if (!topicResponse.data?.success || !topicResponse.data?.data?.topic) {
@@ -183,17 +192,18 @@ const Learn = () => {
         const topicData = topicResponse.data.data.topic
         setTopic(topicData)
 
-        // Session complete if progress is playtime (legacy) or assignment
         const progressPhase = topicData?.phase || phase
         if (progressPhase === 'playtime' || progressPhase === 'assignment') {
           setSessionComplete(true)
         }
 
         if (phase === 'session') {
-          // Load chat history
+          // Load chat history (use requestedTopicId for the topic we're showing)
           try {
-            const historyResponse = await chat.getHistory(topicId)
+            const historyResponse = await chat.getHistory(requestedTopicId)
             console.log('Chat history response:', historyResponse.data)
+
+            if (topicIdRef.current !== requestedTopicId) return
 
             if (historyResponse.data.data.messages && historyResponse.data.data.messages.length > 0) {
               setMessages(historyResponse.data.data.messages)
@@ -206,8 +216,8 @@ const Learn = () => {
                 setSessionComplete(true)
               }
             } else {
-              // Start new session
-              const startResponse = await learning.sessionChat(topicId, '')
+              // Start new session (backend ensures progress row exists for this topic)
+              const startResponse = await learning.sessionChat(requestedTopicId, '')
               console.log('Start session response:', startResponse.data)
 
               if (startResponse.data.data.response) {
@@ -219,11 +229,11 @@ const Learn = () => {
                 setMessages([message])
               }
             }
-          } catch (historyError) {
-            console.error('Error loading chat history:', historyError)
-            // Start new session on error
-            try {
-              const startResponse = await learning.sessionChat(topicId, '')
+            } catch (historyError) {
+              console.error('Error loading chat history:', historyError)
+              // Start new session on error
+              try {
+                const startResponse = await learning.sessionChat(requestedTopicId, '')
               if (startResponse.data.data.response) {
                 const message = {
                   role: 'assistant',
@@ -238,27 +248,36 @@ const Learn = () => {
             }
           }
         } else if (phase === 'assignment') {
-          // Load assignments from topic data
-          const assignments = topicResponse.data.data.topic.tasks || []
-          setAssignments(assignments)
-          if (assignments.length > 0) {
-            // Create assignment code with question in comments
-            const assignment = assignments[0]
+          // Load assignments from topic data; resume at next task or start from 1st
+          const assignmentsList = topicResponse.data.data.topic.tasks || []
+          setAssignments(assignmentsList)
+          const topicCompleted = topicData?.topic_completed === true
+          const assignmentsCompleted = topicData?.assignments_completed ?? 0
+          setAssignmentsCompletedCount(assignmentsCompleted)
+          // current_task is 1-based (next task number); convert to 0-based index for assignments array
+          const currentTaskOneBased = topicData?.current_task ?? 1
+          const currentTaskIndex = Math.max(0, currentTaskOneBased - 1)
+          // If coming from "assignment icon" on completed topic, or start=1, show 1st task
+          const startIndex = (startFromFirst || topicCompleted) ? 0 : Math.min(currentTaskIndex, Math.max(0, assignmentsList.length - 1))
+          setCurrentAssignment(startIndex)
+          setAssignmentComplete(topicCompleted && assignmentsCompleted >= assignmentsList.length)
+          if (assignmentsList.length > 0) {
+            const assignment = assignmentsList[startIndex]
             const description = assignment.description || 'Complete the assignment below'
             let codeWithComments = description.startsWith('//') ? `${description}\n` : `// ${description}\n`
-
             if (assignment.requirements && assignment.requirements.length > 0) {
               assignment.requirements.forEach(req => {
-                const requirement = req.startsWith('//') ? `${req}\n` : `// ${req}\n`
-                codeWithComments += requirement
+                codeWithComments += req.startsWith('//') ? `${req}\n` : `// ${req}\n`
               })
             }
-
             codeWithComments += `// START YOUR CODE AFTER THIS LINE. DO NOT REMOVE THIS LINE\n`
             codeWithComments += assignment.starter_code || ''
-
             setAssignmentCode(codeWithComments)
           }
+          setAssignmentOutput('')
+          assignmentTestResultsRef.current = null
+          setAssignmentTestResults(null)
+          setAssignmentReview('')
         }
 
       } catch (err) {
@@ -272,7 +291,7 @@ const Learn = () => {
     if (topicId) {
       loadTopic()
     }
-  }, [topicId, phase])
+  }, [topicId, phase, startFromFirst])
 
   // Handle sending messages in session phase
   const handleSendMessage = async (e) => {
@@ -306,12 +325,10 @@ const Learn = () => {
           response.data.data.response.includes('Congratulations') ||
           response.data.data.response.includes('SESSION_COMPLETE_SIGNAL')) {
           setSessionComplete(true)
-          success('Session completed! Playground unlocked!', 3000)
         }
       }
     } catch (err) {
       console.error('Error sending message:', err)
-      showError('Failed to send message. Please check your connection and try again.', 4000)
       const errorMessage = {
         role: 'assistant',
         content: 'Sorry, I encountered an error. Please try again.',
@@ -407,16 +424,10 @@ const Learn = () => {
 
       // Set output for reference
       setPlaygroundOutput(outputText)
-
-      if (!result.success) {
-        showError('Code execution failed. Check the output for details.', 3000)
-      }
-
     } catch (error) {
       console.error('Code execution failed:', error)
       const errorDiv = `<div style="color: #ef4444; font-family: Monaco, Consolas, monospace; padding: 16px;">Error: ${error.message}</div>`
       outputDiv.innerHTML = errorDiv
-      showError('Code execution failed. Please check your syntax.', 3000)
     }
   }
 
@@ -532,230 +543,238 @@ const Learn = () => {
     if (!userCode.trim()) return
     try {
       await navigator.clipboard.writeText(userCode)
-      success('Code copied to clipboard.', 1500)
     } catch (e) {
-      showError('Copy failed.', 2000)
+      // Copy failed silently
     }
   }
 
-  // Industry-level secure assignment code execution (uses assignment-only output area)
+  // Run: execute code and show output in terminal. Clear Submit view (test results + AI review).
   const handleRunAssignment = async () => {
-    const outputDiv = document.getElementById('assignment-output')
-    if (!outputDiv) return
+    assignmentTestResultsRef.current = null
+    setAssignmentTestResults(null)
+    setAssignmentReview('')
+    setAssignmentOutput('Running...')
 
     try {
-      // Clear previous output
-      outputDiv.innerHTML = '<div style="color: #10a37f; font-family: Monaco, Consolas, monospace; padding: 8px;">Executing assignment code securely...</div>'
-
-      const startTime = Date.now()
-
-      // Get current assignment details
       const currentTask = assignments[currentAssignment]
-      const testCases = currentTask?.testCases || []
       const solutionType = currentTask?.solution_type || 'script'
       const functionName = currentTask?.function_name || null
-
-      // Execute code using secure Web Worker with test cases
       const result = await CodeExecutor.executeForTesting(
         assignmentCode,
-        testCases,
+        [],
         functionName,
         solutionType
       )
 
-      const executionTime = Date.now() - startTime
-
-      // Process results
       let outputText = ''
-      let outputColor = '#10a37f'
-      let allTestsPassed = false
-
       if (result.success) {
-        allTestsPassed = result.allPassed
-        
-        if (testCases.length > 0) {
-          // Show test results
-          const passedTests = result.results.filter(r => r.passed).length
-          const totalTests = result.results.length
-          
-          outputText = `Test Results: ${passedTests}/${totalTests} passed\n\n`
-          
-          result.results.forEach((testResult, index) => {
-            const status = testResult.passed ? '[PASS]' : '[FAIL]'
-            const input = JSON.stringify(testResult.input || {})
-            const expected = testResult.expected
-            const actual = testResult.output || testResult.result || testResult.error || 'No output'
-            
-            outputText += `${status} Test ${index + 1}: Input: ${input}\n`
-            outputText += `   Expected: ${expected}\n`
-            outputText += `   Actual: ${actual}\n`
-            if (!testResult.passed && testResult.error) {
-              outputText += `   Error: ${testResult.error}\n`
-            }
-            outputText += '\n'
-          })
-          
-          if (allTestsPassed) {
-            outputText += 'All tests passed! Ready to submit.'
-            outputColor = '#10a37f'
-          } else {
-            outputText += 'Some tests failed. Please review your code.'
-            outputColor = '#ef4444'
-          }
+        const first = result.results?.[0]
+        if (first && !first.passed && first.error) {
+          outputText = `Error: ${first.error}`
+        } else if (result.results && result.results.length > 0) {
+          outputText = result.results.map(r => r.output || r.result || '').filter(Boolean).join('\n') || 'Code executed (no output)'
         } else {
-          // No test cases, just show execution output
-          if (result.results && result.results.length > 0) {
-            outputText = result.results.map(r => r.output || r.result || '').join('\n')
-          } else {
-            outputText = 'Code executed successfully (no output)'
-          }
-          allTestsPassed = true // No tests to fail
-        }
-        
-        if (executionTime > 1000) {
-          outputText += `\nExecution completed in ${executionTime}ms`
+          outputText = 'Code executed (no output)'
         }
       } else {
         outputText = `Error: ${result.error || 'Code execution failed'}`
-        outputColor = '#ef4444'
-        allTestsPassed = false
       }
 
-      const outputLines = outputText.split('\n')
-
-      // Update line numbers (assignment panel)
-      const lineNumbersDiv = outputDiv.parentElement.querySelector('.assignment-terminal-line-numbers')
-      if (lineNumbersDiv) {
-        let lineNumbersHTML = ''
-        outputLines.forEach((_, index) => {
-          lineNumbersHTML += `<div style="line-height: 1.4; color: #6b7280; text-align: right; padding-right: 8px; font-size: 0.875rem;">${index + 1}</div>`
-        })
-        lineNumbersDiv.innerHTML = lineNumbersHTML
-      }
-
-      // Update output content with color coding
-      let formattedOutput = ''
-      outputLines.forEach((line) => {
-        let color = outputColor
-        if (line.includes('[PASS]') || line.includes('Execution completed')) color = '#10a37f'
-        else if (line.includes('[FAIL]') || line.includes('Error:')) color = '#ef4444'
-        else if (line.includes('Test Results:')) color = '#3b82f6'
-        else if (line.includes('Expected:') || line.includes('Actual:')) color = '#6b7280'
-        
-        formattedOutput += `<div style="line-height: 1.4; color: ${color}; white-space: pre; padding-left: 2px; font-size: 0.875rem;">${line || ' '}</div>`
-      })
-
-      outputDiv.innerHTML = `
-        <div style="font-family: Monaco, Consolas, 'SF Mono', 'Courier New', monospace; line-height: 1.4;">
-          ${formattedOutput}
-        </div>
-      `
-
-      // Set output for reference
       setAssignmentOutput(outputText)
-      
-      if (result.success && allTestsPassed) {
-        success('Assignment code executed successfully! All tests passed.', 2000)
-      } else if (result.success) {
-        showError('Code executed but some tests failed. Please review the output.', 3000)
-      } else {
-        showError('Assignment code execution failed. Check the output for details.', 3000)
-      }
-
     } catch (error) {
       console.error('Assignment code execution failed:', error)
-      const errorDiv = `<div style="color: #ef4444; font-family: Monaco, Consolas, monospace; padding: 16px;">Error: ${error.message}</div>`
-      outputDiv.innerHTML = errorDiv
-      showError('Assignment code execution failed. Please check your syntax.', 3000)
+      setAssignmentOutput(`Error: ${error.message}`)
     }
   }
 
-  // Handle submitting assignment with enhanced validation
-  const handleSubmitAssignment = async () => {
-    try {
-      // First validate code locally before submission
-      const currentTask = assignments[currentAssignment]
-      const testCases = currentTask?.testCases || []
-      const solutionType = currentTask?.solution_type || 'script'
-      const functionName = currentTask?.function_name || null
+  // Build test results text from results array (local or backend shape)
+  const buildTestResultsText = (results, allPassed) => {
+    if (!results?.length) return ''
+    const passed = results.filter(r => r.passed).length
+    const total = results.length
+    let text = `Test Results: ${passed}/${total} passed\n\n`
+    results.forEach((r, i) => {
+      const status = r.passed ? '[PASS]' : '[FAIL]'
+      const expected = r.expected ?? r.expectedOutput ?? ''
+      const actual = r.output ?? r.result ?? r.error ?? 'No output'
+      text += `${status} Test ${i + 1}: Input: ${JSON.stringify(r.input || {})}\n`
+      text += `   Expected: ${expected}\n   Actual: ${actual}\n`
+      if (!r.passed && r.error) text += `   Error: ${r.error}\n`
+      text += '\n'
+    })
+    if (allPassed) text += 'All tests passed!\n'
+    return text
+  }
 
+  // Submit: run tests (show pass/fail + output in terminal) + generate and display AI review (no backend progress/Supabase)
+  const handleSubmitAssignment = async () => {
+    const currentTask = assignments[currentAssignment]
+    const testCases = currentTask?.testCases || []
+    const solutionType = currentTask?.solution_type || 'script'
+    const functionName = currentTask?.function_name || null
+
+    try {
+      setSubmitLoading(true)
+
+      // 1. Run tests and display test case results in a clear structured format
       if (testCases.length > 0) {
-        // Run local validation first
         const localResult = await CodeExecutor.executeForTesting(
           assignmentCode,
           testCases,
           functionName,
           solutionType
         )
-
-        if (!localResult.success || !localResult.allPassed) {
-          showError('Please fix the failing tests before submitting.', 3000)
+        if (localResult.error && !localResult.results?.length) {
+          assignmentTestResultsRef.current = null
+          setAssignmentTestResults(null)
+          setAssignmentOutput(`Error: ${localResult.error}`)
+          setSubmitLoading(false)
           return
         }
-      }
+        const results = localResult.results || []
+        const passedCount = results.filter(r => r.passed).length
+        const testResultsList = results.map(r => ({
+          passed: r.passed,
+          expected: r.expected ?? r.expectedOutput ?? '',
+          actual: r.output ?? r.result ?? r.error ?? 'No output',
+          error: r.error,
+          input: r.input
+        }))
+        setAssignmentOutput(`Test Results: ${passedCount}/${results.length} passed`)
+        setAssignmentTestResults(testResultsList)
+        assignmentTestResultsRef.current = testResultsList
 
-      // Submit to backend with enhanced validation
-      const response = await learning.completeAssignment(topicId, currentAssignment, assignmentCode)
-
-      if (response.data.data.success) {
-        if (currentAssignment < assignments.length - 1) {
-          // Move to next assignment
-          const nextAssignmentIndex = currentAssignment + 1
-          setCurrentAssignment(nextAssignmentIndex)
-
-          // Create next assignment code with question in comments
-          const nextAssignment = assignments[nextAssignmentIndex]
-          const description = nextAssignment.description || 'Complete the assignment below'
-          let codeWithComments = description.startsWith('//') ? `${description}\n` : `// ${description}\n`
-
-          if (nextAssignment.requirements && nextAssignment.requirements.length > 0) {
-            nextAssignment.requirements.forEach(req => {
-              const requirement = req.startsWith('//') ? `${req}\n` : `// ${req}\n`
-              codeWithComments += requirement
-            })
-          }
-
-          codeWithComments += `// START YOUR CODE AFTER THIS LINE. DO NOT REMOVE THIS LINE\n`
-          codeWithComments += nextAssignment.starter_code || ''
-
-          setAssignmentCode(codeWithComments)
-          setAssignmentOutput('')
-          setAssignmentReview('')
-          success('Assignment completed! Moving to next one...', 3000)
-        } else {
-          // All assignments complete
-          setAssignmentComplete(true)
-          success('All assignments completed! Excellent work!', 4000)
+        if (!localResult.success || !localResult.allPassed) {
+          setSubmitLoading(false)
+          return
         }
       } else {
-        // Handle backend validation failure
-        const errorMessage = response.data.data.execution?.error || 'Assignment validation failed'
-        showError(errorMessage, 4000)
+        assignmentTestResultsRef.current = null
+        setAssignmentTestResults(null)
+        setAssignmentOutput('No test cases for this assignment.')
+      }
+
+      // 1b. Persist progress (current_task, assignments_completed) so dashboard and topic stay in sync
+      try {
+        await learning.completeAssignment(topicId, currentAssignment, assignmentCode)
+        // Advance local count only when this was the next task in sequence (backend enforces same rule)
+        if (currentAssignment === assignmentsCompletedCount) {
+          setAssignmentsCompletedCount(prev => {
+            const next = prev + 1
+            if (next >= assignments.length) setAssignmentComplete(true)
+            return next
+          })
+        }
+      } catch (completeErr) {
+        console.error('Failed to save assignment progress:', completeErr)
+        setAssignmentOutput((prev) => (prev ? `${prev}\n(Progress could not be saved: ${completeErr?.response?.data?.message || completeErr.message})` : `Progress could not be saved: ${completeErr?.response?.data?.message || completeErr.message}`))
+      }
+
+      // 2. Generate and display AI review on user code (like Review button)
+      try {
+        const feedbackRes = await learning.getFeedback(topicId, assignmentCode, currentTask)
+        const reviewText = feedbackRes?.data?.data?.feedback || ''
+        setAssignmentReview(reviewText)
+      } catch (feedbackErr) {
+        console.error('Get review error:', feedbackErr)
+        setAssignmentReview('Could not load AI review. Please try again.')
       }
     } catch (err) {
       console.error('Error submitting assignment:', err)
-      const errorMessage = err.response?.data?.message || 'Failed to submit assignment'
-      showError(errorMessage, 3000)
+      const body = err.response?.data
+      const msg = body?.message ?? body?.error ?? (typeof body === 'string' ? body : err.message) ?? 'Request failed'
+      assignmentTestResultsRef.current = null
+      setAssignmentTestResults(null)
+      setAssignmentOutput(`Error: ${msg}`)
+    } finally {
+      setSubmitLoading(false)
     }
   }
 
-  // Get AI review for current assignment code (assignment phase only)
-  const [reviewLoading, setReviewLoading] = useState(false)
-  const handleGetReview = async () => {
-    if (!assignmentCode.trim() || !assignments.length) return
-    setReviewLoading(true)
-    setAssignmentReview('')
-    try {
-      const currentTask = assignments[currentAssignment]
-      const res = await learning.getFeedback(topicId, assignmentCode, currentTask)
-      const text = res?.data?.data?.feedback || ''
-      setAssignmentReview(text)
-      if (text) success('Review loaded.', 2000)
-    } catch (err) {
-      console.error('Get review error:', err)
-      showError(err.response?.data?.message || 'Failed to get review', 3000)
-    } finally {
-      setReviewLoading(false)
+  // Next: go to next assignment in topic, or next topic's session phase. When topic not complete, can only go forward if current assignment is completed.
+  const canGoToNextAssignment = assignmentComplete || (currentAssignment < assignmentsCompletedCount)
+  const handleNext = async () => {
+    if (currentAssignment < assignments.length - 1) {
+      if (!canGoToNextAssignment) {
+        setIncompleteModalMessage('You need to complete and submit the current assignment before you can go to the next one. Click Submit after your code passes the tests.')
+        setShowIncompleteModal(true)
+        return
+      }
+      // More assignments in this topic — load next assignment
+      const nextAssignmentIndex = currentAssignment + 1
+      setCurrentAssignment(nextAssignmentIndex)
+      const nextAssignment = assignments[nextAssignmentIndex]
+      const description = nextAssignment.description || 'Complete the assignment below'
+      let codeWithComments = description.startsWith('//') ? `${description}\n` : `// ${description}\n`
+      if (nextAssignment.requirements && nextAssignment.requirements.length > 0) {
+        nextAssignment.requirements.forEach(req => {
+          codeWithComments += req.startsWith('//') ? `${req}\n` : `// ${req}\n`
+        })
+      }
+          codeWithComments += `// START YOUR CODE AFTER THIS LINE. DO NOT REMOVE THIS LINE\n`
+          codeWithComments += nextAssignment.starter_code || ''
+          setAssignmentCode(codeWithComments)
+          setAssignmentOutput('')
+          assignmentTestResultsRef.current = null
+          setAssignmentTestResults(null)
+          setAssignmentReview('')
+        } else {
+          // Last assignment — only allow next topic if all assignments completed
+      if (!assignmentComplete) {
+        setIncompleteModalMessage('Please complete all assignments in this topic before moving to the next topic. Submit each assignment after your code passes the tests.')
+        setShowIncompleteModal(true)
+        return
+      }
+      try {
+        const coursesRes = await learning.getCourses()
+        if (!coursesRes.data?.success || !coursesRes.data?.data?.courses?.length) {
+          navigate('/dashboard')
+          return
+        }
+        const courses = coursesRes.data.data.courses
+        let nextTopicId = null
+        for (const course of courses) {
+          const topics = course.topics || []
+          const idx = topics.findIndex(t => String(t.id) === String(topicId))
+          if (idx !== -1 && idx < topics.length - 1) {
+            nextTopicId = topics[idx + 1].id
+            break
+          }
+        }
+        if (nextTopicId) {
+          navigate(`/learn/${nextTopicId}`)
+        } else {
+          navigate('/dashboard')
+        }
+      } catch (err) {
+        console.error('Error fetching next topic:', err)
+        navigate('/dashboard')
+      }
+    }
+  }
+
+  // Back in assignment: previous assignment or session phase if on 1st
+  const handleAssignmentBack = () => {
+    if (currentAssignment > 0) {
+      const prevIndex = currentAssignment - 1
+      setCurrentAssignment(prevIndex)
+      const prevAssignment = assignments[prevIndex]
+      const description = prevAssignment.description || 'Complete the assignment below'
+      let codeWithComments = description.startsWith('//') ? `${description}\n` : `// ${description}\n`
+      if (prevAssignment.requirements && prevAssignment.requirements.length > 0) {
+        prevAssignment.requirements.forEach(req => {
+          codeWithComments += req.startsWith('//') ? `${req}\n` : `// ${req}\n`
+        })
+      }
+      codeWithComments += `// START YOUR CODE AFTER THIS LINE. DO NOT REMOVE THIS LINE\n`
+      codeWithComments += prevAssignment.starter_code || ''
+      setAssignmentCode(codeWithComments)
+      setAssignmentOutput('')
+      assignmentTestResultsRef.current = null
+      setAssignmentTestResults(null)
+      setAssignmentReview('')
+    } else {
+      navigate(`/learn/${topicId}`)
     }
   }
 
@@ -841,6 +860,53 @@ const Learn = () => {
 
   return (
     <div className="learn-container">
+      {/* Modal: complete all assignments before next topic */}
+      {showIncompleteModal && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999
+          }}
+          onClick={() => setShowIncompleteModal(false)}
+        >
+          <div
+            style={{
+              backgroundColor: 'white',
+              padding: '24px',
+              borderRadius: '12px',
+              maxWidth: '360px',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
+              textAlign: 'center'
+            }}
+            onClick={e => e.stopPropagation()}
+          >
+            <p style={{ margin: '0 0 16px', fontSize: '1rem', color: '#374151' }}>
+              {incompleteModalMessage || 'Complete and submit the current assignment before going to the next one.'}
+            </p>
+            <button
+              type="button"
+              onClick={() => setShowIncompleteModal(false)}
+              style={{
+                padding: '10px 24px',
+                backgroundColor: '#10a37f',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '0.95rem',
+                cursor: 'pointer'
+              }}
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Session: fixed toggle only; editor view has no header */}
       {phase === 'session' && (
         <EditorToggle
@@ -853,10 +919,13 @@ const Learn = () => {
       {((phase === 'session' && !showEditorInSession) || phase === 'assignment') && (
         <header className="learn-header">
           <button
-            className="back-btn"
+            type="button"
+            className="back-btn learn-sara-brand"
             onClick={() => navigate('/dashboard')}
+            title="Back to Dashboard"
+            aria-label="Back to Dashboard"
           >
-            Back
+            Sara
           </button>
 
           <div className="header-center">
@@ -871,21 +940,20 @@ const Learn = () => {
             {phase === 'session' && (
               <button
                 type="button"
-                disabled={!sessionComplete}
-                onClick={() => { info('Loading code tasks...', 1500); navigate(`/learn/${topicId}?phase=assignment`) }}
+                onClick={() => navigate(`/learn/${topicId}?phase=assignment`)}
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '6px',
                   padding: '8px 16px',
-                  backgroundColor: sessionComplete ? '#10a37f' : '#d1d5db',
-                  color: sessionComplete ? 'white' : '#9ca3af',
+                  backgroundColor: '#10a37f',
+                  color: 'white',
                   border: 'none',
                   borderRadius: '8px',
-                  cursor: sessionComplete ? 'pointer' : 'not-allowed',
+                  cursor: 'pointer',
                   fontSize: '0.9rem'
                 }}
-                title={sessionComplete ? 'Go to code tasks' : 'Complete the session to unlock code tasks'}
+                title="Go to code tasks"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="16,18 22,12 16,6" />
@@ -895,22 +963,36 @@ const Learn = () => {
               </button>
             )}
             {phase === 'assignment' && (
-              <button
-                type="button"
-                onClick={() => navigate(`/learn/${topicId}`)}
-                style={{
-                  padding: '8px 16px',
-                  backgroundColor: '#6b7280',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  cursor: 'pointer',
-                  fontSize: '0.9rem'
-                }}
-                title="Back to Session"
-              >
-                Session
-              </button>
+              <>
+                <button
+                  type="button"
+                  className="assignment-nav-btn assignment-back-btn"
+                  onClick={handleAssignmentBack}
+                  title={currentAssignment > 0 ? 'Previous assignment' : 'Back to session'}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="15,18 9,12 15,6" />
+                  </svg>
+                  Back
+                </button>
+                <button
+                  type="button"
+                  className="assignment-nav-btn assignment-next-btn"
+                  onClick={handleNext}
+                  title={
+                    currentAssignment < assignments.length - 1
+                      ? 'Next assignment'
+                      : assignments.length > 0
+                        ? 'Next topic'
+                        : 'Next'
+                  }
+                >
+                  Next
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="9,18 15,12 9,6" />
+                  </svg>
+                </button>
+              </>
             )}
           </div>
         </header>
@@ -1017,7 +1099,7 @@ const Learn = () => {
               minHeight: '56px'
             }}>
               {/* File Tab */}
-              <div style={{
+              <div className="assignment-js-tab" style={{
                 padding: '4px 12px',
                 backgroundColor: '#ffffff',
                 borderRadius: '4px 4px 0 0',
@@ -1059,47 +1141,26 @@ const Learn = () => {
                 </button>
                 <button
                   onClick={handleSubmitAssignment}
+                  disabled={submitLoading}
                   className="playground-reset-btn"
                   style={{
-                    backgroundColor: '#6b7280',
+                    backgroundColor: submitLoading ? '#9ca3af' : '#6b7280',
                     color: 'white',
                     border: 'none',
                     borderRadius: '6px',
                     padding: '6px 12px',
                     fontSize: '0.75rem',
                     fontWeight: '500',
-                    cursor: 'pointer',
+                    cursor: submitLoading ? 'not-allowed' : 'pointer',
                     transition: 'all 0.2s ease',
                     boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-                    minWidth: '60px',
-                    height: '28px',
-                    alignSelf: 'flex-start'
-                  }}
-                  title="Submit Assignment"
-                >
-                  Submit
-                </button>
-                <button
-                  onClick={handleGetReview}
-                  disabled={!assignmentCode.trim() || reviewLoading}
-                  className="playground-review-btn"
-                  style={{
-                    backgroundColor: assignmentCode.trim() && !reviewLoading ? '#3b82f6' : '#d1d5db',
-                    color: assignmentCode.trim() && !reviewLoading ? 'white' : '#9ca3af',
-                    border: 'none',
-                    borderRadius: '6px',
-                    padding: '6px 12px',
-                    fontSize: '0.75rem',
-                    fontWeight: '500',
-                    cursor: assignmentCode.trim() && !reviewLoading ? 'pointer' : 'not-allowed',
-                    transition: 'all 0.2s ease',
                     minWidth: '72px',
                     height: '28px',
                     alignSelf: 'flex-start'
                   }}
-                  title="Get AI review of your code"
+                  title="Submit Assignment (test results + AI review)"
                 >
-                  {reviewLoading ? '...' : 'Get review'}
+                  {submitLoading ? 'Submitting...' : 'Submit'}
                 </button>
               </div>
             </div>
@@ -1452,104 +1513,130 @@ const Learn = () => {
               </div>
             </div>
 
-            {/* Terminal Content (assignment only — shared run terminal is id="terminal-output") */}
-            <div style={{
-              flex: 1,
-              backgroundColor: '#1e1e1e',
-              border: '1px solid #333',
-              borderTop: 'none',
-              display: 'flex',
-              minHeight: 0
-            }}>
-              <div className="assignment-terminal-line-numbers" style={{
-                width: '50px',
-                backgroundColor: '#2d2d2d',
-                borderRight: '1px solid #404040',
-                padding: '16px 8px',
-                fontSize: '0.875rem',
-                color: '#6b7280',
-                fontFamily: 'Monaco, Consolas, "SF Mono", "Courier New", monospace',
-                lineHeight: '1.4',
-                textAlign: 'right',
-                userSelect: 'none',
-                overflow: 'hidden',
-                flexShrink: 0,
-                position: 'relative'
-              }}>
-              </div>
+            {/* Run = terminal (dark, line numbers). Submit = document (light, test results + AI review). */}
+            {(() => {
+              const testResults = assignmentTestResults ?? assignmentTestResultsRef.current
+              const hasTestResults = testResults && Array.isArray(testResults) && testResults.length > 0
+              const isDocumentMode = hasTestResults || assignmentReview
 
-              <div
-                id="assignment-output"
-                className="playground-output"
-                onScroll={(e) => {
-                  const lineNumbers = e.target.parentElement.querySelector('.assignment-terminal-line-numbers')
-                  if (lineNumbers) {
-                    lineNumbers.scrollTop = e.target.scrollTop
-                  }
-                }}
-                style={{
-                  flex: 1,
-                  padding: '16px',
-                  backgroundColor: '#1e1e1e',
-                  color: '#10a37f',
-                  fontFamily: 'Monaco, Consolas, "SF Mono", "Courier New", monospace',
-                  fontSize: '0.875rem',
-                  lineHeight: '1.4',
-                  overflow: 'auto',
-                  minHeight: 0,
-                  height: '100%'
-                }}
-              >
-                <div style={{ color: '#6b7280', fontStyle: 'italic' }}>
-                  {assignmentOutput ? (
-                    <pre style={{ margin: 0, color: '#10a37f', whiteSpace: 'pre-wrap' }}>{assignmentOutput}</pre>
-                  ) : (
-                    'Click "Run" to test your assignment code'
-                  )}
+              if (isDocumentMode) {
+                return (
+                  <div
+                    id="assignment-output"
+                    style={{
+                      flex: 1,
+                      overflow: 'auto',
+                      minHeight: 0,
+                      backgroundColor: '#fafafa',
+                      border: '1px solid #e5e7eb',
+                      borderTop: 'none',
+                      padding: '20px 24px',
+                      fontSize: '0.9375rem',
+                      lineHeight: 1.6,
+                      color: '#374151',
+                      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+                    }}
+                  >
+                    <div style={{ maxWidth: '720px', margin: '0 auto' }}>
+                      <div style={{ color: '#059669', marginBottom: '16px', fontWeight: 600, fontSize: '1rem' }}>
+                        {assignmentOutput && assignmentOutput.startsWith('Test Results:') ? assignmentOutput : (hasTestResults ? `Test Results: ${testResults.filter(r => r.passed).length}/${testResults.length} passed` : '')}
+                      </div>
+                      {hasTestResults && testResults.map((t, i) => {
+                        const hasInput = t.input && typeof t.input === 'object' && Object.keys(t.input).length > 0
+                        const inputDisplay = hasInput ? JSON.stringify(t.input, null, 2) : '(none)'
+                        return (
+                          <div key={i} style={{ marginBottom: '20px', padding: '12px 16px', backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px', borderLeft: `4px solid ${t.passed ? '#10a37f' : '#ef4444'}` }}>
+                            <div style={{ color: '#6b7280', marginBottom: '6px', fontWeight: 500 }}>
+                              Test {i + 1} {t.passed ? '✅' : '❌'}
+                            </div>
+                            <div style={{ color: '#6b7280', marginBottom: '2px', fontSize: '0.8125rem' }}>Input:</div>
+                            <div style={{ color: '#111827', marginBottom: '8px', marginLeft: '8px', fontFamily: 'Monaco, Consolas, monospace', fontSize: '0.8125rem', whiteSpace: 'pre-wrap' }}>{inputDisplay}</div>
+                            <div style={{ color: '#6b7280', marginBottom: '2px', fontSize: '0.8125rem' }}>Expected:</div>
+                            <div style={{ color: '#111827', marginBottom: '8px', marginLeft: '8px' }}>{String(t.expected ?? '')}</div>
+                            <div style={{ color: '#6b7280', marginBottom: '2px', fontSize: '0.8125rem' }}>Actual:</div>
+                            <div style={{ color: t.passed ? '#059669' : '#dc2626', marginLeft: '8px' }}>{String(t.actual ?? '')}</div>
+                            {!t.passed && t.error && (
+                              <div style={{ color: '#dc2626', marginTop: '6px', marginLeft: '8px', fontSize: '0.8125rem' }}>Error: {t.error}</div>
+                            )}
+                          </div>
+                        )
+                      })}
+                      {assignmentReview && (
+                        <div style={{ marginTop: '24px', paddingTop: '24px', borderTop: '1px solid #e5e7eb' }}>
+                          <div style={{ color: '#059669', fontWeight: 600, marginBottom: '12px', fontSize: '1rem' }}>AI Review</div>
+                          <div style={{ color: '#374151', whiteSpace: 'pre-wrap', fontSize: '0.9375rem', lineHeight: 1.7 }}>{assignmentReview}</div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )
+              }
+
+              const outputLines = (assignmentOutput || '').split('\n')
+              const isError = assignmentOutput && (assignmentOutput.startsWith('Error:') || assignmentOutput.includes('[FAIL]'))
+              const lineHeightPx = 22
+              const padV = 16
+              const padH = 12
+              return (
+                <div style={{ flex: 1, display: 'flex', minHeight: 0, backgroundColor: '#1e1e1e', border: '1px solid #333', borderTop: 'none' }}>
+                  <div
+                    className="assignment-terminal-line-numbers"
+                    style={{
+                      width: '48px',
+                      backgroundColor: '#2d2d2d',
+                      borderRight: '1px solid #404040',
+                      padding: `${padV}px ${padH}px`,
+                      fontSize: '0.8125rem',
+                      color: '#6b7280',
+                      fontFamily: 'Monaco, Consolas, monospace',
+                      lineHeight: `${lineHeightPx}px`,
+                      textAlign: 'right',
+                      userSelect: 'none',
+                      overflow: 'hidden',
+                      flexShrink: 0
+                    }}
+                  >
+                    {outputLines.map((_, i) => (
+                      <div key={i} style={{ height: lineHeightPx, lineHeight: `${lineHeightPx}px` }}>{i + 1}</div>
+                    ))}
+                    {outputLines.length === 0 && <div style={{ height: lineHeightPx, lineHeight: `${lineHeightPx}px` }}>1</div>}
+                  </div>
+                  <div
+                    id="assignment-output"
+                    className="playground-output"
+                    onScroll={(e) => {
+                      const ln = e.target.parentElement.querySelector('.assignment-terminal-line-numbers')
+                      if (ln) ln.scrollTop = e.target.scrollTop
+                    }}
+                    style={{
+                      flex: 1,
+                      padding: `${padV}px ${padH}px`,
+                      backgroundColor: '#1e1e1e',
+                      color: isError ? '#ef4444' : '#10a37f',
+                      fontFamily: 'Monaco, Consolas, monospace',
+                      fontSize: '0.875rem',
+                      lineHeight: `${lineHeightPx}px`,
+                      overflow: 'auto',
+                      minHeight: 0
+                    }}
+                  >
+                    {assignmentOutput ? (
+                      outputLines.map((line, i) => (
+                        <div key={i} style={{ minHeight: lineHeightPx, lineHeight: `${lineHeightPx}px`, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
+                          {line || ' '}
+                        </div>
+                      ))
+                    ) : (
+                      <span style={{ fontStyle: 'italic', color: '#6b7280' }}>Click &quot;Run&quot; to test your assignment code</span>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </div>
-            {assignmentReview && (
-              <div style={{
-                marginTop: '12px',
-                padding: '12px 16px',
-                backgroundColor: '#f0f9ff',
-                border: '1px solid #bae6fd',
-                borderRadius: '8px',
-                fontSize: '0.875rem',
-                lineHeight: '1.5',
-                color: '#0c4a6e',
-                whiteSpace: 'pre-wrap'
-              }}>
-                <strong>AI Review</strong>
-                <div style={{ marginTop: '8px' }}>{assignmentReview}</div>
-              </div>
-            )}
+              )
+            })()}
           </div>
         </div>
       )}
 
-      {/* Completed Phase — 3 phases only: session → play → assignment */}
-      {assignmentComplete && (
-        <div className="completed-container">
-          <div className="completed-content">
-            <span className="completed-emoji" aria-hidden></span>
-            <h2 className="completed-title">All Done!</h2>
-            <p className="completed-text">
-              You've completed all assignments for {topic.title}
-            </p>
-            <button
-              className="back-to-dashboard-btn"
-              onClick={() => navigate('/dashboard')}
-            >
-              Back to Dashboard
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Professional Toast Notifications */}
-      <ToastContainer toasts={toasts} />
     </div>
   )
 }

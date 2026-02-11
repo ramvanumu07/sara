@@ -255,6 +255,41 @@
    RESPONSIVE BREAKPOINTS - MOBILE FIRST APPROACH
    ============================================================================ */
 
+/* Mobile: match Run/Submit button height to assignment.js tab height */
+@media (max-width: 767px) {
+  /* Single height for editor header row so tab and buttons align */
+  .playground-editor-header {
+    min-height: 40px !important;
+    padding: 8px 12px !important;
+  }
+  .assignment-js-tab {
+    display: inline-flex;
+    align-items: center;
+    height: 28px !important;
+    min-height: 28px;
+    padding: 0 12px !important;
+    box-sizing: border-box;
+  }
+  .playground-editor-header .playground-header-actions,
+  .playground-editor-header .playground-header-actions button,
+  .playground-editor-header .playground-run-btn,
+  .playground-editor-header .playground-reset-btn {
+    height: 28px !important;
+    min-height: 28px !important;
+    padding: 0 10px !important;
+    min-width: 52px !important;
+  }
+  .assignment-nav-btn {
+    padding: 3px 10px !important;
+    min-width: 64px !important;
+    height: 28px !important;
+  }
+  .assignment-nav-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
 /* Extra Small Mobile (320px - 479px) */
 @media (max-width: 479px) {
   .learn-header {

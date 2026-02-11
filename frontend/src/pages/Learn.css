@@ -57,6 +57,53 @@
   cursor: pointer;
 }
 
+/* Plain Sara brand (dashboard/auth style) - back to dashboard */
+.learn-sara-brand {
+  background: none !important;
+  border: none !important;
+  font-size: 1.5rem !important;
+  font-weight: 700 !important;
+  color: #10a37f !important;
+  padding: 4px 8px !important;
+}
+.learn-sara-brand:hover {
+  color: #0d8a6c !important;
+}
+
+/* Assignment phase Back/Next - same look as Copy button in editor */
+.assignment-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  min-width: 72px;
+  height: 28px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+  border: 1px solid #e5e7eb;
+}
+.assignment-back-btn {
+  background-color: #f3f4f6;
+  color: #374151;
+  border-color: #e5e7eb;
+}
+.assignment-back-btn:hover {
+  background-color: #e5e7eb;
+  border-color: #d1d5db;
+}
+.assignment-next-btn {
+  background-color: #f0fdf4;
+  color: #047857;
+  border-color: #86efac;
+}
+.assignment-next-btn:hover {
+  background-color: #dcfce7;
+  border-color: #4ade80;
+}
+
 .header-center {
   text-align: center;
 }

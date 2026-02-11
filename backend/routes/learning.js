@@ -204,14 +204,11 @@ router.get('/state/:topicId', authenticateToken, async (req, res) => {
       success: true,
       exists: true,
       phase: normalizedPhase,
-      conceptRevealed: progress.concept_revealed || false,
-      currentAssignment: progress.current_task || 0,
+      currentAssignment: Math.max(0, (progress.current_task || 1) - 1),
       totalAssignments: progress.total_tasks || 0,
       status: progress.status,
       conversationHistory: chatHistory || '',
       assignments: [],
-      savedCode: progress?.saved_code || '',
-      hintsUsed: progress?.hints_used || 0,
       topic: {
         id: topicId,
         title: topic.title,
@@ -256,7 +253,6 @@ router.post('/session/start', authenticateToken, rateLimitMiddleware, validateBo
     await upsertProgress(userId, topicId, {
       phase: 'session',
       status: 'in_progress',
-      started_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     })
 
@@ -415,7 +411,7 @@ router.post('/assignment/start', authenticateToken, rateLimitMiddleware, validat
     await upsertProgress(userId, topicId, {
       phase: 'assignment',
       status: 'in_progress',
-      current_task: 0,
+      current_task: 1,
       total_tasks: tasks.length,
       updated_at: new Date().toISOString()
     })
@@ -444,10 +440,14 @@ router.post('/assignment/start', authenticateToken, rateLimitMiddleware, validat
 
 router.post('/assignment/complete', authenticateToken, rateLimitMiddleware, async (req, res) => {
   try {
-    const { topicId, assignmentIndex, code } = req.body
+    const { topicId, assignmentIndex: rawIndex, code } = req.body
     const userId = req.user.userId
+    const assignmentIndex = Number(rawIndex)
+    if (rawIndex !== undefined && (Number.isNaN(assignmentIndex) || assignmentIndex < 0)) {
+      return res.status(400).json(createErrorResponse('assignmentIndex must be a non-negative number'))
+    }
 
-    if (!topicId || assignmentIndex === undefined) {
+    if (!topicId || rawIndex === undefined) {
       return res.status(400).json(createErrorResponse('topicId and assignmentIndex are required'))
     }
 
@@ -467,9 +467,12 @@ router.post('/assignment/complete', authenticateToken, rateLimitMiddleware, asyn
     }
 
     const currentTask = tasks[assignmentIndex]
+    if (!currentTask) {
+      return res.status(400).json(createErrorResponse('Assignment not found for this topic'))
+    }
     const testCases = currentTask.testCases || []
     const solutionType = currentTask.solution_type || 'script'
-    const functionName = currentTask.function_name || null
+    const functionName = currentTask.function_name ?? null
 
     // Execute code and validate against test cases with proper parameters
     const executionResult = await executeCodeSecurely(code, testCases, functionName, solutionType)
@@ -483,21 +486,55 @@ router.post('/assignment/complete', authenticateToken, rateLimitMiddleware, asyn
       }))
     }
 
-    // Complete assignment - tests passed or no tests required
+    // Complete assignment - tests passed or no tests required. Only advance when user completes the next task in sequence (no reward for skipping).
     const currentProgress = await getProgress(userId, topicId)
-    const completedAssignments = (currentProgress?.assignments_completed || 0) + 1
+    const currentCount = currentProgress?.assignments_completed ?? currentProgress?.completed_assignments ?? 0
+    const isNextInSequence = assignmentIndex === currentCount
+    const completedAssignments = isNextInSequence ? currentCount + 1 : currentCount
     const isTopicComplete = completedAssignments >= tasks.length
+    const now = new Date().toISOString()
 
-    await upsertProgress(userId, topicId, {
+    // current_task = 1-based "next task to do" = assignments_completed + 1 (so Continue opens the right assignment)
+    const nextTaskOneBased = Math.min(completedAssignments + 1, tasks.length)
+    const progressPayload = {
       phase: 'assignment',
       status: isTopicComplete ? 'completed' : 'in_progress',
-      current_task: Math.min(assignmentIndex + 1, tasks.length - 1),
+      current_task: nextTaskOneBased,
+      total_tasks: tasks.length,
       assignments_completed: completedAssignments,
-      status: isTopicComplete ? 'completed' : 'in_progress',
-      completed_at: isTopicComplete ? new Date().toISOString() : null,
-      saved_code: code, // Save the successful code
-      updated_at: new Date().toISOString()
-    })
+      updated_at: now
+    }
+
+    try {
+      await upsertProgress(userId, topicId, progressPayload)
+    } catch (progressErr) {
+      const msg = progressErr?.message || ''
+      if (msg.includes('column') && msg.includes('does not exist')) {
+        const minimalPayload = {
+          phase: 'assignment',
+          status: isTopicComplete ? 'completed' : 'in_progress',
+          current_task: nextTaskOneBased,
+          total_tasks: tasks.length,
+          assignments_completed: completedAssignments,
+          updated_at: now
+        }
+        try {
+          await upsertProgress(userId, topicId, minimalPayload)
+        } catch (minimalErr) {
+          const m2 = minimalErr?.message || ''
+          if (m2.includes('assignments_completed')) {
+            const alt = { ...minimalPayload }
+            delete alt.assignments_completed
+            alt.completed_assignments = completedAssignments
+            await upsertProgress(userId, topicId, alt)
+          } else {
+            throw minimalErr
+          }
+        }
+      } else {
+        throw progressErr
+      }
+    }
 
     const totalAssignments = tasks.length
 
@@ -517,7 +554,12 @@ router.post('/assignment/complete', authenticateToken, rateLimitMiddleware, asyn
       }
     }))
   } catch (error) {
-    handleErrorResponse(res, error, 'complete assignment')
+    console.error('Complete assignment error:', error?.message)
+    if (error?.stack) console.error(error.stack)
+    if (!res.headersSent) {
+      const message = error?.message || 'Complete assignment failed'
+      res.status(500).json(createErrorResponse(message, 'SERVER_ERROR', process.env.NODE_ENV === 'development' ? error?.stack : null))
+    }
   }
 })
 
@@ -646,7 +688,25 @@ router.get('/progress', authenticateToken, async (req, res) => {
     console.log(`Progress API called for user: ${userId}`)
 
     // Get progress data directly for compatibility
-    const allProgress = await getAllProgress(userId)
+    let allProgress = await getAllProgress(userId)
+
+    // New user: ensure first-topic progress row exists (fallback if /continue wasn't called first)
+    if (allProgress.length === 0) {
+      const firstTopic = getAllTopics(courses)[0]
+      if (firstTopic) {
+        const totalTasks = (firstTopic.tasks || []).length
+        await upsertProgress(userId, firstTopic.id, {
+          phase: 'session',
+          status: 'in_progress',
+          current_task: totalTasks > 0 ? 1 : 0,
+          total_tasks: totalTasks,
+          assignments_completed: 0,
+          updated_at: new Date().toISOString()
+        })
+      console.log(`Progress API: created first-topic progress for user ${userId}, topic ${firstTopic.id}`)
+        allProgress = await getAllProgress(userId)
+      }
+    }
 
     // Calculate summary directly
     const allTopicsFromCurriculum = getAllTopics(courses)
@@ -736,7 +796,7 @@ router.delete('/debug/reset-progress', authenticateToken, async (req, res) => {
     const supabase = getSupabaseClient()
 
     // Delete from all possible tables
-    const tables = ['progress', 'chat_sessions', 'chat_history']
+    const tables = ['progress', 'chat_sessions']
 
     for (const table of tables) {
       try {
@@ -847,19 +907,12 @@ router.get('/debug/all-data-sources', authenticateToken, async (req, res) => {
       .select('*')
       .eq('user_id', userId)
 
-    // Check chat_history table
-    const { data: chatHistoryData, error: chatHistoryError } = await supabase
-      .from('chat_history')
-      .select('*')
-      .eq('user_id', userId)
-
     // Check cache
     const { progressCache } = await import('../middleware/performance.js')
 
     console.log(`DEBUG RESULTS:`)
     console.log(`   - Progress table: ${progressData?.length || 0} records`)
     console.log(`   - Chat sessions: ${chatSessionsData?.length || 0} records`)
-    console.log(`   - Chat history: ${chatHistoryData?.length || 0} records`)
     console.log(`   - Cache size: ${progressCache.size()}`)
 
     res.json({
@@ -876,11 +929,6 @@ router.get('/debug/all-data-sources', authenticateToken, async (req, res) => {
             count: chatSessionsData?.length || 0,
             data: chatSessionsData,
             error: chatSessionsError?.message
-          },
-          chatHistory: {
-            count: chatHistoryData?.length || 0,
-            data: chatHistoryData,
-            error: chatHistoryError?.message
           },
           cache: {
             size: progressCache.size()
@@ -906,13 +954,29 @@ router.get('/continue', authenticateToken, async (req, res) => {
     const lastAccessed = allProgress.length > 0 ? allProgress[0] : null
 
     if (!lastAccessed) {
-      // If no progress, start with first topic
+      // New user: create progress row for first topic so "Continue learning" has a row before they open Learn
       const firstTopic = getAllTopics(courses)[0]
-      console.log(`No progress found for user ${userId}, starting with first topic: ${firstTopic.id}`)
+      if (firstTopic) {
+        const totalTasks = (firstTopic.tasks || []).length
+        await upsertProgress(userId, firstTopic.id, {
+          phase: 'session',
+          status: 'in_progress',
+          current_task: totalTasks > 0 ? 1 : 0,
+          total_tasks: totalTasks,
+          assignments_completed: 0,
+          updated_at: new Date().toISOString()
+        })
+        console.log(`No progress found for user ${userId}, created first-topic progress: ${firstTopic.id}`)
+      }
+
+      const topic = firstTopic || getAllTopics(courses)[0]
+      if (!topic) {
+        return res.json(createSuccessResponse({ lastAccessed: null }))
+      }
 
       return res.json(createSuccessResponse({
         lastAccessed: {
-          topicId: firstTopic.id,
+          topicId: topic.id,
           phase: 'session'
         }
       }))
@@ -961,9 +1025,7 @@ router.get('/topics', authenticateToken, async (req, res) => {
       return {
         ...topic,
         status: progress?.status || 'not_started',
-        phase: progress?.phase || 'session',
-        lastAccessed: progress?.last_accessed,
-        completedAt: progress?.completed_at
+        phase: progress?.phase || 'session'
       }
     })
 
@@ -986,12 +1048,36 @@ router.get('/topic/:topicId', authenticateToken, async (req, res) => {
     if (!topic) return
 
     let progress = await getProgress(userId, topicId)
+    const totalTasks = (topic.tasks || []).length
+
+    // Ensure progress row exists and refresh updated_at and total_tasks when user opens this topic.
+    const now = new Date().toISOString()
+    if (!progress) {
+      progress = await upsertProgress(userId, topicId, {
+        phase: 'session',
+        status: 'in_progress',
+        topic_id: String(topicId),
+        current_task: totalTasks > 0 ? 1 : 0,
+        total_tasks: totalTasks,
+        assignments_completed: 0,
+        updated_at: now
+      })
+    } else {
+      // Row exists: refresh updated_at and total_tasks (so 0 never sticks)
+      progress = await upsertProgress(userId, topicId, {
+        phase: progress.phase || 'session',
+        status: progress.status || 'in_progress',
+        total_tasks: totalTasks,
+        updated_at: now
+      })
+    }
 
     // Normalize legacy state: completed + session → assignment + in_progress (2-phase model)
     if (progress?.phase === 'session' && progress?.status === 'completed') {
       await upsertProgress(userId, topicId, {
         phase: 'assignment',
         status: 'in_progress',
+        total_tasks: totalTasks,
         updated_at: new Date().toISOString()
       })
       progress = { ...progress, phase: 'assignment', status: 'in_progress' }
@@ -1009,8 +1095,10 @@ router.get('/topic/:topicId', authenticateToken, async (req, res) => {
         ...topic,
         status: progress?.status || 'not_started',
         phase: progress?.phase || 'session',
-        lastAccessed: progress?.last_accessed,
-        completedAt: progress?.completed_at
+        current_task: progress?.current_task ?? 1,
+        total_tasks: progress?.total_tasks ?? totalTasks,
+        assignments_completed: progress?.assignments_completed ?? 0,
+        topic_completed: progress?.status === 'completed' || (totalTasks > 0 && (progress?.assignments_completed ?? 0) >= totalTasks)
       },
       nextTopic: nextTopic
     }))

@@ -52,6 +52,12 @@ class CodeExecutor {
           input: {},
           expected: null
         });
+        return {
+          success: false,
+          error: error.message,
+          results,
+          allPassed: false
+        };
       }
     } else {
       // Handle assignment execution (with test cases)
@@ -138,12 +144,15 @@ class CodeExecutor {
   }
 
   runScriptWithInputs(code, inputs) {
+    const inputKeys = Object.keys(inputs || {});
+    // Comment out user declarations of input variables so we don't get "Identifier has already been declared"
+    const codeToRun = inputKeys.length > 0 ? this.stripInputVariableDeclarations(code, inputKeys) : code;
     // Inject input variables
     const inputCode = Object.entries(inputs || {})
       .map(([key, value]) => `const ${key} = ${JSON.stringify(value)};`)
       .join('\n');
 
-    const fullCode = inputCode + (inputCode ? '\n' : '') + code;
+    const fullCode = inputCode + (inputCode ? '\n' : '') + codeToRun;
 
     // Capture console output with enhanced logging
     const outputs = [];
@@ -214,6 +223,17 @@ class CodeExecutor {
     } finally {
       self.console = originalConsole;
     }
+  }
+
+  stripInputVariableDeclarations(code, inputKeys) {
+    if (!inputKeys || inputKeys.length === 0) return code;
+    const escaped = inputKeys.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+    const names = escaped.join('|');
+    const re = new RegExp(
+      `^(\\s*)(const|let|var)\\s+(${names})\\s*=.*;?\\s*$`,
+      'gm'
+    );
+    return code.replace(re, '$1// [test input] $2 $3 = ... ;');
   }
 
   executeCodeSafely(code) {
