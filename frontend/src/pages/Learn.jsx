@@ -246,6 +246,7 @@ const Learn = () => {
   const [incompleteModalMessage, setIncompleteModalMessage] = useState('')
   const [submitLoading, setSubmitLoading] = useState(false)
   const [reviewLoading, setReviewLoading] = useState(false)
+  const assignmentTextareaRef = useRef(null)
 
   // Feedback phase states
 
@@ -1408,9 +1409,52 @@ const Learn = () => {
 
               {/* Code Textarea */}
               <textarea
+                ref={assignmentTextareaRef}
                 className="playground-textarea"
                 value={assignmentCode}
-                onChange={(e) => setAssignmentCode(e.target.value)}
+                onChange={(e) => {
+                  const newVal = e.target.value
+                  const oldVal = assignmentCode
+                  // Mobile fallback: soft keyboards often don't fire keydown with e.key, so auto-close in onChange
+                  if (newVal.length === oldVal.length + 1) {
+                    const AUTO_CLOSE_PAIRS = { '(': ')', '[': ']', '{': '}', '"': '"', "'": "'", '`': '`' }
+                    let insertIndex = -1
+                    let insertedChar = ''
+                    for (let i = 0; i < newVal.length; i++) {
+                      if (oldVal === newVal.slice(0, i) + newVal.slice(i + 1)) {
+                        insertIndex = i
+                        insertedChar = newVal[i]
+                        break
+                      }
+                    }
+                    if (insertIndex !== -1 && AUTO_CLOSE_PAIRS[insertedChar]) {
+                      // For quotes: don't insert closing quote if next char is already that quote (skip-over case)
+                      if (['"', "'", '`'].includes(insertedChar) && newVal[insertIndex + 1] === insertedChar) {
+                        setAssignmentCode(newVal)
+                        requestAnimationFrame(() => {
+                          const ta = assignmentTextareaRef.current
+                          if (ta) {
+                            ta.selectionStart = ta.selectionEnd = insertIndex + 1
+                          }
+                        })
+                        return
+                      }
+                      const closeChar = AUTO_CLOSE_PAIRS[insertedChar]
+                      const finalVal = newVal.slice(0, insertIndex + 1) + closeChar + newVal.slice(insertIndex + 1)
+                      setAssignmentCode(finalVal)
+                      const cursorPos = insertIndex + 1
+                      requestAnimationFrame(() => {
+                        const ta = assignmentTextareaRef.current
+                        if (ta) {
+                          ta.focus()
+                          ta.selectionStart = ta.selectionEnd = cursorPos
+                        }
+                      })
+                      return
+                    }
+                  }
+                  setAssignmentCode(newVal)
+                }}
                 onScroll={(e) => {
                   // Sync line numbers with textarea scroll
                   const lineNumbers = e.target.parentElement.querySelector('.playground-line-numbers')

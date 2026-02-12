@@ -2208,8 +2208,9 @@
   /* Responsive Headers - Reduced height for mobile */
   .playground-editor-header,
   .playground-output-header {
-    height: clamp(32px, 5vh, 48px) !important;
-    padding: clamp(4px, 1vh, 10px) !important;
+    height: clamp(26px, 4vh, 40px) !important;
+    min-height: clamp(26px, 4vh, 40px) !important;
+    padding: clamp(3px, 0.8vh, 8px) !important;
     font-size: clamp(0.6rem, 1.6vw, 0.7rem) !important;
   }
 
@@ -2235,20 +2236,20 @@
       border-radius: 1px !important;
     }
 
-    /* Responsive Line Numbers and Content */
+    /* Responsive Line Numbers and Content - mobile */
     .playground-line-numbers,
     .terminal-line-numbers,
     .assignment-terminal-line-numbers {
-      width: 28px !important;
-      min-width: 28px !important;
-      padding: 8px 4px !important;
-      font-size: 0.65rem !important;
+      width: 24px !important;
+      min-width: 24px !important;
+      padding: 6px 3px !important;
+      font-size: 0.6rem !important;
     }
 
     .playground-textarea,
     .playground-output {
-      padding: clamp(8px, 2vw, 16px) !important;
-      font-size: clamp(0.65rem, 2vw, 0.75rem) !important;
+      padding: clamp(6px, 1.5vw, 14px) !important;
+      font-size: 0.65rem !important;
     }
 
   /* Responsive Buttons - Smaller than main code button */
@@ -2274,8 +2275,9 @@
 
   .playground-editor-header,
   .playground-output-header {
-    height: clamp(28px, 6vh, 40px) !important;
-    padding: clamp(3px, 0.8vh, 6px) !important;
+    height: clamp(22px, 4vh, 32px) !important;
+    min-height: clamp(22px, 4vh, 32px) !important;
+    padding: clamp(2px, 0.5vh, 5px) !important;
     font-size: clamp(0.5rem, 2vw, 0.65rem) !important;
     flex-wrap: wrap !important;
     gap: clamp(2px, 0.6vh, 4px) !important;
@@ -2284,15 +2286,15 @@
     .playground-line-numbers,
     .terminal-line-numbers,
     .assignment-terminal-line-numbers {
-      width: 24px !important;
-      min-width: 24px !important;
-      padding: 6px 2px !important;
-      font-size: 0.6rem !important;
+      width: 20px !important;
+      min-width: 20px !important;
+      padding: 5px 2px !important;
+      font-size: 0.55rem !important;
     }
 
     .playground-textarea,
     .playground-output {
-      font-size: clamp(0.6rem, 2.5vw, 0.7rem) !important;
+      font-size: 0.6rem !important;
     }
 
   /* Mobile Button Layout - Extra small for mobile */
