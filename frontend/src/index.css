@@ -24,19 +24,29 @@
   font-family: var(--sara-font) !important;
 }
 
-/* Inner wrapper: guarantees center even when fixed positioning is affected (e.g. Vercel) */
+/* Inner wrapper: fixed + full viewport so content is always centered (immune to parent transform/size) */
 .loading-container .loading-inner,
 .dashboard-loading .loading-inner,
 .app-loading .loading-inner {
-  position: absolute !important;
-  left: 50% !important;
-  top: 50% !important;
-  transform: translate(-50%, -50%) !important;
+  position: fixed !important;
+  left: 0 !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
   justify-content: center !important;
   gap: 16px !important;
+  pointer-events: none !important;
+}
+.loading-container .loading-inner *,
+.dashboard-loading .loading-inner *,
+.app-loading .loading-inner * {
+  pointer-events: auto !important;
 }
 
 /* Full-Screen Loading Spinners */

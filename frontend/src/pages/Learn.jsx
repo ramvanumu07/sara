@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { learning, chat } from '../config/api'
 import EditorToggle from '../components/EditorToggle'
@@ -925,7 +926,7 @@ const Learn = () => {
   }, [])
 
   if (loading) {
-    return (
+    return createPortal(
       <div className="loading-container">
         <div className="loading-inner">
           <div
@@ -943,7 +944,8 @@ const Learn = () => {
           />
           <p>Loading topic...</p>
         </div>
-      </div>
+      </div>,
+      document.body
     )
   }
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { learning, progress } from '../config/api'
@@ -458,7 +459,7 @@ const Dashboard = () => {
   }
 
   if (loading) {
-    return (
+    return createPortal(
       <div className="dashboard-loading">
         <div className="loading-inner">
           <div
@@ -476,7 +477,8 @@ const Dashboard = () => {
           />
           <p>Loading your dashboard...</p>
         </div>
-      </div>
+      </div>,
+      document.body
     )
   }
 

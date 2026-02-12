@@ -5,6 +5,7 @@
  */
 
 import React from 'react'
+import { createPortal } from 'react-dom'
 import { BrowserRouter as Router, Routes, Route, Navigate, useParams } from 'react-router-dom'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 
@@ -40,7 +41,7 @@ const AppRoutes = () => {
 
   // Show loading while checking authentication
   if (loading) {
-    return (
+    return createPortal(
       <div className="app-loading">
         <div className="loading-inner">
           <div
@@ -58,7 +59,8 @@ const AppRoutes = () => {
           />
           <p>Loading Sara...</p>
         </div>
-      </div>
+      </div>,
+      document.body
     )
   }
 
