@@ -152,6 +152,52 @@ const MessageContent = ({ content, role }) => {
   )
 }
 
+// Same formatting as MessageContent (bold, fenced and inline code) for assignment AI review
+function renderFormattedReview(text) {
+  if (!text || typeof text !== 'string') return null
+  const codeBlockParts = text.split(/(```[\s\S]*?```)/g)
+  return codeBlockParts.map((part, blockIndex) => {
+    if (part.startsWith('```') && part.endsWith('```')) {
+      const raw = part.slice(3, -3).trim()
+      const firstLineEnd = raw.indexOf('\n')
+      const looksLikeLang = (s) => /^[a-z0-9+#-]+$/i.test((s || '').trim()) && (s || '').trim().length < 20
+      const firstLine = firstLineEnd === -1 ? raw : raw.slice(0, firstLineEnd).trim()
+      const rest = firstLineEnd === -1 ? '' : raw.slice(firstLineEnd + 1).trim()
+      const code = looksLikeLang(firstLine) ? rest : raw
+      return (
+        <div key={`rb-${blockIndex}`} style={fencedBlockStyle}>
+          <pre style={{ margin: 0, fontFamily: 'inherit', fontSize: 'inherit', color: '#e2e8f0', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{code}</pre>
+        </div>
+      )
+    }
+    const inlineCodeParts = part.split(/(`[^`]+`)/g)
+    return (
+      <React.Fragment key={`rf-${blockIndex}`}>
+        {inlineCodeParts.map((inlinePart, inlineIndex) => {
+          if (inlinePart.startsWith('`') && inlinePart.endsWith('`')) {
+            const inlineCode = inlinePart.slice(1, -1)
+            if (looksLikeCodeStatement(inlineCode)) {
+              const isMultiline = inlineCode.includes('\n')
+              if (isMultiline) {
+                return (
+                  <div key={`r-${blockIndex}-${inlineIndex}`} style={fencedBlockStyle}>
+                    <pre style={{ margin: 0, fontFamily: 'inherit', fontSize: 'inherit', color: '#e2e8f0', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{inlineCode}</pre>
+                  </div>
+                )
+              }
+              return <span key={`r-${blockIndex}-${inlineIndex}`} style={inlineStatementStyle}>{inlineCode}</span>
+            }
+            return (
+              <code key={`r-${blockIndex}-${inlineIndex}`} style={{ backgroundColor: '#f1f5f9', color: '#334155', padding: '2px 6px', borderRadius: '4px', fontSize: '0.85rem', fontFamily: 'Monaco, Consolas, monospace', border: '1px solid #e2e8f0' }}>{inlineCode}</code>
+            )
+          }
+          return <React.Fragment key={`r-${blockIndex}-${inlineIndex}`}>{renderTextWithBold(inlinePart, `r-${blockIndex}-${inlineIndex}`)}</React.Fragment>
+        })}
+      </React.Fragment>
+    )
+  })
+}
+
 const Learn = () => {
   const { topicId } = useParams()
   const topicIdRef = useRef(topicId)
@@ -198,6 +244,7 @@ const Learn = () => {
   const [showIncompleteModal, setShowIncompleteModal] = useState(false)
   const [incompleteModalMessage, setIncompleteModalMessage] = useState('')
   const [submitLoading, setSubmitLoading] = useState(false)
+  const [reviewLoading, setReviewLoading] = useState(false)
 
   // Feedback phase states
 
@@ -283,11 +330,11 @@ const Learn = () => {
                 setMessages([message])
               }
             }
-            } catch (historyError) {
-              console.error('Error loading chat history:', historyError)
-              // Start new session on error
-              try {
-                const startResponse = await learning.sessionChat(requestedTopicId, '')
+          } catch (historyError) {
+            console.error('Error loading chat history:', historyError)
+            // Start new session on error
+            try {
+              const startResponse = await learning.sessionChat(requestedTopicId, '')
               if (startResponse?.data?.data?.debugSystemPrompt) {
                 console.log('Session system prompt (finalized):', startResponse.data.data.debugSystemPrompt)
               }
@@ -413,7 +460,7 @@ const Learn = () => {
 
       // Execute code using secure Web Worker
       const result = await CodeExecutor.executeForTesting(
-        userCode, 
+        userCode,
         [], // No test cases for playground
         null, // No function name for playground
         'script' // Always script type for playground
@@ -434,7 +481,7 @@ const Learn = () => {
             }
             return r.output || r.result || ''
           }).filter(output => output !== '')
-          
+
           if (outputs.length > 0) {
             outputText = outputs.join('\n')
           } else {
@@ -443,7 +490,7 @@ const Learn = () => {
         } else {
           outputText = 'Code executed successfully (no output)'
         }
-        
+
         // Add execution time for longer operations
         if (executionTime > 1000) {
           outputText += `\nExecution completed in ${executionTime}ms`
@@ -470,9 +517,9 @@ const Learn = () => {
       // Update output content
       let formattedOutput = ''
       outputLines.forEach((line) => {
-        const color = line.includes('Error:') ? '#ef4444' : 
-                     line.includes('Warning') ? '#f59e0b' : 
-                     line.includes('Execution completed') ? '#10a37f' : outputColor
+        const color = line.includes('Error:') ? '#ef4444' :
+          line.includes('Warning') ? '#f59e0b' :
+            line.includes('Execution completed') ? '#10a37f' : outputColor
         formattedOutput += `<div style="line-height: 1.4; color: ${color}; white-space: pre; padding-left: 2px; font-size: 0.875rem;">${line || ' '}</div>`
       })
 
@@ -613,7 +660,7 @@ const Learn = () => {
     assignmentTestResultsRef.current = null
     setAssignmentTestResults(null)
     setAssignmentReview('')
-    setAssignmentOutput('Running...')
+    setAssignmentOutput('')
 
     try {
       const currentTask = assignments[currentAssignment]
@@ -647,6 +694,18 @@ const Learn = () => {
     }
   }
 
+  // Format test input for display: show key-value list instead of raw object
+  const formatTestInput = (input) => {
+    if (input == null) return null
+    if (typeof input !== 'object') return [{ key: '', value: String(input) }]
+    const entries = Object.entries(input)
+    if (entries.length === 0) return null
+    return entries.map(([k, v]) => ({
+      key: k,
+      value: typeof v === 'object' && v !== null ? JSON.stringify(v) : String(v)
+    }))
+  }
+
   // Build test results text from results array (local or backend shape)
   const buildTestResultsText = (results, allPassed) => {
     if (!results?.length) return ''
@@ -666,13 +725,14 @@ const Learn = () => {
     return text
   }
 
-  // Submit: run tests (show pass/fail + output in terminal) + generate and display AI review (no backend progress/Supabase)
+  // Submit: run tests (show pass/fail), persist progress when all pass. No AI review — use Review button for that.
   const handleSubmitAssignment = async () => {
     const currentTask = assignments[currentAssignment]
     const testCases = currentTask?.testCases || []
     const solutionType = currentTask?.solution_type || 'script'
     const functionName = currentTask?.function_name || null
 
+    setAssignmentReview('') // show test results, not previous review
     try {
       setSubmitLoading(true)
 
@@ -729,16 +789,6 @@ const Learn = () => {
         console.error('Failed to save assignment progress:', completeErr)
         setAssignmentOutput((prev) => (prev ? `${prev}\n(Progress could not be saved: ${completeErr?.response?.data?.message || completeErr.message})` : `Progress could not be saved: ${completeErr?.response?.data?.message || completeErr.message}`))
       }
-
-      // 2. Generate and display AI review on user code (like Review button)
-      try {
-        const feedbackRes = await learning.getFeedback(topicId, assignmentCode, currentTask)
-        const reviewText = feedbackRes?.data?.data?.feedback || ''
-        setAssignmentReview(reviewText)
-      } catch (feedbackErr) {
-        console.error('Get review error:', feedbackErr)
-        setAssignmentReview('Could not load AI review. Please try again.')
-      }
     } catch (err) {
       console.error('Error submitting assignment:', err)
       const body = err.response?.data
@@ -750,6 +800,28 @@ const Learn = () => {
       setSubmitLoading(false)
     }
   }
+
+  // Review: generate AI review only when user clicks Review (enabled only after all tests pass)
+  const handleReviewAssignment = async () => {
+    const currentTask = assignments[currentAssignment]
+    if (!currentTask) return
+    try {
+      setReviewLoading(true)
+      setAssignmentReview('')
+      const feedbackRes = await learning.getFeedback(topicId, assignmentCode, currentTask)
+      const reviewText = feedbackRes?.data?.data?.feedback || ''
+      setAssignmentReview(reviewText)
+    } catch (feedbackErr) {
+      console.error('Get review error:', feedbackErr)
+      setAssignmentReview('Could not load AI review. Please try again.')
+    } finally {
+      setReviewLoading(false)
+    }
+  }
+
+  // Review button: enabled only when all test cases passed (for current assignment)
+  const assignmentTestResultsForReview = assignmentTestResults ?? assignmentTestResultsRef.current
+  const allTestsPassedForReview = assignmentTestResultsForReview?.length > 0 && assignmentTestResultsForReview.every(r => r.passed)
 
   // Next: go to next assignment in topic, or next topic's session phase. When topic not complete, can only go forward if current assignment is completed.
   const canGoToNextAssignment = assignmentComplete || (currentAssignment < assignmentsCompletedCount)
@@ -771,15 +843,15 @@ const Learn = () => {
           codeWithComments += req.startsWith('//') ? `${req}\n` : `// ${req}\n`
         })
       }
-          codeWithComments += `// START YOUR CODE AFTER THIS LINE. DO NOT REMOVE THIS LINE\n`
-          codeWithComments += nextAssignment.starter_code || ''
-          setAssignmentCode(codeWithComments)
-          setAssignmentOutput('')
-          assignmentTestResultsRef.current = null
-          setAssignmentTestResults(null)
-          setAssignmentReview('')
-        } else {
-          // Last assignment — only allow next topic if all assignments completed
+      codeWithComments += `// START YOUR CODE AFTER THIS LINE. DO NOT REMOVE THIS LINE\n`
+      codeWithComments += nextAssignment.starter_code || ''
+      setAssignmentCode(codeWithComments)
+      setAssignmentOutput('')
+      assignmentTestResultsRef.current = null
+      setAssignmentTestResults(null)
+      setAssignmentReview('')
+    } else {
+      // Last assignment — only allow next topic if all assignments completed
       if (!assignmentComplete) {
         setIncompleteModalMessage('Please complete all assignments in this topic before moving to the next topic. Submit each assignment after your code passes the tests.')
         setShowIncompleteModal(true)
@@ -1118,12 +1190,12 @@ const Learn = () => {
         <SessionPlayground
           code={userCode}
           onCodeChange={setUserCode}
-          onCopySuccess={() => {}}
-          onRunError={() => {}}
+          onCopySuccess={() => { }}
+          onRunError={() => { }}
         />
       )}
 
-            {/* Assignment Phase - Same Structure as Playground */}
+      {/* Assignment Phase - Same Structure as Playground */}
       {phase === 'assignment' && assignments.length > 0 && (
         <div className="playground-main-content" style={{
           flex: 1,
@@ -1219,9 +1291,32 @@ const Learn = () => {
                     height: '28px',
                     alignSelf: 'flex-start'
                   }}
-                  title="Submit Assignment (test results + AI review)"
+                  title="Run tests and save progress when all pass"
                 >
-                  {submitLoading ? 'Submitting...' : 'Submit'}
+                  Test
+                </button>
+                <button
+                  onClick={handleReviewAssignment}
+                  disabled={reviewLoading || !allTestsPassedForReview}
+                  className="playground-review-btn"
+                  style={{
+                    backgroundColor: (reviewLoading || !allTestsPassedForReview) ? '#d1d5db' : '#059669',
+                    color: (reviewLoading || !allTestsPassedForReview) ? '#9ca3af' : 'white',
+                    border: 'none',
+                    borderRadius: '6px',
+                    padding: '6px 12px',
+                    fontSize: '0.75rem',
+                    fontWeight: '500',
+                    cursor: (reviewLoading || !allTestsPassedForReview) ? 'not-allowed' : 'pointer',
+                    transition: 'all 0.2s ease',
+                    boxShadow: (reviewLoading || !allTestsPassedForReview) ? 'none' : '0 1px 3px rgba(0, 0, 0, 0.1)',
+                    minWidth: '72px',
+                    height: '28px',
+                    alignSelf: 'flex-start'
+                  }}
+                  title="Get AI review (available after all tests pass)"
+                >
+                  Review
                 </button>
               </div>
             </div>
@@ -1570,20 +1665,22 @@ const Learn = () => {
                 borderBottom: '2px solid #10a37f',
                 marginBottom: '-1px'
               }}>
-                Test Results
+                {assignmentReview ? 'AI Review' : 'Test Results'}
               </div>
             </div>
 
-            {/* Run = terminal (dark, line numbers). Submit = document (light, test results + AI review). */}
+            {/* Run = terminal. Test = document (test results only). Review = document (review only). */}
             {(() => {
               const testResults = assignmentTestResults ?? assignmentTestResultsRef.current
               const hasTestResults = testResults && Array.isArray(testResults) && testResults.length > 0
-              const isDocumentMode = hasTestResults || assignmentReview
+              const showReviewOnly = !!assignmentReview
+              const isDocumentMode = hasTestResults || showReviewOnly
 
               if (isDocumentMode) {
                 return (
                   <div
                     id="assignment-output"
+                    className="assignment-review-panel"
                     style={{
                       flex: 1,
                       overflow: 'auto',
@@ -1595,38 +1692,58 @@ const Learn = () => {
                       fontSize: '0.9375rem',
                       lineHeight: 1.6,
                       color: '#374151',
-                      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+                      fontFamily: "'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
                     }}
                   >
                     <div style={{ maxWidth: '720px', margin: '0 auto' }}>
-                      <div style={{ color: '#059669', marginBottom: '16px', fontWeight: 600, fontSize: '1rem' }}>
-                        {assignmentOutput && assignmentOutput.startsWith('Test Results:') ? assignmentOutput : (hasTestResults ? `Test Results: ${testResults.filter(r => r.passed).length}/${testResults.length} passed` : '')}
-                      </div>
-                      {hasTestResults && testResults.map((t, i) => {
-                        const hasInput = t.input && typeof t.input === 'object' && Object.keys(t.input).length > 0
-                        const inputDisplay = hasInput ? JSON.stringify(t.input, null, 2) : '(none)'
-                        return (
-                          <div key={i} style={{ marginBottom: '20px', padding: '12px 16px', backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px', borderLeft: `4px solid ${t.passed ? '#10a37f' : '#ef4444'}` }}>
-                            <div style={{ color: '#6b7280', marginBottom: '6px', fontWeight: 500 }}>
-                              Test {i + 1} {t.passed ? '✅' : '❌'}
-                            </div>
-                            <div style={{ color: '#6b7280', marginBottom: '2px', fontSize: '0.8125rem' }}>Input:</div>
-                            <div style={{ color: '#111827', marginBottom: '8px', marginLeft: '8px', fontFamily: 'Monaco, Consolas, monospace', fontSize: '0.8125rem', whiteSpace: 'pre-wrap' }}>{inputDisplay}</div>
-                            <div style={{ color: '#6b7280', marginBottom: '2px', fontSize: '0.8125rem' }}>Expected:</div>
-                            <div style={{ color: '#111827', marginBottom: '8px', marginLeft: '8px' }}>{String(t.expected ?? '')}</div>
-                            <div style={{ color: '#6b7280', marginBottom: '2px', fontSize: '0.8125rem' }}>Actual:</div>
-                            <div style={{ color: t.passed ? '#059669' : '#dc2626', marginLeft: '8px' }}>{String(t.actual ?? '')}</div>
-                            {!t.passed && t.error && (
-                              <div style={{ color: '#dc2626', marginTop: '6px', marginLeft: '8px', fontSize: '0.8125rem' }}>Error: {t.error}</div>
-                            )}
+                      {showReviewOnly ? (
+                        <>
+                          <div style={{ color: '#111827', fontWeight: 600, marginBottom: '12px', fontSize: '0.9375rem', fontFamily: "'Outfit', sans-serif" }}>AI Review</div>
+                          <div className="message-text" style={{ color: '#374151', fontSize: '0.9375rem', lineHeight: 1.7, fontFamily: "'Outfit', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+                            {renderFormattedReview(assignmentReview)}
                           </div>
-                        )
-                      })}
-                      {assignmentReview && (
-                        <div style={{ marginTop: '24px', paddingTop: '24px', borderTop: '1px solid #e5e7eb' }}>
-                          <div style={{ color: '#059669', fontWeight: 600, marginBottom: '12px', fontSize: '1rem' }}>AI Review</div>
-                          <div style={{ color: '#374151', whiteSpace: 'pre-wrap', fontSize: '0.9375rem', lineHeight: 1.7 }}>{assignmentReview}</div>
-                        </div>
+                        </>
+                      ) : (
+                        <>
+                          <div style={{ color: '#6b7280', marginBottom: '16px', fontSize: '0.8125rem' }}>
+                            {testResults.filter(r => r.passed).length}/{testResults.length} passed
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            {testResults.map((t, i) => {
+                              const inputEntries = formatTestInput(t.input)
+                              return (
+                                <div key={i} style={{
+                                  display: 'grid',
+                                  gridTemplateColumns: '24px 1fr',
+                                  gap: '8px 12px',
+                                  alignItems: 'start',
+                                  padding: '10px 12px',
+                                  backgroundColor: '#fff',
+                                  border: '1px solid #e5e7eb',
+                                  borderRadius: '6px',
+                                  fontSize: '0.8125rem'
+                                }}>
+                                  <span style={{ color: t.passed ? '#10a37f' : '#ef4444', fontWeight: 600 }}>{t.passed ? '✓' : '✗'}</span>
+                                  <div style={{ minWidth: 0 }}>
+                                    {inputEntries && inputEntries.length > 0 && (
+                                      <div style={{ color: '#6b7280', marginBottom: '6px' }}>
+                                        <div style={{ marginBottom: '2px' }}>Input:</div>
+                                        <div style={{ marginLeft: '8px', fontFamily: 'Monaco, Consolas, monospace', color: '#111827' }}>
+                                          {inputEntries.map(({ key, value }, j) => (
+                                            <div key={j}>{key ? `${key}: ${value}` : value}</div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+                                    <div style={{ color: '#6b7280', marginBottom: '2px' }}>Expected: <span style={{ color: '#111827', fontFamily: 'Monaco, Consolas, monospace' }}>{String(t.expected ?? '')}</span></div>
+                                    <div style={{ color: '#6b7280' }}>Actual: <span style={{ color: t.passed ? '#10a37f' : '#dc2626', fontFamily: 'Monaco, Consolas, monospace' }}>{String(t.actual ?? '')}</span></div>
+                                    {!t.passed && t.error && <div style={{ color: '#dc2626', marginTop: '4px' }}>{t.error}</div>}
+                                  </div>
+                                </div>
+                              )
+                            })}
+                          </div>
+                        </>
                       )}
                     </div>
                   </div>
