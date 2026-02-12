@@ -221,13 +221,17 @@
   pointer-events: all;
 }
 
-/* Main Content Area */
+/* Main Content Area - same width on localhost and Vercel */
 .main-content {
   flex: 1;
-  padding: 24px;
+  min-width: 0;
+  width: 100%;
   max-width: 800px;
+  padding: 24px;
   margin: 0 auto;
   overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 /* Course Header */
@@ -238,9 +242,10 @@
 
 .course-header h2 {
   font-size: 2rem;
-  font-weight: 700;
+  font-weight: 700 !important;
   color: #111827;
   margin: 0 0 8px 0;
+  font-family: var(--sara-font);
 }
 
 .course-header p {
@@ -257,6 +262,8 @@
   padding: 24px;
   margin-bottom: 32px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .progress-section h3 {
@@ -284,9 +291,10 @@
 .stat .number {
   display: block;
   font-size: 1.5rem;
-  font-weight: 700;
+  font-weight: 700 !important;
   color: #10a37f;
   margin-bottom: 4px;
+  font-family: var(--sara-font);
 }
 
 .stat .label {
@@ -315,7 +323,7 @@
   margin-bottom: 32px;
 }
 
-/* Current Learning Card */
+/* Current Learning Card - prevent icon overflow on mobile/Vercel */
 .current-learning-card {
   background: #f8fafc;
   border: 1px solid #e2e8f0;
@@ -323,6 +331,8 @@
   padding: 16px;
   margin-bottom: 20px;
   text-align: left;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .learning-header {
@@ -330,6 +340,7 @@
   align-items: center;
   gap: 8px;
   margin-bottom: 12px;
+  min-width: 0;
 }
 
 .learning-icon {
@@ -347,6 +358,8 @@
 
 .topic-info {
   margin-left: 26px;
+  min-width: 0;
+  flex: 1;
 }
 
 .topic-title {
@@ -429,6 +442,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  min-width: 0;
   padding: 10px 12px;
   background: #ffffff;
   border: 1px solid #e5e7eb;
