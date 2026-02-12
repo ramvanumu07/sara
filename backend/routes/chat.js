@@ -12,7 +12,7 @@ import { getChatHistory, saveChatTurn, saveInitialMessage, clearChatHistory, get
 import { updateChatPhase } from '../services/chatHistory.js'
 import { getSupabaseClient } from '../services/database.js'
 import { courses } from '../../data/curriculum.js'
-import { formatLearningObjectives, findTopicById } from '../utils/curriculum.js'
+import { formatLearningObjectives, findTopicById, getTopicsTaughtSoFar } from '../utils/curriculum.js'
 import { getTopicOrRespond } from '../utils/topicHelper.js'
 import { getCompletedTopics, getProgress, upsertProgress } from '../services/database.js'
 import progressManager from '../services/progressManager.js'
@@ -309,36 +309,34 @@ router.post('/feedback', authenticateToken, rateLimitMiddleware, async (req, res
     const topic = getTopicOrRespond(res, courses, topicId, createErrorResponse)
     if (!topic) return
 
-    // Build feedback prompt
-    const feedbackPrompt = `You are Sara, a JavaScript tutor providing code feedback for "${topic.title}".
+    const topicsTaughtSoFar = getTopicsTaughtSoFar(courses, topicId)
+    const conceptsScope = topicsTaughtSoFar.length > 0
+      ? topicsTaughtSoFar.join(' → ')
+      : topic.title
 
-Assignment: ${assignment.description}
-Student's Code: ${userCode}
+    // Build feedback prompt: experienced developer writes best solution using only concepts taught so far
+    const feedbackPrompt = `You are an experienced JavaScript developer. Your task is to write the best possible solution for the assignment below, as you would write it yourself—clean, clear, and professional.
 
-Your role:
-- Review the student's code carefully
-- Check if it meets the assignment requirements
-- Provide constructive feedback
-- Point out any errors or improvements
-- Celebrate what they did well
-- Suggest next steps if needed
+STRICT CONSTRAINT: CONCEPTS TAUGHT SO FAR
+The student has only completed these topics in order: ${conceptsScope}
+They have NOT been taught any topic that comes after this list in the curriculum. Your solution must ONLY use concepts from the topics in that list. Do not use any language feature or pattern that belongs to a later topic. Limit yourself strictly to what has been taught so far.
 
-Guidelines:
-- Be encouraging and positive
-- Point out specific issues with explanations
-- Suggest improvements with examples
-- Acknowledge correct parts of their solution
-- Help them understand concepts, not just fix syntax
+ASSIGNMENT
+${assignment.description}
 
-Provide detailed feedback on their code:`
+STUDENT'S CURRENT CODE (for context only; you are writing your own solution)
+${userCode}
+
+OUTPUT
+Output only your refactored solution: a single fenced JavaScript code block. Write the code that solves the assignment in the best way possible within the concepts taught so far. Include any template lines (e.g. the provided const/let declarations) if the assignment expects them; otherwise output the runnable solution. No explanation, no issues list, no commentary—just the code in a \`\`\`javascript block.`
 
     const messages = [
       { role: 'system', content: feedbackPrompt },
-      { role: 'user', content: `Please review my code for the assignment: "${assignment.description}"\n\nMy code:\n${userCode}` }
+      { role: 'user', content: `Write the best solution for this assignment using only the concepts taught so far. Output only a fenced JavaScript code block.` }
     ]
 
-    // Get AI response (assignment review only — no phase change)
-    const aiResponse = await callAI(messages, 1200, 0.4, 'llama-3.3-70b-versatile')
+    // Get AI response (refactored code only)
+    const aiResponse = await callAI(messages, 1500, 0.3, 'llama-3.3-70b-versatile')
 
     console.log(`Code feedback: User ${userId}, Topic ${topicId}`)
 

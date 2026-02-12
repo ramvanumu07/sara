@@ -1723,7 +1723,7 @@ const Learn = () => {
                                   borderRadius: '6px',
                                   fontSize: '0.8125rem'
                                 }}>
-                                  <span style={{ color: t.passed ? '#10a37f' : '#ef4444', fontWeight: 600 }}>{t.passed ? '✓' : '✗'}</span>
+                                  <span style={{ color: t.passed ? '#10a37f' : '#ef4444', fontWeight: 600 }}>{t.passed ? '✅' : '❌'}</span>
                                   <div style={{ minWidth: 0 }}>
                                     {inputEntries && inputEntries.length > 0 && (
                                       <div style={{ color: '#6b7280', marginBottom: '6px' }}>
