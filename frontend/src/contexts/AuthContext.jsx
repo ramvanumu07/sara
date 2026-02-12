@@ -119,20 +119,14 @@ export const AuthProvider = ({ children }) => {
       let errorMessage = 'Login failed. Please try again.'
       
       if (error.response?.data) {
-        // Backend uses 'message' field for error messages (see responses.js)
-        if (error.response.data.message) {
-          errorMessage = error.response.data.message
-        } else if (error.response.data.error) {
-          errorMessage = error.response.data.error
-        } else if (typeof error.response.data === 'string') {
-          errorMessage = error.response.data
-        }
+        const d = error.response.data
+        if (typeof d.message === 'string') errorMessage = d.message
+        else if (typeof d.error === 'string') errorMessage = d.error
+        else if (typeof d === 'string') errorMessage = d
+        else if (d.message) errorMessage = String(d.message)
+        else if (d.error) errorMessage = String(d.error)
       }
-      
-      return { 
-        success: false, 
-        error: errorMessage
-      }
+      return { success: false, error: errorMessage }
     }
   }
 

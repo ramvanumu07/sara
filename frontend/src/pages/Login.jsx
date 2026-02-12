@@ -14,6 +14,18 @@ const MAX_LOGIN_ATTEMPTS = 5
 const RATE_LIMIT_WINDOW = 300000 // 5 minutes
 const SUBMIT_COOLDOWN = 1000 // 1 second
 
+// Ensure we always have a string for error display (backend may return object on 500)
+function toErrorString (value) {
+  if (value == null) return ''
+  if (typeof value === 'string') return value
+  if (typeof value === 'object' && value !== null) {
+    if (typeof value.message === 'string') return value.message
+    if (typeof value.error === 'string') return value.error
+    return JSON.stringify(value)
+  }
+  return String(value)
+}
+
 const Login = () => {
   const navigate = useNavigate()
   const { login, isAuthenticated } = useAuth()
@@ -128,13 +140,8 @@ const Login = () => {
         }, 500)
       } else {
         console.log('Login Page - Login failed:', result.error)
-        
-        // Handle specific error types with field-specific errors when possible
-        const errorMessage = result.error || 'Login failed'
-        
+        const errorMessage = toErrorString(result.error) || 'Login failed'
         console.log('Login Page - Processing error message:', errorMessage)
-        
-        // Check for specific error patterns and set appropriate field errors
         if (errorMessage.includes('Username or email not found') || 
             errorMessage.includes('not found') || 
             errorMessage.includes('Please check your credentials or create an account')) {
@@ -151,7 +158,6 @@ const Login = () => {
         } else if (errorMessage.includes('Invalid credentials')) {
           setErrors({ general: 'Invalid username/email or password. Please check your credentials.' })
         } else {
-          // Use the exact error message from backend
           setErrors({ general: errorMessage })
         }
         setLoginAttempts(prev => prev + 1)

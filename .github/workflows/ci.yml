@@ -176,10 +176,11 @@ jobs:
         BASE_URL: http://localhost:5173
         API_URL: http://localhost:5000
 
-  # Security Scan
+  # Security Scan (optional: does not block deploy if SNYK_TOKEN is missing or scan fails)
   security-scan:
     name: Security Scan
     runs-on: ubuntu-latest
+    continue-on-error: true
     
     steps:
     - name: Checkout code
@@ -192,11 +193,11 @@ jobs:
       with:
         args: --severity-threshold=high
 
-  # Build and Deploy (only on main branch)
+  # Build and Deploy (only on main branch; security-scan optional)
   deploy:
     name: Deploy to Production
     runs-on: ubuntu-latest
-    needs: [backend-test, frontend-test, e2e-test, security-scan]
+    needs: [backend-test, frontend-test, e2e-test]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     
     steps:

@@ -83,6 +83,19 @@ In the Vercel project: **Settings** → **Domains** → add your domain and foll
 - **Bandwidth and builds**: See [Vercel pricing](https://vercel.com/pricing).
 - **Database**: Use Supabase (or similar) separately; not included in Vercel.
 
+## GitHub Actions CI (optional)
+
+The repo has a CI workflow (`.github/workflows/ci.yml`) that runs on push. To **stop "Run failed" emails** and allow the "Deploy to Production" step to run:
+
+1. **Secrets for tests** (Repo → Settings → Secrets and variables → Actions):
+   - `SUPABASE_TEST_URL` – Supabase project URL (can be the same as production for a test project).
+   - `SUPABASE_TEST_KEY` – Supabase anon or service key for that project.
+   Without these, Backend Tests (and then E2E) will fail and deploy will be skipped.
+
+2. **Security scan** – Uses `SNYK_TOKEN` if set; if missing or the scan fails, the workflow still continues and deploy can run.
+
+3. **Vercel** – Deployment to Vercel is done by Vercel’s own Git integration (each push deploys). The CI "Deploy to Production" job is for any extra deploy steps you add (e.g. Slack notify). Your live app updates when you push, regardless of CI.
+
 ## Troubleshooting
 
 - **API 404 or 500**: Check **Deployments** → latest deployment → **Functions** and logs for the `/api` function.
