@@ -48,7 +48,8 @@ export const initializeCache = () => {
       keyPrefix: 'sara:',
       reconnectOnError: (err) => {
         const targetError = 'READONLY'
-        return err.message.includes(targetError)
+        const msg = err && typeof err.message === 'string' ? err.message : (err && err.message != null ? String(err.message) : '')
+        return msg.includes(targetError)
       }
     })
 

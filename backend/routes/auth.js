@@ -32,6 +32,9 @@ import { rateLimitMiddleware } from '../middleware/rateLimiting.js'
 
 const router = express.Router()
 
+// Ensure async route errors are passed to Express error middleware (fixes unhandled rejections on Vercel)
+const asyncHandler = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next)
+
 // ============ MIDDLEWARE ============
 
 export function authenticateToken(req, res, next) {
@@ -600,7 +603,7 @@ router.post('/signup', rateLimitMiddleware, async (req, res) => {
   }
 })
 
-router.post('/login', rateLimitMiddleware, async (req, res) => {
+router.post('/login', rateLimitMiddleware, asyncHandler(async (req, res) => {
   try {
     const { usernameOrEmail: rawInput, password } = req.body
     const usernameOrEmail = typeof rawInput === 'string' ? rawInput.trim() : (rawInput != null ? String(rawInput) : '')
@@ -721,7 +724,7 @@ router.post('/login', rateLimitMiddleware, async (req, res) => {
       }
     }
   }
-})
+}))
 
 router.post('/logout', authenticateToken, async (req, res) => {
   try {
