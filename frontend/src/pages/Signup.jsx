@@ -5,8 +5,8 @@
 
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import axios from 'axios'
 import { useAuth } from '../contexts/AuthContext'
+import api from '../config/api'
 import { validatePassword } from '../utils/passwordValidation'
 import PasswordStrengthMeter from '../components/PasswordStrengthMeter'
 import { validateEmail } from '../utils/emailValidation'
@@ -108,13 +108,13 @@ const Signup = () => {
         setUsernameAvailable(null)
         usernameCheckTimeout = setTimeout(async () => {
           try {
-            const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/auth/check-username/${encodeURIComponent(value)}`)
+            const response = await api.get(`/auth/check-username/${encodeURIComponent(value)}`)
             if (response.data.success) {
               setUsernameAvailable(response.data.data.available)
             }
           } catch (error) {
             console.error('Username check error:', error)
-            setUsernameAvailable(null)
+            setUsernameAvailable(undefined)
           }
         }, 500)
       } else {
@@ -135,7 +135,7 @@ const Signup = () => {
       if (value && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
         emailCheckTimeout = setTimeout(async () => {
           try {
-            const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/auth/check-email`, {
+            const response = await api.post('/auth/check-email', {
               email: value
             })
             if (response.data.success) {
@@ -255,7 +255,7 @@ const Signup = () => {
     setSubmitAttempts(prev => prev + 1)
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/auth/signup`, {
+      const response = await api.post('/auth/signup', {
         username: formData.username.trim(),
         email: formData.email.trim(),
         name: formData.name.trim(),

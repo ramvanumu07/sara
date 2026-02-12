@@ -5,8 +5,8 @@
 
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import axios from 'axios'
 import { useAuth } from '../contexts/AuthContext'
+import api from '../config/api'
 import { getSecurityQuestionById } from '../utils/securityQuestions'
 import './Auth.css'
 
@@ -89,7 +89,7 @@ const ForgotPassword = () => {
     setIsLoading(true)
 
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/auth/get-security-question`, {
+      const response = await api.post('/auth/get-security-question', {
         usernameOrEmail: formData.usernameOrEmail.trim()
       })
 
@@ -140,7 +140,7 @@ const ForgotPassword = () => {
 
     try {
       // Verify security answer first before proceeding to password reset
-      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/auth/verify-security-answer-only`, {
+      const response = await api.post('/auth/verify-security-answer-only', {
         usernameOrEmail: formData.usernameOrEmail.trim(),
         securityAnswer: formData.securityAnswer.trim()
       })
@@ -219,7 +219,7 @@ const ForgotPassword = () => {
 
     try {
       // Since security answer was already verified in Step 2, we just need to reset the password
-      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/auth/verify-security-answer`, {
+      const response = await api.post('/auth/verify-security-answer', {
         usernameOrEmail: formData.usernameOrEmail.trim(),
         securityAnswer: formData.securityAnswer.trim(),
         newPassword: formData.newPassword,
