@@ -11,6 +11,8 @@
   bottom: 0 !important;
   width: 100vw !important;
   height: 100vh !important;
+  height: 100dvh !important;
+  min-height: -webkit-fill-available !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
@@ -84,6 +86,9 @@
 }
 
 :root {
+    /* Font stack - same on localhost and production */
+    --sara-font: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    --sara-font-mono: 'JetBrains Mono', 'SF Mono', Monaco, 'Courier New', monospace;
     /* Sara Color Scheme - GPT Style */
     --sara-primary: #10a37f;
     --sara-primary-light: #1a9c87;
@@ -122,12 +127,27 @@
     box-sizing: border-box;
 }
 
+html {
+    height: 100%;
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+}
+
 body {
-    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    font-family: var(--sara-font);
     background: var(--main-bg);
     color: var(--text-primary);
     min-height: 100vh;
+    min-height: 100dvh;
     line-height: 1.6;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
+#root {
+    min-height: 100vh;
+    min-height: 100dvh;
 }
 
 /* Scrollbar */

@@ -7,14 +7,18 @@
   box-sizing: border-box;
 }
 
-/* Main container improvements */
+/* Main container improvements - 100dvh for mobile so it matches localhost */
 .learn-container {
   height: 100vh;
+  height: 100dvh;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   background: #fafafa;
   overflow: hidden;
   position: relative;
+  width: 100%;
+  max-width: 100vw;
 }
 
 /* Header improvements */
@@ -602,12 +606,21 @@
   }
 }
 
-/* Reduced motion support */
+/* Reduced motion support - keep loading spinners animating for feedback */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+  .loading-spinner,
+  .spinner,
+  .app-loading .loading-spinner,
+  .dashboard-loading .loading-spinner,
+  .loading-container .loading-spinner,
+  .auth-submit-btn .spinner {
+    animation-duration: 1s !important;
+    animation-iteration-count: infinite !important;
   }
 }
 

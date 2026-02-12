@@ -2,12 +2,19 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#ffffff" />
     <title>Sara - Your Personal Learning Assistant</title>
     <meta name="description" content="Learn with Sara, your AI-powered companion. Interactive lessons, personalized feedback, and hands-on practice." />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      /* Critical: prevent layout shift and ensure same baseline as localhost */
+      html { height: 100%; overflow-x: hidden; -webkit-text-size-adjust: 100%; }
+      body { margin: 0; min-height: 100%; width: 100%; max-width: 100vw; overflow-x: hidden; }
+      #root { min-height: 100%; }
+    </style>
   </head>
   <body>
     <div id="root"></div>
