@@ -460,20 +460,22 @@ const Dashboard = () => {
   if (loading) {
     return (
       <div className="dashboard-loading">
-        <div
-          className="loading-spinner"
-          style={{
-            width: 32,
-            height: 32,
-            border: '3px solid #e5e7eb',
-            borderTopColor: '#10a37f',
-            borderRadius: '50%',
-            animation: 'loadingSpin 1s linear infinite',
-            flexShrink: 0
-          }}
-          aria-hidden
-        />
-        <p>Loading your dashboard...</p>
+        <div className="loading-inner">
+          <div
+            className="loading-spinner"
+            style={{
+              width: 32,
+              height: 32,
+              border: '3px solid #e5e7eb',
+              borderTopColor: '#10a37f',
+              borderRadius: '50%',
+              animation: 'loadingSpin 1s linear infinite',
+              flexShrink: 0
+            }}
+            aria-hidden
+          />
+          <p>Loading your dashboard...</p>
+        </div>
       </div>
     )
   }

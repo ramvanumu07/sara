@@ -927,20 +927,22 @@ const Learn = () => {
   if (loading) {
     return (
       <div className="loading-container">
-        <div
-          className="loading-spinner"
-          style={{
-            width: 32,
-            height: 32,
-            border: '3px solid #e5e7eb',
-            borderTopColor: '#10a37f',
-            borderRadius: '50%',
-            animation: 'loadingSpin 1s linear infinite',
-            flexShrink: 0
-          }}
-          aria-hidden
-        />
-        <p>Loading topic...</p>
+        <div className="loading-inner">
+          <div
+            className="loading-spinner"
+            style={{
+              width: 32,
+              height: 32,
+              border: '3px solid #e5e7eb',
+              borderTopColor: '#10a37f',
+              borderRadius: '50%',
+              animation: 'loadingSpin 1s linear infinite',
+              flexShrink: 0
+            }}
+            aria-hidden
+          />
+          <p>Loading topic...</p>
+        </div>
       </div>
     )
   }
@@ -1102,7 +1104,8 @@ const Learn = () => {
                   border: 'none',
                   borderRadius: '8px',
                   cursor: sessionComplete ? 'pointer' : 'not-allowed',
-                  fontSize: '0.9rem'
+                  fontSize: '0.9rem',
+                  fontFamily: 'var(--sara-font)'
                 }}
                 title={sessionComplete ? 'Go to code tasks' : 'Complete the session to unlock code tasks'}
               >
@@ -1257,7 +1260,8 @@ const Learn = () => {
                 borderBottom: '2px solid #10a37f',
                 color: '#111827',
                 fontWeight: '500',
-                fontSize: '0.75rem'
+                fontSize: '0.75rem',
+                fontFamily: 'var(--sara-font)'
               }}>
                 assignment.js
               </div>
@@ -1279,6 +1283,7 @@ const Learn = () => {
                     padding: '6px 12px',
                     fontSize: '0.75rem',
                     fontWeight: '500',
+                    fontFamily: 'var(--sara-font)',
                     cursor: assignmentCode.trim() ? 'pointer' : 'not-allowed',
                     transition: 'all 0.2s ease',
                     boxShadow: assignmentCode.trim() ? '0 1px 3px rgba(0, 0, 0, 0.1)' : 'none',
@@ -1302,6 +1307,7 @@ const Learn = () => {
                     padding: '6px 12px',
                     fontSize: '0.75rem',
                     fontWeight: '500',
+                    fontFamily: 'var(--sara-font)',
                     cursor: submitLoading ? 'not-allowed' : 'pointer',
                     transition: 'all 0.2s ease',
                     boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
@@ -1325,6 +1331,7 @@ const Learn = () => {
                     padding: '6px 12px',
                     fontSize: '0.75rem',
                     fontWeight: '500',
+                    fontFamily: 'var(--sara-font)',
                     cursor: (reviewLoading || !allTestsPassedForReview) ? 'not-allowed' : 'pointer',
                     transition: 'all 0.2s ease',
                     boxShadow: (reviewLoading || !allTestsPassedForReview) ? 'none' : '0 1px 3px rgba(0, 0, 0, 0.1)',
@@ -1681,7 +1688,8 @@ const Learn = () => {
                 color: '#111827',
                 border: '1px solid #e5e7eb',
                 borderBottom: '2px solid #10a37f',
-                marginBottom: '-1px'
+                marginBottom: '-1px',
+                fontFamily: 'var(--sara-font)'
               }}>
                 {assignmentReview ? 'AI Review' : 'Test Results'}
               </div>
@@ -1699,25 +1707,25 @@ const Learn = () => {
                   <div
                     id="assignment-output"
                     className="assignment-review-panel"
-                    style={{
-                      flex: 1,
-                      overflow: 'auto',
-                      minHeight: 0,
-                      backgroundColor: '#fafafa',
-                      border: '1px solid #e5e7eb',
-                      borderTop: 'none',
-                      padding: '20px 24px',
-                      fontSize: '0.9375rem',
-                      lineHeight: 1.6,
-                      color: '#374151',
-                      fontFamily: "'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
-                    }}
+              style={{
+                flex: 1,
+                overflow: 'auto',
+                minHeight: 0,
+                backgroundColor: '#fafafa',
+                border: '1px solid #e5e7eb',
+                borderTop: 'none',
+                padding: '20px 24px',
+                fontSize: '0.9375rem',
+                lineHeight: 1.6,
+                color: '#374151',
+                fontFamily: 'var(--sara-font)'
+              }}
                   >
                     <div style={{ maxWidth: '720px', margin: '0 auto' }}>
                       {showReviewOnly ? (
                         <>
-                          <div style={{ color: '#111827', fontWeight: 600, marginBottom: '12px', fontSize: '0.9375rem', fontFamily: "'Outfit', sans-serif" }}>AI Review</div>
-                          <div className="message-text" style={{ color: '#374151', fontSize: '0.9375rem', lineHeight: 1.7, fontFamily: "'Outfit', -apple-system, BlinkMacSystemFont, sans-serif" }}>
+                          <div style={{ color: '#111827', fontWeight: 600, marginBottom: '12px', fontSize: '0.9375rem', fontFamily: 'var(--sara-font)' }}>AI Review</div>
+                          <div className="message-text" style={{ color: '#374151', fontSize: '0.9375rem', lineHeight: 1.7, fontFamily: 'var(--sara-font)' }}>
                             {renderFormattedReview(assignmentReview)}
                           </div>
                         </>
