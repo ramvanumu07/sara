@@ -6,6 +6,20 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { auth, getToken, getUser, removeToken, removeUser, setToken, setUser } from '../config/api'
 
+// Always return a string for UI display (backend can send object on 500)
+function toErrorString (value) {
+  if (value == null) return ''
+  if (typeof value === 'string') return value
+  if (typeof value === 'object' && value !== null) {
+    if (typeof value.message === 'string') return value.message
+    if (typeof value.error === 'string') return value.error
+    if (value.message != null) return String(value.message)
+    if (value.error != null) return String(value.error)
+    return JSON.stringify(value)
+  }
+  return String(value)
+}
+
 const AuthContext = createContext()
 
 export const useAuth = () => {
@@ -108,23 +122,22 @@ export const AuthProvider = ({ children }) => {
         console.log('AuthContext - Login successful, user state set to:', userData)
         return { success: true, user: userData }
       } else {
-        return { success: false, error: response.data.message || response.data.error || 'Login failed' }
+        const err = response.data.message ?? response.data.error ?? 'Login failed'
+        return { success: false, error: toErrorString(err) || 'Login failed' }
       }
     } catch (error) {
       console.error('Login error:', error)
       console.error('Error response:', error.response)
       console.error('Error response data:', error.response?.data)
-      
-      // Extract the specific error message from the backend response
+      // #region agent log
+      const resp = error.response
+      const body = resp?.data != null ? (typeof resp.data === 'object' && !Array.isArray(resp.data) ? { ...resp.data } : resp.data) : null
+      fetch('http://127.0.0.1:7242/ingest/dbfe404f-6ce7-49dd-99ab-481ff031ac11', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'AuthContext.jsx:login-catch', message: 'Login failed response', data: { status: resp?.status, responseBody: body }, timestamp: Date.now(), hypothesisId: 'H1' }) }).catch(() => {})
+      // #endregion
       let errorMessage = 'Login failed. Please try again.'
-      
       if (error.response?.data) {
         const d = error.response.data
-        if (typeof d.message === 'string') errorMessage = d.message
-        else if (typeof d.error === 'string') errorMessage = d.error
-        else if (typeof d === 'string') errorMessage = d
-        else if (d.message) errorMessage = String(d.message)
-        else if (d.error) errorMessage = String(d.error)
+        errorMessage = toErrorString(d.message ?? d.error ?? d) || errorMessage
       }
       return { success: false, error: errorMessage }
     }

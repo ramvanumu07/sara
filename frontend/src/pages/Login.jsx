@@ -158,7 +158,7 @@ const Login = () => {
         } else if (errorMessage.includes('Invalid credentials')) {
           setErrors({ general: 'Invalid username/email or password. Please check your credentials.' })
         } else {
-          setErrors({ general: errorMessage })
+          setErrors({ general: typeof errorMessage === 'string' ? errorMessage : toErrorString(errorMessage) || 'Login failed' })
         }
         setLoginAttempts(prev => prev + 1)
       }
