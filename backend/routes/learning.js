@@ -272,16 +272,17 @@ router.post('/session/start', authenticateToken, rateLimitMiddleware, validateBo
       { role: 'user', content: `Start teaching the first concept.` }
     ]
 
-    // Log finalized system prompt for testing (file + console)
-    const promptLogPath = path.join(process.cwd(), 'logs', 'last-system-prompt.txt')
-    const promptLabel = `[SESSION/START] topicId=${topicId}\n`
-    try {
-      fs.mkdirSync(path.dirname(promptLogPath), { recursive: true })
-      fs.writeFileSync(promptLogPath, promptLabel + '---\n' + sessionPrompt, 'utf8')
-    } catch (e) {
-      console.error('Could not write prompt to file:', e.message)
+    // Log finalized system prompt for testing (file + console); skip file on Vercel (read-only fs)
+    if (!process.env.VERCEL) {
+      const promptLogPath = path.join(process.cwd(), 'logs', 'last-system-prompt.txt')
+      try {
+        fs.mkdirSync(path.dirname(promptLogPath), { recursive: true })
+        fs.writeFileSync(promptLogPath, `[SESSION/START] topicId=${topicId}\n---\n` + sessionPrompt, 'utf8')
+      } catch (e) {
+        console.error('Could not write prompt to file:', e.message)
+      }
     }
-    console.log('\n[SYSTEM PROMPT] Length:', sessionPrompt.length, '| Written to:', promptLogPath)
+    console.log('\n[SYSTEM PROMPT] Length:', sessionPrompt.length)
 
     // Generate initial message (idempotent - won't duplicate if conversation exists)
     const aiResponse = await callAI(messages, 800, 0.4, 'llama-3.3-70b-versatile')

@@ -18,10 +18,14 @@ try {
   console.warn('Winston module not installed. Using console logging fallback.')
 }
 
-// Ensure logs directory exists
-const logsDir = path.join(process.cwd(), 'logs')
-if (!fs.existsSync(logsDir)) {
-  fs.mkdirSync(logsDir, { recursive: true })
+// On Vercel (serverless) the filesystem is read-only; skip file logging
+const isServerless = !!process.env.VERCEL
+let logsDir
+if (!isServerless) {
+  logsDir = path.join(process.cwd(), 'logs')
+  if (!fs.existsSync(logsDir)) {
+    try { fs.mkdirSync(logsDir, { recursive: true }) } catch (_) { /* ignore */ }
+  }
 }
 
 // Initialize formats with fallback
@@ -60,31 +64,37 @@ const devFormat = printf(({ level, message, timestamp, requestId, ...meta }) => 
 let logger
 
 if (winston) {
+  const transports = []
+  if (!isServerless && logsDir) {
+    transports.push(
+      new winston.transports.File({
+        filename: path.join(logsDir, 'error.log'),
+        level: 'error',
+        maxsize: 5242880,
+        maxFiles: 5
+      }),
+      new winston.transports.File({
+        filename: path.join(logsDir, 'combined.log'),
+        maxsize: 5242880,
+        maxFiles: 5
+      })
+    )
+  }
+  if (transports.length === 0) {
+    transports.push(new winston.transports.Console({ format: combine(timestamp(), json()) }))
+  }
   logger = winston.createLogger({
-  level: process.env.LOG_LEVEL || 'info',
-  format: combine(
-    timestamp(),
-    errors({ stack: true }),
-    json()
-  ),
-  defaultMeta: {
-    service: 'sara-backend',
-    environment: process.env.NODE_ENV || 'development'
-  },
-  transports: [
-    // Write all logs to files
-    new winston.transports.File({
-      filename: path.join('logs', 'error.log'),
-      level: 'error',
-      maxsize: 5242880, // 5MB
-      maxFiles: 5
-    }),
-    new winston.transports.File({
-      filename: path.join('logs', 'combined.log'),
-      maxsize: 5242880, // 5MB
-      maxFiles: 5
-    })
-  ]
+    level: process.env.LOG_LEVEL || 'info',
+    format: combine(
+      timestamp(),
+      errors({ stack: true }),
+      json()
+    ),
+    defaultMeta: {
+      service: 'sara-backend',
+      environment: process.env.NODE_ENV || 'development'
+    },
+    transports
   })
 } else {
   // Fallback logger using console

@@ -6,7 +6,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import api from '../config/api'
+import api, { handleApiError } from '../config/api'
 import { validatePassword } from '../utils/passwordValidation'
 import PasswordStrengthMeter from '../components/PasswordStrengthMeter'
 import { validateEmail } from '../utils/emailValidation'
@@ -281,10 +281,8 @@ const Signup = () => {
       }
     } catch (error) {
       console.error('Signup error:', error)
-
-      if (error.response?.data?.message || error.response?.data?.error) {
-        const errorMessage = error.response.data.message || error.response.data.error
-        
+      const errorMessage = handleApiError(error, 'Failed to create account. Please try again.')
+      if (typeof errorMessage === 'string' && errorMessage) {
         // Handle specific field errors
         if (errorMessage.includes('Username already exists')) {
           setErrors({ username: 'Username already exists' })
@@ -296,8 +294,7 @@ const Signup = () => {
           setErrors({ general: errorMessage })
         }
       } else {
-        const fallbackMessage = 'Failed to create account. Please try again.'
-        setErrors({ general: fallbackMessage })
+        setErrors({ general: 'Failed to create account. Please try again.' })
       }
     } finally {
       setIsLoading(false)
