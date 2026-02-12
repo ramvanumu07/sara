@@ -14,5 +14,12 @@ export default function handler(req, res) {
     req.url = '/api/' + pathStr.replace(/^\/+/, '') + qs
     req.originalUrl = req.originalUrl || req.url
   }
-  return app(req, res)
+  try {
+    return app(req, res)
+  } catch (syncErr) {
+    const msg = (syncErr && typeof syncErr.message === 'string') ? syncErr.message : (syncErr && syncErr.message != null ? String(syncErr.message) : 'Server error')
+    if (!res.headersSent) {
+      res.status(500).setHeader('Content-Type', 'application/json').end(JSON.stringify({ success: false, message: msg, code: 'SERVER_ERROR' }))
+    }
+  }
 }

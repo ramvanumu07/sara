@@ -710,7 +710,16 @@ router.post('/login', rateLimitMiddleware, async (req, res) => {
       token: tokens.accessToken
     }))
   } catch (error) {
-    handleErrorResponse(res, error, 'login')
+    const safeMsg = (error && typeof error.message === 'string') ? error.message : (error && error.message != null ? String(error.message) : null) || 'Login failed'
+    try {
+      if (!res.headersSent) {
+        handleErrorResponse(res, error, 'login')
+      }
+    } catch (handleErr) {
+      if (!res.headersSent) {
+        res.status(500).json({ success: false, message: safeMsg, code: 'LOGIN_ERROR' })
+      }
+    }
   }
 })
 
