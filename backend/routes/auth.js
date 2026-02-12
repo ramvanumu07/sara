@@ -189,6 +189,9 @@ function validateName(name) {
 // ============ UTILITY FUNCTIONS ============
 
 async function generateTokens(user) {
+  if (!process.env.JWT_SECRET || process.env.JWT_SECRET.trim() === '') {
+    throw new Error('Server configuration error: JWT_SECRET is not set. Add it in Vercel (or .env) for auth to work.')
+  }
   const payload = {
     userId: user.id,
     username: user.username,
@@ -599,7 +602,8 @@ router.post('/signup', rateLimitMiddleware, async (req, res) => {
 
 router.post('/login', rateLimitMiddleware, async (req, res) => {
   try {
-    const { usernameOrEmail, password } = req.body
+    const { usernameOrEmail: rawInput, password } = req.body
+    const usernameOrEmail = typeof rawInput === 'string' ? rawInput.trim() : (rawInput != null ? String(rawInput) : '')
 
     if (!usernameOrEmail || !password) {
       return res.status(400).json(createErrorResponse('Username/email and password are required'))

@@ -144,34 +144,42 @@ export function sendErrorResponse(res, message, statusCode = 500, code = null, d
  * @param {string} operation - Operation that failed
  * @param {number} defaultStatusCode - Default status code if not determined
  */
+function safeErrorMessage(error) {
+  if (!error) return ''
+  const msg = error.message
+  if (typeof msg === 'string') return msg
+  if (msg != null) return String(msg)
+  return ''
+}
+
 export function handleErrorResponse(res, error, operation = 'operation', defaultStatusCode = 500) {
   console.error(`${operation} error:`, error)
 
-  // Determine status code based on error type
   let statusCode = defaultStatusCode
   let message = `Failed to process ${operation}`
   let code = 'SERVER_ERROR'
+  const errMsg = safeErrorMessage(error)
 
-  if (error.name === 'ValidationError') {
+  if (error && error.name === 'ValidationError') {
     statusCode = 400
     message = 'Validation failed'
     code = 'VALIDATION_ERROR'
-  } else if (error.name === 'UnauthorizedError' || error.message.includes('token')) {
+  } else if (error && (error.name === 'UnauthorizedError' || (errMsg && errMsg.includes('token')))) {
     statusCode = 401
     message = 'Authentication required'
     code = 'AUTH_ERROR'
-  } else if (error.name === 'ForbiddenError') {
+  } else if (error && error.name === 'ForbiddenError') {
     statusCode = 403
     message = 'Insufficient permissions'
     code = 'AUTHORIZATION_ERROR'
-  } else if (error.name === 'NotFoundError') {
+  } else if (error && error.name === 'NotFoundError') {
     statusCode = 404
     message = 'Resource not found'
     code = 'NOT_FOUND'
-  } else if (error.message) {
-    message = error.message
+  } else if (errMsg) {
+    message = errMsg
   }
 
   sendErrorResponse(res, message, statusCode, code,
-    process.env.NODE_ENV === 'development' ? error.stack : null)
+    process.env.NODE_ENV === 'development' && error && error.stack ? error.stack : null)
 }
