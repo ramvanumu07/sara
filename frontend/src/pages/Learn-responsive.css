@@ -284,13 +284,14 @@
     min-width: 52px !important;
   }
   .assignment-nav-btn {
-    padding: 3px 10px !important;
-    min-width: 64px !important;
-    height: 28px !important;
+    padding: 6px !important;
+    width: 36px !important;
+    min-width: 36px !important;
+    height: 36px !important;
   }
   .assignment-nav-btn svg {
-    width: 14px;
-    height: 14px;
+    width: 18px;
+    height: 18px;
   }
 }
 
@@ -339,18 +340,43 @@
   .assignment-left-panel {
     border-right: none;
     border-bottom: 1px solid #e5e7eb;
-    min-height: 250px;
-    max-height: 50vh;
+    min-height: 280px;
+    max-height: 55vh;
   }
   
   .assignment-right-panel {
-    min-height: 200px;
+    min-height: 220px;
   }
   
   .assignment-question-section {
-    padding: 12px;
-    max-height: 120px;
-    font-size: 0.85rem;
+    padding: 10px 12px;
+    max-height: 180px;
+    font-size: 0.75rem;
+    line-height: 1.4;
+  }
+  
+  .assignment-question-section h1,
+  .assignment-question-section h2,
+  .assignment-question-section h3 {
+    font-size: 0.8rem;
+  }
+  
+  /* Mobile: smaller code/terminal text so more fits on screen */
+  .assignment-left-panel .playground-textarea,
+  .assignment-right-panel .playground-output {
+    font-size: 0.7rem !important;
+    line-height: 1.35 !important;
+    padding: 8px 10px !important;
+  }
+  
+  /* Mobile: narrower line number panels */
+  .playground-line-numbers,
+  .terminal-line-numbers,
+  .assignment-terminal-line-numbers {
+    width: 26px !important;
+    min-width: 26px !important;
+    padding: 8px 2px !important;
+    font-size: 0.65rem !important;
   }
   
   .assignment-sticky-footer {
@@ -409,12 +435,30 @@
   .assignment-left-panel {
     border-right: none;
     border-bottom: 1px solid #e5e7eb;
-    min-height: 300px;
-    max-height: 55vh;
+    min-height: 320px;
+    max-height: 58vh;
   }
   
   .assignment-question-section {
-    max-height: 150px;
+    max-height: 160px;
+    font-size: 0.78rem;
+    padding: 10px 12px;
+  }
+  
+  /* Smaller line number panels on small mobile */
+  .playground-line-numbers,
+  .terminal-line-numbers,
+  .assignment-terminal-line-numbers {
+    width: 30px !important;
+    min-width: 30px !important;
+    padding: 10px 4px !important;
+    font-size: 0.7rem !important;
+  }
+  
+  .assignment-left-panel .playground-textarea,
+  .assignment-right-panel .playground-output {
+    font-size: 0.75rem !important;
+    line-height: 1.4 !important;
   }
   
   .assignment-sticky-footer {
