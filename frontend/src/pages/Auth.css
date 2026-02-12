@@ -56,7 +56,7 @@
 }
 
 .logo-sara {
-  font-family: 'Outfit', serif;
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 2rem;
   font-weight: 700;
   color: var(--sara-primary);

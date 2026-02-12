@@ -459,9 +459,25 @@ const Dashboard = () => {
   }
 
   if (loading) {
+    const loadingOverlayStyle = {
+      position: 'fixed',
+      left: 0,
+      top: 0,
+      right: 0,
+      bottom: 0,
+      width: '100vw',
+      height: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexDirection: 'column',
+      gap: 16,
+      background: 'rgba(255,255,255,0.98)',
+      zIndex: 99999
+    }
     return createPortal(
-      <div className="dashboard-loading">
-        <div className="loading-inner">
+      <div className="dashboard-loading" style={loadingOverlayStyle}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
           <div
             className="loading-spinner"
             style={{
@@ -475,7 +491,7 @@ const Dashboard = () => {
             }}
             aria-hidden
           />
-          <p>Loading your dashboard...</p>
+          <p style={{ margin: 0, fontSize: '0.875rem', fontWeight: 500, color: '#6b7280' }}>Loading your dashboard...</p>
         </div>
       </div>,
       document.body
