@@ -374,7 +374,9 @@ const Learn = () => {
                 codeWithComments += req.startsWith('//') ? `${req}\n` : `// ${req}\n`
               })
             }
-            codeWithComments += `// START YOUR CODE AFTER THIS LINE. DO NOT REMOVE THIS LINE\n`
+            if (assignment.solution_type !== 'function') {
+              codeWithComments += `// START YOUR CODE AFTER THIS LINE. DO NOT REMOVE THIS LINE\n`
+            }
             codeWithComments += assignment.starter_code || ''
             setAssignmentCode(codeWithComments)
           }
@@ -843,7 +845,9 @@ const Learn = () => {
           codeWithComments += req.startsWith('//') ? `${req}\n` : `// ${req}\n`
         })
       }
-      codeWithComments += `// START YOUR CODE AFTER THIS LINE. DO NOT REMOVE THIS LINE\n`
+      if (nextAssignment.solution_type !== 'function') {
+        codeWithComments += `// START YOUR CODE AFTER THIS LINE. DO NOT REMOVE THIS LINE\n`
+      }
       codeWithComments += nextAssignment.starter_code || ''
       setAssignmentCode(codeWithComments)
       setAssignmentOutput('')
@@ -898,7 +902,9 @@ const Learn = () => {
           codeWithComments += req.startsWith('//') ? `${req}\n` : `// ${req}\n`
         })
       }
-      codeWithComments += `// START YOUR CODE AFTER THIS LINE. DO NOT REMOVE THIS LINE\n`
+      if (prevAssignment.solution_type !== 'function') {
+        codeWithComments += `// START YOUR CODE AFTER THIS LINE. DO NOT REMOVE THIS LINE\n`
+      }
       codeWithComments += prevAssignment.starter_code || ''
       setAssignmentCode(codeWithComments)
       setAssignmentOutput('')
