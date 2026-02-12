@@ -7,87 +7,136 @@ import CodeExecutor from '../services/CodeExecutor'
 import './Learn.css'
 import './Learn-responsive.css'
 
-// Component to render message content with proper code block formatting
+// Code block: dark background + light text so content is always visible
+const fencedBlockStyle = {
+  backgroundColor: '#1a202c',
+  color: '#e2e8f0',
+  padding: '8px 12px',
+  borderRadius: '6px',
+  margin: '6px 0',
+  overflow: 'auto',
+  fontFamily: 'Monaco, Consolas, monospace',
+  fontSize: '0.8125rem',
+  lineHeight: '1.4',
+  border: '1px solid #2d3748'
+}
+
+// One-line code snippets in the flow of text: compact chip (no big block, no label)
+const inlineStatementStyle = {
+  display: 'inline',
+  backgroundColor: '#f1f5f9',
+  color: '#475569',
+  padding: '3px 8px',
+  borderRadius: '4px',
+  fontFamily: 'Monaco, Consolas, monospace',
+  fontSize: '0.875rem',
+  border: '1px solid #e2e8f0'
+}
+
+function looksLikeCodeStatement(str) {
+  const s = (str || '').trim()
+  if (s.length < 3) return false
+  return (
+    /console\.\s*log|;\s*$|function\s*\(|=>|\.log\s*\(|\.log\(/.test(s) ||
+    (s.includes('(') && s.includes(')') && s.length > 15)
+  )
+}
+
+// Renders text with markdown-style **bold** parsed
+function renderTextWithBold(text, keyPrefix) {
+  if (!text || typeof text !== 'string') return null
+  const parts = text.split(/(\*\*.*?\*\*)/g)
+  return parts.map((part, i) => {
+    const match = part.match(/^\*\*(.*?)\*\*$/)
+    if (match) return <strong key={`${keyPrefix}-${i}`}>{match[1]}</strong>
+    return <span key={`${keyPrefix}-${i}`} style={{ whiteSpace: 'pre-wrap' }}>{part}</span>
+  })
+}
+
 const MessageContent = ({ content, role }) => {
   const renderContent = (text) => {
-    // First handle code blocks (```javascript ... ```)
+    if (!text || typeof text !== 'string') return null
+    // First handle fenced code blocks (```javascript ... ```)
     const codeBlockParts = text.split(/(```[\s\S]*?```)/g)
 
     return codeBlockParts.map((part, blockIndex) => {
       if (part.startsWith('```') && part.endsWith('```')) {
-        // Extract language and code
-        const lines = part.slice(3, -3).split('\n')
-        const language = lines[0].trim()
-        const code = lines.slice(1).join('\n').trim()
+        const raw = part.slice(3, -3).trim()
+        const firstLineEnd = raw.indexOf('\n')
+        const looksLikeLang = (s) => /^[a-z0-9+#-]+$/i.test((s || '').trim()) && (s || '').trim().length < 20
+        const firstLine = firstLineEnd === -1 ? raw : raw.slice(0, firstLineEnd).trim()
+        const rest = firstLineEnd === -1 ? '' : raw.slice(firstLineEnd + 1).trim()
+        const code = looksLikeLang(firstLine) ? rest : raw
 
         return (
-          <div key={blockIndex} className="code-block" style={{
-            backgroundColor: '#1e1e1e',
-            color: '#e2e8f0',
-            padding: '12px 16px',
-            borderRadius: '8px',
-            margin: '8px 0',
-            overflow: 'auto',
-            fontFamily: 'Monaco, Consolas, monospace',
-            fontSize: '0.85rem',
-            lineHeight: '1.4',
-            border: '1px solid #2d3748'
-          }}>
-            <div style={{
-              fontSize: '0.75rem',
-              color: '#9ca3af',
-              marginBottom: '8px',
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px'
-            }}>
-              {language || 'code'}
-            </div>
-            <div style={{
+          <div key={`b-${blockIndex}`} className="code-block" style={fencedBlockStyle}>
+            <pre style={{
+              margin: 0,
+              fontFamily: 'inherit',
+              fontSize: 'inherit',
+              color: '#e2e8f0',
               whiteSpace: 'pre-wrap',
               wordBreak: 'break-word'
             }}>
-              <pre style={{
-                margin: 0,
-                fontFamily: 'inherit',
-                fontSize: 'inherit',
-                color: 'inherit',
-                whiteSpace: 'pre-wrap',
-                wordBreak: 'break-word'
-              }}>
-                {code}
-              </pre>
-            </div>
+              {code}
+            </pre>
           </div>
         )
-      } else {
-        // Handle inline code and regular text
-        const inlineCodeParts = part.split(/(`[^`]+`)/g)
-
-        return inlineCodeParts.map((inlinePart, inlineIndex) => {
-          if (inlinePart.startsWith('`') && inlinePart.endsWith('`')) {
-            const inlineCode = inlinePart.slice(1, -1)
-            return (
-              <code key={`${blockIndex}-${inlineIndex}`} style={{
-                backgroundColor: '#f7fafc',
-                color: '#2d3748',
-                padding: '2px 6px',
-                borderRadius: '4px',
-                fontSize: '0.85rem',
-                fontFamily: 'Monaco, Consolas, monospace',
-                border: '1px solid #e2e8f0'
-              }}>
-                {inlineCode}
-              </code>
-            )
-          } else {
-            return (
-              <span key={`${blockIndex}-${inlineIndex}`} style={{ whiteSpace: 'pre-wrap' }}>
-                {inlinePart}
-              </span>
-            )
-          }
-        })
       }
+
+      // Handle inline code and regular text; statement-like code: multi-line → block, one-line → chip
+      const inlineCodeParts = part.split(/(`[^`]+`)/g)
+      return (
+        <React.Fragment key={`f-${blockIndex}`}>
+          {inlineCodeParts.map((inlinePart, inlineIndex) => {
+            if (inlinePart.startsWith('`') && inlinePart.endsWith('`')) {
+              const inlineCode = inlinePart.slice(1, -1)
+              if (looksLikeCodeStatement(inlineCode)) {
+                const isMultiline = inlineCode.includes('\n')
+                if (isMultiline) {
+                  return (
+                    <div key={`${blockIndex}-${inlineIndex}`} className="code-block" style={fencedBlockStyle}>
+                      <pre style={{
+                        margin: 0,
+                        fontFamily: 'inherit',
+                        fontSize: 'inherit',
+                        color: '#e2e8f0',
+                        whiteSpace: 'pre-wrap',
+                        wordBreak: 'break-word'
+                      }}>
+                        {inlineCode}
+                      </pre>
+                    </div>
+                  )
+                }
+                return (
+                  <span key={`${blockIndex}-${inlineIndex}`} style={inlineStatementStyle}>
+                    {inlineCode}
+                  </span>
+                )
+              }
+              return (
+                <code key={`${blockIndex}-${inlineIndex}`} style={{
+                  backgroundColor: '#f7fafc',
+                  color: '#2d3748',
+                  padding: '2px 6px',
+                  borderRadius: '4px',
+                  fontSize: '0.85rem',
+                  fontFamily: 'Monaco, Consolas, monospace',
+                  border: '1px solid #e2e8f0'
+                }}>
+                  {inlineCode}
+                </code>
+              )
+            }
+            return (
+              <React.Fragment key={`${blockIndex}-${inlineIndex}`}>
+                {renderTextWithBold(inlinePart, `t-${blockIndex}-${inlineIndex}`)}
+              </React.Fragment>
+            )
+          })}
+        </React.Fragment>
+      )
     })
   }
 
@@ -193,6 +242,9 @@ const Learn = () => {
         setTopic(topicData)
 
         const progressPhase = topicData?.phase || phase
+        if (phase === 'session') {
+          setSessionComplete(false)
+        }
         if (progressPhase === 'playtime' || progressPhase === 'assignment') {
           setSessionComplete(true)
         }
@@ -219,7 +271,9 @@ const Learn = () => {
               // Start new session (backend ensures progress row exists for this topic)
               const startResponse = await learning.sessionChat(requestedTopicId, '')
               console.log('Start session response:', startResponse.data)
-
+              if (startResponse?.data?.data?.debugSystemPrompt) {
+                console.log('Session system prompt (finalized):', startResponse.data.data.debugSystemPrompt)
+              }
               if (startResponse.data.data.response) {
                 const message = {
                   role: 'assistant',
@@ -234,6 +288,9 @@ const Learn = () => {
               // Start new session on error
               try {
                 const startResponse = await learning.sessionChat(requestedTopicId, '')
+              if (startResponse?.data?.data?.debugSystemPrompt) {
+                console.log('Session system prompt (finalized):', startResponse.data.data.debugSystemPrompt)
+              }
               if (startResponse.data.data.response) {
                 const message = {
                   role: 'assistant',
@@ -311,6 +368,9 @@ const Learn = () => {
     try {
       const response = await learning.sessionChat(topicId, userMessage.content)
 
+      if (response?.data?.data?.debugSystemPrompt) {
+        console.log('Session system prompt (finalized):', response.data.data.debugSystemPrompt)
+      }
       if (response.data.data.response) {
         const message = {
           role: 'assistant',
@@ -940,20 +1000,21 @@ const Learn = () => {
             {phase === 'session' && (
               <button
                 type="button"
+                disabled={!sessionComplete}
                 onClick={() => navigate(`/learn/${topicId}?phase=assignment`)}
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '6px',
                   padding: '8px 16px',
-                  backgroundColor: '#10a37f',
-                  color: 'white',
+                  backgroundColor: sessionComplete ? '#10a37f' : '#d1d5db',
+                  color: sessionComplete ? 'white' : '#9ca3af',
                   border: 'none',
                   borderRadius: '8px',
-                  cursor: 'pointer',
+                  cursor: sessionComplete ? 'pointer' : 'not-allowed',
                   fontSize: '0.9rem'
                 }}
-                title="Go to code tasks"
+                title={sessionComplete ? 'Go to code tasks' : 'Complete the session to unlock code tasks'}
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="16,18 22,12 16,6" />

@@ -5,11 +5,14 @@
 
 import axios from 'axios'
 
-// Sara API configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
+// Sara API configuration: when not on localhost (e.g. Vercel URL), always use same-origin /api
+const isLocalhost = typeof window !== 'undefined' && /^localhost$|^127\.0\.0\.1$/i.test(window.location.hostname)
+const raw = import.meta.env.VITE_API_BASE_URL
+const API_BASE_URL = (raw !== undefined && raw !== '') ? raw : (isLocalhost ? 'http://localhost:5000' : '')
+const baseURL = API_BASE_URL ? `${API_BASE_URL}/api` : '/api'
 
 const api = axios.create({
-  baseURL: `${API_BASE_URL}/api`,
+  baseURL,
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json'

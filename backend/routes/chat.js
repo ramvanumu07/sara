@@ -4,9 +4,11 @@
  */
 
 import express from 'express'
+import fs from 'fs'
+import path from 'path'
 import { authenticateToken } from './auth.js'
 import { callAI } from '../services/ai.js'
-import { getChatHistory, saveChatTurn, saveInitialMessage, clearChatHistory, getChatHistoryString } from '../services/chatService.js'
+import { getChatHistory, saveChatTurn, saveInitialMessage, clearChatHistory, getChatHistoryString, truncateHistoryForPrompt } from '../services/chatService.js'
 import { updateChatPhase } from '../services/chatHistory.js'
 import { getSupabaseClient } from '../services/database.js'
 import { courses } from '../../data/curriculum.js'
@@ -54,8 +56,7 @@ function buildEmbeddedSessionPrompt(topicId, conversationHistory, completedTopic
     topicTitle: topic.title,
     goals,
     conversationHistory,
-    completedList,
-    variant: 'chat'
+    completedList
   })
 }
 
@@ -117,8 +118,16 @@ router.post('/session', authenticateToken, rateLimitMiddleware, async (req, res)
       getCompletedTopics(userId)
     ])
 
-    // Build embedded prompt with conversation history
-    const embeddedPrompt = buildEmbeddedSessionPrompt(topicId, conversationHistory, completedTopics)
+    // Include current user message in history so the AI can validate their answer
+    const conversationHistoryForPrompt = message.trim()
+      ? (conversationHistory ? conversationHistory + '\n' : '') + 'USER: ' + message.trim()
+      : conversationHistory
+
+    // Truncate only for the prompt (keep full history in DB and UI)
+    const promptHistory = truncateHistoryForPrompt(conversationHistoryForPrompt, 14)
+
+    // Build embedded prompt with conversation history (including current turn)
+    const embeddedPrompt = buildEmbeddedSessionPrompt(topicId, promptHistory, completedTopics)
 
     const messages = [
       { role: 'system', content: embeddedPrompt }
@@ -129,6 +138,17 @@ router.post('/session', authenticateToken, rateLimitMiddleware, async (req, res)
       messages.push({ role: 'user', content: message.trim() })
     }
 
+    // Log finalized system prompt for testing (file + console)
+    const promptLogPath = path.join(process.cwd(), 'logs', 'last-system-prompt.txt')
+    const promptLabel = `[SESSION CHAT] topicId=${topicId} messageLength=${message.trim().length}\n`
+    try {
+      fs.mkdirSync(path.dirname(promptLogPath), { recursive: true })
+      fs.writeFileSync(promptLogPath, promptLabel + '---\n' + embeddedPrompt, 'utf8')
+    } catch (e) {
+      console.error('Could not write prompt to file:', e.message)
+    }
+    console.log('\n[SYSTEM PROMPT] Length:', embeddedPrompt.length, '| Written to:', promptLogPath)
+
     // Get AI response with optimized parameters for education
     console.log('Calling AI with messages:', messages.length)
     const aiResponse = await callAI(messages, 1500, 0.5, 'llama-3.3-70b-versatile')
@@ -138,28 +158,11 @@ router.post('/session', authenticateToken, rateLimitMiddleware, async (req, res)
       preview: aiResponse?.substring(0, 100) + '...'
     })
 
-    // Simple and reliable completion detection - look for the exact signal
-    let isSessionComplete = aiResponse.includes('SESSION_COMPLETE_SIGNAL')
+    // Completion detection: prompt asks AI to write "Congratulations! You've Mastered [topic]!" when done (no signal)
+    const completionPhrases = ['Congratulations', 'You\'ve Mastered', "You've Mastered", 'ready for the playground']
+    let isSessionComplete = completionPhrases.some(phrase => aiResponse.includes(phrase))
 
-    // Clean the response by removing the signal (don't show it to user)
-    let cleanedResponse = aiResponse.replace('SESSION_COMPLETE_SIGNAL\n\n', '').replace('SESSION_COMPLETE_SIGNAL', '')
-
-    // Fallback: Force completion if conversation is too long (8+ messages) and student has shown console.log usage
-    if (!isSessionComplete) {
-      const messageCount = conversationHistory.split(/(?=AGENT:|USER:)/).filter(msg => msg.trim()).length
-      const hasConsoleLogUsage = conversationHistory.toLowerCase().includes('console.log')
-
-      // Count console.log occurrences in user messages
-      const userMessages = conversationHistory.split('USER:').slice(1) // Remove first empty element
-      const consoleLogCount = userMessages.filter(msg => msg.toLowerCase().includes('console.log')).length
-
-      if ((messageCount >= 8 && hasConsoleLogUsage) || consoleLogCount >= 3) {
-        console.log(`Forcing session completion - messageCount: ${messageCount}, consoleLogCount: ${consoleLogCount}`)
-        isSessionComplete = true
-        // Add the completion message that frontend will detect
-        cleanedResponse = cleanedResponse + '\n\nCongratulations! You\'ve mastered console.log! You\'re ready for the playground.'
-      }
-    }
+    let cleanedResponse = aiResponse
 
     // Save the conversation turn (user message + cleaned AI response) atomically
     let saveSuccess
@@ -178,8 +181,7 @@ router.post('/session', authenticateToken, rateLimitMiddleware, async (req, res)
 
     console.log('Completion Detection Debug:')
     console.log('   - AI Response length:', aiResponse?.length)
-    console.log('   - Contains SESSION_COMPLETE_SIGNAL:', aiResponse.includes('SESSION_COMPLETE_SIGNAL'))
-    console.log('   - Is Complete:', isSessionComplete)
+    console.log('   - Is Complete (Congratulations/Mastered/playground):', isSessionComplete)
     console.log('   - AI Response preview:', aiResponse?.substring(0, 400) + '...')
 
     // Update progress - direct database call for compatibility
@@ -227,7 +229,9 @@ router.post('/session', authenticateToken, rateLimitMiddleware, async (req, res)
         id: topicId,
         title: topic.title,
         category: topic.category
-      }
+      },
+      // Include finalized system prompt in dev so frontend can log to console
+      ...(process.env.NODE_ENV !== 'production' && { debugSystemPrompt: embeddedPrompt })
     }
 
     console.log('Response data being sent:', responseData)

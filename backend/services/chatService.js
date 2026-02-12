@@ -123,6 +123,30 @@ function parseTextToMessagesOptimized(textHistory) {
   return messages
 }
 
+/** Serialize messages array to USER:/AGENT: text (for prompt truncation only) */
+function serializeMessagesToHistory(messages) {
+  if (!messages || messages.length === 0) return ''
+  return messages.map(m => {
+    const prefix = m.role === 'user' ? 'USER' : 'AGENT'
+    return `${prefix}: ${(m.content || '').trim()}`
+  }).join('\n')
+}
+
+/**
+ * Truncate conversation history to last N messages for prompt context only.
+ * Full history is still stored and displayed; use this when building the AI prompt.
+ * @param {string} historyString - Full history in USER:/AGENT: format
+ * @param {number} maxMessages - Max messages to include (default 50 ≈ 25 turns)
+ * @returns {string} Truncated history string
+ */
+export function truncateHistoryForPrompt(historyString, maxMessages = 50) {
+  if (!historyString || typeof historyString !== 'string' || !historyString.trim()) return historyString || ''
+  const messages = parseTextToMessagesOptimized(historyString)
+  if (messages.length <= maxMessages) return historyString
+  const trimmed = messages.slice(-maxMessages)
+  return serializeMessagesToHistory(trimmed)
+}
+
 /**
  * Get chat history as structured messages array (parsed from text format)
  * OPTIMIZED with caching and performance monitoring
@@ -225,18 +249,14 @@ export async function saveChatTurn(userId, topicId, userMessage, aiResponse, pha
     // Add new conversation turn in text format
     const newTurn = `USER: ${userMessage.trim()}\nAGENT: ${aiResponse.trim()}`
 
-    // Append to existing history
+    // Append to existing history (keep full conversation for session phase)
     const updatedHistory = currentHistory
       ? `${currentHistory}\n${newTurn}`
       : newTurn
 
-    const newMessageCount = currentMessageCount + 2 // User + AI message
-
-    // Keep conversation manageable (limit to ~50 turns = 100 messages)
-    const lines = updatedHistory.split('\n')
-    const trimmedLines = lines.slice(-100) // Keep last 100 lines
-    const finalHistory = trimmedLines.join('\n')
-    const finalMessageCount = trimmedLines.length
+    const finalHistory = updatedHistory
+    const allMessages = parseTextToMessagesOptimized(finalHistory)
+    const finalMessageCount = allMessages.length
 
     // Upsert chat session
     const { error } = await client

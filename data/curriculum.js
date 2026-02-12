@@ -14,8 +14,7 @@ export const courses = [
           'Basic arithmetic expressions in logs',
           'String concatenation (+) and the space problem',
           'Comma-separated logging and auto-spacing',
-          'Logic vs. String representation (The Quote Trap)',
-          'Introduction to Template Literals (${})'
+          'Logic vs. String representation (The Quote Trap)'
         ],
         "tasks": [
           {
@@ -79,16 +78,6 @@ export const courses = [
             ]
           },
           {
-            "description": '// Use a template literal to print "15 plus 28 equals" followed by the actual sum\n// Your output should be:\n// 15 plus 28 equals 43',
-            "solution_type": "script",
-            "testCases": [
-              {
-                "input": {},
-                "expectedOutput": '15 plus 28 equals 43'
-              }
-            ]
-          },
-          {
             "description": '// Print: He said "JavaScript is amazing"\n// (Include the double quotes in the output)\n// Your output should be:\n// He said "JavaScript is amazing"',
             "solution_type": "script",
             "testCases": [
@@ -108,16 +97,6 @@ export const courses = [
               }
             ]
           },
-          {
-            "description": '// Print a formatted statement showing both the expression and result\n// Use template literals to print: "Expression: 20 + 30 * 2 = " followed by the calculated result\n// Your output should be:\n// Expression: 20 + 30 * 2 = 80',
-            "solution_type": "script",
-            "testCases": [
-              {
-                "input": {},
-                "expectedOutput": 'Expression: 20 + 30 * 2 = 80'
-              }
-            ]
-          }
         ]
       },
       {

@@ -57,8 +57,19 @@ app.use(cors({
       'http://localhost:5178',
       'http://localhost:3000'
     ]
+    // Vercel: allow deployment and preview URLs (same-origin when frontend + API on same project)
+    if (process.env.VERCEL_URL) {
+      allowedOrigins.push(`https://${process.env.VERCEL_URL}`)
+    }
+    if (process.env.FRONTEND_URL) {
+      allowedOrigins.push(...process.env.FRONTEND_URL.split(',').map(s => s.trim()).filter(Boolean))
+    }
 
     if (allowedOrigins.includes(origin)) {
+      return callback(null, true)
+    }
+    // Allow any *.vercel.app origin for preview deployments
+    if (origin && /^https:\/\/[^.]+\.vercel\.app$/.test(origin)) {
       return callback(null, true)
     }
 
@@ -241,7 +252,9 @@ const startServer = async () => {
   }
 }
 
-// Start the server
-startServer()
+// Start the server only when not running on Vercel (serverless)
+if (!process.env.VERCEL) {
+  startServer()
+}
 
 export default app

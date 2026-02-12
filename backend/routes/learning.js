@@ -4,6 +4,8 @@
  */
 
 import express from 'express'
+import fs from 'fs'
+import path from 'path'
 import { authenticateToken } from './auth.js'
 import { callAI } from '../services/ai.js'
 import {
@@ -138,8 +140,7 @@ function buildSessionPrompt(topicId, conversationHistory, completedTopics = []) 
     topicTitle: topic.title,
     goals,
     conversationHistory,
-    completedList,
-    variant: 'learning'
+    completedList
   })
 }
 
@@ -256,17 +257,31 @@ router.post('/session/start', authenticateToken, rateLimitMiddleware, validateBo
       updated_at: new Date().toISOString()
     })
 
-    // Get student context and build prompt
-    const completedTopics = await getCompletedTopicsForUser(userId)
+    // Get student context and chat history for prompt
+    const [completedTopics, conversationHistory] = await Promise.all([
+      getCompletedTopicsForUser(userId),
+      getChatHistoryString(userId, topicId)
+    ])
     const outcomes = topic ? formatLearningObjectives(topic.outcomes) : 'Learn programming concepts'
 
-    // Build the session prompt
-    const sessionPrompt = buildSessionPrompt(topicId, '', completedTopics)
+    // Build the session prompt with actual conversation history
+    const sessionPrompt = buildSessionPrompt(topicId, conversationHistory || '', completedTopics)
 
     const messages = [
       { role: 'system', content: sessionPrompt },
       { role: 'user', content: `Start teaching the first concept.` }
     ]
+
+    // Log finalized system prompt for testing (file + console)
+    const promptLogPath = path.join(process.cwd(), 'logs', 'last-system-prompt.txt')
+    const promptLabel = `[SESSION/START] topicId=${topicId}\n`
+    try {
+      fs.mkdirSync(path.dirname(promptLogPath), { recursive: true })
+      fs.writeFileSync(promptLogPath, promptLabel + '---\n' + sessionPrompt, 'utf8')
+    } catch (e) {
+      console.error('Could not write prompt to file:', e.message)
+    }
+    console.log('\n[SYSTEM PROMPT] Length:', sessionPrompt.length, '| Written to:', promptLogPath)
 
     // Generate initial message (idempotent - won't duplicate if conversation exists)
     const aiResponse = await callAI(messages, 800, 0.4, 'llama-3.3-70b-versatile')
