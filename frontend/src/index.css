@@ -368,3 +368,80 @@ pre code {
         display: none !important;
     }
 }
+
+/* ========== LEARN PAGE - VERCEL/PRODUCTION (match localhost) ==========
+   In main bundle so these apply on Vercel; high specificity + !important. */
+
+/* Session phase: margin from screen edges */
+@media (max-width: 767px) {
+  .learn-container .learn-header {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+  .learn-container .messages-area {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+  .learn-container .input-form {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+}
+
+@media (max-width: 479px) {
+  .learn-container .learn-header {
+    padding: 8px 20px !important;
+  }
+  .learn-container .messages-area {
+    padding: 12px 20px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+  .learn-container .input-form {
+    padding: 12px 20px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+}
+
+/* Editor/terminal: narrower line number panel on mobile */
+@media (max-width: 768px) {
+  .learn-container .playground-line-numbers,
+  .learn-container .terminal-line-numbers,
+  .learn-container .assignment-terminal-line-numbers {
+    width: 24px !important;
+    min-width: 24px !important;
+    padding: 6px 3px !important;
+    font-size: 0.6rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .learn-container .playground-line-numbers,
+  .learn-container .terminal-line-numbers,
+  .learn-container .assignment-terminal-line-numbers {
+    width: 20px !important;
+    min-width: 20px !important;
+    padding: 5px 2px !important;
+    font-size: 0.55rem !important;
+  }
+}
+
+/* Editor blocks: reduced header height on mobile */
+@media (max-width: 768px) {
+  .learn-container .playground-editor-header,
+  .learn-container .playground-output-header {
+    height: clamp(26px, 4vh, 40px) !important;
+    min-height: clamp(26px, 4vh, 40px) !important;
+    padding: clamp(3px, 0.8vh, 8px) !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .learn-container .playground-editor-header,
+  .learn-container .playground-output-header {
+    height: clamp(22px, 4vh, 32px) !important;
+    min-height: clamp(22px, 4vh, 32px) !important;
+    padding: clamp(2px, 0.5vh, 5px) !important;
+  }
+}
