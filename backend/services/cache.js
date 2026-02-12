@@ -36,6 +36,10 @@ export const initializeCache = () => {
     // Use in-memory cache for tests
     return initializeMemoryCache()
   }
+  if (!Redis) {
+    // ioredis failed to load (e.g. serverless bundle) - use memory cache
+    return initializeMemoryCache()
+  }
 
   const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379'
   
