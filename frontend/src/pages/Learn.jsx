@@ -445,8 +445,6 @@ const Learn = () => {
       // Clear previous output
       outputDiv.innerHTML = '<div style="color: #10a37f; font-family: Monaco, Consolas, monospace; padding: 8px;">Executing code securely...</div>'
 
-      const startTime = Date.now()
-
       // Execute code using secure Web Worker
       const result = await CodeExecutor.executeForTesting(
         userCode,
@@ -454,8 +452,6 @@ const Learn = () => {
         null, // No function name for playground
         'script' // Always script type for playground
       )
-
-      const executionTime = Date.now() - startTime
 
       // Process results with enhanced output handling
       let outputText = ''
@@ -478,13 +474,6 @@ const Learn = () => {
           }
         } else {
           outputText = 'Code executed successfully (no output)'
-        }
-
-        // Add execution time for longer operations
-        if (executionTime > 1000) {
-          outputText += `\nExecution completed in ${executionTime}ms`
-        } else if (executionTime > 100) {
-          outputText += `\nExecution completed in ${executionTime}ms`
         }
       } else {
         outputText = `Error: ${result.error || 'Code execution failed'}`

@@ -57,9 +57,7 @@ export default function SessionPlayground({
       const lineNumDiv = outputDiv.parentElement?.querySelector('.terminal-line-numbers')
       if (lineNumDiv) lineNumDiv.innerHTML = ''
 
-      const startTime = Date.now()
       const result = await CodeExecutor.executeForTesting(code, [], null, 'script')
-      const executionTime = Date.now() - startTime
 
       let outputText = ''
       let outputColor = '#10a37f'
@@ -70,7 +68,6 @@ export default function SessionPlayground({
         } else {
           outputText = 'Code executed successfully (no output)'
         }
-        if (executionTime > 100) outputText += `\nExecution completed in ${executionTime}ms`
       } else {
         outputText = `Error: ${result.error || 'Code execution failed'}`
         outputColor = '#ef4444'
@@ -83,7 +80,7 @@ export default function SessionPlayground({
         ).join('')
       }
       const formatted = outputLines.map(line => {
-        const color = line.includes('Error:') ? '#ef4444' : line.includes('Warning') ? '#f59e0b' : line.includes('Execution completed') ? '#10a37f' : outputColor
+        const color = line.includes('Error:') ? '#ef4444' : line.includes('Warning') ? '#f59e0b' : outputColor
         return `<div style="line-height: 1.4; color: ${color}; white-space: pre; padding-left: 2px; font-size: 0.875rem;">${escapeHtml(String(line || ' '))}</div>`
       }).join('')
       outputDiv.innerHTML = `<div style="font-family: Monaco, Consolas, 'SF Mono', 'Courier New', monospace; line-height: 1.4;">${formatted}</div>`

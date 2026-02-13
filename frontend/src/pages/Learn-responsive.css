@@ -284,19 +284,19 @@
 
 /* Mobile: match Run/Submit button height to assignment.js tab height; reduced header height for Vercel/production */
 @media (max-width: 767px) {
-  /* Single height for editor header row - overrides inline styles so Vercel matches localhost */
+  /* Shorter header bar background on mobile - overrides inline styles */
   .playground-editor-header,
   .playground-output-header {
-    min-height: 32px !important;
-    height: 32px !important;
-    max-height: 40px !important;
-    padding: 6px 10px !important;
+    min-height: 26px !important;
+    height: 26px !important;
+    max-height: 32px !important;
+    padding: 4px 8px !important;
   }
   .learn-container .playground-editor-header,
   .learn-container .playground-output-header {
-    min-height: 32px !important;
-    height: 32px !important;
-    padding: 6px 10px !important;
+    min-height: 26px !important;
+    height: 26px !important;
+    padding: 4px 8px !important;
   }
   .assignment-js-tab {
     display: inline-flex;

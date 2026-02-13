@@ -435,16 +435,16 @@ pre code {
   }
 }
 
-/* Editor blocks: reduced header height on mobile (Vercel + localhost) */
+/* Editor blocks: shorter header bar background on mobile */
 @media (max-width: 768px) {
   .playground-editor-header,
   .playground-output-header,
   .learn-container .playground-editor-header,
   .learn-container .playground-output-header {
-    height: 32px !important;
-    min-height: 32px !important;
-    max-height: 40px !important;
-    padding: 6px 10px !important;
+    height: 26px !important;
+    min-height: 26px !important;
+    max-height: 32px !important;
+    padding: 4px 8px !important;
   }
 }
 
@@ -453,8 +453,8 @@ pre code {
   .playground-output-header,
   .learn-container .playground-editor-header,
   .learn-container .playground-output-header {
-    height: 30px !important;
-    min-height: 30px !important;
-    padding: 5px 8px !important;
+    height: 24px !important;
+    min-height: 24px !important;
+    padding: 3px 6px !important;
   }
 }
