@@ -13,9 +13,7 @@ router.get('/chat-history/:topicId', async (req, res) => {
   try {
     const { topicId } = req.params
     const userId = 'beeedf0e-c329-4255-b161-edc5d3d375cd' // Your user ID
-    
-    console.log(`Debug: Checking chat history for ${userId}/${topicId}`)
-    
+
     const client = getSupabaseClient()
     
     if (client === 'DEV_MODE') {
@@ -100,7 +98,6 @@ router.get('/chat-history/:topicId', async (req, res) => {
     })
 
   } catch (error) {
-    console.error('Debug chat history error:', error)
     res.status(500).json({
       error: 'Failed to debug chat history',
       message: error.message,

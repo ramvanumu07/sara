@@ -69,7 +69,6 @@ export function authenticateToken(req, res, next) {
       }
       next()
     } catch (error) {
-      console.error('Session validation error:', error)
       return res.status(403).json(createErrorResponse('Session validation failed'))
     }
   })
@@ -257,7 +256,6 @@ async function invalidateAllUserSessions(userId) {
     .eq('user_id', userId)
 
   if (error) throw new Error(`Failed to invalidate user sessions: ${error.message}`)
-  console.log(`🔒 All sessions invalidated for user: ${userId}`)
 }
 
 // Invalidate specific session
@@ -269,7 +267,6 @@ async function invalidateSession(sessionId) {
     .eq('id', sessionId)
 
   if (error) throw new Error(`Failed to invalidate session: ${error.message}`)
-  console.log(`🔒 Session invalidated: ${sessionId}`)
 }
 
 // ============ REFRESH TOKEN FUNCTIONS ============
@@ -368,7 +365,6 @@ router.post('/check-email', async (req, res) => {
     })
 
   } catch (error) {
-    console.error('Email check error:', error)
     return res.status(500).json({
       success: false,
       message: 'Failed to check email availability'
@@ -413,7 +409,6 @@ router.get('/check-email/:email', async (req, res) => {
     })
 
   } catch (error) {
-    console.error('Email check error:', error)
     return res.status(500).json({
       success: false,
       message: 'Failed to check email availability'
@@ -475,7 +470,6 @@ router.get('/check-username/:username', async (req, res) => {
     })
 
   } catch (error) {
-    console.error('Username check error:', error)
     return res.status(500).json(createErrorResponse('Failed to check username availability'))
   }
 })
@@ -571,10 +565,8 @@ router.post('/signup', rateLimitMiddleware, async (req, res) => {
           assignments_completed: 0,
           updated_at: new Date().toISOString()
         })
-        console.log(`Created first-topic progress for new user ${user.id}, topic ${firstTopic.id}`)
       }
     } catch (progressErr) {
-      console.error('Signup: could not create initial progress (non-fatal):', progressErr.message)
     }
 
     // Generate token and create session
@@ -583,7 +575,6 @@ router.post('/signup', rateLimitMiddleware, async (req, res) => {
     // Update last login
     await updateLastLogin(user.id)
 
-    console.log(`New user registered: ${username} (${email})`)
 
     res.status(201).json(createSuccessResponse({
       message: 'Account created successfully',
@@ -617,22 +608,9 @@ router.post('/login', rateLimitMiddleware, asyncHandler(async (req, res) => {
     const isEmail = validateEmail(usernameOrEmail).isValid
 
     if (isEmail) {
-      console.log(`Backend - Looking up user by email: ${usernameOrEmail}`)
       user = await getUserByEmail(usernameOrEmail)
     } else {
-      console.log(`Backend - Looking up user by username: ${usernameOrEmail}`)
       user = await getUserByUsername(usernameOrEmail)
-    }
-
-    if (user) {
-      console.log(`Backend - Found user:`, {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        name: user.name,
-        nameType: typeof user.name,
-        nameValue: JSON.stringify(user.name)
-      })
     }
 
     if (!user) {
@@ -676,22 +654,10 @@ router.post('/login', rateLimitMiddleware, asyncHandler(async (req, res) => {
             assignments_completed: 0,
             updated_at: new Date().toISOString()
           })
-          console.log(`Login: created first-topic progress for user ${user.id}, topic ${firstTopic.id}`)
         }
       }
     } catch (progressErr) {
-      console.error('Login: could not ensure initial progress (non-fatal):', progressErr.message)
     }
-
-    console.log(`User logged in: ${user.username}`)
-    console.log(`🔐 Backend - User data from DB:`, {
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      name: user.name,
-      nameType: typeof user.name,
-      nameLength: user.name?.length
-    })
 
     const responseUserData = {
       id: user.id,
@@ -700,8 +666,6 @@ router.post('/login', rateLimitMiddleware, asyncHandler(async (req, res) => {
       name: user.name,
       lastLogin: user.last_login
     }
-
-    console.log(`🔐 Backend - Response user data:`, responseUserData)
 
     res.json(createSuccessResponse({
       message: 'Login successful',
@@ -734,7 +698,6 @@ router.post('/logout', authenticateToken, async (req, res) => {
       await deleteUserSession(token)
     }
 
-    console.log(`User logged out: ${req.user.username}`)
 
     res.json(createSuccessResponse({
       message: 'Logout successful'
@@ -778,7 +741,6 @@ router.post('/reset-password', rateLimitMiddleware, async (req, res) => {
     // Mark token as used
     await markPasswordResetTokenUsed(resetToken.id)
 
-    console.log(`Password reset completed: ${resetToken.users.username}`)
 
     res.json(createSuccessResponse({
       message: 'Password reset successful. You can now log in with your new password.'
@@ -813,14 +775,10 @@ router.put('/profile', authenticateToken, rateLimitMiddleware, async (req, res) 
     const userId = req.user.userId
 
     // Get current user data
-    console.log(`Looking for user with ID: ${req.user.userId}`)
     const currentUser = await getUserById(req.user.userId)
     if (!currentUser) {
-      console.error(`User not found in database: ${req.user.userId}`)
-      console.error(`JWT payload:`, req.user)
       return res.status(404).json(createErrorResponse('User not found'))
     }
-    console.log(`User found: ${currentUser.username} (ID: ${currentUser.id})`)
 
     // Verify current password only if password is being changed
     if (newPassword) {
@@ -887,13 +845,11 @@ router.put('/profile', authenticateToken, rateLimitMiddleware, async (req, res) 
       
       // Invalidate all sessions when password changes (security measure)
       await invalidateAllUserSessions(userId)
-      console.log(`🔒 All sessions invalidated due to password change for user: ${userId}`)
     }
 
     // Update user profile
     const updatedUser = await updateUserProfile(userId, updates)
 
-    console.log(`Profile updated: ${updatedUser.username}`)
 
     res.json(createSuccessResponse({
       message: 'Profile updated successfully',
@@ -917,22 +873,11 @@ router.put('/profile', authenticateToken, rateLimitMiddleware, async (req, res) 
 router.get('/validate', authenticateToken, async (req, res) => {
   try {
     // Get fresh user data from database instead of JWT
-    console.log(`Validation - Looking for user with ID: ${req.user.userId}`)
     const currentUser = await getUserById(req.user.userId)
 
     if (!currentUser) {
-      console.error(`Validation - User not found: ${req.user.userId}`)
       return res.status(404).json(createErrorResponse('User not found'))
     }
-
-    console.log(`Validation - Fresh user data from DB:`, {
-      id: currentUser.id,
-      username: currentUser.username,
-      email: currentUser.email,
-      name: currentUser.name,
-      nameType: typeof currentUser.name,
-      nameValue: JSON.stringify(currentUser.name)
-    })
 
     const responseData = {
       valid: true,
@@ -944,7 +889,6 @@ router.get('/validate', authenticateToken, async (req, res) => {
       }
     }
 
-    console.log(`Validation - Sending response:`, responseData)
     res.json(createSuccessResponse(responseData))
   } catch (error) {
     handleErrorResponse(res, error, 'validate token')
@@ -1039,7 +983,6 @@ router.post('/get-security-question', async (req, res) => {
     }))
 
   } catch (error) {
-    console.error('Get security question error:', error)
     res.status(500).json(createErrorResponse('Failed to get security question'))
   }
 })
@@ -1087,7 +1030,6 @@ router.post('/verify-security-answer-only', async (req, res) => {
     }))
 
   } catch (error) {
-    console.error('Verify security answer error:', error)
     res.status(500).json(createErrorResponse('Failed to verify security answer'))
   }
 })
@@ -1150,7 +1092,6 @@ router.post('/verify-security-answer', async (req, res) => {
     }))
 
   } catch (error) {
-    console.error('Verify security answer error:', error)
     res.status(500).json(createErrorResponse('Failed to verify security answer'))
   }
 })
@@ -1161,14 +1102,10 @@ router.get('/profile/password', authenticateToken, async (req, res) => {
     const userId = req.user.userId
 
     // Get current user data
-    console.log(`Looking for user with ID: ${req.user.userId}`)
     const currentUser = await getUserById(req.user.userId)
     if (!currentUser) {
-      console.error(`User not found in database: ${req.user.userId}`)
-      console.error(`JWT payload:`, req.user)
       return res.status(404).json(createErrorResponse('User not found'))
     }
-    console.log(`User found: ${currentUser.username} (ID: ${currentUser.id})`)
 
     // Return password status (we can't return actual password as it's hashed)
     // This endpoint confirms the user has a password set
@@ -1177,7 +1114,6 @@ router.get('/profile/password', authenticateToken, async (req, res) => {
       message: 'Password is set and secure'
     }))
   } catch (error) {
-    console.error('Get password status error:', error)
     handleErrorResponse(res, error, 'get password status')
   }
 })
@@ -1219,7 +1155,6 @@ router.post('/refresh', async (req, res) => {
       newRefreshExpiresAt.toISOString()
     )
 
-    console.log(`Tokens refreshed for user: ${user.username}`)
 
     res.json(createSuccessResponse({
       message: 'Tokens refreshed successfully',
@@ -1229,7 +1164,6 @@ router.post('/refresh', async (req, res) => {
     }))
 
   } catch (error) {
-    console.error('Refresh token error:', error)
     handleErrorResponse(res, error, 'refresh token')
   }
 })
@@ -1274,7 +1208,6 @@ router.delete('/sessions/:sessionId', authenticateToken, async (req, res) => {
 
     if (error) throw new Error(`Failed to revoke session: ${error.message}`)
 
-    console.log(`🔒 Session revoked by user: ${sessionId}`)
     res.json(createSuccessResponse({
       message: 'Session revoked successfully'
     }))
@@ -1298,7 +1231,6 @@ router.post('/sessions/revoke-others', authenticateToken, async (req, res) => {
 
     if (error) throw new Error(`Failed to revoke other sessions: ${error.message}`)
 
-    console.log(`🔒 All other sessions revoked for user: ${userId}`)
     res.json(createSuccessResponse({
       message: 'All other sessions revoked successfully'
     }))

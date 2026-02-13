@@ -46,7 +46,6 @@ const Signup = () => {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      console.log('Signup: User already authenticated, redirecting to dashboard')
       navigate('/dashboard', { replace: true })
     }
   }, [isAuthenticated, navigate])
@@ -113,7 +112,6 @@ const Signup = () => {
               setUsernameAvailable(response.data.data.available)
             }
           } catch (error) {
-            console.error('Username check error:', error)
             setUsernameAvailable(undefined)
           }
         }, 500)
@@ -142,7 +140,6 @@ const Signup = () => {
               setEmailExists(response.data.data.exists)
             }
           } catch (error) {
-            console.error('Email check error:', error)
             setEmailExists(null)
           }
         }, 500)
@@ -280,7 +277,6 @@ const Signup = () => {
         }, SUCCESS_REDIRECT_DELAY)
       }
     } catch (error) {
-      console.error('Signup error:', error)
       const errorMessage = handleApiError(error, 'Failed to create account. Please try again.')
       if (typeof errorMessage === 'string' && errorMessage) {
         // Handle specific field errors

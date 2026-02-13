@@ -83,8 +83,6 @@ const codeExecutor = new SecureCodeExecutor();
 
 // Industry-level secure code execution function
 async function executeCodeSecurely(code, testCases = [], functionName = null, solutionType = 'script') {
-  console.log('🔧 Executing code securely:', code.substring(0, 100) + '...')
-
   try {
     // Validate inputs
     if (!code || typeof code !== 'string') {
@@ -98,13 +96,6 @@ async function executeCodeSecurely(code, testCases = [], functionName = null, so
     // Execute code with new secure executor
     const result = await codeExecutor.execute(code, testCases, functionName, solutionType);
 
-    console.log('Secure code execution completed:', {
-      success: result.success,
-      allPassed: result.allPassed,
-      executionTime: result.executionTime,
-      testCount: result.results?.length || 0
-    });
-
     return {
       success: result.success,
       output: result.results?.map(r => r.output || r.result).join('\n') || '',
@@ -115,7 +106,6 @@ async function executeCodeSecurely(code, testCases = [], functionName = null, so
     };
 
   } catch (error) {
-    console.error('Secure code execution error:', error.message);
     return {
       success: false,
       error: error.message,
@@ -149,7 +139,6 @@ async function getCompletedTopicsForUser(userId) {
     const completedTopics = await getCompletedTopics(userId)
     return completedTopics
   } catch (error) {
-    console.error('Error getting completed topics:', error)
     return []
   }
 }
@@ -161,10 +150,6 @@ router.get('/state/:topicId', authenticateToken, async (req, res) => {
     const { topicId } = req.params
     const userId = req.user.userId
 
-    console.log(`Loading learning state for: "${topicId}" (type: ${typeof topicId}, length: ${topicId?.length})`)
-    console.log(`Raw params:`, req.params)
-    console.log(`Full URL:`, req.url)
-
     // Validate topic exists
     const topic = getTopicOrRespond(res, courses, topicId, createErrorResponse)
     if (!topic) return
@@ -175,15 +160,7 @@ router.get('/state/:topicId', authenticateToken, async (req, res) => {
       getChatHistoryString(userId, topicId)
     ])
 
-    console.log(`Progress data:`, {
-      hasProgress: !!progress,
-      status: progress?.status,
-      phase: progress?.phase,
-      chatHistoryLength: chatHistory?.length
-    })
-
     if (!progress) {
-      console.log(`📝 No progress found for ${topicId}`)
       return res.json({
         success: true,
         exists: false,
@@ -220,12 +197,6 @@ router.get('/state/:topicId', authenticateToken, async (req, res) => {
       }
     }
 
-    console.log(`📤 Sending response:`, {
-      exists: responseData.exists,
-      conversationHistoryLength: responseData.conversationHistory?.length,
-      phase: responseData.phase
-    })
-
     res.json(responseData)
   } catch (error) {
     handleErrorResponse(res, error, 'get session state')
@@ -238,8 +209,6 @@ router.post('/session/start', authenticateToken, rateLimitMiddleware, validateBo
   try {
     const { topicId, assignments } = req.body
     const userId = req.user.userId
-
-    console.log(`🚀 Starting session for topic: ${topicId}`)
 
     // Validate topic exists
     const topic = getTopicOrRespond(res, courses, topicId, createErrorResponse)
@@ -279,10 +248,8 @@ router.post('/session/start', authenticateToken, rateLimitMiddleware, validateBo
         fs.mkdirSync(path.dirname(promptLogPath), { recursive: true })
         fs.writeFileSync(promptLogPath, `[SESSION/START] topicId=${topicId}\n---\n` + sessionPrompt, 'utf8')
       } catch (e) {
-        console.error('Could not write prompt to file:', e.message)
       }
     }
-    console.log('\n[SYSTEM PROMPT] Length:', sessionPrompt.length)
 
     // Generate initial message (idempotent - won't duplicate if conversation exists)
     const aiResponse = await callAI(messages, 800, 0.4, 'llama-3.3-70b-versatile')
@@ -322,7 +289,6 @@ router.post('/playtime/start', authenticateToken, rateLimitMiddleware, validateB
     const { topicId } = req.body
     const userId = req.user.userId
 
-    console.log(`🎮 Starting playtime for topic: ${topicId}`)
 
     const topic = getTopicOrRespond(res, courses, topicId, createErrorResponse)
     if (!topic) return
@@ -359,20 +325,14 @@ router.post('/playtime/complete', authenticateToken, rateLimitMiddleware, valida
     const { topicId } = req.body
     const userId = req.user.userId
 
-    console.log(`🎮 PLAYTIME COMPLETE REQUEST:`)
-    console.log(`   - User ID: ${userId}`)
-    console.log(`   - Topic ID: ${topicId}`)
-    console.log(`   - Request Body:`, req.body)
 
     // Validate topic exists
     const topic = getTopicOrRespond(res, courses, topicId, createErrorResponse)
     if (!topic) return
 
-    console.log(`Topic found: ${topic.title}`)
 
     // Complete playtime phase - direct database update for compatibility
     try {
-      console.log(`🎮 Updating progress: phase=assignment, status=in_progress`)
 
       const result = await upsertProgress(userId, topicId, {
         phase: 'assignment',
@@ -380,11 +340,7 @@ router.post('/playtime/complete', authenticateToken, rateLimitMiddleware, valida
         updated_at: new Date().toISOString()
       })
 
-      console.log(`Playtime completed - database updated:`, result)
     } catch (dbError) {
-      console.error(`Database error in playtime complete:`, dbError)
-      console.error(`Error details:`, dbError.message)
-      console.error(`Error stack:`, dbError.stack)
       throw new Error(`Failed to complete playtime: ${dbError.message}`)
     }
 
@@ -399,7 +355,6 @@ router.post('/playtime/complete', authenticateToken, rateLimitMiddleware, valida
       }
     }))
   } catch (error) {
-    console.error(`Playtime complete error:`, error)
     handleErrorResponse(res, error, 'complete playtime')
   }
 })
@@ -411,7 +366,6 @@ router.post('/assignment/start', authenticateToken, rateLimitMiddleware, validat
     const { topicId } = req.body
     const userId = req.user.userId
 
-    console.log(`📝 Starting assignment for topic: ${topicId}`)
 
     // Validate topic exists
     const topic = getTopicOrRespond(res, courses, topicId, createErrorResponse)
@@ -471,7 +425,6 @@ router.post('/assignment/complete', authenticateToken, rateLimitMiddleware, asyn
       return res.status(400).json(createErrorResponse('Code is required to complete assignment'))
     }
 
-    console.log(`📝 Completing assignment ${assignmentIndex} for topic: ${topicId}`)
 
     // Validate topic exists
     const topic = getTopicOrRespond(res, courses, topicId, createErrorResponse)
@@ -570,8 +523,6 @@ router.post('/assignment/complete', authenticateToken, rateLimitMiddleware, asyn
       }
     }))
   } catch (error) {
-    console.error('Complete assignment error:', error?.message)
-    if (error?.stack) console.error(error.stack)
     if (!res.headersSent) {
       const message = error?.message || 'Complete assignment failed'
       res.status(500).json(createErrorResponse(message, 'SERVER_ERROR', process.env.NODE_ENV === 'development' ? error?.stack : null))
@@ -591,7 +542,6 @@ router.post('/execute-playground', authenticateToken, async (req, res) => {
     const result = await executeCodeSecurely(code, [], null, 'script')
     return res.json(createSuccessResponse({ execution: result }))
   } catch (error) {
-    console.error('Playground execution error:', error)
     return res.status(500).json(createErrorResponse('Code execution failed'))
   }
 })
@@ -636,7 +586,6 @@ router.post('/execute', authenticateToken, async (req, res) => {
     }))
 
   } catch (error) {
-    console.error('Code execution error:', error)
     res.status(500).json(createErrorResponse('Code execution failed'))
   }
 })
@@ -645,13 +594,6 @@ router.post('/execute', authenticateToken, async (req, res) => {
 router.post('/execute-secure', authenticateToken, async (req, res) => {
   try {
     const { code, testCases, functionName, solutionType, topicId, assignmentIndex } = req.body;
-
-    console.log('🔒 Secure execution request:', {
-      solutionType,
-      functionName,
-      testCaseCount: testCases?.length || 0,
-      codeLength: code?.length || 0
-    });
 
     // Validate required parameters
     if (!code) {
@@ -691,7 +633,6 @@ router.post('/execute-secure', authenticateToken, async (req, res) => {
     }));
 
   } catch (error) {
-    console.error('Secure execution error:', error);
     res.status(500).json(createErrorResponse('Secure code execution failed'));
   }
 })
@@ -701,7 +642,6 @@ router.post('/execute-secure', authenticateToken, async (req, res) => {
 router.get('/progress', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.userId
-    console.log(`Progress API called for user: ${userId}`)
 
     // Get progress data directly for compatibility
     let allProgress = await getAllProgress(userId)
@@ -719,7 +659,6 @@ router.get('/progress', authenticateToken, async (req, res) => {
           assignments_completed: 0,
           updated_at: new Date().toISOString()
         })
-      console.log(`Progress API: created first-topic progress for user ${userId}, topic ${firstTopic.id}`)
         allProgress = await getAllProgress(userId)
       }
     }
@@ -737,8 +676,6 @@ router.get('/progress', authenticateToken, async (req, res) => {
       completion_percentage: totalTopics > 0 ? Math.round((completedTopics / totalTopics) * 100) : 0
     }
 
-    console.log(`Found ${allProgress?.length || 0} progress records from progress table`)
-    console.log(`RAW PROGRESS DATA:`, JSON.stringify(allProgress, null, 2))
 
     // Find most recent topic for lastAccessed
     const lastAccessed = allProgress.length > 0 ? {
@@ -762,8 +699,6 @@ router.get('/progress', authenticateToken, async (req, res) => {
       }))
     }))
   } catch (error) {
-    console.error('Progress API error:', error)
-    console.error('Error details:', error.message)
     handleErrorResponse(res, error, 'get progress')
   }
 })
@@ -772,16 +707,11 @@ router.get('/progress', authenticateToken, async (req, res) => {
 router.get('/debug/progress', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.userId
-    console.log(`Debug: Checking progress table for user ${userId}`)
 
     // Get progress using the database service
     const data = await getAllProgress(userId)
     const error = null
 
-    console.log(`Debug results:`)
-    console.log(`   - Error:`, error)
-    console.log(`   - Data:`, data)
-    console.log(`   - Data length:`, data?.length)
 
     res.json({
       success: true,
@@ -793,7 +723,6 @@ router.get('/debug/progress', authenticateToken, async (req, res) => {
       }
     })
   } catch (error) {
-    console.error('Debug error:', error)
     res.json({
       success: false,
       error: error.message
@@ -822,18 +751,14 @@ router.delete('/debug/reset-progress', authenticateToken, async (req, res) => {
           .eq('user_id', userId)
 
         if (error) {
-          console.warn(`Failed to delete from ${table}:`, error.message)
         } else {
-          console.log(`Deleted all records from ${table}`)
         }
       } catch (err) {
-        console.warn(`Error deleting from ${table}:`, err.message)
       }
     }
 
     // Clear cache
     progressCache.clear()
-    console.log(`🧹 Progress cache cleared`)
 
     const result = { success: true, message: 'All progress reset successfully' }
 
@@ -844,7 +769,6 @@ router.delete('/debug/reset-progress', authenticateToken, async (req, res) => {
       details: result
     })
   } catch (error) {
-    console.error('Reset progress error:', error)
     res.status(500).json({
       success: false,
       error: error.message
@@ -858,7 +782,6 @@ router.post('/debug/clear-cache', authenticateToken, async (req, res) => {
     const { progressCache } = await import('../middleware/performance.js')
 
     progressCache.clear()
-    console.log('🧹 All backend caches cleared')
 
     res.json({
       success: true,
@@ -866,7 +789,6 @@ router.post('/debug/clear-cache', authenticateToken, async (req, res) => {
       cacheSize: progressCache.size()
     })
   } catch (error) {
-    console.error('Clear cache error:', error)
     res.status(500).json({
       success: false,
       error: error.message
@@ -882,7 +804,6 @@ router.get('/debug/progress/:topicId', authenticateToken, async (req, res) => {
 
     const progress = await getProgress(userId, topicId)
 
-    console.log(`Progress Debug for ${topicId}:`, progress)
 
     res.json({
       success: true,
@@ -894,7 +815,6 @@ router.get('/debug/progress/:topicId', authenticateToken, async (req, res) => {
       }
     })
   } catch (error) {
-    console.error('Progress debug error:', error)
     res.status(500).json({
       success: false,
       error: error.message
@@ -906,7 +826,6 @@ router.get('/debug/progress/:topicId', authenticateToken, async (req, res) => {
 router.get('/debug/all-data-sources', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.userId
-    console.log(`COMPREHENSIVE DEBUG: Checking all data sources for user: ${userId}`)
 
     const { getSupabaseClient } = await import('../services/database.js')
     const supabase = getSupabaseClient()
@@ -926,10 +845,6 @@ router.get('/debug/all-data-sources', authenticateToken, async (req, res) => {
     // Check cache
     const { progressCache } = await import('../middleware/performance.js')
 
-    console.log(`DEBUG RESULTS:`)
-    console.log(`   - Progress table: ${progressData?.length || 0} records`)
-    console.log(`   - Chat sessions: ${chatSessionsData?.length || 0} records`)
-    console.log(`   - Cache size: ${progressCache.size()}`)
 
     res.json({
       success: true,
@@ -953,7 +868,6 @@ router.get('/debug/all-data-sources', authenticateToken, async (req, res) => {
       }
     })
   } catch (error) {
-    console.error('Comprehensive debug error:', error)
     res.status(500).json({
       success: false,
       error: error.message
@@ -982,7 +896,6 @@ router.get('/continue', authenticateToken, async (req, res) => {
           assignments_completed: 0,
           updated_at: new Date().toISOString()
         })
-        console.log(`No progress found for user ${userId}, created first-topic progress: ${firstTopic.id}`)
       }
 
       const topic = firstTopic || getAllTopics(courses)[0]
@@ -999,7 +912,6 @@ router.get('/continue', authenticateToken, async (req, res) => {
     }
 
     const topic = findTopicById(courses, lastAccessed.topic_id)
-    console.log(`Last accessed topic for user ${userId}: ${lastAccessed.topic_id}, phase: ${lastAccessed.phase}`)
 
     res.json(createSuccessResponse({
       lastAccessed: {
@@ -1022,7 +934,6 @@ router.get('/courses', authenticateToken, async (req, res) => {
       courses: courses
     }))
   } catch (error) {
-    console.error('Get courses error:', error)
     handleErrorResponse(res, error, 'Failed to get courses')
   }
 })

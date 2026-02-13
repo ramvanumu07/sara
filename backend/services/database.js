@@ -26,8 +26,6 @@ function initializeDatabase() {
     supabaseUrl.includes('your_') || supabaseKey.includes('your_')
 
   if (isPlaceholderConfig) {
-    console.log(`[${new Date().toISOString()}] Running in DEVELOPMENT MODE - Using in-memory database`)
-    console.log(`[${new Date().toISOString()}] 📝 To use Supabase, update SUPABASE_URL and SUPABASE_SERVICE_KEY in .env`)
     return 'DEV_MODE' // Special marker for development mode
   }
 
@@ -46,10 +44,8 @@ function initializeDatabase() {
         }
       }
     })
-    console.log(`[${new Date().toISOString()}] Sara database connected with performance optimizations`)
     return supabase
   } catch (error) {
-    console.error(`[${new Date().toISOString()}] Database connection failed:`, error)
     throw error
   }
 }
@@ -85,7 +81,6 @@ export async function createUser(username, email, name, hashedPassword, security
       created_at: new Date().toISOString()
     }
     DEV_USERS.set(username, user)
-    console.log(`[DEV] Created user: ${username}`)
     return user
   }
 
@@ -128,18 +123,15 @@ export async function createUser(username, email, name, hashedPassword, security
 }
 
 export async function getUserById(userId) {
-  console.log(`[DB] Searching for user with ID: "${userId}"`)
   const client = initializeDatabase()
 
   // Development mode fallback
   if (client === 'DEV_MODE') {
     for (const user of DEV_USERS.values()) {
       if (user.id === userId) {
-        console.log(`[DEV] Get user by ID: ${userId} - Found`)
         return user
       }
     }
-    console.log(`[DEV] Get user by ID: ${userId} - Not found`)
     return null
   }
 
@@ -151,26 +143,20 @@ export async function getUserById(userId) {
 
   if (error) {
     if (error.code === 'PGRST116') {
-      console.log(`[DB] No user found with ID: "${userId}"`)
       return null
     } else {
-      console.error(`[DB] Database error searching for user ID "${userId}":`, error)
       throw new Error(`Failed to get user by ID: ${error.message}`)
     }
   }
 
-  console.log(`[DB] User found: ${data.username} (ID: ${data.id})`)
   return data
 }
 
 export async function getUserByUsername(username) {
-  console.log(`[DB] Searching for user with username: "${username}"`)
   const client = initializeDatabase()
 
-  // Development mode fallback
   if (client === 'DEV_MODE') {
     const user = DEV_USERS.get(username)
-    console.log(`[DEV] Get user by username: ${username} - ${user ? 'Found' : 'Not found'}`)
     return user || null
   }
 
@@ -182,15 +168,12 @@ export async function getUserByUsername(username) {
 
   if (error) {
     if (error.code === 'PGRST116') {
-      console.log(`[DB] No user found with username: "${username}"`)
       return null
     } else {
-      console.error(`[DB] Database error searching for username "${username}":`, error)
       throw new Error(`Failed to get user by username: ${error.message}`)
     }
   }
 
-  console.log(`[DB] User found: ${data.username} (ID: ${data.id})`)
   return data
 }
 
@@ -201,11 +184,9 @@ export async function getUserByEmail(email) {
   if (client === 'DEV_MODE') {
     for (const user of DEV_USERS.values()) {
       if (user.email === email) {
-        console.log(`[DEV] Get user by email: ${email} - Found`)
         return user
       }
     }
-    console.log(`[DEV] Get user by email: ${email} - Not found`)
     return null
   }
 
@@ -312,7 +293,6 @@ export async function getProgress(userId, topicId) {
   // Check cache first
   const cached = progressCache.get(cacheKey)
   if (cached) {
-    console.log(`[${new Date().toISOString()}] 🚀 CACHE HIT: Progress for ${topicId}`)
     return cached
   }
 
@@ -323,7 +303,6 @@ export async function getProgress(userId, topicId) {
     if (client === 'DEV_MODE') {
       const progressKey = `${userId}:${topicId}`
       const progress = DEV_PROGRESS.get(progressKey)
-      console.log(`[DEV] Get progress: ${progressKey} - ${progress ? 'Found' : 'Not found'}`)
       if (progress) {
         progressCache.set(cacheKey, progress)
       }
@@ -371,7 +350,6 @@ export async function upsertProgress(userId, topicId, updates) {
       const cacheKey = `progress:${userId}:${topicId}`
       progressCache.set(cacheKey, newProgress)
 
-      console.log(`[DEV] Upserted progress: ${progressKey}`)
       return newProgress
     }
 
@@ -418,7 +396,6 @@ export async function getAllProgress(userId) {
       }
     }
     list.sort((a, b) => new Date(b.updated_at || 0) - new Date(a.updated_at || 0))
-    console.log(`[DEV] getAllProgress: ${list.length} records for user ${userId}`)
     return list
   }
 
@@ -429,23 +406,7 @@ export async function getAllProgress(userId) {
     .order('updated_at', { ascending: false })
 
   if (error) {
-    console.error('getAllProgress error:', error)
     throw new Error(`Failed to get all progress: ${error.message}`)
-  }
-  console.log(`getAllProgress: Found ${data?.length || 0} progress records for user ${userId}`)
-  if (data && data.length > 0) {
-    console.log(`getAllProgress RAW DATA:`, JSON.stringify(data, null, 2))
-    data.forEach((record, index) => {
-      console.log(`Record ${index + 1}:`, {
-        topic_id: record.topic_id,
-        status: record.status,
-        phase: record.phase,
-        created_at: record.created_at,
-        updated_at: record.updated_at
-      })
-    })
-  } else {
-    console.log(`getAllProgress: No data returned from database`)
   }
   return data || []
 }
@@ -542,7 +503,6 @@ export async function updateUserPassword(userId, hashedPassword) {
       if (user.id === userId) {
         user.password = hashedPassword
         user.updated_at = new Date().toISOString()
-        console.log(`[DEV] Updated password for user: ${username}`)
         return user
       }
     }

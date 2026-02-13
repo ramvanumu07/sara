@@ -28,7 +28,6 @@ const ForgotPassword = () => {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      console.log('ForgotPassword: User already authenticated, redirecting to dashboard')
       navigate('/dashboard', { replace: true })
     }
   }, [isAuthenticated, navigate])
@@ -99,8 +98,6 @@ const ForgotPassword = () => {
         setErrors({})
       }
     } catch (error) {
-      console.error('Get security question error:', error)
-      
       let errorMessage = 'Something went wrong. Please try again.'
 
       if (error.response) {
@@ -151,8 +148,6 @@ const ForgotPassword = () => {
         setErrors({})
       }
     } catch (error) {
-      console.error('Security answer verification error:', error)
-      
       let errorMessage = 'Something went wrong. Please try again.'
 
       if (error.response) {
@@ -231,8 +226,6 @@ const ForgotPassword = () => {
         setErrors({})
       }
     } catch (error) {
-      console.error('Password reset error:', error)
-      
       let errorMessage = 'Something went wrong. Please try again.'
 
       if (error.response) {

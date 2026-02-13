@@ -28,9 +28,7 @@ function getSupabaseClient() {
  */
 export async function getChatHistoryString(userId, topicId) {
   const client = getSupabaseClient()
-  
-  console.log(`Fetching chat history: ${userId}/${topicId}`)
-  
+
   try {
     const { data, error } = await client
       .from('chat_sessions')
@@ -41,19 +39,15 @@ export async function getChatHistoryString(userId, topicId) {
 
     if (error) {
       if (error.code === 'PGRST116') { // No rows found
-        console.log(`📝 No chat history found - returning empty string`)
         return ''
       }
       throw new Error(`Database error: ${error.message}`)
     }
 
     const conversationString = data?.messages || ''
-    console.log(`Chat history retrieved: ${conversationString.length} characters`)
-    
     return conversationString
 
   } catch (error) {
-    console.error(`Failed to get chat history:`, error)
     throw error
   }
 }
@@ -63,9 +57,7 @@ export async function getChatHistoryString(userId, topicId) {
  */
 export async function saveChatTurn(userId, topicId, userMessage, aiResponse) {
   const client = getSupabaseClient()
-  
-  console.log(`💾 Saving chat turn: ${userId}/${topicId}`)
-  
+
   try {
     // Get current conversation
     const { data: currentData, error: fetchError } = await client
@@ -121,15 +113,12 @@ export async function saveChatTurn(userId, topicId, userMessage, aiResponse) {
       throw new Error(`Failed to save conversation: ${upsertError.message}`)
     }
 
-    console.log(`Chat turn saved: ${finalCount} total messages`)
-    
-    return { 
+    return {
       messageCount: finalCount,
-      conversationHistory: finalConversation 
+      conversationHistory: finalConversation
     }
 
   } catch (error) {
-    console.error(`Failed to save chat turn:`, error)
     throw error
   }
 }
@@ -139,15 +128,12 @@ export async function saveChatTurn(userId, topicId, userMessage, aiResponse) {
  */
 export async function saveInitialMessage(userId, topicId, aiMessage) {
   const client = getSupabaseClient()
-  
-  console.log(`🚀 Saving initial message: ${userId}/${topicId}`)
-  
+
   try {
     // Check if conversation already exists
     const existingHistory = await getChatHistoryString(userId, topicId)
     
     if (existingHistory && existingHistory.trim().length > 0) {
-      console.log(`Conversation already exists - skipping initial message`)
       return { 
         messageCount: countMessages(existingHistory),
         conversationHistory: existingHistory,
@@ -178,16 +164,13 @@ export async function saveInitialMessage(userId, topicId, aiMessage) {
       throw new Error(`Failed to save initial message: ${error.message}`)
     }
 
-    console.log(`Initial message saved`)
-    
-    return { 
+    return {
       messageCount: 1,
       conversationHistory: initialConversation,
       wasCreated: true
     }
 
   } catch (error) {
-    console.error(`Failed to save initial message:`, error)
     throw error
   }
 }
@@ -197,9 +180,7 @@ export async function saveInitialMessage(userId, topicId, aiMessage) {
  */
 export async function clearChatHistory(userId, topicId) {
   const client = getSupabaseClient()
-  
-  console.log(`Clearing chat history: ${userId}/${topicId}`)
-  
+
   try {
     const { error } = await client
       .from('chat_sessions')
@@ -211,10 +192,7 @@ export async function clearChatHistory(userId, topicId) {
       throw new Error(`Failed to clear chat history: ${error.message}`)
     }
 
-    console.log(`Chat history cleared`)
-
   } catch (error) {
-    console.error(`Failed to clear chat history:`, error)
     throw error
   }
 }
@@ -244,7 +222,6 @@ export async function getChatHistoryByPhase(userId, topicId, phase) {
     return data?.messages || ''
 
   } catch (error) {
-    console.error(`Failed to get chat history by phase:`, error)
     throw error
   }
 }
@@ -269,10 +246,7 @@ export async function updateChatPhase(userId, topicId, phase) {
       throw new Error(`Failed to update chat phase: ${error.message}`)
     }
 
-    console.log(`Chat phase updated to: ${phase}`)
-
   } catch (error) {
-    console.error(`Failed to update chat phase:`, error)
     throw error
   }
 }

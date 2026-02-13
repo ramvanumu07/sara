@@ -65,7 +65,6 @@ router.get('/schema', async (req, res) => {
     })
 
   } catch (error) {
-    console.error('Schema debug error:', error)
     res.status(500).json({
       error: 'Failed to get schema information',
       message: error.message,
@@ -105,7 +104,6 @@ router.get('/test-db', async (req, res) => {
     })
 
   } catch (error) {
-    console.error('Database test error:', error)
     res.status(500).json({
       status: 'error',
       message: error.message,

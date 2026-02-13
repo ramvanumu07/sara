@@ -55,8 +55,6 @@ api.interceptors.response.use(
           throw new Error('No refresh token available')
         }
         
-        console.log('Access token expired, refreshing...')
-        
         // Call refresh endpoint
         const refreshResponse = await api.post('/auth/refresh', { refreshToken })
         
@@ -70,21 +68,14 @@ api.interceptors.response.use(
           // Update the original request with new token
           originalRequest.headers.Authorization = `Bearer ${accessToken}`
           
-          console.log('Tokens refreshed successfully, retrying original request')
-          
           // Retry the original request
           return api(originalRequest)
         }
       } catch (refreshError) {
-        console.log('Token refresh failed:', refreshError.message)
-        
         // Clear all tokens and redirect to login
         localStorage.removeItem('sara_token')
         localStorage.removeItem('sara_refresh_token')
         localStorage.removeItem('sara_user')
-        
-        // Show user-friendly message (this should rarely happen now)
-        console.log('Session could not be refreshed. Please log in again.')
         
         // Dispatch event for user notification
         const event = new CustomEvent('auth-session-expired', {
@@ -200,17 +191,8 @@ export const chat = {
       const response = await api.get(`/chat/history/${topicId}`)
       const duration = Date.now() - startTime
       
-      // Log performance for monitoring
-      if (duration > 2000) {
-        console.warn(`Slow chat history API: ${duration}ms for topic ${topicId}`)
-      } else if (duration > 1000) {
-        console.log(`Chat history API: ${duration}ms for topic ${topicId}`)
-      }
-      
       return response
     } catch (error) {
-      const duration = Date.now() - startTime
-      console.error(`Chat history API failed after ${duration}ms:`, error.message)
       throw error
     }
   },
@@ -274,7 +256,6 @@ export const batchRequests = async (requests) => {
       error: result.status === 'rejected' ? result.reason : null
     }))
   } catch (error) {
-    console.error('Batch request error:', error)
     throw error
   }
 }
@@ -299,9 +280,7 @@ export const cachedRequest = async (key, apiCall, ttl = CACHE_TTL) => {
     })
     return response
   } catch (error) {
-    // Return cached data if available, even if expired
     if (cached) {
-      console.warn('Using expired cache due to API error:', error.message)
       return cached.data
     }
     throw error
@@ -311,7 +290,6 @@ export const cachedRequest = async (key, apiCall, ttl = CACHE_TTL) => {
 // Clear cache
 export const clearCache = () => {
   cache.clear()
-  console.log('Frontend cache cleared')
 }
 
 // Make clearCache available globally for debugging
@@ -338,11 +316,6 @@ api.interceptors.response.use(
     const duration = Date.now() - response.config.startTime
     performanceMetrics.requests++
     performanceMetrics.totalTime += duration
-    
-    // Log slow requests
-    if (duration > 3000) {
-      console.warn(`Slow API request: ${response.config.url} took ${duration}ms`)
-    }
     
     return response
   },

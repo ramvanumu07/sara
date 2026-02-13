@@ -42,7 +42,6 @@ const Login = () => {
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      console.log('Login: User already authenticated, redirecting to dashboard')
       navigate('/dashboard', { replace: true })
     }
   }, [isAuthenticated, navigate])
@@ -123,11 +122,9 @@ const Login = () => {
     setLastAttemptTime(now)
 
     try {
-      console.log('Login Page - Starting login process')
       const result = await login(formData.usernameOrEmail.trim(), formData.password)
 
       if (result.success) {
-        console.log('Login Page - Login successful:', result.user)
         // Reset login attempts on success
         setLoginAttempts(0)
         
@@ -139,9 +136,7 @@ const Login = () => {
           navigate('/dashboard')
         }, 500)
       } else {
-        console.log('Login Page - Login failed:', result.error)
         const errorMessage = toErrorString(result.error) || 'Login failed'
-        console.log('Login Page - Processing error message:', errorMessage)
         if (errorMessage.includes('Username or email not found') || 
             errorMessage.includes('not found') || 
             errorMessage.includes('Please check your credentials or create an account')) {
@@ -163,8 +158,6 @@ const Login = () => {
         setLoginAttempts(prev => prev + 1)
       }
     } catch (error) {
-      console.error('Login Page - Unexpected error:', error)
-      
       // Handle network and other errors with specific messages
       let errorMessage = 'Something went wrong. Please try again.'
       

@@ -153,8 +153,6 @@ app.get('/metrics', (req, res) => {
 
 // ============ ERROR HANDLING ============
 app.use((err, req, res, next) => {
-  console.error(`[${new Date().toISOString()}] Error:`, err.message)
-
   const isDevelopment = process.env.NODE_ENV === 'development'
 
   res.status(err.status || 500).json({
@@ -195,20 +193,6 @@ const startServer = async () => {
       caching: process.env.REDIS_URL ? 'redis' : 'memory'
     }
   })
-  
-  console.log(`
-╔══════════════════════════════════════════════════════════════╗
-║                    Sara Learning Platform                    ║
-║                    Industry Grade v2.0                      ║
-╠══════════════════════════════════════════════════════════════╣
-║  Server:      http://localhost:${PORT.toString().padEnd(29)} ║
-║  Environment: ${(process.env.NODE_ENV || 'development').padEnd(29)} ║
-║  Status:      Production Ready                               ║
-║  Health:      http://localhost:${PORT}/health${' '.repeat(18)} ║
-║  Services:    ${(process.env.REDIS_URL ? 'Redis' : 'Memory').padEnd(29)} ║
-║  Monitoring:  ${(process.env.SENTRY_DSN ? 'Sentry' : 'Console').padEnd(29)} ║
-╚══════════════════════════════════════════════════════════════╝
-  `)
     })
 
     server.on('error', (error) => {
@@ -228,16 +212,11 @@ const startServer = async () => {
 
     // ============ GRACEFUL SHUTDOWN ============
     const gracefulShutdown = (signal) => {
-      console.log(`\n[${new Date().toISOString()}] Received ${signal}. Starting graceful shutdown...`)
-
       server.close(() => {
-        console.log(`[${new Date().toISOString()}] Server closed successfully.`)
         process.exit(0)
       })
 
-      // Force close after 10 seconds
       setTimeout(() => {
-        console.log(`[${new Date().toISOString()}] Force closing server.`)
         process.exit(1)
       }, 10000)
     }
@@ -247,7 +226,6 @@ const startServer = async () => {
     
   } catch (error) {
     logError('Failed to start server', { error: error.message })
-    console.error('Could not find an available port. Please check your system.')
     process.exit(1)
   }
 }

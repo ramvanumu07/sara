@@ -7,11 +7,8 @@ const router = express.Router()
 
 // DEPRECATED: Use /learn/progress instead
 router.get('/', authenticateToken, async (req, res) => {
-  console.log('DEPRECATED: /api/progress endpoint called. Use /api/learn/progress instead.')
-  
   try {
     const progress = await getAllProgress(req.user.userId)
-    console.log(`DEPRECATED endpoint: Found ${progress?.length || 0} progress records`)
 
     // Convert to frontend format (for backward compatibility)
     const formatted = {}
@@ -66,12 +63,9 @@ router.post('/update', authenticateToken, async (req, res) => {
     // Update progress in database
     await upsertProgress(userId, topicId, progressData)
 
-    console.log(`Progress updated for user ${userId}, topic ${topicId}:`, progressData)
-
     res.json(createSuccessResponse(progressData, 'Progress updated successfully'))
 
   } catch (error) {
-    console.error('Progress update error:', error)
     handleErrorResponse(res, error, 'Failed to update progress')
   }
 })

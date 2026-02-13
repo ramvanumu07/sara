@@ -404,44 +404,57 @@ pre code {
   }
 }
 
-/* Editor/terminal: narrower line number panel on mobile */
+/* Editor/terminal: narrower line number panel on mobile (Vercel + localhost) */
 @media (max-width: 768px) {
+  .playground-line-numbers,
+  .terminal-line-numbers,
+  .assignment-terminal-line-numbers,
   .learn-container .playground-line-numbers,
   .learn-container .terminal-line-numbers,
   .learn-container .assignment-terminal-line-numbers {
     width: 24px !important;
     min-width: 24px !important;
+    max-width: 24px !important;
     padding: 6px 3px !important;
     font-size: 0.6rem !important;
   }
 }
 
 @media (max-width: 480px) {
+  .playground-line-numbers,
+  .terminal-line-numbers,
+  .assignment-terminal-line-numbers,
   .learn-container .playground-line-numbers,
   .learn-container .terminal-line-numbers,
   .learn-container .assignment-terminal-line-numbers {
     width: 20px !important;
     min-width: 20px !important;
+    max-width: 20px !important;
     padding: 5px 2px !important;
     font-size: 0.55rem !important;
   }
 }
 
-/* Editor blocks: reduced header height on mobile */
+/* Editor blocks: reduced header height on mobile (Vercel + localhost) */
 @media (max-width: 768px) {
+  .playground-editor-header,
+  .playground-output-header,
   .learn-container .playground-editor-header,
   .learn-container .playground-output-header {
-    height: clamp(26px, 4vh, 40px) !important;
-    min-height: clamp(26px, 4vh, 40px) !important;
-    padding: clamp(3px, 0.8vh, 8px) !important;
+    height: 32px !important;
+    min-height: 32px !important;
+    max-height: 40px !important;
+    padding: 6px 10px !important;
   }
 }
 
 @media (max-width: 480px) {
+  .playground-editor-header,
+  .playground-output-header,
   .learn-container .playground-editor-header,
   .learn-container .playground-output-header {
-    height: clamp(22px, 4vh, 32px) !important;
-    min-height: clamp(22px, 4vh, 32px) !important;
-    padding: clamp(2px, 0.5vh, 5px) !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    padding: 5px 8px !important;
   }
 }

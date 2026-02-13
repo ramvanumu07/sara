@@ -111,7 +111,6 @@ const PublicRoute = ({ children }) => {
   const { isAuthenticated } = useAuth()
   
   if (isAuthenticated) {
-    console.log('PublicRoute: User is authenticated, redirecting to dashboard')
     return <Navigate to="/dashboard" replace />
   }
   
@@ -123,7 +122,6 @@ const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useAuth()
   
   if (!isAuthenticated) {
-    console.log('ProtectedRoute: User not authenticated, redirecting to login')
     return <Navigate to="/login" replace />
   }
   
@@ -135,10 +133,8 @@ const SmartRedirect = () => {
   const { isAuthenticated } = useAuth()
   
   if (isAuthenticated) {
-    console.log('SmartRedirect: Authenticated user, redirecting to dashboard')
     return <Navigate to="/dashboard" replace />
   } else {
-    console.log('SmartRedirect: Unauthenticated user, redirecting to welcome')
     return <Navigate to="/" replace />
   }
 }

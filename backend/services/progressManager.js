@@ -29,8 +29,6 @@ export const PHASES = {
  * This creates the initial progress record
  */
 export async function initializeTopicProgress(userId, topicId) {
-  console.log(`🚀 Initializing progress for user ${userId}, topic ${topicId}`)
-  
   const topic = findTopicById(courses, topicId)
   if (!topic) {
     throw new Error(`Topic not found: ${topicId}`)
@@ -46,8 +44,7 @@ export async function initializeTopicProgress(userId, topicId) {
   }
 
   await upsertProgress(userId, topicId, progressData)
-  console.log(`Topic ${topicId} initialized as IN_PROGRESS for user ${userId}`)
-  
+
   return progressData
 }
 
@@ -55,13 +52,9 @@ export async function initializeTopicProgress(userId, topicId) {
  * Mark session phase as completed
  */
 export async function completeSessionPhase(userId, topicId) {
-  console.log(`📚 Completing session phase for user ${userId}, topic ${topicId}`)
-  
   try {
-    // Get current progress to preserve existing data
     const currentProgress = await getProgress(userId, topicId)
-    console.log(`Current progress before session completion:`, currentProgress)
-    
+
     const progressUpdate = {
       phase: PHASES.ASSIGNMENT,  // 2-phase model: (session<->play) done → assignment
       status: 'in_progress',
@@ -69,11 +62,9 @@ export async function completeSessionPhase(userId, topicId) {
     }
 
     await upsertProgress(userId, topicId, progressUpdate)
-    console.log(`Session completed for topic ${topicId}, user should go to assignment next`)
-    
+
     return progressUpdate
   } catch (error) {
-    console.error(`Error in completeSessionPhase:`, error)
     throw error
   }
 }
@@ -82,8 +73,6 @@ export async function completeSessionPhase(userId, topicId) {
  * Start playtime phase
  */
 export async function startPlaytimePhase(userId, topicId) {
-  console.log(`🎮 Starting playtime phase for user ${userId}, topic ${topicId}`)
-  
   const progressUpdate = {
     phase: PHASES.PLAYTIME,
     updated_at: new Date().toISOString()
@@ -91,8 +80,7 @@ export async function startPlaytimePhase(userId, topicId) {
   }
 
   await upsertProgress(userId, topicId, progressUpdate)
-  console.log(`Playtime started for topic ${topicId}`)
-  
+
   return progressUpdate
 }
 
@@ -100,13 +88,9 @@ export async function startPlaytimePhase(userId, topicId) {
  * Complete playtime phase
  */
 export async function completePlaytimePhase(userId, topicId) {
-  console.log(`🎮 Completing playtime phase for user ${userId}, topic ${topicId}`)
-  
   try {
-    // Get current progress to preserve existing data
     const currentProgress = await getProgress(userId, topicId)
-    console.log(`Current progress before playtime completion:`, currentProgress)
-    
+
     const progressUpdate = {
       phase: PHASES.ASSIGNMENT,
       status: 'in_progress',
@@ -114,11 +98,9 @@ export async function completePlaytimePhase(userId, topicId) {
     }
 
     await upsertProgress(userId, topicId, progressUpdate)
-    console.log(`Playtime completed for topic ${topicId}, user should go to assignments next`)
-    
+
     return progressUpdate
   } catch (error) {
-    console.error(`Error in completePlaytimePhase:`, error)
     throw error
   }
 }
@@ -127,11 +109,9 @@ export async function completePlaytimePhase(userId, topicId) {
  * Start assignment phase
  */
 export async function startAssignmentPhase(userId, topicId) {
-  console.log(`📝 Starting assignment phase for user ${userId}, topic ${topicId}`)
-  
   const topic = findTopicById(courses, topicId)
   const totalAssignments = topic?.tasks?.length || 0
-  
+
   const progressUpdate = {
     phase: PHASES.ASSIGNMENT,
     total_tasks: totalAssignments,
@@ -140,8 +120,7 @@ export async function startAssignmentPhase(userId, topicId) {
   }
 
   await upsertProgress(userId, topicId, progressUpdate)
-  console.log(`Assignment phase started for topic ${topicId} (${totalAssignments} assignments)`)
-  
+
   return progressUpdate
 }
 
@@ -149,8 +128,6 @@ export async function startAssignmentPhase(userId, topicId) {
  * Complete a single assignment
  */
 export async function completeAssignment(userId, topicId, assignmentIndex) {
-  console.log(`📝 Completing assignment ${assignmentIndex} for user ${userId}, topic ${topicId}`)
-  
   const currentProgress = await getProgress(userId, topicId)
   if (!currentProgress) {
     throw new Error(`No progress found for topic ${topicId}`)
@@ -170,12 +147,6 @@ export async function completeAssignment(userId, topicId, assignmentIndex) {
   if (isTopicComplete) {
     progressUpdate.status = PROGRESS_STATES.COMPLETED
     progressUpdate.status = 'completed'
-    
-    console.log(`TOPIC FULLY COMPLETED: ${topicId} for user ${userId}`)
-    console.log(`   - Completed ${completedAssignments}/${totalAssignments} assignments`)
-  } else {
-    console.log(`📝 Assignment ${assignmentIndex + 1} completed for topic ${topicId}`)
-    console.log(`   - Progress: ${completedAssignments}/${totalAssignments} assignments`)
   }
 
   await upsertProgress(userId, topicId, progressUpdate)
@@ -204,12 +175,6 @@ export async function getProgressSummary(userId) {
   const inProgressTopics = allProgress.filter(p => p.status === 'in_progress').length
   const completionPercentage = totalTopics > 0 ? Math.round((completedTopics / totalTopics) * 100) : 0
 
-  console.log(`Progress Summary for user ${userId}:`)
-  console.log(`   - Total Topics: ${totalTopics}`)
-  console.log(`   - Completed: ${completedTopics}`)
-  console.log(`   - In Progress: ${inProgressTopics}`)
-  console.log(`   - Completion: ${completionPercentage}%`)
-
   return {
     total_topics: totalTopics,
     completed_topics: completedTopics,
@@ -223,38 +188,25 @@ export async function getProgressSummary(userId) {
  * Reset all progress for a user (for testing)
  */
 export async function resetUserProgress(userId) {
-  console.log(`Resetting ALL progress for user: ${userId}`)
-  
   const { getSupabaseClient } = await import('./database.js')
   const { progressCache } = await import('../middleware/performance.js')
   const supabase = getSupabaseClient()
 
-  // Delete from all possible tables
   const tables = ['progress', 'chat_sessions']
-  
+
   for (const table of tables) {
     try {
-      const { error } = await supabase
+      await supabase
         .from(table)
         .delete()
         .eq('user_id', userId)
-      
-      if (error) {
-        console.warn(`Failed to delete from ${table}:`, error.message)
-      } else {
-        console.log(`Deleted all records from ${table}`)
-      }
     } catch (err) {
-      console.warn(`Error deleting from ${table}:`, err.message)
+      // Continue with other tables
     }
   }
 
-  // Clear cache
   progressCache.clear()
-  console.log(`🧹 Progress cache cleared`)
 
-  console.log(`All progress reset for user ${userId}`)
-  
   return { success: true, message: 'All progress reset successfully' }
 }
 

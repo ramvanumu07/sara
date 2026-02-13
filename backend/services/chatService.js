@@ -158,8 +158,6 @@ export async function getChatHistory(userId, topicId) {
     // Try cache first
     const cachedMessages = await getCachedChatHistory(userId, topicId)
     if (cachedMessages) {
-      const duration = Date.now() - startTime
-      console.log(`🚀 Cache hit: Chat history retrieved in ${duration}ms (${cachedMessages.length} messages)`)
       return cachedMessages
     }
 
@@ -205,17 +203,9 @@ export async function getChatHistory(userId, topicId) {
     // Cache the parsed messages for future requests
     await setCachedChatHistory(userId, topicId, messages)
 
-    const duration = Date.now() - startTime
-    if (duration > 1000) {
-      console.warn(`Slow chat history retrieval: ${duration}ms for ${messages.length} messages`)
-    } else {
-      console.log(`Chat history retrieved in ${duration}ms (${messages.length} messages)`)
-    }
-
     return messages
 
   } catch (error) {
-    console.error('Error fetching chat history:', error.message)
     return []
   }
 }
@@ -226,8 +216,6 @@ export async function getChatHistory(userId, topicId) {
  */
 export async function saveChatTurn(userId, topicId, userMessage, aiResponse, phase = 'session') {
   const client = getSupabaseClient()
-
-  console.log(`💾 Saving chat turn in text format: ${userId}/${topicId}`)
 
   try {
     // Get current conversation history as text
@@ -280,13 +268,10 @@ export async function saveChatTurn(userId, topicId, userMessage, aiResponse, pha
     // Invalidate cache after saving new messages
     await invalidateChatHistoryCache(userId, topicId)
 
-    console.log(`Chat turn saved successfully: ${finalMessageCount} total messages`)
-
     // Return messages in array format for frontend compatibility
     return parseTextToMessagesOptimized(finalHistory)
 
   } catch (error) {
-    console.error(`Failed to save chat turn:`, error)
     throw error
   }
 }
@@ -296,8 +281,6 @@ export async function saveChatTurn(userId, topicId, userMessage, aiResponse, pha
  */
 export async function saveInitialMessage(userId, topicId, message, phase = 'session') {
   const client = getSupabaseClient()
-
-  console.log(`💾 Checking for existing conversation: ${userId}/${topicId}`)
 
   try {
     // Check if conversation already exists
@@ -309,7 +292,6 @@ export async function saveInitialMessage(userId, topicId, message, phase = 'sess
       .single()
 
     if (existing && existing.messages && existing.messages.trim() !== '') {
-      console.log(`Conversation already exists - not creating initial message`)
       return {
         wasCreated: false,
         conversationHistory: existing.messages,
@@ -318,7 +300,6 @@ export async function saveInitialMessage(userId, topicId, message, phase = 'sess
     }
 
     // No existing conversation, create initial message
-    console.log(`💾 Creating initial message for new conversation`)
     const initialHistory = `AGENT: ${message.trim()}`
 
     const { error } = await client
@@ -341,8 +322,6 @@ export async function saveInitialMessage(userId, topicId, message, phase = 'sess
     // Invalidate cache after creating initial message
     await invalidateChatHistoryCache(userId, topicId)
 
-    console.log(`Initial message created successfully`)
-
     return {
       wasCreated: true,
       conversationHistory: initialHistory,
@@ -350,7 +329,6 @@ export async function saveInitialMessage(userId, topicId, message, phase = 'sess
     }
 
   } catch (error) {
-    console.error(`Failed to save initial message:`, error)
     throw error
   }
 }
@@ -375,10 +353,7 @@ export async function clearChatHistory(userId, topicId) {
     // Invalidate cache after clearing
     await invalidateChatHistoryCache(userId, topicId)
 
-    console.log(`Chat history cleared and cache invalidated`)
-
   } catch (error) {
-    console.error(`Failed to clear chat history:`, error)
     throw error
   }
 }
@@ -404,7 +379,6 @@ export async function getChatHistoryString(userId, topicId) {
     return textLines.join('\n')
 
   } catch (error) {
-    console.error('Error converting messages to string:', error)
     return ''
   }
 }

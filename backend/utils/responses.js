@@ -153,8 +153,6 @@ function safeErrorMessage(error) {
 }
 
 export function handleErrorResponse(res, error, operation = 'operation', defaultStatusCode = 500) {
-  console.error(`${operation} error:`, error)
-
   let statusCode = defaultStatusCode
   let message = `Failed to process ${operation}`
   let code = 'SERVER_ERROR'

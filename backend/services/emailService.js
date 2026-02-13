@@ -152,25 +152,11 @@ The Sara Team
     }
     
     // Send email
-    const info = await transporter.sendMail(mailOptions)
-    
-    console.log(`Password reset email sent successfully to ${email}`)
-    console.log(`📧 Message ID: ${info.messageId}`)
-    
+    await transporter.sendMail(mailOptions)
+
     return true
-    
+
   } catch (error) {
-    console.error('Failed to send password reset email:', error)
-    
-    // Log specific error details for debugging
-    if (error.code === 'EAUTH') {
-      console.error('🔐 Authentication failed - check EMAIL_USER and EMAIL_PASSWORD/EMAIL_APP_PASSWORD')
-    } else if (error.code === 'ECONNECTION') {
-      console.error('🌐 Connection failed - check internet connection and SMTP settings')
-    } else if (error.code === 'EMESSAGE') {
-      console.error('📝 Message format error - check email content')
-    }
-    
     return false
   }
 }
@@ -183,10 +169,8 @@ export async function testEmailConfiguration() {
   try {
     const transporter = createTransporter()
     await transporter.verify()
-    console.log('Email configuration is valid')
     return true
   } catch (error) {
-    console.error('Email configuration test failed:', error.message)
     return false
   }
 }

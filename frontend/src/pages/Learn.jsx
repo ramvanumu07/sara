@@ -302,7 +302,6 @@ const Learn = () => {
           // Load chat history (use requestedTopicId for the topic we're showing)
           try {
             const historyResponse = await chat.getHistory(requestedTopicId)
-            console.log('Chat history response:', historyResponse.data)
 
             if (topicIdRef.current !== requestedTopicId) return
 
@@ -319,10 +318,6 @@ const Learn = () => {
             } else {
               // Start new session (backend ensures progress row exists for this topic)
               const startResponse = await learning.sessionChat(requestedTopicId, '')
-              console.log('Start session response:', startResponse.data)
-              if (startResponse?.data?.data?.debugSystemPrompt) {
-                console.log('Session system prompt (finalized):', startResponse.data.data.debugSystemPrompt)
-              }
               if (startResponse.data.data.response) {
                 const message = {
                   role: 'assistant',
@@ -333,13 +328,9 @@ const Learn = () => {
               }
             }
           } catch (historyError) {
-            console.error('Error loading chat history:', historyError)
             // Start new session on error
             try {
               const startResponse = await learning.sessionChat(requestedTopicId, '')
-              if (startResponse?.data?.data?.debugSystemPrompt) {
-                console.log('Session system prompt (finalized):', startResponse.data.data.debugSystemPrompt)
-              }
               if (startResponse.data.data.response) {
                 const message = {
                   role: 'assistant',
@@ -349,7 +340,6 @@ const Learn = () => {
                 setMessages([message])
               }
             } catch (startError) {
-              console.error('Error starting new session:', startError)
               setError('Failed to initialize chat session')
             }
           }
@@ -389,7 +379,6 @@ const Learn = () => {
         }
 
       } catch (err) {
-        console.error('Error loading topic:', err)
         setError(err.response?.data?.error || err.response?.data?.message || 'Failed to load topic')
       } finally {
         setLoading(false)
@@ -419,9 +408,6 @@ const Learn = () => {
     try {
       const response = await learning.sessionChat(topicId, userMessage.content)
 
-      if (response?.data?.data?.debugSystemPrompt) {
-        console.log('Session system prompt (finalized):', response.data.data.debugSystemPrompt)
-      }
       if (response.data.data.response) {
         const message = {
           role: 'assistant',
@@ -439,7 +425,6 @@ const Learn = () => {
         }
       }
     } catch (err) {
-      console.error('Error sending message:', err)
       const errorMessage = {
         role: 'assistant',
         content: 'Sorry, I encountered an error. Please try again.',
@@ -536,7 +521,6 @@ const Learn = () => {
       // Set output for reference
       setPlaygroundOutput(outputText)
     } catch (error) {
-      console.error('Code execution failed:', error)
       const errorDiv = `<div style="color: #ef4444; font-family: Monaco, Consolas, monospace; padding: 16px;">Error: ${error.message}</div>`
       outputDiv.innerHTML = errorDiv
     }
@@ -693,7 +677,6 @@ const Learn = () => {
 
       setAssignmentOutput(outputText)
     } catch (error) {
-      console.error('Assignment code execution failed:', error)
       setAssignmentOutput(`Error: ${error.message}`)
     }
   }
@@ -790,11 +773,9 @@ const Learn = () => {
           })
         }
       } catch (completeErr) {
-        console.error('Failed to save assignment progress:', completeErr)
         setAssignmentOutput((prev) => (prev ? `${prev}\n(Progress could not be saved: ${completeErr?.response?.data?.message || completeErr.message})` : `Progress could not be saved: ${completeErr?.response?.data?.message || completeErr.message}`))
       }
     } catch (err) {
-      console.error('Error submitting assignment:', err)
       const body = err.response?.data
       const msg = body?.message ?? body?.error ?? (typeof body === 'string' ? body : err.message) ?? 'Request failed'
       assignmentTestResultsRef.current = null
@@ -816,7 +797,6 @@ const Learn = () => {
       const reviewText = feedbackRes?.data?.data?.feedback || ''
       setAssignmentReview(reviewText)
     } catch (feedbackErr) {
-      console.error('Get review error:', feedbackErr)
       setAssignmentReview('Could not load AI review. Please try again.')
     } finally {
       setReviewLoading(false)
@@ -885,7 +865,6 @@ const Learn = () => {
           navigate('/dashboard')
         }
       } catch (err) {
-        console.error('Error fetching next topic:', err)
         navigate('/dashboard')
       }
     }

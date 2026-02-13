@@ -10,12 +10,6 @@ import './Dashboard.css'
 const Dashboard = () => {
   const navigate = useNavigate()
   const { user, logout } = useAuth()
-  
-  // Debug user data
-  console.log('Dashboard - Current user object:', user)
-  console.log('Dashboard - User name specifically:', user?.name)
-  console.log('Dashboard - User name type:', typeof user?.name)
-  console.log('Dashboard - User name length:', user?.name?.length)
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -64,8 +58,6 @@ const Dashboard = () => {
       setLoading(true)
       setError(null)
 
-      console.log('Loading dashboard data...')
-      
       // Clear any frontend caches
       if (window.clearCache) {
         window.clearCache()
@@ -79,50 +71,21 @@ const Dashboard = () => {
       try {
         continueRes = await learning.getContinueLearning()
       } catch (e) {
-        console.warn('Dashboard: getContinueLearning failed', e?.response?.status, e?.message)
       }
       try {
         coursesRes = await learning.getCourses()
       } catch (e) {
-        console.warn('Dashboard: getCourses failed', e?.response?.status, e?.message)
       }
       try {
         progressRes = await progress.getAll()
       } catch (e) {
-        console.warn('Dashboard: progress.getAll failed', e?.response?.status, e?.message)
         throw e
       }
-
-      console.log('Raw API responses:')
-      console.log('Progress API:', progressRes)
-      console.log('Continue API:', continueRes)
-      console.log('Courses API:', coursesRes)
 
       if (progressRes.data.success) {
         const progressData = progressRes.data.data.progress || []
         setUserProgress(progressData)
         setProgressSummary(progressRes.data.data.summary || {})
-        console.log('User progress loaded:', progressData.length, 'topics')
-        console.log('Progress data:', progressData)
-        console.log('Full API response:', progressRes.data)
-        
-        // Store globally for debugging
-        window.lastProgressData = progressData
-        window.lastProgressResponse = progressRes.data
-        
-        // Log each record individually
-        progressData.forEach((record, index) => {
-          console.log(`Progress Record ${index + 1}:`, {
-            topic_id: record.topic_id,
-            status: record.status,
-            phase: record.phase,
-            topic_completed: record.topic_completed,
-            created_at: record.created_at,
-            updated_at: record.updated_at
-          })
-        })
-      } else {
-        console.log('Progress API failed:', progressRes.data)
       }
 
       const lastAccessedData = continueRes.data.success && continueRes.data.data?.lastAccessed
@@ -130,7 +93,6 @@ const Dashboard = () => {
         : null
       if (lastAccessedData) {
         setLastAccessed(lastAccessedData)
-        console.log('Last accessed:', lastAccessedData)
         // If progress list is empty but continue returned a topic, use it as the only progress so Continue button works
         if (!progressRes.data?.data?.progress?.length && lastAccessedData.topicId) {
           const synthetic = [{
@@ -140,10 +102,7 @@ const Dashboard = () => {
             updated_at: new Date().toISOString()
           }]
           setUserProgress(synthetic)
-          console.log('Dashboard: using lastAccessed as synthetic progress (progress list was empty)')
         }
-      } else {
-        console.log('No last accessed data found')
       }
 
       if (coursesRes.data.success) {
@@ -151,7 +110,6 @@ const Dashboard = () => {
       }
 
     } catch (err) {
-      console.error('Dashboard load error:', err)
       const msg = err.response?.data?.message || err.response?.data?.error || err.message
       const status = err.response?.status
       const detail = status ? ` (${status})` : ''
@@ -167,20 +125,11 @@ const Dashboard = () => {
       courseTopics.some(topic => topic.id === p.topic_id)
     )
 
-    console.log(`FRONTEND DEBUG: updateProgressForCourse(${courseId})`)
-    console.log(`   - Course topics count: ${courseTopics.length}`)
-    console.log(`   - User progress count: ${userProgress.length}`)
-    console.log(`   - Course progress count: ${courseProgress.length}`)
-    console.log(`   - Course progress data:`, courseProgress)
-
     // Step 1: Count fully completed topics (topic_completed = true)
     const fullyCompleted = courseProgress.filter(p =>
       p.topic_completed === true
     ).length
     const completedPhases = fullyCompleted * 3
-
-    console.log(`   - Fully completed topics: ${fullyCompleted}`)
-    console.log(`   - Completed phases: ${completedPhases}`)
 
     // Step 2: Find current active topic (most recently updated, not completed)
     const activeTopics = courseProgress.filter(p => p.topic_completed !== true)
@@ -195,19 +144,12 @@ const Dashboard = () => {
         currentPhaseProgress = 2  // Session + PlayTime completed
       }
       // If phase === 'session', currentPhaseProgress remains 0 (just started)
-      
-      console.log(`   - Current topic: ${currentTopic.topic_id}, Phase: ${currentTopic.phase}`)
-      console.log(`   - Current phase progress: ${currentPhaseProgress}`)
     }
 
     // Step 4: Calculate final percentage
     const totalCompletedPhases = completedPhases + currentPhaseProgress
     const totalPossiblePhases = courseTopics.length * 3
     const percentage = totalPossiblePhases > 0 ? Math.round((totalCompletedPhases / totalPossiblePhases) * 100) : 0
-
-    console.log(`   - Total completed phases: ${totalCompletedPhases}`)
-    console.log(`   - Total possible phases: ${totalPossiblePhases}`)
-    console.log(`   - Accurate percentage: ${percentage}%`)
 
     return {
       completed_topics: fullyCompleted,
@@ -217,9 +159,6 @@ const Dashboard = () => {
   }
 
   const handleContinueLearning = () => {
-    console.log('Smart Continue Learning - Analyzing progress...')
-    console.log('User Progress:', userProgress)
-
     // Find the most recent topic with progress
     const recentTopic = userProgress
       .sort((a, b) => new Date(b.updated_at || 0) - new Date(a.updated_at || 0))[0]
@@ -231,8 +170,6 @@ const Dashboard = () => {
       const currentAssignment = recentTopic.current_assignment || 0
       const topicCompleted = recentTopic.topic_completed
 
-      console.log(`Most recent topic: ${topicId}, Phase: ${phase}, Status: ${status}`)
-
       // If topic is completed, find next topic
       if (topicCompleted === true || (status === 'completed' && phase === 'assignment')) {
         const selectedCourseData = courses.find(c => c.id === selectedCourse)
@@ -241,12 +178,10 @@ const Dashboard = () => {
         if (currentTopicIndex !== -1 && currentTopicIndex < (selectedCourseData?.topics?.length - 1)) {
           // Move to next topic's session phase
           const nextTopic = selectedCourseData.topics[currentTopicIndex + 1]
-          console.log(`Topic completed, moving to next topic: ${nextTopic.id}`)
           navigate(`/learn/${nextTopic.id}`)
           return
         } else {
           // Course completed or no more topics
-          console.log('Course completed! Starting from first topic.')
           navigate(`/learn/${selectedCourseData?.topics?.[0]?.id}`)
           return
         }
@@ -256,25 +191,14 @@ const Dashboard = () => {
       let targetPhase = 'session'
       let targetUrl = `/learn/${topicId}`
 
-      console.log('Progress Debug:', {
-        phase: recentTopic.phase,
-        status: recentTopic.status,
-        session_completed: recentTopic.session_completed,
-        playtime_completed: recentTopic.playtime_completed,
-        assignment_completed: recentTopic.assignment_completed,
-        topic_completed: recentTopic.topic_completed
-      })
-
       // Playtime removed: session ↔ editor (toggle) → assignment only
       if (phase === 'assignment') {
         targetPhase = 'assignment'
         targetUrl = `/learn/${topicId}?phase=assignment`
-        console.log('Continue assignment')
       } else {
         // Session or playtime (legacy) → session; practice is inline via Code editor toggle
         targetPhase = 'session'
         targetUrl = `/learn/${topicId}`
-        console.log('Continue session')
       }
 
       navigate(targetUrl)
@@ -285,7 +209,6 @@ const Dashboard = () => {
     const selectedCourseData = courses.find(c => c.id === selectedCourse)
     const firstTopic = selectedCourseData?.topics?.[0]
     if (firstTopic) {
-      console.log('No progress found, starting with first topic:', firstTopic.id)
       navigate(`/learn/${firstTopic.id}`)
     }
   }
@@ -339,72 +262,46 @@ const Dashboard = () => {
   }
 
   const getCurrentActiveTopic = () => {
-    console.log('getCurrentActiveTopic - Debug Info:')
-    console.log('   - userProgress length:', userProgress.length)
-    console.log('   - userProgress data:', userProgress)
-    
     // Find current active topic (most recently updated, not completed)
     const activeTopics = userProgress.filter(p => p.topic_completed !== true)
-    console.log('   - activeTopics count:', activeTopics.length)
-    console.log('   - activeTopics data:', activeTopics)
-    
-    const currentTopicProgress = activeTopics.sort((a, b) => 
+    const currentTopicProgress = activeTopics.sort((a, b) =>
       new Date(b.updated_at || 0) - new Date(a.updated_at || 0)
     )[0]
-    
-    console.log('   - currentTopicProgress:', currentTopicProgress)
 
     if (currentTopicProgress) {
       const topic = getTopicById(currentTopicProgress.topic_id)
-      console.log('   - found topic:', topic)
-      
-      const result = {
+      return topic ? {
         ...topic,
         phase: currentTopicProgress.phase,
         progress: currentTopicProgress
-      }
-      console.log('   - returning result:', result)
-      return result
+      } : null
     }
-    
+
     // Fallback: if no active topics, try to find the most recent topic with any progress
-    console.log('   - no active topics, trying fallback approach')
     if (userProgress.length > 0) {
-      const mostRecentProgress = userProgress.sort((a, b) => 
+      const mostRecentProgress = userProgress.sort((a, b) =>
         new Date(b.updated_at || 0) - new Date(a.updated_at || 0)
       )[0]
-      
-      console.log('   - most recent progress:', mostRecentProgress)
-      
       if (mostRecentProgress) {
         const topic = getTopicById(mostRecentProgress.topic_id)
-        console.log('   - fallback topic:', topic)
-        
-        const result = {
+        return topic ? {
           ...topic,
           phase: mostRecentProgress.phase,
           progress: mostRecentProgress
-        }
-        console.log('   - fallback result:', result)
-        return result
+        } : null
       }
     }
-    
+
     // Final fallback: if no progress at all, return first topic of selected course
-    console.log('   - no progress found, showing first topic of selected course')
     const selectedCourseData = courses.find(c => c.id === selectedCourse)
     const firstTopic = selectedCourseData?.topics?.[0]
     if (firstTopic) {
-      const result = {
+      return {
         ...firstTopic,
         phase: 'session',
         progress: null
       }
-      console.log('   - returning first topic as fallback:', result)
-      return result
     }
-    
-    console.log('   - no topic found at all, returning null')
     return null
   }
 
@@ -671,8 +568,6 @@ const Dashboard = () => {
           {/* Current Learning Status Card - Above Button */}
           {(() => {
             const currentTopic = getCurrentActiveTopic()
-            console.log('Rendering current topic card:', currentTopic)
-            
             if (currentTopic) {
               return (
                 <div className="current-learning-card">
@@ -693,7 +588,6 @@ const Dashboard = () => {
                 </div>
               )
             } else {
-              console.log('No current topic found - card will not render')
               return null
             }
           })()}

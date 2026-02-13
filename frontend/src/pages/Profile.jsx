@@ -49,7 +49,6 @@ const Profile = () => {
         username: user.username || '',
         email: user.email || ''
       }
-      console.log('Profile - Setting form data from user:', userData)
       setFormData(prev => ({
         ...prev,
         ...userData
@@ -59,7 +58,6 @@ const Profile = () => {
         username: user.username || '',
         email: user.email || ''
       })
-      console.log('Profile - Original form data set:', userData)
     }
   }, [user])
 
@@ -76,31 +74,23 @@ const Profile = () => {
   // Debounced validation functions
   const checkUsernameAvailability = useCallback(
     debounce(async (username, originalUsername) => {
-      console.log('Profile - checkUsernameAvailability called:', { username, originalUsername })
-      
       if (username === originalUsername) {
-        console.log('Profile - Username same as original, skipping check')
         setUsernameAvailable(undefined)
         setCheckingUsername(false)
         return
       }
 
       if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
-        console.log('Profile - Invalid username format, skipping check')
         setUsernameAvailable(undefined)
         setCheckingUsername(false)
         return
       }
 
-      console.log('Profile - Starting username availability check for:', username)
       setCheckingUsername(true)
       try {
         const response = await api.get(`/auth/check-username/${username}`)
-        console.log('Profile - Username check response:', response.data)
         setUsernameAvailable(response.data.data.available)
-        console.log('Profile - Username available:', response.data.data.available)
       } catch (err) {
-        console.error('Profile - Username check error:', err)
         setUsernameAvailable(undefined)
       } finally {
         setCheckingUsername(false)
@@ -129,7 +119,6 @@ const Profile = () => {
         const response = await api.get(`/auth/check-email/${email}`)
         setEmailAvailable(response.data.data.available)
       } catch (err) {
-        console.error('Email check error:', err)
         setEmailAvailable(undefined)
       } finally {
         setCheckingEmail(false)
@@ -200,14 +189,12 @@ const Profile = () => {
       // Reset availability state when user starts typing
       if (value.trim() !== originalFormData.username) {
         setUsernameAvailable(undefined)
-        console.log('Profile - Username changed, will check availability:', value.trim())
       }
       checkUsernameAvailability(value.trim(), originalFormData.username)
     } else if (name === 'email' && value.trim()) {
       // Reset availability state when user starts typing
       if (value.trim() !== originalFormData.email) {
         setEmailAvailable(undefined)
-        console.log('Profile - Email changed, will check availability:', value.trim())
       }
       checkEmailAvailability(value.trim(), originalFormData.email)
     }
@@ -267,11 +254,9 @@ const Profile = () => {
 
 
       const response = await updateProfile(updateData)
-      console.log('Profile update response:', response)
 
       if (response.success) {
         // User context is already updated by updateProfile function
-        console.log('Profile update successful, updated user:', response.user)
 
         setSuccess('Profile updated successfully!')
 
@@ -304,7 +289,6 @@ const Profile = () => {
         setError(response.error || 'Failed to update profile')
       }
     } catch (err) {
-      console.error('Profile update error:', err)
       if (err.response?.data?.message) {
         setError(err.response.data.message)
       } else if (err.message) {
@@ -394,17 +378,6 @@ const Profile = () => {
               {errors.username && (
                 <span className="error-message">{errors.username}</span>
               )}
-              {/* Debug conditions */}
-              {console.log('Profile - Username status conditions:', {
-                noErrors: !errors.username,
-                isDifferent: formData.username !== originalFormData.username,
-                validFormat: /^[a-zA-Z0-9_]{3,20}$/.test(formData.username),
-                checkingUsername,
-                usernameAvailable,
-                currentUsername: formData.username,
-                originalUsername: originalFormData.username
-              })}
-              
               {!errors.username && formData.username !== originalFormData.username && /^[a-zA-Z0-9_]{3,20}$/.test(formData.username) && (
                 <div className="username-status">
                   {checkingUsername ? (
