@@ -109,6 +109,12 @@ router.post('/session', authenticateToken, rateLimitMiddleware, async (req, res)
         status: 'in_progress',
         updated_at: new Date().toISOString()
       })
+      progress = await getProgress(userId, topicId)
+    }
+
+    // Block new session messages once topic session is completed (read-only view only)
+    if (progress && (progress.phase === 'assignment' || progress.topic_completed === true)) {
+      return res.status(403).json(createErrorResponse('Session already completed. You can view the conversation but cannot send new messages.', 'SESSION_ALREADY_COMPLETE'))
     }
 
     // Get conversation history and completed topics in parallel

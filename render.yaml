@@ -1,0 +1,49 @@
+# Render Blueprint – SARA
+# Use after initial setup: set all env vars in the Render dashboard for each service.
+# Docs: https://render.com/docs/blueprint-spec
+
+services:
+  # Backend API
+  - type: web
+    name: sara-backend
+    runtime: node
+    region: oregon
+
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: FRONTEND_URL
+        sync: false   # Set in dashboard to your frontend URL after deploy
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: SENTRY_DSN
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: LOG_LEVEL
+        value: info
+
+  # Frontend (static) – region does not apply to static sites
+  - type: web
+    name: sara-frontend
+    runtime: static
+
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+
+    envVars:
+      - key: VITE_API_BASE_URL
+        sync: false   # Set in dashboard to your backend URL (e.g. https://sara-backend.onrender.com)
+      - key: VITE_SUPABASE_URL
+        sync: false
+      - key: VITE_SUPABASE_ANON_KEY
+        sync: false

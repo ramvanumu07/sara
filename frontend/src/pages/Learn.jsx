@@ -402,9 +402,10 @@ const Learn = () => {
     }
   }, [topicId, phase, startFromFirst])
 
-  // Handle sending messages in session phase
+  // Handle sending messages in session phase (no new messages once session is completed)
   const handleSendMessage = async (e) => {
     e.preventDefault()
+    if (sessionComplete) return
     if (!inputValue.trim() || isTyping) return
 
     const userMessage = {
@@ -437,6 +438,11 @@ const Learn = () => {
         }
       }
     } catch (err) {
+      if (err.response?.status === 403 && err.response?.data?.code === 'SESSION_ALREADY_COMPLETE') {
+        setMessages(prev => prev.slice(0, -1))
+        setSessionComplete(true)
+        return
+      }
       const errorMessage = {
         role: 'assistant',
         content: 'Sorry, I encountered an error. Please try again.',
@@ -1234,29 +1240,35 @@ const Learn = () => {
             <div ref={messagesEndRef} />
           </div>
 
-          <form className="input-form" onSubmit={handleSendMessage}>
-            <textarea
-              className="text-input"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault()
-                  handleSendMessage(e)
-                }
-              }}
-              placeholder="Type your message..."
-              rows="1"
-              disabled={isTyping}
-            />
-            <button
-              type="submit"
-              className="send-btn"
-              disabled={!inputValue.trim() || isTyping}
-            >
-              Send
-            </button>
-          </form>
+          {sessionComplete ? (
+            <div className="session-complete-readonly" style={{ padding: '12px 16px', background: '#f0fdf4', borderTop: '1px solid #bbf7d0', color: '#166534', fontSize: '0.875rem' }}>
+              Session completed. You can view the conversation above or go to Assignments to practice.
+            </div>
+          ) : (
+            <form className="input-form" onSubmit={handleSendMessage}>
+              <textarea
+                className="text-input"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault()
+                    handleSendMessage(e)
+                  }
+                }}
+                placeholder="Type your message..."
+                rows="1"
+                disabled={isTyping}
+              />
+              <button
+                type="submit"
+                className="send-btn"
+                disabled={!inputValue.trim() || isTyping}
+              >
+                Send
+              </button>
+            </form>
+          )}
         </div>
       )}
 
