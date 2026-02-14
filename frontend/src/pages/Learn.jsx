@@ -212,6 +212,8 @@ const Learn = () => {
   const [topic, setTopic] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [courseLocked, setCourseLocked] = useState(false)
+  const [lockedCourseId, setLockedCourseId] = useState(null)
 
   // Session phase states
   const [messages, setMessages] = useState([])
@@ -276,6 +278,8 @@ const Learn = () => {
       try {
         setLoading(true)
         setError(null)
+        setCourseLocked(false)
+        setLockedCourseId(null)
 
         const topicResponse = await learning.getTopic(requestedTopicId)
 
@@ -379,7 +383,15 @@ const Learn = () => {
         }
 
       } catch (err) {
-        setError(err.response?.data?.error || err.response?.data?.message || 'Failed to load topic')
+        const status = err.response?.status
+        const data = err.response?.data
+        if (status === 403 && data?.code === 'COURSE_LOCKED') {
+          setCourseLocked(true)
+          setLockedCourseId(data?.details?.courseId || null)
+          setError(null)
+        } else {
+          setError(data?.error || data?.message || 'Failed to load topic')
+        }
       } finally {
         setLoading(false)
       }
@@ -931,6 +943,54 @@ const Learn = () => {
         </div>
       </div>,
       document.body
+    )
+  }
+
+  if (courseLocked) {
+    const unlockUrl = lockedCourseId ? `/dashboard?unlock=${encodeURIComponent(lockedCourseId)}` : '/dashboard'
+    return (
+      <div className="error-container" style={{ padding: 40, textAlign: 'center', maxWidth: 420, margin: '60px auto' }}>
+        <div style={{ marginBottom: 16 }}>
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" style={{ margin: '0 auto' }}>
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+        </div>
+        <h2 style={{ color: '#92400e', marginBottom: '8px' }}>This course is locked</h2>
+        <p style={{ color: '#6b7280', marginBottom: '24px' }}>
+          Unlock the course to access this topic and all its content.
+        </p>
+        <button
+          onClick={() => navigate(unlockUrl)}
+          style={{
+            padding: '12px 24px',
+            backgroundColor: '#059669',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            fontSize: '0.95rem',
+            fontWeight: '500',
+            cursor: 'pointer'
+          }}
+        >
+          Unlock this course
+        </button>
+        <button
+          onClick={() => navigate('/dashboard')}
+          style={{
+            marginLeft: 12,
+            padding: '12px 24px',
+            backgroundColor: 'transparent',
+            color: '#6b7280',
+            border: '1px solid #d1d5db',
+            borderRadius: '8px',
+            fontSize: '0.95rem',
+            cursor: 'pointer'
+          }}
+        >
+          Back to Dashboard
+        </button>
+      </div>
     )
   }
 

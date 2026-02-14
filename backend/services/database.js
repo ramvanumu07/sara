@@ -632,6 +632,47 @@ export async function getLearningAnalytics(userId, topicId = null, days = 30) {
   return data || []
 }
 
+// ============ COURSE UNLOCKS (per-course access after payment) ============
+
+const DEV_COURSE_UNLOCKS = new Map() // key: `${userId}:${courseId}`
+
+export async function getUnlockedCourseIds(userId) {
+  const client = initializeDatabase()
+  if (client === 'DEV_MODE') {
+    const keys = Array.from(DEV_COURSE_UNLOCKS.keys()).filter(k => k.startsWith(`${userId}:`))
+    return keys.map(k => k.split(':')[1])
+  }
+  const { data, error } = await client
+    .from('user_course_unlocks')
+    .select('course_id')
+    .eq('user_id', userId)
+  if (error) throw new Error(`Failed to get unlocked courses: ${error.message}`)
+  return (data || []).map(row => row.course_id)
+}
+
+export async function isCourseUnlockedForUser(userId, courseId) {
+  const unlocked = await getUnlockedCourseIds(userId)
+  return unlocked.includes(courseId)
+}
+
+export async function unlockCourseForUser(userId, courseId) {
+  const client = initializeDatabase()
+  if (client === 'DEV_MODE') {
+    DEV_COURSE_UNLOCKS.set(`${userId}:${courseId}`, { userId, courseId, unlocked_at: new Date().toISOString() })
+    return { user_id: userId, course_id: courseId, unlocked_at: new Date().toISOString() }
+  }
+  const { data, error } = await client
+    .from('user_course_unlocks')
+    .upsert(
+      { user_id: userId, course_id: courseId, unlocked_at: new Date().toISOString() },
+      { onConflict: ['user_id', 'course_id'] }
+    )
+    .select()
+    .single()
+  if (error) throw new Error(`Failed to unlock course: ${error.message}`)
+  return data
+}
+
 // Export the client for direct access if needed
 export const getSupabaseClient = () => initializeDatabase()
 export { initializeDatabase }

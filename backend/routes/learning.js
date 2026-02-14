@@ -14,7 +14,10 @@ import {
   getAllProgress,
   getLastAccessedTopic,
   getCompletedTopics,
-  getUserProgressSummary
+  getUserProgressSummary,
+  getUnlockedCourseIds,
+  isCourseUnlockedForUser,
+  unlockCourseForUser
 } from '../services/database.js'
 import progressManager from '../services/progressManager.js'
 import { saveChatTurn, saveInitialMessage, clearChatHistory, getChatHistoryString, getChatHistory } from '../services/chatService.js'
@@ -143,9 +146,52 @@ async function getCompletedTopicsForUser(userId) {
   }
 }
 
+// Require course to be unlocked for user (used for topic access)
+async function requireCourseUnlocked(req, res, next) {
+  const topicId = req.params.topicId || req.body?.topicId
+  if (!topicId) return next()
+  const topic = findTopicById(courses, topicId)
+  if (!topic) return next()
+  const courseId = topic.courseId
+  const userId = req.user?.userId
+  if (!userId) return next()
+  const unlocked = await isCourseUnlockedForUser(userId, courseId)
+  if (!unlocked) {
+    return res.status(403).json(createErrorResponse('This course is locked. Unlock it to continue.', 'COURSE_LOCKED', { courseId }))
+  }
+  next()
+}
+
+// ============ COURSE UNLOCK (payment flow) ============
+
+router.get('/unlocked-courses', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId
+    const courseIds = await getUnlockedCourseIds(userId)
+    res.json(createSuccessResponse({ courseIds }))
+  } catch (error) {
+    handleErrorResponse(res, error, 'get unlocked courses')
+  }
+})
+
+router.post('/unlock-course', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId
+    const { courseId } = req.body || {}
+    if (!courseId || typeof courseId !== 'string') {
+      return res.status(400).json(createErrorResponse('courseId is required'))
+    }
+    // In production: verify payment (Stripe/Razorpay webhook or server-side confirmation) before unlocking
+    await unlockCourseForUser(userId, courseId.trim())
+    res.json(createSuccessResponse({ message: 'Course unlocked', courseId: courseId.trim() }))
+  } catch (error) {
+    handleErrorResponse(res, error, 'unlock course')
+  }
+})
+
 // ============ LEARNING STATE MANAGEMENT ============
 
-router.get('/state/:topicId', authenticateToken, async (req, res) => {
+router.get('/state/:topicId', authenticateToken, requireCourseUnlocked, async (req, res) => {
   try {
     const { topicId } = req.params
     const userId = req.user.userId
@@ -205,7 +251,7 @@ router.get('/state/:topicId', authenticateToken, async (req, res) => {
 
 // ============ SESSION PHASE ============
 
-router.post('/session/start', authenticateToken, rateLimitMiddleware, validateBody(schemas.sessionStart), async (req, res) => {
+router.post('/session/start', authenticateToken, rateLimitMiddleware, validateBody(schemas.sessionStart), requireCourseUnlocked, async (req, res) => {
   try {
     const { topicId, assignments } = req.body
     const userId = req.user.userId
@@ -284,7 +330,7 @@ router.post('/session/start', authenticateToken, rateLimitMiddleware, validateBo
 // ============ PLAYTIME PHASE ============
 
 // Play phase: user tries out code from session — no AI, just progress update
-router.post('/playtime/start', authenticateToken, rateLimitMiddleware, validateBody(schemas.playtimeStart), async (req, res) => {
+router.post('/playtime/start', authenticateToken, rateLimitMiddleware, validateBody(schemas.playtimeStart), requireCourseUnlocked, async (req, res) => {
   try {
     const { topicId } = req.body
     const userId = req.user.userId
@@ -320,7 +366,7 @@ router.get('/playtime/test', (req, res) => {
   res.json({ success: true, message: 'Playtime routes are working', timestamp: new Date().toISOString() })
 })
 
-router.post('/playtime/complete', authenticateToken, rateLimitMiddleware, validateBody(schemas.playtimeComplete), async (req, res) => {
+router.post('/playtime/complete', authenticateToken, rateLimitMiddleware, validateBody(schemas.playtimeComplete), requireCourseUnlocked, async (req, res) => {
   try {
     const { topicId } = req.body
     const userId = req.user.userId
@@ -361,7 +407,7 @@ router.post('/playtime/complete', authenticateToken, rateLimitMiddleware, valida
 
 // ============ ASSIGNMENT PHASE ============
 
-router.post('/assignment/start', authenticateToken, rateLimitMiddleware, validateBody(schemas.assignmentStart), async (req, res) => {
+router.post('/assignment/start', authenticateToken, rateLimitMiddleware, validateBody(schemas.assignmentStart), requireCourseUnlocked, async (req, res) => {
   try {
     const { topicId } = req.body
     const userId = req.user.userId
@@ -408,7 +454,7 @@ router.post('/assignment/start', authenticateToken, rateLimitMiddleware, validat
   }
 })
 
-router.post('/assignment/complete', authenticateToken, rateLimitMiddleware, async (req, res) => {
+router.post('/assignment/complete', authenticateToken, rateLimitMiddleware, requireCourseUnlocked, async (req, res) => {
   try {
     const { topicId, assignmentIndex: rawIndex, code } = req.body
     const userId = req.user.userId
@@ -966,7 +1012,7 @@ router.get('/topics', authenticateToken, async (req, res) => {
   }
 })
 
-router.get('/topic/:topicId', authenticateToken, async (req, res) => {
+router.get('/topic/:topicId', authenticateToken, requireCourseUnlocked, async (req, res) => {
   try {
     const { topicId } = req.params
     const userId = req.user.userId

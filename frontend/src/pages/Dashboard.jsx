@@ -19,6 +19,9 @@ const Dashboard = () => {
   const [progressSummary, setProgressSummary] = useState({})
   const [lastAccessed, setLastAccessed] = useState(null)
   const [showMobileMenu, setShowMobileMenu] = useState(false)
+  const [unlockedCourseIds, setUnlockedCourseIds] = useState([])
+  const [unlockModalCourse, setUnlockModalCourse] = useState(null)
+  const [unlocking, setUnlocking] = useState(false)
   // Always show dashboard on load/reload; editor toggle state is not persisted for this page
   const [editorToggleOn, setEditorToggleOn] = useState(false)
   const [playgroundCode, setPlaygroundCode] = useState('')
@@ -26,6 +29,16 @@ const Dashboard = () => {
   useEffect(() => {
     loadDashboardData()
   }, [])
+
+  // Open unlock modal if URL has ?unlock=courseId (e.g. from Learn paywall)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const unlockCourseId = params.get('unlock')
+    if (unlockCourseId && courses.length > 0 && courses.some(c => c.id === unlockCourseId)) {
+      setUnlockModalCourse(courses.find(c => c.id === unlockCourseId))
+      window.history.replaceState({}, '', window.location.pathname)
+    }
+  }, [courses])
 
   // Handle ESC key to close mobile menu
   useEffect(() => {
@@ -76,10 +89,18 @@ const Dashboard = () => {
         coursesRes = await learning.getCourses()
       } catch (e) {
       }
+      let unlockedRes = { data: { success: false, data: {} } }
+      try {
+        unlockedRes = await learning.getUnlockedCourses()
+      } catch (e) { }
       try {
         progressRes = await progress.getAll()
       } catch (e) {
         throw e
+      }
+
+      if (unlockedRes.data.success && Array.isArray(unlockedRes.data.data?.courseIds)) {
+        setUnlockedCourseIds(unlockedRes.data.data.courseIds)
       }
 
       if (progressRes.data.success) {
@@ -503,21 +524,31 @@ const Dashboard = () => {
 
         <div className="courses-nav">
           <h3>Courses</h3>
-          {courses.map(course => (
-            <button
-              key={course.id}
-              className={`course-item ${selectedCourse === course.id ? 'active' : ''}`}
-              onClick={() => {
-                setSelectedCourse(course.id)
-                setShowMobileMenu(false) // Close mobile menu on selection
-              }}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polyline points="9,18 15,12 9,6" />
-              </svg>
-              {course.title}
-            </button>
-          ))}
+          {courses.map(course => {
+            const isUnlocked = unlockedCourseIds.includes(course.id)
+            return (
+              <button
+                key={course.id}
+                className={`course-item ${selectedCourse === course.id ? 'active' : ''}`}
+                onClick={() => {
+                  setSelectedCourse(course.id)
+                  setShowMobileMenu(false)
+                }}
+              >
+                {isUnlocked ? (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="9,18 15,12 9,6" />
+                  </svg>
+                ) : (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" title="Locked">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                )}
+                {course.title}
+              </button>
+            )
+          })}
         </div>
       </div>
 
@@ -537,6 +568,29 @@ const Dashboard = () => {
           <h2>{selectedCourseData?.title || 'Course'}</h2>
           <p>{selectedCourseData?.description || 'Master programming concepts step by step with Sara'}</p>
         </div>
+
+        {/* Course locked: show unlock CTA */}
+        {selectedCourseData && !unlockedCourseIds.includes(selectedCourseData.id) && (
+          <div className="course-locked-banner" style={{ marginBottom: 24, padding: 20, background: '#fef3c7', border: '1px solid #f59e0b', borderRadius: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#b45309" strokeWidth="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+              <div style={{ flex: 1, minWidth: 200 }}>
+                <strong style={{ color: '#92400e' }}>This course is locked</strong>
+                <p style={{ margin: '4px 0 0', fontSize: '0.875rem', color: '#b45309' }}>Unlock it for lifetime access to all topics and assignments.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setUnlockModalCourse(selectedCourseData)}
+                style={{ padding: '10px 20px', background: '#059669', color: 'white', border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer' }}
+              >
+                Unlock for lifetime
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Progress Section */}
         <div className="progress-section">
@@ -592,16 +646,26 @@ const Dashboard = () => {
             }
           })()}
 
-          {/* Continue Learning Button */}
-          <button
-            className="continue-btn"
-            onClick={handleContinueLearning}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polygon points="5,3 19,12 5,21" />
-            </svg>
-            Continue Learning
-          </button>
+          {/* Continue Learning Button - disabled when current topic's course is locked */}
+          {(() => {
+            const currentTopic = getCurrentActiveTopic()
+            const currentTopicCourseId = currentTopic ? courses.find(c => c.topics?.some(t => t.id === currentTopic.id))?.id : null
+            const isContinueDisabled = currentTopicCourseId && !unlockedCourseIds.includes(currentTopicCourseId)
+            return (
+              <button
+                className="continue-btn"
+                onClick={handleContinueLearning}
+                disabled={isContinueDisabled}
+                title={isContinueDisabled ? 'Unlock this course to continue' : undefined}
+                style={isContinueDisabled ? { opacity: 0.7, cursor: 'not-allowed' } : undefined}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polygon points="5,3 19,12 5,21" />
+                </svg>
+                Continue Learning
+              </button>
+            )
+          })()}
 
           {/* Session completed: view conversation or try assignments */}
           {sessionCompletedTopics.length > 0 && (
@@ -693,6 +757,75 @@ const Dashboard = () => {
         )}
 
       </div>
+
+      {/* Unlock course modal (payment flow) */}
+      {unlockModalCourse && (
+        <div
+          className="unlock-modal-overlay"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: 16
+          }}
+          onClick={() => !unlocking && setUnlockModalCourse(null)}
+        >
+          <div
+            className="unlock-modal"
+            style={{
+              background: 'white',
+              borderRadius: 16,
+              padding: 24,
+              maxWidth: 400,
+              width: '100%',
+              boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 style={{ margin: '0 0 8px', fontSize: '1.25rem' }}>Unlock {unlockModalCourse.title}</h3>
+            <p style={{ margin: '0 0 20px', color: '#6b7280', fontSize: '0.875rem' }}>
+              Complete payment to unlock this course permanently. You’ll get lifetime access to all topics and assignments.
+            </p>
+            <p style={{ margin: '0 0 20px', fontSize: '0.8rem', color: '#9ca3af' }}>
+              Payment integration (Stripe/Razorpay) can be added here. For now, unlock is granted on button click.
+            </p>
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end' }}>
+              <button
+                type="button"
+                disabled={unlocking}
+                onClick={() => setUnlockModalCourse(null)}
+                style={{ padding: '10px 16px', background: '#f3f4f6', border: 'none', borderRadius: 8, cursor: unlocking ? 'not-allowed' : 'pointer' }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={unlocking}
+                onClick={async () => {
+                  setUnlocking(true)
+                  try {
+                    await learning.unlockCourse(unlockModalCourse.id)
+                    setUnlockedCourseIds(prev => (prev.includes(unlockModalCourse.id) ? prev : [...prev, unlockModalCourse.id]))
+                    setUnlockModalCourse(null)
+                  } catch (e) {
+                    console.error('Unlock failed', e)
+                  } finally {
+                    setUnlocking(false)
+                  }
+                }}
+                style={{ padding: '10px 20px', background: unlocking ? '#9ca3af' : '#059669', color: 'white', border: 'none', borderRadius: 8, fontWeight: 600, cursor: unlocking ? 'not-allowed' : 'pointer' }}
+              >
+                {unlocking ? 'Unlocking…' : 'Pay & Unlock'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
         </>
       )}
     </div>

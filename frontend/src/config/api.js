@@ -168,7 +168,11 @@ export const learning = {
     api.post('/chat/feedback', { topicId, userCode, assignment }),
 
   // Continue learning
-  getContinueLearning: () => api.get('/learn/continue')
+  getContinueLearning: () => api.get('/learn/continue'),
+
+  // Course unlock (payment flow)
+  getUnlockedCourses: () => api.get('/learn/unlocked-courses'),
+  unlockCourse: (courseId) => api.post('/learn/unlock-course', { courseId })
 }
 
 // Progress API

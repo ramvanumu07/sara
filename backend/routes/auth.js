@@ -623,15 +623,7 @@ router.post('/login', rateLimitMiddleware, asyncHandler(async (req, res) => {
       return res.status(401).json(createErrorResponse('Incorrect password. Please try again or use "Forgot Password" if needed.'))
     }
 
-    // Check if user has access
-    if (!user.has_access) {
-      return res.status(403).json(createErrorResponse('Account access has been revoked'))
-    }
-
-    // Check if access has expired
-    if (user.access_expires_at && new Date(user.access_expires_at) < new Date()) {
-      return res.status(403).json(createErrorResponse('Account access has expired'))
-    }
+    // Access is now per-course (unlock via payment). No account-level access check on login.
 
     // Generate tokens and create session
     const tokens = await generateTokens(user)

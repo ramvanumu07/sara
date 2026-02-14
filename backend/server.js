@@ -72,10 +72,6 @@ app.use(cors({
     if (origin && /^https:\/\/[^.]+\.vercel\.app$/.test(origin)) {
       return callback(null, true)
     }
-    // Allow Render frontend and preview URLs
-    if (origin && /^https:\/\/[\w-]+\.onrender\.com$/.test(origin)) {
-      return callback(null, true)
-    }
 
     const msg = 'The CORS policy for this site does not allow access from the specified Origin.'
     return callback(new Error(msg), false)
