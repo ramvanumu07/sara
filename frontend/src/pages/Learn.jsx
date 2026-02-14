@@ -5,8 +5,12 @@ import { learning, chat } from '../config/api'
 import EditorToggle from '../components/EditorToggle'
 import SessionPlayground from '../components/SessionPlayground'
 import CodeExecutor from '../services/CodeExecutor'
+import { useToast } from '../hooks/useToast'
+import { ToastContainer } from '../components/Toast'
 import './Learn.css'
 import './Learn-responsive.css'
+
+const SESSION_COMPLETE_REASON = 'Session completed. You can view the conversation but cannot send new messages.'
 
 // Code block: dark background + light text so content is always visible
 const fencedBlockStyle = {
@@ -205,6 +209,7 @@ const Learn = () => {
   topicIdRef.current = topicId
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
+  const { toasts, info: showInfo } = useToast()
   // Playtime removed: practice is inline in session via toggle; playtime URL treated as session
   const phaseParam = searchParams.get('phase') || 'session'
   const phase = phaseParam === 'playtime' ? 'session' : phaseParam
@@ -405,7 +410,10 @@ const Learn = () => {
   // Handle sending messages in session phase (no new messages once session is completed)
   const handleSendMessage = async (e) => {
     e.preventDefault()
-    if (sessionComplete) return
+    if (sessionComplete) {
+      showInfo(SESSION_COMPLETE_REASON, 4000)
+      return
+    }
     if (!inputValue.trim() || isTyping) return
 
     const userMessage = {
@@ -438,9 +446,12 @@ const Learn = () => {
         }
       }
     } catch (err) {
-      if (err.response?.status === 403 && err.response?.data?.code === 'SESSION_ALREADY_COMPLETE') {
+      const code = err.response?.data?.code
+      const status = err.response?.status
+      if ((status === 400 || status === 403) && code === 'SESSION_ALREADY_COMPLETE') {
         setMessages(prev => prev.slice(0, -1))
         setSessionComplete(true)
+        showInfo(SESSION_COMPLETE_REASON, 4000)
         return
       }
       const errorMessage = {
@@ -1240,35 +1251,41 @@ const Learn = () => {
             <div ref={messagesEndRef} />
           </div>
 
-          {sessionComplete ? (
+          {sessionComplete && (
             <div className="session-complete-readonly" style={{ padding: '12px 16px', background: '#f0fdf4', borderTop: '1px solid #bbf7d0', color: '#166534', fontSize: '0.875rem' }}>
-              Session completed. You can view the conversation above or go to Assignments to practice.
+              {SESSION_COMPLETE_REASON} You can go to Assignments to practice.
             </div>
-          ) : (
-            <form className="input-form" onSubmit={handleSendMessage}>
-              <textarea
-                className="text-input"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault()
-                    handleSendMessage(e)
-                  }
-                }}
-                placeholder="Type your message..."
-                rows="1"
-                disabled={isTyping}
-              />
-              <button
-                type="submit"
-                className="send-btn"
-                disabled={!inputValue.trim() || isTyping}
-              >
-                Send
-              </button>
-            </form>
           )}
+          <form className="input-form" onSubmit={handleSendMessage}>
+            <textarea
+              className="text-input"
+              value={inputValue}
+              onChange={(e) => !sessionComplete && setInputValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (sessionComplete) {
+                  e.preventDefault()
+                  return
+                }
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault()
+                  handleSendMessage(e)
+                }
+              }}
+              placeholder={sessionComplete ? 'Session completed' : 'Type your message...'}
+              rows="1"
+              disabled={isTyping || sessionComplete}
+              readOnly={sessionComplete}
+              style={sessionComplete ? { cursor: 'not-allowed', opacity: 0.8 } : undefined}
+            />
+            <button
+              type="submit"
+              className="send-btn"
+              disabled={!inputValue.trim() || isTyping || sessionComplete}
+              style={sessionComplete ? { cursor: 'not-allowed', opacity: 0.8 } : undefined}
+            >
+              Send
+            </button>
+          </form>
         </div>
       )}
 
@@ -1949,6 +1966,7 @@ const Learn = () => {
         </div>
       )}
 
+      <ToastContainer toasts={toasts} />
     </div>
   )
 }
