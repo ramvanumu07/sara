@@ -12,18 +12,31 @@ import './Learn-responsive.css'
 
 const SESSION_COMPLETE_REASON = 'Session completed. You can view the conversation but cannot send new messages.'
 
-// Code block: dark background + light text; horizontal scroll for long lines
+// Code block: dark background + light text; horizontal scroll for long lines (inline so Vercel applies)
+const codeBlockWrapperStyle = {
+  position: 'relative',
+  margin: '6px 0',
+  width: '100%',
+  maxWidth: '100%',
+  overflow: 'hidden',
+  boxSizing: 'border-box'
+}
 const fencedBlockStyle = {
+  width: '100%',
+  maxWidth: '100%',
+  minWidth: 0,
   backgroundColor: '#1a202c',
   color: '#e2e8f0',
   padding: '8px 12px',
   borderRadius: '6px',
-  margin: '6px 0',
+  margin: 0,
   overflowX: 'auto',
   overflowY: 'hidden',
+  WebkitOverflowScrolling: 'touch',
   fontFamily: 'Monaco, Consolas, monospace',
   fontSize: '0.8125rem',
-  lineHeight: '1.4'
+  lineHeight: '1.4',
+  boxSizing: 'border-box'
 }
 const preScrollStyle = {
   margin: 0,
@@ -92,7 +105,7 @@ const MessageContent = ({ content, role }) => {
         const blockId = `b-${blockIndex}`
 
         return (
-          <div key={blockId} className="code-block-wrapper" style={{ position: 'relative', margin: '6px 0' }}>
+          <div key={blockId} className="code-block-wrapper" style={codeBlockWrapperStyle}>
             <button
               type="button"
               onClick={() => handleCopyCode(code, blockId)}
@@ -141,7 +154,7 @@ const MessageContent = ({ content, role }) => {
                 if (isMultiline) {
                   const blockId = `ib-${blockIndex}-${inlineIndex}`
                   return (
-                    <div key={blockId} className="code-block-wrapper" style={{ position: 'relative', margin: '6px 0' }}>
+                    <div key={blockId} className="code-block-wrapper" style={codeBlockWrapperStyle}>
                       <button
                         type="button"
                         onClick={() => handleCopyCode(inlineCode, blockId)}
@@ -213,7 +226,7 @@ const MessageContent = ({ content, role }) => {
       <span className="message-role">
         {role === 'user' ? 'You' : 'Sara'}
       </span>
-      <div className="message-text">
+      <div className="message-text" style={{ maxWidth: '100%', overflowX: 'hidden' }}>
         {renderContent(content)}
       </div>
     </div>
