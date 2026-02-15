@@ -20,8 +20,10 @@ import Learn from './pages/Learn'
 import Terms from './pages/Terms'
 import Privacy from './pages/Privacy'
 
-// Import Styles
+// Import Styles (global + legal pages so they apply on Vercel/production)
 import './index.css'
+import './pages/Terms.css'
+import './pages/Privacy.css'
 
 function App() {
   return (

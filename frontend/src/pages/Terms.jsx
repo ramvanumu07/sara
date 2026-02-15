@@ -4,7 +4,7 @@
 
 import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import './Terms.css'
+// Terms.css is imported in App.jsx so it applies on all environments (including Vercel)
 
 const Terms = () => {
   // Scroll to top when component mounts

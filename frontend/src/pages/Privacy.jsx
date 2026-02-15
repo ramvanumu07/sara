@@ -4,7 +4,7 @@
 
 import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import './Privacy.css'
+// Privacy.css is imported in App.jsx so it applies on all environments (including Vercel)
 
 const Privacy = () => {
   // Scroll to top when component mounts
