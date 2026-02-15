@@ -2159,15 +2159,31 @@
     opacity: 1 !important;
   }
 
-/* Desktop Button Styling */
+/* Desktop: same comfortable button height and header padding as other breakpoints */
 @media (min-width: 769px) {
+  .playground-editor-header,
+  .playground-output-header {
+    padding: 10px 14px !important;
+    min-height: 48px !important;
+    box-sizing: border-box !important;
+  }
+  .playground-editor-header > div:first-child,
+  .playground-output-header > div:first-child {
+    padding: 6px 12px !important;
+    font-size: 0.75rem !important;
+    min-height: 28px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+  }
   .playground-run-btn,
   .playground-reset-btn {
-    padding: 1px 4px !important;
-    font-size: 0.55rem !important;
-    min-width: 35px !important;
-    height: 14px !important;
-    border-radius: 2px !important;
+    padding: 6px 12px !important;
+    font-size: 0.75rem !important;
+    min-width: 44px !important;
+    height: 28px !important;
+    min-height: 28px !important;
+    border-radius: 6px !important;
+    box-sizing: border-box !important;
   }
 }
 
@@ -2214,13 +2230,13 @@
   /* ========== TABLET RESPONSIVE (≤768px) ========== */
   @media (max-width: 768px) {
 
-  /* Header background = just a bit higher than content */
+  /* Header with padding; content has space from edges */
   .playground-editor-header,
   .playground-output-header {
-    height: 30px !important;
-    min-height: 30px !important;
-    max-height: 30px !important;
-    padding: 2px 8px !important;
+    min-height: 44px !important;
+    height: auto !important;
+    max-height: none !important;
+    padding: 8px 10px !important;
     box-sizing: border-box !important;
     font-size: clamp(0.6rem, 1.6vw, 0.7rem) !important;
   }
@@ -2263,26 +2279,26 @@
       font-size: 0.65rem !important;
     }
 
-  /* Buttons fit inside header (header 30px, content ~24px) */
+  /* Buttons with comfortable height + padding in header */
   .playground-run-btn,
   .playground-reset-btn {
-    padding: 0 8px !important;
-    font-size: 0.65rem !important;
+    padding: 0 10px !important;
+    font-size: 0.75rem !important;
     min-width: 44px !important;
-    height: 24px !important;
-    min-height: 24px !important;
+    height: 28px !important;
+    min-height: 28px !important;
     border-radius: 4px !important;
     box-sizing: border-box !important;
   }
 
-    /* Tab = fit inside 30px header */
+    /* Tab with comfortable height */
   .playground-editor-header>div:first-child,
   .playground-output-header>div:first-child {
-    padding: 2px 8px !important;
-    font-size: 0.7rem !important;
-    height: 24px !important;
-    min-height: 24px !important;
-    max-height: 24px !important;
+    padding: 4px 10px !important;
+    font-size: 0.75rem !important;
+    height: 28px !important;
+    min-height: 28px !important;
+    max-height: 28px !important;
     display: inline-flex !important;
     align-items: center !important;
     box-sizing: border-box !important;
@@ -2294,14 +2310,14 @@
 
   .playground-editor-header,
   .playground-output-header {
-    height: 28px !important;
-    min-height: 28px !important;
-    max-height: 28px !important;
-    padding: 2px 6px !important;
+    min-height: 40px !important;
+    height: auto !important;
+    max-height: none !important;
+    padding: 6px 8px !important;
     box-sizing: border-box !important;
     font-size: clamp(0.5rem, 2vw, 0.65rem) !important;
     flex-wrap: nowrap !important;
-    gap: 6px !important;
+    gap: 8px !important;
   }
 
     .playground-line-numbers,
@@ -2326,11 +2342,11 @@
 
   .playground-run-btn,
   .playground-reset-btn {
-    padding: 0 6px !important;
-    font-size: 0.6rem !important;
+    padding: 0 8px !important;
+    font-size: 0.7rem !important;
     min-width: 40px !important;
-    height: 22px !important;
-    min-height: 22px !important;
+    height: 26px !important;
+    min-height: 26px !important;
     border-radius: 4px !important;
     box-sizing: border-box !important;
   }
@@ -2346,14 +2362,14 @@
       height: clamp(2px, 0.5vh, 3px) !important;
     }
 
-  /* Tab fits inside 28px header */
+  /* Tab at 480px */
   .playground-editor-header>div:first-child,
   .playground-output-header>div:first-child {
-    padding: 2px 6px !important;
-    font-size: 0.65rem !important;
-    height: 22px !important;
-    min-height: 22px !important;
-    max-height: 22px !important;
+    padding: 4px 8px !important;
+    font-size: 0.7rem !important;
+    height: 26px !important;
+    min-height: 26px !important;
+    max-height: 26px !important;
   }
 
   /* Ensure Run/Reset buttons are smaller than Code button on mobile */
