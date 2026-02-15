@@ -747,7 +747,7 @@ const Learn = () => {
     assignmentTestResultsRef.current = null
     setAssignmentTestResults(null)
     setAssignmentReview('')
-    setAssignmentOutput('')
+    setAssignmentOutput('Executing code securely...')
 
     try {
       const currentTask = assignments[currentAssignment]
