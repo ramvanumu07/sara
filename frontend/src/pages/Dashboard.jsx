@@ -12,6 +12,7 @@ const Dashboard = () => {
   const { user, logout } = useAuth()
 
   const [loading, setLoading] = useState(true)
+  const [loggingOut, setLoggingOut] = useState(false)
   const [error, setError] = useState(null)
   const [courses, setCourses] = useState([])
   const [selectedCourse, setSelectedCourse] = useState('javascript')
@@ -246,8 +247,9 @@ const Dashboard = () => {
     navigate('/profile')
   }
 
-  const handleLogout = () => {
-    logout()
+  const handleLogout = async () => {
+    setLoggingOut(true)
+    await logout()
     navigate('/login')
   }
 
@@ -374,6 +376,46 @@ const Dashboard = () => {
           </svg>
         )
     }
+  }
+
+  if (loggingOut) {
+    const loadingOverlayStyle = {
+      position: 'fixed',
+      left: 0,
+      top: 0,
+      right: 0,
+      bottom: 0,
+      width: '100vw',
+      height: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexDirection: 'column',
+      gap: 16,
+      background: 'rgba(255,255,255,0.98)',
+      zIndex: 99999
+    }
+    return createPortal(
+      <div className="dashboard-loading" style={loadingOverlayStyle}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+          <div
+            className="loading-spinner"
+            style={{
+              width: 32,
+              height: 32,
+              border: '3px solid #e5e7eb',
+              borderTopColor: '#10a37f',
+              borderRadius: '50%',
+              animation: 'loadingSpin 1s linear infinite',
+              flexShrink: 0
+            }}
+            aria-hidden
+          />
+          <p style={{ margin: 0, fontSize: '0.875rem', fontWeight: 500, color: '#6b7280' }}>Logging out...</p>
+        </div>
+      </div>,
+      document.body
+    )
   }
 
   if (loading) {
