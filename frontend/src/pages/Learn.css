@@ -281,6 +281,23 @@
   border: 1px solid #2d3748;
 }
 
+/* Session code blocks: horizontal scroll for long lines, copy button */
+.message-text .code-block-wrapper {
+  max-width: 100%;
+}
+.message-text .code-block {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.message-text .code-block pre {
+  white-space: pre;
+  word-break: normal;
+  min-width: min-content;
+}
+.message-text .code-block-copy-btn:hover {
+  background: #4a5568 !important;
+}
+
 .message-text pre code {
   background: none;
   color: inherit;

@@ -12,18 +12,29 @@ import './Learn-responsive.css'
 
 const SESSION_COMPLETE_REASON = 'Session completed. You can view the conversation but cannot send new messages.'
 
-// Code block: dark background + light text so content is always visible
+// Code block: dark background + light text; horizontal scroll for long lines
 const fencedBlockStyle = {
   backgroundColor: '#1a202c',
   color: '#e2e8f0',
   padding: '8px 12px',
   borderRadius: '6px',
   margin: '6px 0',
-  overflow: 'auto',
+  overflowX: 'auto',
+  overflowY: 'hidden',
   fontFamily: 'Monaco, Consolas, monospace',
   fontSize: '0.8125rem',
   lineHeight: '1.4',
   border: '1px solid #2d3748'
+}
+const preScrollStyle = {
+  margin: 0,
+  fontFamily: 'inherit',
+  fontSize: 'inherit',
+  color: '#e2e8f0',
+  whiteSpace: 'pre',
+  wordBreak: 'normal',
+  overflowX: 'auto',
+  minWidth: 'min-content'
 }
 
 // One-line code snippets in the flow of text: compact chip (no big block, no label)
@@ -59,6 +70,14 @@ function renderTextWithBold(text, keyPrefix) {
 }
 
 const MessageContent = ({ content, role }) => {
+  const [copiedBlockId, setCopiedBlockId] = useState(null)
+  const handleCopyCode = (code, blockId) => {
+    navigator.clipboard.writeText(code).then(() => {
+      setCopiedBlockId(blockId)
+      setTimeout(() => setCopiedBlockId(null), 2000)
+    }).catch(() => {})
+  }
+
   const renderContent = (text) => {
     if (!text || typeof text !== 'string') return null
     // First handle fenced code blocks (```javascript ... ```)
@@ -72,19 +91,33 @@ const MessageContent = ({ content, role }) => {
         const firstLine = firstLineEnd === -1 ? raw : raw.slice(0, firstLineEnd).trim()
         const rest = firstLineEnd === -1 ? '' : raw.slice(firstLineEnd + 1).trim()
         const code = looksLikeLang(firstLine) ? rest : raw
+        const blockId = `b-${blockIndex}`
 
         return (
-          <div key={`b-${blockIndex}`} className="code-block" style={fencedBlockStyle}>
-            <pre style={{
-              margin: 0,
-              fontFamily: 'inherit',
-              fontSize: 'inherit',
-              color: '#e2e8f0',
-              whiteSpace: 'pre-wrap',
-              wordBreak: 'break-word'
-            }}>
-              {code}
-            </pre>
+          <div key={blockId} className="code-block-wrapper" style={{ position: 'relative', margin: '6px 0' }}>
+            <button
+              type="button"
+              onClick={() => handleCopyCode(code, blockId)}
+              className="code-block-copy-btn"
+              style={{
+                position: 'absolute',
+                top: 6,
+                right: 8,
+                zIndex: 1,
+                padding: '4px 8px',
+                fontSize: '0.75rem',
+                background: copiedBlockId === blockId ? '#059669' : '#2d3748',
+                color: '#e2e8f0',
+                border: '1px solid #4a5568',
+                borderRadius: 4,
+                cursor: 'pointer'
+              }}
+            >
+              {copiedBlockId === blockId ? 'Copied!' : 'Copy'}
+            </button>
+            <div className="code-block" style={fencedBlockStyle}>
+              <pre style={preScrollStyle}>{code}</pre>
+            </div>
           </div>
         )
       }
@@ -99,18 +132,32 @@ const MessageContent = ({ content, role }) => {
               if (looksLikeCodeStatement(inlineCode)) {
                 const isMultiline = inlineCode.includes('\n')
                 if (isMultiline) {
+                  const blockId = `ib-${blockIndex}-${inlineIndex}`
                   return (
-                    <div key={`${blockIndex}-${inlineIndex}`} className="code-block" style={fencedBlockStyle}>
-                      <pre style={{
-                        margin: 0,
-                        fontFamily: 'inherit',
-                        fontSize: 'inherit',
-                        color: '#e2e8f0',
-                        whiteSpace: 'pre-wrap',
-                        wordBreak: 'break-word'
-                      }}>
-                        {inlineCode}
-                      </pre>
+                    <div key={blockId} className="code-block-wrapper" style={{ position: 'relative', margin: '6px 0' }}>
+                      <button
+                        type="button"
+                        onClick={() => handleCopyCode(inlineCode, blockId)}
+                        className="code-block-copy-btn"
+                        style={{
+                          position: 'absolute',
+                          top: 6,
+                          right: 8,
+                          zIndex: 1,
+                          padding: '4px 8px',
+                          fontSize: '0.75rem',
+                          background: copiedBlockId === blockId ? '#059669' : '#2d3748',
+                          color: '#e2e8f0',
+                          border: '1px solid #4a5568',
+                          borderRadius: 4,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        {copiedBlockId === blockId ? 'Copied!' : 'Copy'}
+                      </button>
+                      <div className="code-block" style={fencedBlockStyle}>
+                        <pre style={preScrollStyle}>{inlineCode}</pre>
+                      </div>
                     </div>
                   )
                 }
@@ -171,7 +218,7 @@ function renderFormattedReview(text) {
       const code = looksLikeLang(firstLine) ? rest : raw
       return (
         <div key={`rb-${blockIndex}`} style={fencedBlockStyle}>
-          <pre style={{ margin: 0, fontFamily: 'inherit', fontSize: 'inherit', color: '#e2e8f0', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{code}</pre>
+          <pre style={preScrollStyle}>{code}</pre>
         </div>
       )
     }
@@ -186,7 +233,7 @@ function renderFormattedReview(text) {
               if (isMultiline) {
                 return (
                   <div key={`r-${blockIndex}-${inlineIndex}`} style={fencedBlockStyle}>
-                    <pre style={{ margin: 0, fontFamily: 'inherit', fontSize: 'inherit', color: '#e2e8f0', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{inlineCode}</pre>
+                    <pre style={preScrollStyle}>{inlineCode}</pre>
                   </div>
                 )
               }
@@ -1252,7 +1299,7 @@ const Learn = () => {
           </div>
 
           {sessionComplete && (
-            <div className="session-complete-readonly" style={{ padding: '12px 16px', background: '#f0fdf4', borderTop: '1px solid #bbf7d0', color: '#166534', fontSize: '0.875rem' }}>
+            <div className="session-complete-readonly" style={{ padding: '12px 16px', background: '#f0fdf4', borderTop: '1px solid #bbf7d0', color: '#166534', fontSize: '0.875rem', textAlign: 'center' }}>
               {SESSION_COMPLETE_REASON} You can go to Assignments to practice.
             </div>
           )}
