@@ -435,15 +435,15 @@ pre code {
   }
 }
 
-/* Playground / editor / terminal – ALL viewports: header = content height + small padding, same everywhere */
+/* Playground / editor / terminal – ALL viewports: header a bit higher, larger buttons and text */
 .playground-editor-header,
 .playground-output-header,
 .learn-container .playground-editor-header,
 .learn-container .playground-output-header,
 .dashboard-playground-fullscreen .playground-editor-header,
 .dashboard-playground-fullscreen .playground-output-header {
-  padding: 6px 12px !important;
-  min-height: 40px !important;
+  padding: 10px 14px !important;
+  min-height: 52px !important;
   height: auto !important;
   max-height: none !important;
   box-sizing: border-box !important;
@@ -454,11 +454,11 @@ pre code {
 .playground-output-header-tab,
 .playground-editor-header > div:first-child,
 .playground-output-header > div:first-child {
-  padding: 4px 10px !important;
-  font-size: 0.75rem !important;
-  height: 28px !important;
-  min-height: 28px !important;
-  max-height: 28px !important;
+  padding: 6px 12px !important;
+  font-size: 0.875rem !important;
+  height: 32px !important;
+  min-height: 32px !important;
+  max-height: 32px !important;
   display: inline-flex !important;
   align-items: center !important;
   box-sizing: border-box !important;
@@ -468,10 +468,10 @@ pre code {
 .playground-reset-btn,
 .dashboard-playground-fullscreen .playground-run-btn,
 .dashboard-playground-fullscreen .playground-copy-btn {
-  height: 28px !important;
-  min-height: 28px !important;
-  padding: 0 10px !important;
-  font-size: 0.75rem !important;
+  height: 32px !important;
+  min-height: 32px !important;
+  padding: 0 12px !important;
+  font-size: 0.875rem !important;
   box-sizing: border-box !important;
 }
 
@@ -482,28 +482,28 @@ pre code {
   .learn-container .playground-output-header,
   .dashboard-playground-fullscreen .playground-editor-header,
   .dashboard-playground-fullscreen .playground-output-header {
-    padding: 5px 8px !important;
-    min-height: 38px !important;
+    padding: 8px 10px !important;
+    min-height: 48px !important;
   }
   .playground-editor-header-tab,
   .playground-output-header-tab,
   .playground-editor-header > div:first-child,
   .playground-output-header > div:first-child {
-    height: 26px !important;
-    min-height: 26px !important;
-    max-height: 26px !important;
-    padding: 4px 8px !important;
-    font-size: 0.7rem !important;
+    height: 28px !important;
+    min-height: 28px !important;
+    max-height: 28px !important;
+    padding: 5px 10px !important;
+    font-size: 0.8125rem !important;
   }
   .playground-run-btn,
   .playground-copy-btn,
   .playground-reset-btn,
   .dashboard-playground-fullscreen .playground-run-btn,
   .dashboard-playground-fullscreen .playground-copy-btn {
-    height: 26px !important;
-    min-height: 26px !important;
-    padding: 0 8px !important;
-    font-size: 0.7rem !important;
+    height: 28px !important;
+    min-height: 28px !important;
+    padding: 0 10px !important;
+    font-size: 0.8125rem !important;
   }
 }
 

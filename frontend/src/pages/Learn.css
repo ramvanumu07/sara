@@ -2159,30 +2159,30 @@
     opacity: 1 !important;
   }
 
-/* Desktop: match global – header 40px + 6px padding, buttons 28px */
+/* Desktop: header a bit higher, larger buttons and text */
 @media (min-width: 769px) {
   .playground-editor-header,
   .playground-output-header {
-    padding: 6px 12px !important;
-    min-height: 40px !important;
+    padding: 10px 14px !important;
+    min-height: 52px !important;
     box-sizing: border-box !important;
   }
   .playground-editor-header > div:first-child,
   .playground-output-header > div:first-child {
-    padding: 4px 10px !important;
-    font-size: 0.75rem !important;
-    height: 28px !important;
-    min-height: 28px !important;
+    padding: 6px 12px !important;
+    font-size: 0.875rem !important;
+    height: 32px !important;
+    min-height: 32px !important;
     display: inline-flex !important;
     align-items: center !important;
   }
   .playground-run-btn,
   .playground-reset-btn {
-    padding: 0 10px !important;
-    font-size: 0.75rem !important;
-    min-width: 44px !important;
-    height: 28px !important;
-    min-height: 28px !important;
+    padding: 0 12px !important;
+    font-size: 0.875rem !important;
+    min-width: 48px !important;
+    height: 32px !important;
+    min-height: 32px !important;
     border-radius: 6px !important;
     box-sizing: border-box !important;
   }
@@ -2231,13 +2231,13 @@
   /* ========== TABLET RESPONSIVE (≤768px) ========== */
   @media (max-width: 768px) {
 
-  /* Match global: 40px header, 6px padding, 28px buttons */
+  /* Header a bit higher, larger buttons and text */
   .playground-editor-header,
   .playground-output-header {
-    padding: 6px 12px !important;
-    min-height: 40px !important;
+    padding: 10px 14px !important;
+    min-height: 52px !important;
     box-sizing: border-box !important;
-    font-size: 0.75rem !important;
+    font-size: 0.875rem !important;
   }
 
     /* Responsive Panels */
@@ -2280,19 +2280,19 @@
 
   .playground-run-btn,
   .playground-reset-btn {
-    padding: 0 10px !important;
-    font-size: 0.75rem !important;
-    min-width: 44px !important;
-    height: 28px !important;
-    min-height: 28px !important;
+    padding: 0 12px !important;
+    font-size: 0.875rem !important;
+    min-width: 48px !important;
+    height: 32px !important;
+    min-height: 32px !important;
     border-radius: 6px !important;
     box-sizing: border-box !important;
   }
 
   .playground-editor-header>div:first-child,
   .playground-output-header>div:first-child {
-    padding: 4px 10px !important;
-    font-size: 0.75rem !important;
+    padding: 5px 10px !important;
+    font-size: 0.8125rem !important;
     height: 28px !important;
     min-height: 28px !important;
     max-height: 28px !important;
@@ -2304,10 +2304,10 @@
 
   .playground-editor-header,
   .playground-output-header {
-    padding: 5px 8px !important;
-    min-height: 38px !important;
+    padding: 8px 10px !important;
+    min-height: 48px !important;
     box-sizing: border-box !important;
-    font-size: 0.7rem !important;
+    font-size: 0.8125rem !important;
     flex-wrap: nowrap !important;
     gap: 8px !important;
   }
@@ -2334,11 +2334,11 @@
 
   .playground-run-btn,
   .playground-reset-btn {
-    padding: 0 8px !important;
-    font-size: 0.7rem !important;
-    min-width: 40px !important;
-    height: 26px !important;
-    min-height: 26px !important;
+    padding: 0 10px !important;
+    font-size: 0.8125rem !important;
+    min-width: 44px !important;
+    height: 28px !important;
+    min-height: 28px !important;
     border-radius: 6px !important;
     box-sizing: border-box !important;
   }
@@ -2356,11 +2356,11 @@
 
   .playground-editor-header>div:first-child,
   .playground-output-header>div:first-child {
-    padding: 4px 8px !important;
-    font-size: 0.7rem !important;
-    height: 26px !important;
-    min-height: 26px !important;
-    max-height: 26px !important;
+    padding: 5px 8px !important;
+    font-size: 0.8125rem !important;
+    height: 28px !important;
+    min-height: 28px !important;
+    max-height: 28px !important;
   }
 
   /* Ensure Run/Reset buttons are smaller than Code button on mobile */
