@@ -780,6 +780,47 @@ const Learn = () => {
     }
   }
 
+  // Mobile: soft keyboards often don't fire keydown with correct e.key; beforeInput fires with e.data
+  const AUTO_CLOSE_PAIRS = { '(': ')', '[': ']', '{': '}', '"': '"', "'": "'", '`': '`' }
+  const handleAssignmentBeforeInput = (e) => {
+    if (!e.data || e.data.length !== 1) return
+    const ch = e.data
+    if (!AUTO_CLOSE_PAIRS[ch]) return
+    const textarea = e.target
+    const start = textarea.selectionStart
+    const end = textarea.selectionEnd
+    const value = assignmentCode || ''
+    if (['"', "'", '`'].includes(ch)) {
+      if (value.charAt(start) === ch) {
+        e.preventDefault()
+        requestAnimationFrame(() => {
+          const ta = assignmentTextareaRef.current
+          if (ta) ta.selectionStart = ta.selectionEnd = start + 1
+        })
+        return
+      }
+      const beforeCursor = value.substring(0, start)
+      const quoteCount = (beforeCursor.match(new RegExp('\\' + ch, 'g')) || []).length
+      if (quoteCount % 2 === 1) return
+    }
+    e.preventDefault()
+    const closeChar = AUTO_CLOSE_PAIRS[ch]
+    const selectedText = value.substring(start, end)
+    const newValue = selectedText
+      ? value.substring(0, start) + ch + selectedText + closeChar + value.substring(end)
+      : value.substring(0, start) + ch + closeChar + value.substring(start)
+    setAssignmentCode(newValue)
+    const cursorPos = start + 1 + (selectedText ? selectedText.length : 0)
+    requestAnimationFrame(() => {
+      const ta = assignmentTextareaRef.current
+      if (ta) {
+        ta.focus()
+        ta.selectionStart = start + 1
+        ta.selectionEnd = selectedText ? cursorPos : start + 1
+      }
+    })
+  }
+
   // Format test input for display: show key-value list instead of raw object
   const formatTestInput = (input) => {
     if (input == null) return null
@@ -1559,6 +1600,7 @@ const Learn = () => {
                 ref={assignmentTextareaRef}
                 className="playground-textarea"
                 value={assignmentCode}
+                onBeforeInput={handleAssignmentBeforeInput}
                 onChange={(e) => {
                   const newVal = e.target.value
                   const oldVal = assignmentCode

@@ -18,6 +18,7 @@ export default function SessionPlayground({
   onRunError
 }) {
   const terminalOutputRef = useRef(null)
+  const editorTextareaRef = useRef(null)
   const [editorHeight, setEditorHeight] = useState(60)
   const [editorWidth, setEditorWidth] = useState(60)
   const [isDesktop, setIsDesktop] = useState(typeof window !== 'undefined' && window.innerWidth >= 768)
@@ -185,6 +186,46 @@ export default function SessionPlayground({
       document.addEventListener('touchmove', handleTouchMove, { passive: false })
       document.addEventListener('touchend', handleTouchEnd)
     }
+  }
+
+  // Mobile: many soft keyboards don't fire keydown with correct e.key; beforeInput fires with e.data
+  const handleBeforeInput = (e) => {
+    if (!e.data || e.data.length !== 1) return
+    const ch = e.data
+    if (!AUTO_CLOSING_PAIRS[ch]) return
+    const textarea = e.target
+    const start = textarea.selectionStart
+    const end = textarea.selectionEnd
+    const value = code || ''
+    // Quotes: skip over if next char is already that quote
+    if (['"', "'", '`'].includes(ch)) {
+      if (value.charAt(start) === ch) {
+        e.preventDefault()
+        requestAnimationFrame(() => {
+          textarea.selectionStart = textarea.selectionEnd = start + 1
+        })
+        return
+      }
+      const beforeCursor = value.substring(0, start)
+      const quoteCount = (beforeCursor.match(new RegExp('\\' + ch, 'g')) || []).length
+      if (quoteCount % 2 === 1) return // closing, let default
+    }
+    e.preventDefault()
+    const closeChar = AUTO_CLOSING_PAIRS[ch]
+    const selectedText = value.substring(start, end)
+    const newValue = selectedText
+      ? value.substring(0, start) + ch + selectedText + closeChar + value.substring(end)
+      : value.substring(0, start) + ch + closeChar + value.substring(start)
+    onCodeChange(newValue)
+    const cursorPos = start + 1 + (selectedText ? selectedText.length : 0)
+    requestAnimationFrame(() => {
+      const ta = editorTextareaRef.current
+      if (ta) {
+        ta.focus()
+        ta.selectionStart = start + 1
+        ta.selectionEnd = selectedText ? cursorPos : start + 1
+      }
+    })
   }
 
   const handleKeyDown = (e) => {
@@ -434,9 +475,48 @@ export default function SessionPlayground({
             ))}
           </div>
           <textarea
+            ref={editorTextareaRef}
             className="playground-textarea"
             value={code || ''}
-            onChange={(e) => onCodeChange(e.target.value)}
+            onBeforeInput={handleBeforeInput}
+            onChange={(e) => {
+              const newVal = e.target.value
+              const oldVal = code || ''
+              // Mobile: soft keyboards often don't fire keydown with e.key, so auto-close in onChange
+              if (newVal.length === oldVal.length + 1) {
+                let insertIndex = -1
+                let insertedChar = ''
+                for (let i = 0; i < newVal.length; i++) {
+                  if (oldVal === newVal.slice(0, i) + newVal.slice(i + 1)) {
+                    insertIndex = i
+                    insertedChar = newVal[i]
+                    break
+                  }
+                }
+                if (insertIndex !== -1 && AUTO_CLOSING_PAIRS[insertedChar]) {
+                  if (['"', "'", '`'].includes(insertedChar) && newVal[insertIndex + 1] === insertedChar) {
+                    onCodeChange(newVal)
+                    requestAnimationFrame(() => {
+                      const ta = editorTextareaRef.current
+                      if (ta) ta.selectionStart = ta.selectionEnd = insertIndex + 1
+                    })
+                    return
+                  }
+                  const closeChar = AUTO_CLOSING_PAIRS[insertedChar]
+                  const finalVal = newVal.slice(0, insertIndex + 1) + closeChar + newVal.slice(insertIndex + 1)
+                  onCodeChange(finalVal)
+                  requestAnimationFrame(() => {
+                    const ta = editorTextareaRef.current
+                    if (ta) {
+                      ta.focus()
+                      ta.selectionStart = ta.selectionEnd = insertIndex + 1
+                    }
+                  })
+                  return
+                }
+              }
+              onCodeChange(newVal)
+            }}
             onScroll={(e) => {
               const lineNumbers = e.target.parentElement?.querySelector('.playground-line-numbers')
               if (lineNumbers) lineNumbers.scrollTop = e.target.scrollTop
