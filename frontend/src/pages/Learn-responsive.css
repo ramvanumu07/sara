@@ -23,18 +23,18 @@
 
 /* Session phase: margin from screen edges on all viewports (localhost + Vercel) */
 .learn-container .session-container {
-  padding-left: 20px;
-  padding-right: 20px;
+  padding-left: 16px;
+  padding-right: 16px;
   box-sizing: border-box;
 }
 .learn-container .messages-area {
-  padding-left: 20px;
-  padding-right: 20px;
+  padding-left: 16px;
+  padding-right: 16px;
   box-sizing: border-box;
 }
 .learn-container .input-form {
-  padding-left: 20px;
-  padding-right: 20px;
+  padding-left: 16px;
+  padding-right: 16px;
   box-sizing: border-box;
 }
 
@@ -333,37 +333,38 @@
     font-size: 0.6rem;
   }
   
-  /* Session chat: minimal gap from screen edge to avatar on mobile */
+  /* Session chat: tight alignment on mobile - minimal padding, small gap (ChatGPT-like) */
   .learn-container .session-container {
-    padding-left: 6px !important;
-    padding-right: 6px !important;
+    padding-left: 4px !important;
+    padding-right: 4px !important;
   }
   .learn-container .messages-area {
-    padding: 6px !important;
-    padding-left: 6px !important;
-    padding-right: 6px !important;
+    padding: 8px 4px !important;
+    padding-left: 4px !important;
+    padding-right: 4px !important;
   }
   .learn-container .input-form {
-    padding: 6px !important;
-    padding-left: 6px !important;
-    padding-right: 6px !important;
+    padding: 6px 4px !important;
+    padding-left: 4px !important;
+    padding-right: 4px !important;
     gap: 6px;
   }
   .session-container {
-    padding-left: 6px !important;
-    padding-right: 6px !important;
+    padding-left: 4px !important;
+    padding-right: 4px !important;
   }
   .messages-area {
-    padding: 6px !important;
-    padding-left: 6px !important;
-    padding-right: 6px !important;
+    padding: 8px 4px !important;
+    padding-left: 4px !important;
+    padding-right: 4px !important;
   }
   .input-form {
-    padding: 6px !important;
-    padding-left: 6px !important;
-    padding-right: 6px !important;
+    padding: 6px 4px !important;
+    padding-left: 4px !important;
+    padding-right: 4px !important;
   }
   .message-row {
+    gap: 6px !important;
     padding-left: 0;
     padding-right: 0;
   }
@@ -487,20 +488,23 @@
   
   .learn-container .session-container,
   .session-container {
-    padding-left: 8px !important;
-    padding-right: 8px !important;
+    padding-left: 6px !important;
+    padding-right: 6px !important;
   }
   .learn-container .messages-area,
   .messages-area {
-    padding: 8px !important;
-    padding-left: 8px !important;
-    padding-right: 8px !important;
+    padding: 10px 6px !important;
+    padding-left: 6px !important;
+    padding-right: 6px !important;
   }
   .learn-container .input-form,
   .input-form {
-    padding: 8px !important;
-    padding-left: 8px !important;
-    padding-right: 8px !important;
+    padding: 6px !important;
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+  }
+  .message-row {
+    gap: 6px !important;
   }
   
   .assignment-main-content {

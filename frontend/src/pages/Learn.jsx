@@ -49,15 +49,24 @@ const preScrollStyle = {
   minWidth: 'min-content'
 }
 
-// One-line code snippets in the flow of text: compact chip (no big block, no label)
+// One-line code snippets in the flow of text: subtle chip (ChatGPT-like)
 const inlineStatementStyle = {
   display: 'inline',
   backgroundColor: '#f1f5f9',
-  color: '#475569',
-  padding: '3px 8px',
-  borderRadius: '4px',
+  color: '#334155',
+  padding: '1px 4px',
+  borderRadius: '3px',
   fontFamily: 'Monaco, Consolas, monospace',
-  fontSize: '0.875rem',
+  fontSize: '0.85em',
+  border: '1px solid #e2e8f0'
+}
+const inlineCodeStyle = {
+  backgroundColor: '#f1f5f9',
+  color: '#334155',
+  padding: '1px 4px',
+  borderRadius: '3px',
+  fontSize: '0.85em',
+  fontFamily: 'Monaco, Consolas, monospace',
   border: '1px solid #e2e8f0'
 }
 
@@ -198,15 +207,7 @@ const MessageContent = ({ content, role }) => {
                 )
               }
               return (
-                <code key={`${blockIndex}-${inlineIndex}`} style={{
-                  backgroundColor: '#f7fafc',
-                  color: '#2d3748',
-                  padding: '2px 6px',
-                  borderRadius: '4px',
-                  fontSize: '0.85rem',
-                  fontFamily: 'Monaco, Consolas, monospace',
-                  border: '1px solid #e2e8f0'
-                }}>
+                <code key={`${blockIndex}-${inlineIndex}`} style={inlineCodeStyle}>
                   {inlineCode}
                 </code>
               )
@@ -270,7 +271,7 @@ function renderFormattedReview(text) {
               return <span key={`r-${blockIndex}-${inlineIndex}`} style={inlineStatementStyle}>{inlineCode}</span>
             }
             return (
-              <code key={`r-${blockIndex}-${inlineIndex}`} style={{ backgroundColor: '#f1f5f9', color: '#334155', padding: '2px 6px', borderRadius: '4px', fontSize: '0.85rem', fontFamily: 'Monaco, Consolas, monospace', border: '1px solid #e2e8f0' }}>{inlineCode}</code>
+              <code key={`r-${blockIndex}-${inlineIndex}`} style={inlineCodeStyle}>{inlineCode}</code>
             )
           }
           return <React.Fragment key={`r-${blockIndex}-${inlineIndex}`}>{renderTextWithBold(inlinePart, `r-${blockIndex}-${inlineIndex}`)}</React.Fragment>
@@ -334,14 +335,7 @@ const Learn = () => {
 
   // Feedback phase states
 
-  // Scroll to bottom of messages
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }
-
-  useEffect(() => {
-    scrollToBottom()
-  }, [messages])
+  // Do not auto-scroll when AI responds: user stays at message start to read from top
 
   // Handle window resize for responsive layout
   useEffect(() => {
@@ -1302,9 +1296,9 @@ const Learn = () => {
       {/* Session chat view */}
       {phase === 'session' && !showEditorInSession && (
         <div className="session-container" style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
-          <div className="messages-area" style={{ flex: 1, minHeight: 0 }}>
+          <div className="messages-area" style={{ flex: 1, minHeight: 0, padding: '12px 16px' }}>
             {messages.map((message, index) => (
-              <div key={index} className="message-row">
+              <div key={index} className="message-row" style={{ gap: 8, alignItems: 'flex-start' }}>
                 <div className={`avatar ${message.role === 'user' ? 'avatar-user' : 'avatar-assistant'}`}>
                   {message.role === 'user' ? 'U' : 'S'}
                 </div>
@@ -1313,7 +1307,7 @@ const Learn = () => {
             ))}
 
             {isTyping && (
-              <div className="message-row">
+              <div className="message-row" style={{ gap: 8, alignItems: 'flex-start' }}>
                 <div className="avatar avatar-assistant">S</div>
                 <div className="message-content">
                   <span className="message-role">Sara</span>

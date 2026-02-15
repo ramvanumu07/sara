@@ -23,6 +23,10 @@ export default function SessionPlayground({
   const [isDesktop, setIsDesktop] = useState(typeof window !== 'undefined' && window.innerWidth >= 768)
   const [isDragging, setIsDragging] = useState(false)
   const [copyButtonLabel, setCopyButtonLabel] = useState('Copy')
+  const resetCode = () => {
+    if (onCodeChange) onCodeChange('')
+    setCopyButtonLabel('Copy')
+  }
 
   useEffect(() => {
     const handleResize = () => setIsDesktop(window.innerWidth >= 768)
@@ -324,54 +328,84 @@ export default function SessionPlayground({
           <div className="playground-editor-header-tab" style={{ padding: '6px 12px', height: 32, minHeight: 32, display: 'inline-flex', alignItems: 'center', backgroundColor: '#ffffff', borderRadius: '4px 4px 0 0', borderBottom: '2px solid #10a37f', color: '#111827', fontWeight: 500, fontSize: '0.875rem', boxSizing: 'border-box' }}>
             playground.js
           </div>
-          <div className="playground-header-actions" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <div className="playground-header-actions" style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
             <button
               type="button"
               onClick={runPlayground}
               className="playground-run-btn"
               disabled={!code?.trim()}
-              title="Run Code (Ctrl+Enter)"
+              title="Run (Ctrl+Enter)"
               style={{
+                width: 32,
                 height: 32,
+                minWidth: 32,
                 minHeight: 32,
-                padding: '0 12px',
-                backgroundColor: code?.trim() ? '#10a37f' : '#d1d5db',
+                padding: 0,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: code?.trim() ? '#10a37f' : '#e5e7eb',
                 color: code?.trim() ? 'white' : '#9ca3af',
                 border: 'none',
                 borderRadius: '6px',
-                fontSize: '0.875rem',
-                fontWeight: '500',
                 cursor: code?.trim() ? 'pointer' : 'not-allowed',
-                minWidth: '60px',
-                boxSizing: 'border-box',
-                transition: 'background-color 0.2s, color 0.2s'
+                boxSizing: 'border-box'
               }}
             >
-              Run
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
             </button>
             <button
               type="button"
               onClick={copyCode}
               className="playground-copy-btn"
               disabled={!code?.trim()}
-              title={copyButtonLabel === 'Copied!' ? 'Copied!' : 'Copy code to clipboard'}
+              title={copyButtonLabel === 'Copied!' ? 'Copied!' : 'Copy code'}
               style={{
+                width: 32,
                 height: 32,
+                minWidth: 32,
                 minHeight: 32,
-                padding: '0 12px',
-                backgroundColor: copyButtonLabel === 'Copied!' ? '#ecfdf5' : (code?.trim() ? '#f0fdf4' : '#f3f4f6'),
-                color: copyButtonLabel === 'Copied!' ? '#059669' : (code?.trim() ? '#047857' : '#9ca3af'),
-                border: copyButtonLabel === 'Copied!' ? '1px solid #a7f3d0' : (code?.trim() ? '1px solid #86efac' : '1px solid #e5e7eb'),
+                padding: 0,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: copyButtonLabel === 'Copied!' ? '#d1fae5' : '#f3f4f6',
+                color: copyButtonLabel === 'Copied!' ? '#059669' : (code?.trim() ? '#374151' : '#9ca3af'),
+                border: 'none',
                 borderRadius: '6px',
-                fontSize: '0.875rem',
-                fontWeight: '600',
                 cursor: code?.trim() ? 'pointer' : 'not-allowed',
-                minWidth: '72px',
-                boxSizing: 'border-box',
-                transition: 'background-color 0.2s, color 0.2s, border-color 0.2s'
+                boxSizing: 'border-box'
               }}
             >
-              {copyButtonLabel}
+              {copyButtonLabel === 'Copied!' ? (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"/></svg>
+              ) : (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={resetCode}
+              className="playground-reset-btn"
+              title="Reset (clear code)"
+              style={{
+                width: 32,
+                height: 32,
+                minWidth: 32,
+                minHeight: 32,
+                padding: 0,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                backgroundColor: '#f3f4f6',
+                color: '#6b7280',
+                border: 'none',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                boxSizing: 'border-box'
+              }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
             </button>
           </div>
         </div>
