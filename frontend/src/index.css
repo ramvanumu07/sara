@@ -435,17 +435,36 @@ pre code {
   }
 }
 
-/* Editor/terminal blocks: header height = just a bit more than button height on mobile */
+/* Editor/terminal blocks: header height = just a bit more than button height on mobile (playground + assignment) */
 @media (max-width: 768px) {
   .playground-editor-header,
   .playground-output-header,
   .learn-container .playground-editor-header,
-  .learn-container .playground-output-header {
+  .learn-container .playground-output-header,
+  .dashboard-playground-fullscreen .playground-editor-header,
+  .dashboard-playground-fullscreen .playground-output-header {
     height: 34px !important;
     min-height: 34px !important;
     max-height: 34px !important;
     padding: 4px 8px !important;
     box-sizing: border-box !important;
+  }
+  .dashboard-playground-fullscreen .playground-run-btn,
+  .dashboard-playground-fullscreen .playground-copy-btn {
+    height: 26px !important;
+    min-height: 26px !important;
+    padding: 0 10px !important;
+    font-size: 0.7rem !important;
+  }
+  .dashboard-playground-fullscreen .playground-editor-header > div:first-child,
+  .dashboard-playground-fullscreen .playground-output-header > div:first-child {
+    padding: 2px 8px !important;
+    font-size: 0.7rem !important;
+    height: 26px !important;
+    min-height: 26px !important;
+    max-height: 26px !important;
+    display: inline-flex !important;
+    align-items: center !important;
   }
 }
 
@@ -453,12 +472,29 @@ pre code {
   .playground-editor-header,
   .playground-output-header,
   .learn-container .playground-editor-header,
-  .learn-container .playground-output-header {
+  .learn-container .playground-output-header,
+  .dashboard-playground-fullscreen .playground-editor-header,
+  .dashboard-playground-fullscreen .playground-output-header {
     height: 32px !important;
     min-height: 32px !important;
     max-height: 32px !important;
     padding: 3px 6px !important;
     box-sizing: border-box !important;
+  }
+  .dashboard-playground-fullscreen .playground-run-btn,
+  .dashboard-playground-fullscreen .playground-copy-btn {
+    height: 24px !important;
+    min-height: 24px !important;
+    padding: 0 8px !important;
+    font-size: 0.65rem !important;
+  }
+  .dashboard-playground-fullscreen .playground-editor-header > div:first-child,
+  .dashboard-playground-fullscreen .playground-output-header > div:first-child {
+    height: 24px !important;
+    min-height: 24px !important;
+    max-height: 24px !important;
+    padding: 2px 6px !important;
+    font-size: 0.65rem !important;
   }
 }
 
