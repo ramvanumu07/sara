@@ -4,7 +4,7 @@
 
 import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import './Privacy.css'
+/* Legal page styles are in index.css so they load on Vercel */
 
 const Privacy = () => {
   // Scroll to top when component mounts

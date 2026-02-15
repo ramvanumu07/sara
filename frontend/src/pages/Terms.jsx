@@ -4,7 +4,7 @@
 
 import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import './Terms.css'
+/* Legal page styles are in index.css so they load on Vercel */
 
 const Terms = () => {
   // Scroll to top when component mounts
