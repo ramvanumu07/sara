@@ -28,13 +28,13 @@ const Terms = () => {
             <span className="logo-sara" style={{ fontSize: '2rem', fontWeight: 700, color: '#44a08d' }}>Sara</span>
           </Link>
           <nav className="header-nav">
-            <Link to="/" className="nav-link" style={{ color: '#5a5a5a', textDecoration: 'none', fontWeight: 500 }}>Back to Home</Link>
+            <Link to="/" className="nav-link">Back to Home</Link>
           </nav>
         </div>
       </header>
 
-      <main className="terms-main" style={{ flex: 1, padding: '2rem 0' }}>
-        <div className="terms-content" style={{ maxWidth: 800, margin: '0 auto', padding: '3rem 2rem', background: '#ffffff' }}>
+      <main className="terms-main" style={{ flex: 1, padding: '1rem 0' }}>
+        <div className="terms-content" style={{ maxWidth: 800, margin: '0 auto', padding: '1.25rem 2rem 3rem 2rem', background: '#ffffff' }}>
           <h1 style={{ fontSize: '2.5rem', fontWeight: 700, marginBottom: '0.5rem', color: '#10a37f' }}>Terms of Service</h1>
           <p className="last-updated">Last updated: February 7, 2026</p>
 
@@ -193,10 +193,10 @@ const Terms = () => {
       <footer className="terms-footer" style={{ background: '#f9f9f9', borderTop: '1px solid #e5e5e5', padding: '2rem 0', marginTop: 'auto' }}>
         <div className="footer-content" style={{ maxWidth: 1200, margin: '0 auto', padding: '0 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <p>&copy; 2026 Sara Learning Platform. All rights reserved.</p>
-          <div className="footer-links">
-            <Link to="/privacy">Privacy Policy</Link>
-            <span>•</span>
-            <a href="mailto:sara4code@gmail.com">Contact</a>
+          <div className="footer-links" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <Link to="/privacy" className="footer-link">Privacy Policy</Link>
+            <span style={{ color: '#8e8e8e' }}>•</span>
+            <a href="mailto:sara4code@gmail.com" className="footer-link">Contact</a>
           </div>
         </div>
       </footer>
