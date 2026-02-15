@@ -435,71 +435,44 @@ pre code {
   }
 }
 
-/* Playground / editor / terminal: all viewports – padding in header, comfortable button height */
+/* Playground / editor / terminal – ALL viewports: header = content height + small padding, same everywhere */
 .playground-editor-header,
-.playground-output-header {
-  padding: 10px 14px;
-  min-height: 48px;
-  box-sizing: border-box;
+.playground-output-header,
+.learn-container .playground-editor-header,
+.learn-container .playground-output-header,
+.dashboard-playground-fullscreen .playground-editor-header,
+.dashboard-playground-fullscreen .playground-output-header {
+  padding: 6px 12px !important;
+  min-height: 40px !important;
+  height: auto !important;
+  max-height: none !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  align-items: center !important;
 }
 .playground-editor-header-tab,
 .playground-output-header-tab,
 .playground-editor-header > div:first-child,
 .playground-output-header > div:first-child {
-  padding: 6px 12px;
-  min-height: 28px;
-  display: inline-flex;
-  align-items: center;
-  box-sizing: border-box;
+  padding: 4px 10px !important;
+  font-size: 0.75rem !important;
+  height: 28px !important;
+  min-height: 28px !important;
+  max-height: 28px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  box-sizing: border-box !important;
 }
 .playground-run-btn,
 .playground-copy-btn,
-.playground-reset-btn {
-  height: 28px;
-  min-height: 28px;
-  padding: 6px 12px;
-  font-size: 0.75rem;
-  box-sizing: border-box;
-}
-
-/* Mobile: header background = bit higher than content + padding around elements */
-@media (max-width: 768px) {
-  .playground-editor-header,
-  .playground-output-header,
-  .learn-container .playground-editor-header,
-  .learn-container .playground-output-header,
-  .dashboard-playground-fullscreen .playground-editor-header,
-  .dashboard-playground-fullscreen .playground-output-header {
-    min-height: 44px !important;
-    height: auto !important;
-    max-height: none !important;
-    padding: 8px 10px !important;
-    box-sizing: border-box !important;
-  }
-  .playground-editor-header-tab,
-  .playground-output-header-tab,
-  .playground-editor-header > div:first-child,
-  .playground-output-header > div:first-child {
-    padding: 4px 10px !important;
-    font-size: 0.75rem !important;
-    height: 28px !important;
-    min-height: 28px !important;
-    max-height: 28px !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    box-sizing: border-box !important;
-  }
-  .playground-run-btn,
-  .playground-copy-btn,
-  .playground-reset-btn,
-  .dashboard-playground-fullscreen .playground-run-btn,
-  .dashboard-playground-fullscreen .playground-copy-btn {
-    height: 28px !important;
-    min-height: 28px !important;
-    padding: 0 10px !important;
-    font-size: 0.75rem !important;
-    box-sizing: border-box !important;
-  }
+.playground-reset-btn,
+.dashboard-playground-fullscreen .playground-run-btn,
+.dashboard-playground-fullscreen .playground-copy-btn {
+  height: 28px !important;
+  min-height: 28px !important;
+  padding: 0 10px !important;
+  font-size: 0.75rem !important;
+  box-sizing: border-box !important;
 }
 
 @media (max-width: 480px) {
@@ -509,11 +482,8 @@ pre code {
   .learn-container .playground-output-header,
   .dashboard-playground-fullscreen .playground-editor-header,
   .dashboard-playground-fullscreen .playground-output-header {
-    min-height: 40px !important;
-    height: auto !important;
-    max-height: none !important;
-    padding: 6px 8px !important;
-    box-sizing: border-box !important;
+    padding: 5px 8px !important;
+    min-height: 38px !important;
   }
   .playground-editor-header-tab,
   .playground-output-header-tab,

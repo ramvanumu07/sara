@@ -2159,25 +2159,26 @@
     opacity: 1 !important;
   }
 
-/* Desktop: same comfortable button height and header padding as other breakpoints */
+/* Desktop: match global – header 40px + 6px padding, buttons 28px */
 @media (min-width: 769px) {
   .playground-editor-header,
   .playground-output-header {
-    padding: 10px 14px !important;
-    min-height: 48px !important;
+    padding: 6px 12px !important;
+    min-height: 40px !important;
     box-sizing: border-box !important;
   }
   .playground-editor-header > div:first-child,
   .playground-output-header > div:first-child {
-    padding: 6px 12px !important;
+    padding: 4px 10px !important;
     font-size: 0.75rem !important;
+    height: 28px !important;
     min-height: 28px !important;
     display: inline-flex !important;
     align-items: center !important;
   }
   .playground-run-btn,
   .playground-reset-btn {
-    padding: 6px 12px !important;
+    padding: 0 10px !important;
     font-size: 0.75rem !important;
     min-width: 44px !important;
     height: 28px !important;
@@ -2230,15 +2231,13 @@
   /* ========== TABLET RESPONSIVE (≤768px) ========== */
   @media (max-width: 768px) {
 
-  /* Header with padding; content has space from edges */
+  /* Match global: 40px header, 6px padding, 28px buttons */
   .playground-editor-header,
   .playground-output-header {
-    min-height: 44px !important;
-    height: auto !important;
-    max-height: none !important;
-    padding: 8px 10px !important;
+    padding: 6px 12px !important;
+    min-height: 40px !important;
     box-sizing: border-box !important;
-    font-size: clamp(0.6rem, 1.6vw, 0.7rem) !important;
+    font-size: 0.75rem !important;
   }
 
     /* Responsive Panels */
@@ -2279,7 +2278,6 @@
       font-size: 0.65rem !important;
     }
 
-  /* Buttons with comfortable height + padding in header */
   .playground-run-btn,
   .playground-reset-btn {
     padding: 0 10px !important;
@@ -2287,11 +2285,10 @@
     min-width: 44px !important;
     height: 28px !important;
     min-height: 28px !important;
-    border-radius: 4px !important;
+    border-radius: 6px !important;
     box-sizing: border-box !important;
   }
 
-    /* Tab with comfortable height */
   .playground-editor-header>div:first-child,
   .playground-output-header>div:first-child {
     padding: 4px 10px !important;
@@ -2299,9 +2296,6 @@
     height: 28px !important;
     min-height: 28px !important;
     max-height: 28px !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    box-sizing: border-box !important;
   }
   }
 
@@ -2310,12 +2304,10 @@
 
   .playground-editor-header,
   .playground-output-header {
-    min-height: 40px !important;
-    height: auto !important;
-    max-height: none !important;
-    padding: 6px 8px !important;
+    padding: 5px 8px !important;
+    min-height: 38px !important;
     box-sizing: border-box !important;
-    font-size: clamp(0.5rem, 2vw, 0.65rem) !important;
+    font-size: 0.7rem !important;
     flex-wrap: nowrap !important;
     gap: 8px !important;
   }
@@ -2347,7 +2339,7 @@
     min-width: 40px !important;
     height: 26px !important;
     min-height: 26px !important;
-    border-radius: 4px !important;
+    border-radius: 6px !important;
     box-sizing: border-box !important;
   }
 
@@ -2362,7 +2354,6 @@
       height: clamp(2px, 0.5vh, 3px) !important;
     }
 
-  /* Tab at 480px */
   .playground-editor-header>div:first-child,
   .playground-output-header>div:first-child {
     padding: 4px 8px !important;

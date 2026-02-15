@@ -284,30 +284,14 @@
 
 /* Mobile: header height just a bit more than buttons; compact bar */
 @media (max-width: 767px) {
-  /* Header with padding; buttons a bit taller */
-  .playground-editor-header,
-  .playground-output-header {
-    min-height: 44px !important;
-    height: auto !important;
-    max-height: none !important;
-    padding: 8px 10px !important;
-    box-sizing: border-box !important;
-  }
-  .learn-container .playground-editor-header,
-  .learn-container .playground-output-header {
-    min-height: 44px !important;
-    height: auto !important;
-    max-height: none !important;
-    padding: 8px 10px !important;
-    box-sizing: border-box !important;
-  }
+  /* Same as global: header 40px + 6px padding, buttons 28px (no extra overrides) */
   .assignment-js-tab {
-    display: inline-flex;
-    align-items: center;
+    display: inline-flex !important;
+    align-items: center !important;
     height: 28px !important;
     min-height: 28px !important;
     padding: 0 10px !important;
-    box-sizing: border-box;
+    box-sizing: border-box !important;
     font-size: 0.75rem !important;
   }
   .playground-editor-header .playground-header-actions,
