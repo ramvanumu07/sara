@@ -54,7 +54,7 @@ const Terms = () => {
           <p className="last-updated">Last updated: February 7, 2026</p>
 
           <section className="terms-section" style={{ marginBottom: '2.5rem' }}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '1rem', color: '#1a1a1a', borderBottom: '2px solid #10a37f', paddingBottom: '0.5rem' }}>1. Acceptance of Terms</h2>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '1rem', color: '#1a1a1a' }}>1. Acceptance of Terms</h2>
             <p>
               By accessing and using Sara Learning Platform ("Sara," "we," "our," or "the Service"), 
               you accept and agree to be bound by the terms and provision of this agreement. 
