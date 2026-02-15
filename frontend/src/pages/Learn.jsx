@@ -231,10 +231,10 @@ const MessageContent = ({ content, role }) => {
         minWidth: 0,
         maxWidth: isUser ? '85%' : '100%',
         ...(isUser ? {
-          background: '#f5f4f0',
+          background: '#e6f7f2',
           borderRadius: '16px',
           padding: '12px 16px',
-          boxShadow: '0 1px 2px rgba(0,0,0,0.06)'
+          boxShadow: '0 1px 2px rgba(16,163,127,0.12)'
         } : {})
       }}
     >
