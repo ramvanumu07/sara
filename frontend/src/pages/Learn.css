@@ -192,7 +192,8 @@
 
 .messages-area {
   flex: 1;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding: 20px;
   padding-left: 20px;
   padding-right: 20px;
@@ -281,13 +282,18 @@
   border: 1px solid #2d3748;
 }
 
-/* Session code blocks: horizontal scroll for long lines, copy button */
+/* Session code blocks: horizontal scroll only inside block, not whole chat */
+.message-text {
+  overflow-x: hidden;
+}
 .message-text .code-block-wrapper {
   max-width: 100%;
+  overflow: hidden;
 }
 .message-text .code-block {
   overflow-x: auto;
   overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 .message-text .code-block pre {
   white-space: pre;

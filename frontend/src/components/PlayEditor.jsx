@@ -75,7 +75,7 @@ export default function PlayEditor({ code, onCodeChange, onRun, placeholder = '/
           </div>
         </div>
         <div style={{ flex: 1, minHeight: 300, display: 'flex', background: '#fff', border: '1px solid #e5e7eb', borderRadius: 6, overflow: 'hidden' }}>
-          <div className="playground-line-numbers" style={{ width: 50, background: '#f9fafb', borderRight: '1px solid #e5e7eb', padding: '16px 8px', fontSize: '0.875rem', color: '#9ca3af', fontFamily: 'Monaco, Consolas, monospace', lineHeight: 1.4, textAlign: 'right', userSelect: 'none', overflow: 'hidden', flexShrink: 0 }}>
+          <div className="playground-line-numbers" style={{ width: 32, minWidth: 32, background: '#f9fafb', borderRight: '1px solid #e5e7eb', padding: '16px 4px', fontSize: '0.875rem', color: '#9ca3af', fontFamily: 'Monaco, Consolas, monospace', lineHeight: 1.4, textAlign: 'right', userSelect: 'none', overflow: 'hidden', flexShrink: 0 }}>
             {Array.from({ length: lineCount }, (_, i) => <div key={i} style={{ lineHeight: 1.4, fontSize: '0.875rem' }}>{i + 1}</div>)}
           </div>
           <textarea value={code} onChange={(e) => onCodeChange(e.target.value)} onKeyDown={handleKeyDown} placeholder={placeholder} style={{ flex: 1, minWidth: 0, padding: 16, border: 'none', outline: 'none', fontFamily: 'Monaco, Consolas, monospace', fontSize: '0.875rem', lineHeight: 1.4, resize: 'none' }} />
@@ -87,7 +87,7 @@ export default function PlayEditor({ code, onCodeChange, onRun, placeholder = '/
           <div style={{ padding: '6px 12px', height: 32, minHeight: 32, display: 'inline-flex', alignItems: 'center', backgroundColor: '#fff', borderRadius: '4px 4px 0 0', fontSize: '0.875rem', fontWeight: 500, color: '#111827', border: '1px solid #e5e7eb', borderBottom: '2px solid #10a37f', marginBottom: -1, boxSizing: 'border-box' }}>Terminal Output</div>
         </div>
         <div style={{ flex: 1, backgroundColor: '#1e1e1e', border: '1px solid #333', borderTop: 'none', display: 'flex', minHeight: 0 }}>
-          <div ref={lineNumbersRef} className="terminal-line-numbers" style={{ width: 50, backgroundColor: '#2d2d2d', borderRight: '1px solid #404040', padding: '16px 8px', fontSize: '0.875rem', color: '#6b7280', fontFamily: 'Monaco, Consolas, monospace', lineHeight: 1.4, textAlign: 'right', userSelect: 'none', overflow: 'hidden', flexShrink: 0 }} />
+          <div ref={lineNumbersRef} className="terminal-line-numbers" style={{ width: 32, minWidth: 32, backgroundColor: '#2d2d2d', borderRight: '1px solid #404040', padding: '16px 4px', fontSize: '0.875rem', color: '#6b7280', fontFamily: 'Monaco, Consolas, monospace', lineHeight: 1.4, textAlign: 'right', userSelect: 'none', overflow: 'hidden', flexShrink: 0 }} />
           <div ref={outputRef} className="playground-output" style={{ flex: 1, padding: 16, backgroundColor: '#1e1e1e', color: '#10a37f', fontFamily: 'Monaco, Consolas, monospace', fontSize: '0.875rem', lineHeight: 1.4, overflow: 'auto', minHeight: 0 }}><div style={{ color: '#6b7280', fontStyle: 'italic' }}>Click &quot;Run&quot; to execute your code</div></div>
         </div>
       </div>

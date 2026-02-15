@@ -404,9 +404,12 @@ pre code {
   }
 }
 
-/* Assignment phase: narrow line number panel (~4 digits) on desktop – ensure Vercel applies */
+/* Assignment phase + playground: narrow line number panel (~4 digits) on desktop – ensure Vercel applies */
 @media (min-width: 769px) {
+  .playground-line-numbers,
+  .terminal-line-numbers,
   .learn-container .playground-line-numbers,
+  .learn-container .terminal-line-numbers,
   .learn-container .assignment-terminal-line-numbers {
     width: 32px !important;
     min-width: 32px !important;

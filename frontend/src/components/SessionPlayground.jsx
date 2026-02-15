@@ -380,10 +380,11 @@ export default function SessionPlayground({
           <div
             className="playground-line-numbers"
             style={{
-              width: '50px',
+              width: '32px',
+              minWidth: '32px',
               backgroundColor: '#f9fafb',
               borderRight: '1px solid #e5e7eb',
-              padding: '16px 8px',
+              padding: '16px 4px',
               fontSize: '0.875rem',
               color: '#9ca3af',
               fontFamily: 'Monaco, Consolas, "SF Mono", "Courier New", monospace',
@@ -490,10 +491,11 @@ export default function SessionPlayground({
           <div
             className="terminal-line-numbers"
             style={{
-              width: '50px',
+              width: '32px',
+              minWidth: '32px',
               backgroundColor: '#2d2d2d',
               borderRight: '1px solid #404040',
-              padding: '16px 8px',
+              padding: '16px 4px',
               fontSize: '0.875rem',
               color: '#6b7280',
               fontFamily: 'Monaco, Consolas, "SF Mono", "Courier New", monospace',

@@ -33,7 +33,6 @@ const preScrollStyle = {
   color: '#e2e8f0',
   whiteSpace: 'pre',
   wordBreak: 'normal',
-  overflowX: 'auto',
   minWidth: 'min-content'
 }
 
@@ -101,19 +100,28 @@ const MessageContent = ({ content, role }) => {
               className="code-block-copy-btn"
               style={{
                 position: 'absolute',
-                top: 6,
+                top: 8,
                 right: 8,
                 zIndex: 1,
-                padding: '4px 8px',
-                fontSize: '0.75rem',
-                background: copiedBlockId === blockId ? '#059669' : '#2d3748',
+                width: 28,
+                height: 28,
+                padding: 0,
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: copiedBlockId === blockId ? '#059669' : '#374151',
                 color: '#e2e8f0',
                 border: '1px solid #4a5568',
-                borderRadius: 4,
+                borderRadius: 6,
                 cursor: 'pointer'
               }}
+              title={copiedBlockId === blockId ? 'Copied' : 'Copy code'}
             >
-              {copiedBlockId === blockId ? 'Copied!' : 'Copy'}
+              {copiedBlockId === blockId ? (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+              ) : (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              )}
             </button>
             <div className="code-block" style={fencedBlockStyle}>
               <pre style={preScrollStyle}>{code}</pre>
@@ -141,19 +149,28 @@ const MessageContent = ({ content, role }) => {
                         className="code-block-copy-btn"
                         style={{
                           position: 'absolute',
-                          top: 6,
+                          top: 8,
                           right: 8,
                           zIndex: 1,
-                          padding: '4px 8px',
-                          fontSize: '0.75rem',
-                          background: copiedBlockId === blockId ? '#059669' : '#2d3748',
+                          width: 28,
+                          height: 28,
+                          padding: 0,
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          background: copiedBlockId === blockId ? '#059669' : '#374151',
                           color: '#e2e8f0',
                           border: '1px solid #4a5568',
-                          borderRadius: 4,
+                          borderRadius: 6,
                           cursor: 'pointer'
                         }}
+                        title={copiedBlockId === blockId ? 'Copied' : 'Copy code'}
                       >
-                        {copiedBlockId === blockId ? 'Copied!' : 'Copy'}
+                        {copiedBlockId === blockId ? (
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                        ) : (
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        )}
                       </button>
                       <div className="code-block" style={fencedBlockStyle}>
                         <pre style={preScrollStyle}>{inlineCode}</pre>
