@@ -1,15 +1,24 @@
 /**
  * Privacy Policy Page Styles - Sara Learning Platform
  * Scoped under .privacy-container so styles apply reliably (localhost + Vercel).
+ * Critical block ensures Sara look wins over any global styles.
  */
 
+/* Critical: force Sara styles so they always apply (including Vercel) */
 .privacy-container {
-  min-height: 100vh;
-  background: #ffffff;
-  color: #1a1a1a;
-  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-  display: flex;
-  flex-direction: column;
+  min-height: 100vh !important;
+  background: #ffffff !important;
+  color: #1a1a1a !important;
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
+  display: flex !important;
+  flex-direction: column !important;
+  line-height: 1.6 !important;
+}
+
+/* Ensure all text inside uses Sara styling */
+.privacy-container * {
+  font-family: inherit;
+  color: inherit;
 }
 
 .privacy-container .privacy-header {
