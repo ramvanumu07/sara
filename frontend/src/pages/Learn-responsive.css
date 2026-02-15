@@ -282,38 +282,43 @@
    RESPONSIVE BREAKPOINTS - MOBILE FIRST APPROACH
    ============================================================================ */
 
-/* Mobile: match Run/Submit button height to assignment.js tab height; reduced header height for Vercel/production */
+/* Mobile: header height just a bit more than buttons; compact bar */
 @media (max-width: 767px) {
-  /* Shorter header bar background on mobile - overrides inline styles */
+  /* Header = slightly taller than button (button ~28px, header 34px) */
   .playground-editor-header,
   .playground-output-header {
-    min-height: 26px !important;
-    height: 26px !important;
-    max-height: 32px !important;
+    min-height: 34px !important;
+    height: 34px !important;
+    max-height: 34px !important;
     padding: 4px 8px !important;
+    box-sizing: border-box !important;
   }
   .learn-container .playground-editor-header,
   .learn-container .playground-output-header {
-    min-height: 26px !important;
-    height: 26px !important;
+    min-height: 34px !important;
+    height: 34px !important;
+    max-height: 34px !important;
     padding: 4px 8px !important;
+    box-sizing: border-box !important;
   }
   .assignment-js-tab {
     display: inline-flex;
     align-items: center;
-    height: 24px !important;
-    min-height: 24px;
-    padding: 0 12px !important;
+    height: 26px !important;
+    min-height: 26px !important;
+    padding: 0 10px !important;
     box-sizing: border-box;
+    font-size: 0.7rem !important;
   }
   .playground-editor-header .playground-header-actions,
   .playground-editor-header .playground-header-actions button,
   .playground-editor-header .playground-run-btn,
   .playground-editor-header .playground-reset-btn {
-    height: 24px !important;
-    min-height: 24px !important;
+    height: 26px !important;
+    min-height: 26px !important;
     padding: 0 8px !important;
     min-width: 44px !important;
+    box-sizing: border-box !important;
   }
   .assignment-nav-btn {
     padding: 6px !important;
