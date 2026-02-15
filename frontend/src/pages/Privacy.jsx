@@ -28,7 +28,22 @@ const Privacy = () => {
             <span className="logo-sara" style={{ fontSize: '2rem', fontWeight: 700, color: '#44a08d' }}>Sara</span>
           </Link>
           <nav className="header-nav">
-            <Link to="/" className="nav-link">Back to Home</Link>
+            <Link
+            to="/"
+            className="nav-link"
+            style={{
+              color: '#5a5a5a',
+              textDecoration: 'none',
+              fontWeight: 500,
+              padding: '0.5rem 1rem',
+              borderRadius: '0.375rem',
+              background: '#f0f0f0',
+              border: '1px solid #e0e0e0',
+              display: 'inline-block'
+            }}
+          >
+            Back to Home
+          </Link>
           </nav>
         </div>
       </header>
@@ -288,9 +303,21 @@ const Privacy = () => {
         <div className="footer-content" style={{ maxWidth: 1200, margin: '0 auto', padding: '0 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <p>&copy; 2026 Sara Learning Platform. All rights reserved.</p>
           <div className="footer-links" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <Link to="/terms" className="footer-link">Terms of Service</Link>
+            <Link
+              to="/terms"
+              className="footer-link"
+              style={{ color: '#5a5a5a', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 500 }}
+            >
+              Terms of Service
+            </Link>
             <span style={{ color: '#8e8e8e' }}>•</span>
-            <a href="mailto:sara4code@gmail.com" className="footer-link">Contact</a>
+            <a
+              href="mailto:sara4code@gmail.com"
+              className="footer-link"
+              style={{ color: '#5a5a5a', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 500 }}
+            >
+              Contact
+            </a>
           </div>
         </div>
       </footer>
