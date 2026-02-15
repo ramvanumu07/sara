@@ -552,14 +552,12 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Mobile Overlay - Disabled for side-by-side layout */}
-      {/* 
-      <div 
+      {/* Mobile Overlay - tap to close menu; content stays full width underneath */}
+      <div
         className={`mobile-overlay ${showMobileMenu ? 'active' : ''}`}
         onClick={() => setShowMobileMenu(false)}
-        style={{ display: showMobileMenu ? 'block' : 'none' }}
+        aria-hidden="true"
       />
-      */}
 
       {/* Main Content - Single flowing page */}
       <div className="main-content">

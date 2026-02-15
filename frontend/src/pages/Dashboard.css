@@ -587,15 +587,14 @@
     left: 0;
   }
 
-  /* Remove overlay - we want side-by-side view */
+  /* Overlay: show when menu is open; tap to close. Main content stays full width (no push). */
   .mobile-overlay {
-    display: none;
+    display: block;
   }
 
   .main-content {
     padding: 60px 16px 24px 16px;
     min-height: calc(100vh - 60px);
-    transition: margin-left 0.3s ease;
     width: 100% !important;
     max-width: none !important;
     margin: 0 !important;
@@ -603,69 +602,16 @@
     box-sizing: border-box;
   }
 
-  /* Push main content with margin when menu opens */
+  /* When menu is open: do NOT push or shrink main content; sidebar overlays. */
   .dashboard.mobile-menu-open .main-content {
-    margin-left: 260px !important;
-    width: calc(100% - 260px) !important;
+    margin-left: 0 !important;
+    width: 100% !important;
   }
 
-  /* Move hamburger button when menu opens */
+  /* Move close (X) button to right edge of sidebar when menu is open */
   .dashboard.mobile-menu-open .mobile-menu-toggle {
     left: 276px;
-    /* 260px + 16px original position */
   }
 
-  .course-header h2 {
-    font-size: 1.5rem;
-  }
-
-  .progress-stats {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-  }
-
-  .stat {
-    padding: 8px 4px;
-  }
-
-  .stat .number {
-    font-size: 1.25rem;
-  }
-
-  .stat .label {
-    font-size: 0.75rem;
-  }
-
-  .completed-list {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .completed-topic {
-    width: 100%;
-    max-width: 300px;
-    justify-content: center;
-  }
-
-  /* Current Learning Card - Mobile */
-  .current-learning-card {
-    padding: 12px;
-    margin-bottom: 16px;
-  }
-
-  .topic-info {
-    margin-left: 20px;
-  }
-
-  .topic-title {
-    font-size: 1rem;
-  }
-
-  .learning-label {
-    font-size: 0.75rem;
-  }
-
-  .phase-name {
-    font-size: 0.8125rem;
-  }
+  /* Main content layout unchanged on mobile - same structure as desktop */
 }
