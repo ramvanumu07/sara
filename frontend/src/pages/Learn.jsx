@@ -23,8 +23,7 @@ const fencedBlockStyle = {
   overflowY: 'hidden',
   fontFamily: 'Monaco, Consolas, monospace',
   fontSize: '0.8125rem',
-  lineHeight: '1.4',
-  border: '1px solid #2d3748'
+  lineHeight: '1.4'
 }
 const preScrollStyle = {
   margin: 0,

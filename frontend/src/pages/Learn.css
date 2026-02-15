@@ -294,11 +294,13 @@
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
+  border: none;
 }
 .message-text .code-block pre {
   white-space: pre;
   word-break: normal;
   min-width: min-content;
+  border: none;
 }
 .message-text .code-block-copy-btn:hover {
   background: #4a5568 !important;
