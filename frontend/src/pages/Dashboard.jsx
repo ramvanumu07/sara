@@ -569,20 +569,22 @@ const Dashboard = () => {
 
         {/* Course locked: show unlock CTA */}
         {selectedCourseData && !unlockedCourseIds.includes(selectedCourseData.id) && (
-          <div className="course-locked-banner" style={{ marginBottom: 24, padding: 20, background: '#fef3c7', border: '1px solid #f59e0b', borderRadius: 12 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#b45309" strokeWidth="2">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-              </svg>
-              <div style={{ flex: 1, minWidth: 200 }}>
-                <strong style={{ color: '#92400e' }}>This course is locked</strong>
-                <p style={{ margin: '4px 0 0', fontSize: '0.875rem', color: '#b45309' }}>Unlock it for lifetime access to all topics and assignments.</p>
+          <div className="course-locked-banner">
+            <div className="course-locked-banner-inner">
+              <span className="course-locked-icon" aria-hidden>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#b45309" strokeWidth="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+              </span>
+              <div className="course-locked-text">
+                <strong>This course is locked</strong>
+                <p>Unlock it for lifetime access to all topics and assignments.</p>
               </div>
               <button
                 type="button"
+                className="course-locked-btn"
                 onClick={() => setUnlockModalCourse(selectedCourseData)}
-                style={{ padding: '10px 20px', background: '#059669', color: 'white', border: 'none', borderRadius: 8, fontWeight: 600, cursor: 'pointer' }}
               >
                 Unlock for lifetime
               </button>

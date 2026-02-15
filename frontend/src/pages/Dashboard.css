@@ -255,6 +255,61 @@
   margin: 0;
 }
 
+/* Course locked banner */
+.course-locked-banner {
+  margin-bottom: 24px;
+  padding: 20px;
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 12px;
+}
+
+.course-locked-banner-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.course-locked-icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.course-locked-text {
+  flex: 1;
+  min-width: 200px;
+}
+
+.course-locked-text strong {
+  color: #92400e;
+  display: block;
+}
+
+.course-locked-text p {
+  margin: 4px 0 0;
+  font-size: 0.875rem;
+  color: #b45309;
+}
+
+.course-locked-btn {
+  padding: 10px 20px;
+  background: #059669;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  flex-shrink: 0;
+}
+
+.course-locked-btn:hover {
+  background: #047857;
+}
+
 /* Progress Section */
 .progress-section {
   background: #ffffff;
@@ -611,6 +666,33 @@
   /* Move close (X) button to right edge of sidebar when menu is open */
   .dashboard.mobile-menu-open .mobile-menu-toggle {
     left: 276px;
+  }
+
+  /* Course locked banner - stacked alignment on mobile */
+  .course-locked-banner {
+    padding: 16px;
+  }
+
+  .course-locked-banner-inner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .course-locked-icon {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .course-locked-text {
+    min-width: 0;
+    text-align: left;
+  }
+
+  .course-locked-btn {
+    width: 100%;
+    text-align: center;
   }
 
   /* Main content layout unchanged on mobile - same structure as desktop */
