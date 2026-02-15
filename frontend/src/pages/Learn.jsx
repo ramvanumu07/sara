@@ -18,6 +18,7 @@ const codeBlockWrapperStyle = {
   margin: '6px 0',
   width: '100%',
   maxWidth: '100%',
+  minWidth: 0,
   overflow: 'hidden',
   boxSizing: 'border-box'
 }
@@ -222,11 +223,11 @@ const MessageContent = ({ content, role }) => {
   }
 
   return (
-    <div className="message-content">
+    <div className="message-content" style={{ minWidth: 0 }}>
       <span className="message-role">
         {role === 'user' ? 'You' : 'Sara'}
       </span>
-      <div className="message-text" style={{ maxWidth: '100%', overflowX: 'hidden' }}>
+      <div className="message-text" style={{ minWidth: 0, maxWidth: '100%', overflowX: 'hidden' }}>
         {renderContent(content)}
       </div>
     </div>
