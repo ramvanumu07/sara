@@ -223,11 +223,21 @@ const MessageContent = ({ content, role }) => {
     })
   }
 
+  const isUser = role === 'user'
   return (
-    <div className="message-content" style={{ minWidth: 0 }}>
-      <span className="message-role">
-        {role === 'user' ? 'You' : 'Sara'}
-      </span>
+    <div
+      className={isUser ? 'message-content message-content--bubble' : 'message-content message-content--plain'}
+      style={{
+        minWidth: 0,
+        maxWidth: isUser ? '85%' : '100%',
+        ...(isUser ? {
+          background: '#f5f4f0',
+          borderRadius: '16px',
+          padding: '12px 16px',
+          boxShadow: '0 1px 2px rgba(0,0,0,0.06)'
+        } : {})
+      }}
+    >
       <div className="message-text" style={{ minWidth: 0, maxWidth: '100%', overflowX: 'hidden' }}>
         {renderContent(content)}
       </div>
@@ -1298,19 +1308,18 @@ const Learn = () => {
         <div className="session-container" style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
           <div className="messages-area" style={{ flex: 1, minHeight: 0, padding: '12px 16px' }}>
             {messages.map((message, index) => (
-              <div key={index} className="message-row" style={{ gap: 8, alignItems: 'flex-start' }}>
-                <div className={`avatar ${message.role === 'user' ? 'avatar-user' : 'avatar-assistant'}`}>
-                  {message.role === 'user' ? 'U' : 'S'}
-                </div>
+              <div
+                key={index}
+                className={`message-row message-row--${message.role}`}
+                style={{ justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start' }}
+              >
                 <MessageContent content={message.content} role={message.role} />
               </div>
             ))}
 
             {isTyping && (
-              <div className="message-row" style={{ gap: 8, alignItems: 'flex-start' }}>
-                <div className="avatar avatar-assistant">S</div>
-                <div className="message-content">
-                  <span className="message-role">Sara</span>
+              <div className="message-row message-row--assistant" style={{ justifyContent: 'flex-start' }}>
+                <div className="message-content message-content--plain">
                   <div className="typing-dots">
                     <span></span>
                     <span></span>
