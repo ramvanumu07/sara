@@ -435,7 +435,27 @@ pre code {
   }
 }
 
-/* Editor/terminal blocks: header height = just a bit more than button height on mobile (playground + assignment) */
+/* Playground / SessionPlayground: desktop header base */
+.playground-editor-header,
+.playground-output-header {
+  padding: 12px 16px;
+  min-height: 56px;
+  box-sizing: border-box;
+}
+.playground-editor-header-tab,
+.playground-output-header-tab {
+  padding: 4px 12px;
+  display: inline-flex;
+  align-items: center;
+}
+.playground-run-btn,
+.playground-copy-btn {
+  height: 28px;
+  padding: 6px 12px;
+  box-sizing: border-box;
+}
+
+/* Mobile: header background = just a bit higher than Run/Copy/Terminal text height */
 @media (max-width: 768px) {
   .playground-editor-header,
   .playground-output-header,
@@ -443,28 +463,35 @@ pre code {
   .learn-container .playground-output-header,
   .dashboard-playground-fullscreen .playground-editor-header,
   .dashboard-playground-fullscreen .playground-output-header {
-    height: 34px !important;
-    min-height: 34px !important;
-    max-height: 34px !important;
-    padding: 4px 8px !important;
+    height: 30px !important;
+    min-height: 30px !important;
+    max-height: 30px !important;
+    padding: 2px 8px !important;
     box-sizing: border-box !important;
   }
-  .dashboard-playground-fullscreen .playground-run-btn,
-  .dashboard-playground-fullscreen .playground-copy-btn {
-    height: 26px !important;
-    min-height: 26px !important;
-    padding: 0 10px !important;
-    font-size: 0.7rem !important;
-  }
-  .dashboard-playground-fullscreen .playground-editor-header > div:first-child,
-  .dashboard-playground-fullscreen .playground-output-header > div:first-child {
+  .playground-editor-header-tab,
+  .playground-output-header-tab,
+  .playground-editor-header > div:first-child,
+  .playground-output-header > div:first-child {
     padding: 2px 8px !important;
     font-size: 0.7rem !important;
-    height: 26px !important;
-    min-height: 26px !important;
-    max-height: 26px !important;
+    height: 24px !important;
+    min-height: 24px !important;
+    max-height: 24px !important;
     display: inline-flex !important;
     align-items: center !important;
+    box-sizing: border-box !important;
+  }
+  .playground-run-btn,
+  .playground-copy-btn,
+  .playground-reset-btn,
+  .dashboard-playground-fullscreen .playground-run-btn,
+  .dashboard-playground-fullscreen .playground-copy-btn {
+    height: 24px !important;
+    min-height: 24px !important;
+    padding: 0 8px !important;
+    font-size: 0.7rem !important;
+    box-sizing: border-box !important;
   }
 }
 
@@ -475,25 +502,30 @@ pre code {
   .learn-container .playground-output-header,
   .dashboard-playground-fullscreen .playground-editor-header,
   .dashboard-playground-fullscreen .playground-output-header {
-    height: 32px !important;
-    min-height: 32px !important;
-    max-height: 32px !important;
-    padding: 3px 6px !important;
+    height: 28px !important;
+    min-height: 28px !important;
+    max-height: 28px !important;
+    padding: 2px 6px !important;
     box-sizing: border-box !important;
   }
-  .dashboard-playground-fullscreen .playground-run-btn,
-  .dashboard-playground-fullscreen .playground-copy-btn {
-    height: 24px !important;
-    min-height: 24px !important;
-    padding: 0 8px !important;
+  .playground-editor-header-tab,
+  .playground-output-header-tab,
+  .playground-editor-header > div:first-child,
+  .playground-output-header > div:first-child {
+    height: 22px !important;
+    min-height: 22px !important;
+    max-height: 22px !important;
+    padding: 2px 6px !important;
     font-size: 0.65rem !important;
   }
-  .dashboard-playground-fullscreen .playground-editor-header > div:first-child,
-  .dashboard-playground-fullscreen .playground-output-header > div:first-child {
-    height: 24px !important;
-    min-height: 24px !important;
-    max-height: 24px !important;
-    padding: 2px 6px !important;
+  .playground-run-btn,
+  .playground-copy-btn,
+  .playground-reset-btn,
+  .dashboard-playground-fullscreen .playground-run-btn,
+  .dashboard-playground-fullscreen .playground-copy-btn {
+    height: 22px !important;
+    min-height: 22px !important;
+    padding: 0 6px !important;
     font-size: 0.65rem !important;
   }
 }

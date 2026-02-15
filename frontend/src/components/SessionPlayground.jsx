@@ -312,15 +312,13 @@ export default function SessionPlayground({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: '12px 16px',
             backgroundColor: '#f9fafb',
             borderBottom: '1px solid #e5e7eb',
             fontSize: '0.8rem',
-            color: '#6b7280',
-            minHeight: '56px'
+            color: '#6b7280'
           }}
         >
-          <div style={{ padding: '4px 12px', backgroundColor: '#ffffff', borderRadius: '4px 4px 0 0', borderBottom: '2px solid #10a37f', color: '#111827', fontWeight: '500', fontSize: '0.75rem' }}>
+          <div className="playground-editor-header-tab" style={{ backgroundColor: '#ffffff', borderRadius: '4px 4px 0 0', borderBottom: '2px solid #10a37f', color: '#111827', fontWeight: '500', fontSize: '0.75rem' }}>
             playground.js
           </div>
           <div className="playground-header-actions" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -335,12 +333,11 @@ export default function SessionPlayground({
                 color: code?.trim() ? 'white' : '#9ca3af',
                 border: 'none',
                 borderRadius: '6px',
-                padding: '6px 12px',
                 fontSize: '0.75rem',
                 fontWeight: '500',
                 cursor: code?.trim() ? 'pointer' : 'not-allowed',
                 minWidth: '60px',
-                height: '28px'
+                transition: 'background-color 0.2s, color 0.2s'
               }}
             >
               Run
@@ -356,12 +353,10 @@ export default function SessionPlayground({
                 color: copyButtonLabel === 'Copied!' ? '#059669' : (code?.trim() ? '#047857' : '#9ca3af'),
                 border: copyButtonLabel === 'Copied!' ? '1px solid #a7f3d0' : (code?.trim() ? '1px solid #86efac' : '1px solid #e5e7eb'),
                 borderRadius: '6px',
-                padding: '6px 12px',
                 fontSize: '0.75rem',
                 fontWeight: '600',
                 cursor: code?.trim() ? 'pointer' : 'not-allowed',
                 minWidth: '72px',
-                height: '28px',
                 transition: 'background-color 0.2s, color 0.2s, border-color 0.2s'
               }}
             >
@@ -466,15 +461,13 @@ export default function SessionPlayground({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: '12px 16px',
             backgroundColor: '#f9fafb',
             borderBottom: '1px solid #e5e7eb',
             fontSize: '0.8rem',
-            color: '#6b7280',
-            minHeight: '56px'
+            color: '#6b7280'
           }}
         >
-          <div style={{ padding: '4px 12px', backgroundColor: '#ffffff', borderRadius: '4px 4px 0 0', fontSize: '0.75rem', fontWeight: '500', color: '#111827', border: '1px solid #e5e7eb', borderBottom: '2px solid #10a37f', marginBottom: '-1px' }}>
+          <div className="playground-output-header-tab" style={{ backgroundColor: '#ffffff', borderRadius: '4px 4px 0 0', fontSize: '0.75rem', fontWeight: '500', color: '#111827', border: '1px solid #e5e7eb', borderBottom: '2px solid #10a37f', marginBottom: '-1px' }}>
             Terminal Output
           </div>
         </div>

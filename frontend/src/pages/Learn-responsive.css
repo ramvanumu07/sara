@@ -284,29 +284,29 @@
 
 /* Mobile: header height just a bit more than buttons; compact bar */
 @media (max-width: 767px) {
-  /* Header = slightly taller than button (button ~28px, header 34px) */
+  /* Header background = just a bit higher than Run/Copy/terminal text */
   .playground-editor-header,
   .playground-output-header {
-    min-height: 34px !important;
-    height: 34px !important;
-    max-height: 34px !important;
-    padding: 4px 8px !important;
+    min-height: 30px !important;
+    height: 30px !important;
+    max-height: 30px !important;
+    padding: 2px 8px !important;
     box-sizing: border-box !important;
   }
   .learn-container .playground-editor-header,
   .learn-container .playground-output-header {
-    min-height: 34px !important;
-    height: 34px !important;
-    max-height: 34px !important;
-    padding: 4px 8px !important;
+    min-height: 30px !important;
+    height: 30px !important;
+    max-height: 30px !important;
+    padding: 2px 8px !important;
     box-sizing: border-box !important;
   }
   .assignment-js-tab {
     display: inline-flex;
     align-items: center;
-    height: 26px !important;
-    min-height: 26px !important;
-    padding: 0 10px !important;
+    height: 24px !important;
+    min-height: 24px !important;
+    padding: 0 8px !important;
     box-sizing: border-box;
     font-size: 0.7rem !important;
   }
@@ -314,8 +314,8 @@
   .playground-editor-header .playground-header-actions button,
   .playground-editor-header .playground-run-btn,
   .playground-editor-header .playground-reset-btn {
-    height: 26px !important;
-    min-height: 26px !important;
+    height: 24px !important;
+    min-height: 24px !important;
     padding: 0 8px !important;
     min-width: 44px !important;
     box-sizing: border-box !important;
