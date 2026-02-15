@@ -52,14 +52,23 @@ function initializeDatabase() {
 
 // ============ USER OPERATIONS ============
 
+/** Escape a string for use in ILIKE so it matches literally (no wildcards). */
+function escapeIlike(str) {
+  if (typeof str !== 'string') return ''
+  return str.replace(/\\/g, '\\\\').replace(/%/g, '\\%').replace(/_/g, '\\_')
+}
+
 export async function createUser(username, email, name, hashedPassword, securityQuestion = null, securityAnswer = null) {
   const client = initializeDatabase()
 
   // Development mode fallback
   if (client === 'DEV_MODE') {
-    // Check for existing users
-    if (DEV_USERS.has(username)) {
-      throw new Error('Username already exists')
+    // Check for existing users (case-insensitive)
+    const lower = username.toLowerCase()
+    for (const key of DEV_USERS.keys()) {
+      if (key.toLowerCase() === lower) {
+        throw new Error('Username already exists')
+      }
     }
     for (const user of DEV_USERS.values()) {
       if (user.email === email) {
@@ -82,6 +91,12 @@ export async function createUser(username, email, name, hashedPassword, security
     }
     DEV_USERS.set(username, user)
     return user
+  }
+
+  // Case-insensitive duplicate check (DB unique is on username; this prevents Ram/ram)
+  const existingByUsername = await getUserByUsername(username)
+  if (existingByUsername) {
+    throw new Error('Username already exists')
   }
 
   // Prepare user data - only include security fields if provided
@@ -156,15 +171,20 @@ export async function getUserByUsername(username) {
   const client = initializeDatabase()
 
   if (client === 'DEV_MODE') {
-    const user = DEV_USERS.get(username)
-    return user || null
+    const lower = (username || '').toLowerCase()
+    for (const [key, user] of DEV_USERS.entries()) {
+      if (key.toLowerCase() === lower) return user
+    }
+    return null
   }
 
+  // Case-insensitive lookup: ILIKE with escaped value for exact match
+  const pattern = escapeIlike(username || '')
   const { data, error } = await client
     .from('users')
     .select('*')
-    .eq('username', username)
-    .single()
+    .ilike('username', pattern)
+    .maybeSingle()
 
   if (error) {
     if (error.code === 'PGRST116') {

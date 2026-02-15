@@ -815,7 +815,7 @@ router.put('/profile', authenticateToken, rateLimitMiddleware, async (req, res) 
       }
 
       const existingUsername = await getUserByUsername(username)
-      if (existingUsername) {
+      if (existingUsername && existingUsername.id !== currentUser.id) {
         return res.status(409).json(createErrorResponse('Username already taken'))
       }
 
