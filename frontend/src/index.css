@@ -69,6 +69,7 @@
   color: #6b7280 !important;
   font-size: 0.875rem !important;
   font-weight: 500 !important;
+  font-family: var(--sara-font) !important;
   text-align: center !important;
   margin: 0 !important;
   line-height: 1.4 !important;

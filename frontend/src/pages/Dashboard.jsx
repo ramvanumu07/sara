@@ -411,7 +411,7 @@ const Dashboard = () => {
             }}
             aria-hidden
           />
-          <p style={{ margin: 0, fontSize: '0.875rem', fontWeight: 500, color: '#6b7280' }}>Logging out...</p>
+          <p style={{ margin: 0, fontSize: '0.875rem', fontWeight: 500, color: '#6b7280', fontFamily: 'var(--sara-font)' }}>Logging out...</p>
         </div>
       </div>,
       document.body
@@ -451,7 +451,7 @@ const Dashboard = () => {
             }}
             aria-hidden
           />
-          <p style={{ margin: 0, fontSize: '0.875rem', fontWeight: 500, color: '#6b7280' }}>Loading your dashboard...</p>
+          <p style={{ margin: 0, fontSize: '0.875rem', fontWeight: 500, color: '#6b7280', fontFamily: 'var(--sara-font)' }}>Loading your dashboard...</p>
         </div>
       </div>,
       document.body

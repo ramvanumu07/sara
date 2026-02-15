@@ -73,7 +73,7 @@ const AppRoutes = () => {
             }}
             aria-hidden
           />
-          <p style={{ margin: 0, fontSize: '0.875rem', fontWeight: 500, color: '#6b7280' }}>Loading Sara...</p>
+          <p style={{ margin: 0, fontSize: '0.875rem', fontWeight: 500, color: '#6b7280', fontFamily: 'var(--sara-font)' }}>Loading Sara...</p>
         </div>
       </div>,
       document.body

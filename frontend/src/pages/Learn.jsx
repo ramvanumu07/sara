@@ -1078,7 +1078,7 @@ const Learn = () => {
             }}
             aria-hidden
           />
-          <p style={{ margin: 0, fontSize: '0.875rem', fontWeight: 500, color: '#6b7280' }}>Loading topic...</p>
+          <p style={{ margin: 0, fontSize: '0.875rem', fontWeight: 500, color: '#6b7280', fontFamily: 'var(--sara-font)' }}>Loading topic...</p>
         </div>
       </div>,
       document.body
