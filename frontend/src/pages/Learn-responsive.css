@@ -676,14 +676,21 @@
     line-height: 1.6;
   }
   
-  /* Code blocks mobile: horizontal scroll + copy button visible */
+  /* Code blocks mobile: constrain width so block scrolls horizontally instead of expanding */
   .message-text .code-block-wrapper {
-    overflow: visible;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    box-sizing: border-box;
   }
   .message-text .code-block {
+    width: 100% !important;
+    max-width: 100% !important;
     overflow-x: auto !important;
+    overflow-y: hidden !important;
     -webkit-overflow-scrolling: touch !important;
-    min-width: 0;
+    min-width: 0 !important;
+    box-sizing: border-box;
   }
   .message-text .code-block pre {
     white-space: pre !important;

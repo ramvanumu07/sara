@@ -287,14 +287,20 @@
   overflow-x: hidden;
 }
 .message-text .code-block-wrapper {
+  width: 100%;
   max-width: 100%;
   overflow: hidden;
+  box-sizing: border-box;
 }
 .message-text .code-block {
+  width: 100%;
+  max-width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
   border: none;
+  min-width: 0;
+  box-sizing: border-box;
 }
 .message-text .code-block pre {
   white-space: pre;
