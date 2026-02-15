@@ -11,26 +11,35 @@ const Terms = () => {
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [])
+  const containerStyle = {
+    minHeight: '100vh',
+    background: '#ffffff',
+    color: '#1a1a1a',
+    fontFamily: "'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+    display: 'flex',
+    flexDirection: 'column',
+    lineHeight: 1.6
+  }
   return (
-    <div className="terms-container">
-      <header className="terms-header">
-        <div className="header-content">
-          <Link to="/" className="logo">
-            <span className="logo-sara">Sara</span>
+    <div className="terms-container" style={containerStyle}>
+      <header className="terms-header" style={{ background: '#ffffff', borderBottom: '1px solid #e5e5e5', padding: '1.5rem 0', position: 'sticky', top: 0, zIndex: 100 }}>
+        <div className="header-content" style={{ maxWidth: 1200, margin: '0 auto', padding: '0 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Link to="/" className="logo" style={{ textDecoration: 'none' }}>
+            <span className="logo-sara" style={{ fontSize: '2rem', fontWeight: 700, color: '#44a08d' }}>Sara</span>
           </Link>
           <nav className="header-nav">
-            <Link to="/" className="nav-link">Back to Home</Link>
+            <Link to="/" className="nav-link" style={{ color: '#5a5a5a', textDecoration: 'none', fontWeight: 500 }}>Back to Home</Link>
           </nav>
         </div>
       </header>
 
-      <main className="terms-main">
-        <div className="terms-content">
-          <h1>Terms of Service</h1>
+      <main className="terms-main" style={{ flex: 1, padding: '2rem 0' }}>
+        <div className="terms-content" style={{ maxWidth: 800, margin: '0 auto', padding: '3rem 2rem', background: '#ffffff' }}>
+          <h1 style={{ fontSize: '2.5rem', fontWeight: 700, marginBottom: '0.5rem', color: '#10a37f' }}>Terms of Service</h1>
           <p className="last-updated">Last updated: February 7, 2026</p>
 
-          <section className="terms-section">
-            <h2>1. Acceptance of Terms</h2>
+          <section className="terms-section" style={{ marginBottom: '2.5rem' }}>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '1rem', color: '#1a1a1a', borderBottom: '2px solid #10a37f', paddingBottom: '0.5rem' }}>1. Acceptance of Terms</h2>
             <p>
               By accessing and using Sara Learning Platform ("Sara," "we," "our," or "the Service"), 
               you accept and agree to be bound by the terms and provision of this agreement. 
@@ -181,8 +190,8 @@ const Terms = () => {
         </div>
       </main>
 
-      <footer className="terms-footer">
-        <div className="footer-content">
+      <footer className="terms-footer" style={{ background: '#f9f9f9', borderTop: '1px solid #e5e5e5', padding: '2rem 0', marginTop: 'auto' }}>
+        <div className="footer-content" style={{ maxWidth: 1200, margin: '0 auto', padding: '0 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <p>&copy; 2026 Sara Learning Platform. All rights reserved.</p>
           <div className="footer-links">
             <Link to="/privacy">Privacy Policy</Link>
