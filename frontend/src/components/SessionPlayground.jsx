@@ -312,13 +312,16 @@ export default function SessionPlayground({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
+            padding: '10px 14px',
+            minHeight: 52,
             backgroundColor: '#f9fafb',
             borderBottom: '1px solid #e5e7eb',
-            fontSize: '0.8rem',
-            color: '#6b7280'
+            fontSize: '0.875rem',
+            color: '#6b7280',
+            boxSizing: 'border-box'
           }}
         >
-          <div className="playground-editor-header-tab" style={{ backgroundColor: '#ffffff', borderRadius: '4px 4px 0 0', borderBottom: '2px solid #10a37f', color: '#111827', fontWeight: '500', fontSize: '0.75rem' }}>
+          <div className="playground-editor-header-tab" style={{ padding: '6px 12px', height: 32, minHeight: 32, display: 'inline-flex', alignItems: 'center', backgroundColor: '#ffffff', borderRadius: '4px 4px 0 0', borderBottom: '2px solid #10a37f', color: '#111827', fontWeight: 500, fontSize: '0.875rem', boxSizing: 'border-box' }}>
             playground.js
           </div>
           <div className="playground-header-actions" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -329,14 +332,18 @@ export default function SessionPlayground({
               disabled={!code?.trim()}
               title="Run Code (Ctrl+Enter)"
               style={{
+                height: 32,
+                minHeight: 32,
+                padding: '0 12px',
                 backgroundColor: code?.trim() ? '#10a37f' : '#d1d5db',
                 color: code?.trim() ? 'white' : '#9ca3af',
                 border: 'none',
                 borderRadius: '6px',
-                fontSize: '0.75rem',
+                fontSize: '0.875rem',
                 fontWeight: '500',
                 cursor: code?.trim() ? 'pointer' : 'not-allowed',
                 minWidth: '60px',
+                boxSizing: 'border-box',
                 transition: 'background-color 0.2s, color 0.2s'
               }}
             >
@@ -349,14 +356,18 @@ export default function SessionPlayground({
               disabled={!code?.trim()}
               title={copyButtonLabel === 'Copied!' ? 'Copied!' : 'Copy code to clipboard'}
               style={{
+                height: 32,
+                minHeight: 32,
+                padding: '0 12px',
                 backgroundColor: copyButtonLabel === 'Copied!' ? '#ecfdf5' : (code?.trim() ? '#f0fdf4' : '#f3f4f6'),
                 color: copyButtonLabel === 'Copied!' ? '#059669' : (code?.trim() ? '#047857' : '#9ca3af'),
                 border: copyButtonLabel === 'Copied!' ? '1px solid #a7f3d0' : (code?.trim() ? '1px solid #86efac' : '1px solid #e5e7eb'),
                 borderRadius: '6px',
-                fontSize: '0.75rem',
+                fontSize: '0.875rem',
                 fontWeight: '600',
                 cursor: code?.trim() ? 'pointer' : 'not-allowed',
                 minWidth: '72px',
+                boxSizing: 'border-box',
                 transition: 'background-color 0.2s, color 0.2s, border-color 0.2s'
               }}
             >
@@ -461,13 +472,16 @@ export default function SessionPlayground({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
+            padding: '10px 14px',
+            minHeight: 52,
             backgroundColor: '#f9fafb',
             borderBottom: '1px solid #e5e7eb',
-            fontSize: '0.8rem',
-            color: '#6b7280'
+            fontSize: '0.875rem',
+            color: '#6b7280',
+            boxSizing: 'border-box'
           }}
         >
-          <div className="playground-output-header-tab" style={{ backgroundColor: '#ffffff', borderRadius: '4px 4px 0 0', fontSize: '0.75rem', fontWeight: '500', color: '#111827', border: '1px solid #e5e7eb', borderBottom: '2px solid #10a37f', marginBottom: '-1px' }}>
+          <div className="playground-output-header-tab" style={{ padding: '6px 12px', height: 32, minHeight: 32, display: 'inline-flex', alignItems: 'center', backgroundColor: '#ffffff', borderRadius: '4px 4px 0 0', fontSize: '0.875rem', fontWeight: 500, color: '#111827', border: '1px solid #e5e7eb', borderBottom: '2px solid #10a37f', marginBottom: -1, boxSizing: 'border-box' }}>
             Terminal Output
           </div>
         </div>

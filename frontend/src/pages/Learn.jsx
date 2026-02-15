@@ -1322,28 +1322,34 @@ const Learn = () => {
             flexDirection: 'column',
             overflow: 'hidden'
           }}>
-            {/* Editor Header */}
+            {/* Editor Header - inline styles so they apply on Vercel */}
             <div className="playground-editor-header" style={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              padding: '12px 16px',
+              padding: '10px 14px',
+              minHeight: 52,
               backgroundColor: '#f9fafb',
               borderBottom: '1px solid #e5e7eb',
-              fontSize: '0.8rem',
+              fontSize: '0.875rem',
               color: '#6b7280',
-              minHeight: '56px'
+              boxSizing: 'border-box'
             }}>
               {/* File Tab */}
               <div className="assignment-js-tab" style={{
-                padding: '4px 12px',
+                padding: '6px 12px',
+                height: 32,
+                minHeight: 32,
+                display: 'inline-flex',
+                alignItems: 'center',
                 backgroundColor: '#ffffff',
                 borderRadius: '4px 4px 0 0',
                 borderBottom: '2px solid #10a37f',
                 color: '#111827',
                 fontWeight: '500',
-                fontSize: '0.75rem',
-                fontFamily: 'var(--sara-font)'
+                fontSize: '0.875rem',
+                fontFamily: 'var(--sara-font)',
+                boxSizing: 'border-box'
               }}>
                 assignment.js
               </div>
@@ -1358,20 +1364,21 @@ const Learn = () => {
                   onClick={handleRunAssignment}
                   className="playground-run-btn"
                   style={{
+                    height: 32,
+                    minHeight: 32,
+                    padding: '0 12px',
                     backgroundColor: assignmentCode.trim() ? '#10a37f' : '#d1d5db',
                     color: assignmentCode.trim() ? 'white' : '#9ca3af',
                     border: 'none',
                     borderRadius: '6px',
-                    padding: '6px 12px',
-                    fontSize: '0.75rem',
+                    fontSize: '0.875rem',
                     fontWeight: '500',
                     fontFamily: 'var(--sara-font)',
                     cursor: assignmentCode.trim() ? 'pointer' : 'not-allowed',
                     transition: 'all 0.2s ease',
                     boxShadow: assignmentCode.trim() ? '0 1px 3px rgba(0, 0, 0, 0.1)' : 'none',
                     minWidth: '60px',
-                    height: '28px',
-                    alignSelf: 'flex-start'
+                    boxSizing: 'border-box'
                   }}
                   title="Run Code (Ctrl+Enter)"
                 >
@@ -1382,20 +1389,21 @@ const Learn = () => {
                   disabled={submitLoading}
                   className="playground-reset-btn"
                   style={{
+                    height: 32,
+                    minHeight: 32,
+                    padding: '0 12px',
                     backgroundColor: submitLoading ? '#9ca3af' : '#6b7280',
                     color: 'white',
                     border: 'none',
                     borderRadius: '6px',
-                    padding: '6px 12px',
-                    fontSize: '0.75rem',
+                    fontSize: '0.875rem',
                     fontWeight: '500',
                     fontFamily: 'var(--sara-font)',
                     cursor: submitLoading ? 'not-allowed' : 'pointer',
                     transition: 'all 0.2s ease',
                     boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
                     minWidth: '72px',
-                    height: '28px',
-                    alignSelf: 'flex-start'
+                    boxSizing: 'border-box'
                   }}
                   title="Run tests and save progress when all pass"
                 >
@@ -1406,20 +1414,21 @@ const Learn = () => {
                   disabled={reviewLoading || !allTestsPassedForReview}
                   className="playground-review-btn"
                   style={{
+                    height: 32,
+                    minHeight: 32,
+                    padding: '0 12px',
                     backgroundColor: (reviewLoading || !allTestsPassedForReview) ? '#d1d5db' : '#059669',
                     color: (reviewLoading || !allTestsPassedForReview) ? '#9ca3af' : 'white',
                     border: 'none',
                     borderRadius: '6px',
-                    padding: '6px 12px',
-                    fontSize: '0.75rem',
+                    fontSize: '0.875rem',
                     fontWeight: '500',
                     fontFamily: 'var(--sara-font)',
                     cursor: (reviewLoading || !allTestsPassedForReview) ? 'not-allowed' : 'pointer',
                     transition: 'all 0.2s ease',
                     boxShadow: (reviewLoading || !allTestsPassedForReview) ? 'none' : '0 1px 3px rgba(0, 0, 0, 0.1)',
                     minWidth: '72px',
-                    height: '28px',
-                    alignSelf: 'flex-start'
+                    boxSizing: 'border-box'
                   }}
                   title="Get AI review (available after all tests pass)"
                 >
@@ -1792,29 +1801,35 @@ const Learn = () => {
             backgroundColor: '#ffffff',
             overflow: 'hidden'
           }}>
-            {/* Terminal Header */}
+            {/* Terminal Header - inline styles so they apply on Vercel */}
             <div className="playground-output-header" style={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
-              padding: '12px 16px',
+              padding: '10px 14px',
+              minHeight: 52,
               backgroundColor: '#f9fafb',
               borderBottom: '1px solid #e5e7eb',
-              fontSize: '0.8rem',
+              fontSize: '0.875rem',
               color: '#6b7280',
-              minHeight: '56px'
+              boxSizing: 'border-box'
             }}>
               <div style={{
-                padding: '4px 12px',
+                padding: '6px 12px',
+                height: 32,
+                minHeight: 32,
+                display: 'inline-flex',
+                alignItems: 'center',
                 backgroundColor: '#ffffff',
                 borderRadius: '4px 4px 0 0',
-                fontSize: '0.75rem',
+                fontSize: '0.875rem',
                 fontWeight: '500',
                 color: '#111827',
                 border: '1px solid #e5e7eb',
                 borderBottom: '2px solid #10a37f',
-                marginBottom: '-1px',
-                fontFamily: 'var(--sara-font)'
+                marginBottom: -1,
+                fontFamily: 'var(--sara-font)',
+                boxSizing: 'border-box'
               }}>
                 {assignmentReview ? 'AI Review' : 'Test Results'}
               </div>
