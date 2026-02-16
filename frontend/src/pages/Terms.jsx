@@ -50,15 +50,22 @@ const Terms = () => {
 
       <main className="terms-main" style={{ flex: 1, padding: '1rem 0' }}>
         <div className="terms-content" style={{ maxWidth: 800, margin: '0 auto', padding: '1.25rem 2rem 3rem 2rem', background: '#ffffff' }}>
-          <h1 style={{ fontSize: '2.5rem', fontWeight: 700, marginBottom: '0.5rem', color: '#10a37f' }}>Terms of Service</h1>
-          <p className="last-updated">Last updated: February 7, 2026</p>
+          <h1 style={{ fontSize: '2.5rem', fontWeight: 700, marginBottom: '0.5rem', color: '#10a37f' }}>Terms &amp; Conditions</h1>
+          <p className="last-updated">Last updated: February 2026</p>
+
+          <section className="terms-section" style={{ marginBottom: '2.5rem' }}>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '1rem', color: '#1a1a1a' }}>Operator</h2>
+            <p>
+              This website is operated by <strong>Vanumu Lakshmi Sai Ram</strong>.
+            </p>
+          </section>
 
           <section className="terms-section" style={{ marginBottom: '2.5rem' }}>
             <h2 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '1rem', color: '#1a1a1a' }}>1. Acceptance of Terms</h2>
             <p>
-              By accessing and using Sara Learning Platform ("Sara," "we," "our," or "the Service"), 
-              you accept and agree to be bound by the terms and provision of this agreement. 
-              If you do not agree to abide by the above, please do not use this service.
+              By accessing and using Sara ("Sara," "we," "our," or "the Service"), 
+              you accept and agree to be bound by these terms and conditions. 
+              If you do not agree, please do not use this service.
             </p>
           </section>
 
@@ -196,11 +203,11 @@ const Terms = () => {
           <section className="terms-section">
             <h2>13. Contact Information</h2>
             <p>
-              If you have any questions about these Terms of Service, please contact us at:
+              If you have any questions about these Terms &amp; Conditions, please contact us at:
             </p>
-            <p>
-              <strong>Email:</strong> <a href="mailto:sara4code@gmail.com">sara4code@gmail.com</a>
-            </p>
+            <p><strong>Legal name:</strong> Vanumu Lakshmi Sai Ram</p>
+            <p><strong>Registered address:</strong> 1-79, VALASAPAKALA, KAKINADA, ANDHRA PRADESH, INDIA</p>
+            <p><strong>Email:</strong> <a href="mailto:codewithsara@proton.me">codewithsara@proton.me</a></p>
           </section>
         </div>
       </main>
@@ -208,22 +215,20 @@ const Terms = () => {
       <footer className="terms-footer" style={{ background: '#f9f9f9', borderTop: '1px solid #e5e5e5', padding: '2rem 0', marginTop: 'auto' }}>
         <div className="footer-content" style={{ maxWidth: 1200, margin: '0 auto', padding: '0 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <p>&copy; 2026 Sara Learning Platform. All rights reserved.</p>
-          <div className="footer-links" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <Link
-              to="/privacy"
-              className="footer-link"
-              style={{ color: '#5a5a5a', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 500 }}
-            >
-              Privacy Policy
-            </Link>
+          <div className="footer-links" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <Link to="/about" className="footer-link" style={{ color: '#5a5a5a', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 500 }}>About</Link>
             <span style={{ color: '#8e8e8e' }}>•</span>
-            <a
-              href="mailto:sara4code@gmail.com"
-              className="footer-link"
-              style={{ color: '#5a5a5a', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 500 }}
-            >
-              Contact
-            </a>
+            <Link to="/products" className="footer-link" style={{ color: '#5a5a5a', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 500 }}>Products</Link>
+            <span style={{ color: '#8e8e8e' }}>•</span>
+            <Link to="/privacy" className="footer-link" style={{ color: '#5a5a5a', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 500 }}>Privacy</Link>
+            <span style={{ color: '#8e8e8e' }}>•</span>
+            <Link to="/return-refund" className="footer-link" style={{ color: '#5a5a5a', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 500 }}>Return &amp; Refund</Link>
+            <span style={{ color: '#8e8e8e' }}>•</span>
+            <Link to="/cancellation" className="footer-link" style={{ color: '#5a5a5a', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 500 }}>Cancellation</Link>
+            <span style={{ color: '#8e8e8e' }}>•</span>
+            <Link to="/shipping" className="footer-link" style={{ color: '#5a5a5a', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 500 }}>Shipping</Link>
+            <span style={{ color: '#8e8e8e' }}>•</span>
+            <a href="mailto:codewithsara@proton.me" className="footer-link" style={{ color: '#5a5a5a', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 500 }}>Contact</a>
           </div>
         </div>
       </footer>

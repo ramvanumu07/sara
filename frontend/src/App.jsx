@@ -19,6 +19,11 @@ import Profile from './pages/Profile'
 import Learn from './pages/Learn'
 import Terms from './pages/Terms'
 import Privacy from './pages/Privacy'
+import ReturnRefund from './pages/ReturnRefund'
+import Cancellation from './pages/Cancellation'
+import Shipping from './pages/Shipping'
+import About from './pages/About'
+import Products from './pages/Products'
 
 // Import Styles (legal page styles are inlined in index.css so they always load on Vercel)
 import './index.css'
@@ -88,9 +93,14 @@ const AppRoutes = () => {
       <Route path="/signup" element={<PublicRoute><Signup /></PublicRoute>} />
       <Route path="/forgot-password" element={<PublicRoute><ForgotPassword /></PublicRoute>} />
       
-      {/* Legal Pages - Always accessible */}
+      {/* Legal & Info Pages - Always accessible */}
       <Route path="/terms" element={<Terms />} />
       <Route path="/privacy" element={<Privacy />} />
+      <Route path="/return-refund" element={<ReturnRefund />} />
+      <Route path="/cancellation" element={<Cancellation />} />
+      <Route path="/shipping" element={<Shipping />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/products" element={<Products />} />
       
       {/* Protected Routes */}
       <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />

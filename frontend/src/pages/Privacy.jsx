@@ -51,7 +51,7 @@ const Privacy = () => {
       <main className="privacy-main" style={{ flex: 1, padding: '1rem 0' }}>
         <div className="privacy-content" style={{ maxWidth: 800, margin: '0 auto', padding: '1.25rem 2rem 3rem 2rem', background: '#ffffff' }}>
           <h1 style={{ fontSize: '2.5rem', fontWeight: 700, marginBottom: '0.5rem', color: '#10a37f' }}>Privacy Policy</h1>
-          <p className="last-updated">Last updated: February 7, 2026</p>
+            <p className="last-updated">Last updated: February 2026</p>
 
           <section className="privacy-section">
             <h2>1. Introduction</h2>
@@ -204,9 +204,9 @@ const Privacy = () => {
             </ul>
 
             <p>
-              To exercise these rights, please contact us at 
-              <a href="mailto:sara4code@gmail.com"> sara4code@gmail.com</a>. 
-              We will respond to your request within a reasonable timeframe.
+              To exercise these rights, please contact us at{' '}
+              <a href="mailto:codewithsara@proton.me">codewithsara@proton.me</a>.
+              We will respond within a reasonable timeframe.
             </p>
           </section>
 
@@ -288,7 +288,9 @@ const Privacy = () => {
               data practices, please contact us:
             </p>
             <div className="contact-info">
-              <p><strong>Email:</strong> <a href="mailto:sara4code@gmail.com">sara4code@gmail.com</a></p>
+              <p><strong>Legal name:</strong> Vanumu Lakshmi Sai Ram</p>
+              <p><strong>Registered address:</strong> 1-79, VALASAPAKALA, KAKINADA, ANDHRA PRADESH, INDIA</p>
+              <p><strong>Email:</strong> <a href="mailto:codewithsara@proton.me">codewithsara@proton.me</a></p>
               <p><strong>Subject Line:</strong> Privacy Policy Inquiry</p>
             </div>
             <p>
@@ -302,22 +304,20 @@ const Privacy = () => {
       <footer className="privacy-footer" style={{ background: '#f9f9f9', borderTop: '1px solid #e5e5e5', padding: '2rem 0', marginTop: 'auto' }}>
         <div className="footer-content" style={{ maxWidth: 1200, margin: '0 auto', padding: '0 2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <p>&copy; 2026 Sara Learning Platform. All rights reserved.</p>
-          <div className="footer-links" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <Link
-              to="/terms"
-              className="footer-link"
-              style={{ color: '#5a5a5a', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 500 }}
-            >
-              Terms of Service
-            </Link>
+          <div className="footer-links" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <Link to="/about" className="footer-link" style={{ color: '#5a5a5a', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 500 }}>About</Link>
             <span style={{ color: '#8e8e8e' }}>•</span>
-            <a
-              href="mailto:sara4code@gmail.com"
-              className="footer-link"
-              style={{ color: '#5a5a5a', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 500 }}
-            >
-              Contact
-            </a>
+            <Link to="/products" className="footer-link" style={{ color: '#5a5a5a', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 500 }}>Products</Link>
+            <span style={{ color: '#8e8e8e' }}>•</span>
+            <Link to="/terms" className="footer-link" style={{ color: '#5a5a5a', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 500 }}>Terms</Link>
+            <span style={{ color: '#8e8e8e' }}>•</span>
+            <Link to="/return-refund" className="footer-link" style={{ color: '#5a5a5a', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 500 }}>Return &amp; Refund</Link>
+            <span style={{ color: '#8e8e8e' }}>•</span>
+            <Link to="/cancellation" className="footer-link" style={{ color: '#5a5a5a', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 500 }}>Cancellation</Link>
+            <span style={{ color: '#8e8e8e' }}>•</span>
+            <Link to="/shipping" className="footer-link" style={{ color: '#5a5a5a', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 500 }}>Shipping</Link>
+            <span style={{ color: '#8e8e8e' }}>•</span>
+            <a href="mailto:codewithsara@proton.me" className="footer-link" style={{ color: '#5a5a5a', textDecoration: 'none', fontSize: '0.9rem', fontWeight: 500 }}>Contact</a>
           </div>
         </div>
       </footer>

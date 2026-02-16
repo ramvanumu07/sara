@@ -122,11 +122,21 @@ const Welcome = () => {
             <p>&copy; 2026 Sara Learning Platform. Empowering learners worldwide.</p>
           </div>
           <div className="footer-links">
-            <Link to="/terms" className="footer-link">Terms of Service</Link>
+            <Link to="/about" className="footer-link">About Us</Link>
+            <span className="footer-separator">•</span>
+            <Link to="/products" className="footer-link">Products &amp; Services</Link>
+            <span className="footer-separator">•</span>
+            <Link to="/terms" className="footer-link">Terms &amp; Conditions</Link>
             <span className="footer-separator">•</span>
             <Link to="/privacy" className="footer-link">Privacy Policy</Link>
             <span className="footer-separator">•</span>
-            <a href="mailto:sara4code@gmail.com" className="footer-link">Contact</a>
+            <Link to="/return-refund" className="footer-link">Return &amp; Refund</Link>
+            <span className="footer-separator">•</span>
+            <Link to="/cancellation" className="footer-link">Cancellation</Link>
+            <span className="footer-separator">•</span>
+            <Link to="/shipping" className="footer-link">Shipping &amp; Delivery</Link>
+            <span className="footer-separator">•</span>
+            <a href="mailto:codewithsara@proton.me" className="footer-link">Contact</a>
           </div>
         </div>
       </footer>
