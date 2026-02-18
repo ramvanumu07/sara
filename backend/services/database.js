@@ -296,6 +296,9 @@ export async function getAllUsers() {
 
 export async function isAdmin(userId) {
   const client = initializeDatabase()
+  if (client === 'DEV_MODE') {
+    return true
+  }
   const { data } = await client
     .from('admins')
     .select('id')
@@ -654,18 +657,32 @@ export async function getLearningAnalytics(userId, topicId = null, days = 30) {
 
 // ============ COURSE UNLOCKS (per-course access after payment) ============
 
-const DEV_COURSE_UNLOCKS = new Map() // key: `${userId}:${courseId}`
+const DEV_COURSE_UNLOCKS = new Map() // key: `${username}:${courseId}`
+const DEV_UNLOCK_SLOTS = new Map()   // key: id (UUID), value: { id, course_id, username }
+
+function randomUUID() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0
+    const v = c === 'x' ? r : (r & 0x3) | 0x8
+    return v.toString(16)
+  })
+}
 
 export async function getUnlockedCourseIds(userId) {
   const client = initializeDatabase()
+  const user = await getUserById(userId)
+  const username = user?.username || null
+  if (!username) return []
+
   if (client === 'DEV_MODE') {
-    const keys = Array.from(DEV_COURSE_UNLOCKS.keys()).filter(k => k.startsWith(`${userId}:`))
-    return keys.map(k => k.split(':')[1])
+    const fromMap = Array.from(DEV_COURSE_UNLOCKS.keys()).filter(k => k.startsWith(`${username}:`))
+    const fromSlots = Array.from(DEV_UNLOCK_SLOTS.values()).filter(s => s.username === username).map(s => s.course_id)
+    return [...new Set([...fromMap.map(k => k.split(':')[1]), ...fromSlots])]
   }
   const { data, error } = await client
     .from('user_course_unlocks')
     .select('course_id')
-    .eq('user_id', userId)
+    .eq('username', username)
   if (error) throw new Error(`Failed to get unlocked courses: ${error.message}`)
   return (data || []).map(row => row.course_id)
 }
@@ -677,20 +694,80 @@ export async function isCourseUnlockedForUser(userId, courseId) {
 
 export async function unlockCourseForUser(userId, courseId) {
   const client = initializeDatabase()
+  const user = await getUserById(userId)
+  const username = user?.username
+  if (!username) throw new Error('User not found')
   if (client === 'DEV_MODE') {
-    DEV_COURSE_UNLOCKS.set(`${userId}:${courseId}`, { userId, courseId, unlocked_at: new Date().toISOString() })
-    return { user_id: userId, course_id: courseId, unlocked_at: new Date().toISOString() }
+    DEV_COURSE_UNLOCKS.set(`${username}:${courseId}`, { username, courseId, unlocked_at: new Date().toISOString() })
+    return { username, course_id: courseId, unlocked_at: new Date().toISOString() }
   }
   const { data, error } = await client
     .from('user_course_unlocks')
     .upsert(
-      { user_id: userId, course_id: courseId, unlocked_at: new Date().toISOString() },
-      { onConflict: ['user_id', 'course_id'] }
+      { username, course_id: courseId, unlocked_at: new Date().toISOString() },
+      { onConflict: ['username', 'course_id'] }
     )
     .select()
     .single()
   if (error) throw new Error(`Failed to unlock course: ${error.message}`)
   return data
+}
+
+/** Create an unused unlock slot (admin only). Returns { id, course_id }. */
+export async function createUnlockSlot(courseId) {
+  const client = initializeDatabase()
+  if (client === 'DEV_MODE') {
+    const id = randomUUID()
+    DEV_UNLOCK_SLOTS.set(id, { id, course_id: courseId, username: null })
+    return { id, course_id: courseId }
+  }
+  const { data, error } = await client
+    .from('user_course_unlocks')
+    .insert({ username: null, course_id: courseId })
+    .select('id, course_id')
+    .single()
+  if (error) throw new Error(`Failed to create unlock slot: ${error.message}`)
+  return { id: data.id, course_id: data.course_id }
+}
+
+/**
+ * Redeem an unlock code. Returns { success, courseId } or throws for invalid/used.
+ * Code is the row id. Updates the row with username so it becomes a normal unlock.
+ */
+export async function redeemUnlockCode(userId, codeId) {
+  const id = (codeId || '').toString().trim()
+  if (!id) throw new Error('Code is required')
+
+  const user = await getUserById(userId)
+  const username = user?.username
+  if (!username) throw new Error('User not found')
+
+  const client = initializeDatabase()
+  if (client === 'DEV_MODE') {
+    const slot = DEV_UNLOCK_SLOTS.get(id)
+    if (!slot) throw new Error('Invalid or already used code')
+    if (slot.username != null) throw new Error('Code already used')
+    slot.username = username
+    DEV_COURSE_UNLOCKS.set(`${username}:${slot.course_id}`, { username, courseId: slot.course_id, unlocked_at: new Date().toISOString() })
+    return { success: true, courseId: slot.course_id }
+  }
+
+  const { data: row, error: fetchError } = await client
+    .from('user_course_unlocks')
+    .select('id, username, course_id')
+    .eq('id', id)
+    .single()
+
+  if (fetchError || !row) throw new Error('Invalid or already used code')
+  if (row.username != null) throw new Error('Code already used')
+
+  const { error: updateError } = await client
+    .from('user_course_unlocks')
+    .update({ username, unlocked_at: new Date().toISOString() })
+    .eq('id', id)
+
+  if (updateError) throw new Error('Failed to redeem code')
+  return { success: true, courseId: row.course_id }
 }
 
 // Export the client for direct access if needed

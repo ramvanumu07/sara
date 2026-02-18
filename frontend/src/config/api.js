@@ -172,7 +172,9 @@ export const learning = {
 
   // Course unlock (payment flow)
   getUnlockedCourses: () => api.get('/learn/unlocked-courses'),
-  unlockCourse: (courseId) => api.post('/learn/unlock-course', { courseId })
+  unlockCourse: (courseId) => api.post('/learn/unlock-course', { courseId }),
+  generateUnlockCode: () => api.post('/learn/generate-unlock-code'),
+  redeemUnlockCode: (code) => api.post('/learn/redeem-unlock-code', { code })
 }
 
 // Progress API

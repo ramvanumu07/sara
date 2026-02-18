@@ -17,7 +17,10 @@ import {
   getUserProgressSummary,
   getUnlockedCourseIds,
   isCourseUnlockedForUser,
-  unlockCourseForUser
+  unlockCourseForUser,
+  isAdmin,
+  createUnlockSlot,
+  redeemUnlockCode
 } from '../services/database.js'
 import progressManager from '../services/progressManager.js'
 import { saveChatTurn, saveInitialMessage, clearChatHistory, getChatHistoryString, getChatHistory } from '../services/chatService.js'
@@ -186,6 +189,41 @@ router.post('/unlock-course', authenticateToken, async (req, res) => {
     res.json(createSuccessResponse({ message: 'Course unlocked', courseId: courseId.trim() }))
   } catch (error) {
     handleErrorResponse(res, error, 'unlock course')
+  }
+})
+
+// Generate one unlock code (admin only). Creates a row in user_course_unlocks with user_id null; id is the code.
+const DEFAULT_UNLOCK_COURSE_ID = 'javascript'
+router.post('/generate-unlock-code', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId
+    const admin = await isAdmin(userId)
+    if (!admin) {
+      return res.status(403).json(createErrorResponse('Admin only'))
+    }
+    const slot = await createUnlockSlot(DEFAULT_UNLOCK_COURSE_ID)
+    res.json(createSuccessResponse({ code: slot.id, courseId: slot.course_id }))
+  } catch (error) {
+    handleErrorResponse(res, error, 'generate unlock code')
+  }
+})
+
+// Redeem unlock code (id of a user_course_unlocks row). Updates row with current user_id so user gets access.
+router.post('/redeem-unlock-code', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId
+    const { code } = req.body || {}
+    if (!code || typeof code !== 'string') {
+      return res.status(400).json(createErrorResponse('Code is required'))
+    }
+    const result = await redeemUnlockCode(userId, code.trim())
+    res.json(createSuccessResponse({ message: 'Course unlocked', courseId: result.courseId }))
+  } catch (error) {
+    const message = error.message || 'Failed to redeem code'
+    if (message.includes('Invalid') || message.includes('already used')) {
+      return res.status(400).json(createErrorResponse(message))
+    }
+    handleErrorResponse(res, error, 'redeem unlock code')
   }
 })
 

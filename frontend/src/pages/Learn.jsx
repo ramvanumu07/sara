@@ -1094,9 +1094,9 @@ const Learn = () => {
             <path d="M7 11V7a5 5 0 0 1 10 0v4" />
           </svg>
         </div>
-        <h2 style={{ color: '#92400e', marginBottom: '8px' }}>This course is locked</h2>
+        <h2 style={{ color: '#92400e', marginBottom: '8px' }}>Full access requires purchase</h2>
         <p style={{ color: '#6b7280', marginBottom: '24px' }}>
-          Unlock the course to access this topic and all its content.
+          Purchase the course to access this topic and all content.
         </p>
         <button
           onClick={() => navigate(unlockUrl)}
@@ -1111,7 +1111,7 @@ const Learn = () => {
             cursor: 'pointer'
           }}
         >
-          Unlock this course
+          Get full access
         </button>
         <button
           onClick={() => navigate('/dashboard')}
