@@ -7,6 +7,7 @@
  */
 import React, { useState, useRef, useEffect } from 'react'
 import CodeExecutor from '../services/CodeExecutor'
+import { copyToClipboard } from '../utils/copyToClipboard'
 
 const AUTO_CLOSING_PAIRS = { '(': ')', '[': ']', '{': '}', '"': '"', "'": "'", '`': '`' }
 
@@ -102,12 +103,12 @@ export default function SessionPlayground({
 
   const copyCode = async () => {
     if (!code?.trim()) return
-    try {
-      await navigator.clipboard.writeText(code)
+    const ok = await copyToClipboard(code)
+    if (ok) {
       setCopyButtonLabel('Copied!')
       if (onCopySuccess) onCopySuccess()
-    } catch (e) {
-      if (onRunError) onRunError('Copy failed.')
+    } else if (onRunError) {
+      onRunError('Copy failed.')
     }
   }
 

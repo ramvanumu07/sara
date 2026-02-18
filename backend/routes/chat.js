@@ -286,27 +286,38 @@ router.post('/feedback', authenticateToken, rateLimitMiddleware, async (req, res
       : topic.title
 
     // Build feedback prompt: experienced developer writes best solution using only concepts taught so far
-    const feedbackPrompt = `You are an experienced JavaScript developer. Your task is to write the best possible solution for the assignment below, as you would write it yourself—clean, clear, and professional.
+    const feedbackPrompt = `You are an experienced JavaScript developer creating a reference solution for a student assignment.
 
-STRICT CONSTRAINT: CONCEPTS TAUGHT SO FAR
-The student has only completed these topics in order: ${conceptsScope}
-They have NOT been taught any topic that comes after this list in the curriculum. Your solution must ONLY use concepts from the topics in that list. Do not use any language feature or pattern that belongs to a later topic. Limit yourself strictly to what has been taught so far.
+CONCEPTS CONSTRAINT (CRITICAL)
+The student has completed these topics in order: ${conceptsScope}
+Your solution must ONLY use concepts from this list. Do not use any feature, 
+pattern, or syntax from topics that come later in the curriculum.
 
 ASSIGNMENT
 ${assignment.description}
 
-STUDENT'S CURRENT CODE (for context only; you are writing your own solution)
+STUDENT'S CURRENT CODE (to understand their approach)
 ${userCode}
 
-OUTPUT
-Output only your refactored solution: a single fenced JavaScript code block. Write the code that solves the assignment in the best way possible within the concepts taught so far. Include any template lines (e.g. the provided const/let declarations) if the assignment expects them; otherwise output the runnable solution. No explanation, no issues list, no commentary—just the code in a \`\`\`javascript block.`
+REQUIREMENTS
+Write a clear, correct solution that:
+- Solves the assignment completely
+- Uses only concepts from the allowed list above
+- Demonstrates good practices within those constraints
+- Uses readable variable names and clear structure
+- Includes any starter code specified in the assignment description
+
+OUTPUT FORMAT
+1. First, a short "Differences" section: a bullet list comparing the student's code to your solution. For each point, state what is wrong or missing in their code (or what they did differently from good practice). Use plain language so the student can see exactly where they lag behind developer-style code.
+2. Then a blank line, then a single fenced JavaScript code block with your solution (e.g. \`\`\`javascript ... \`\`\`).
+`
 
     const messages = [
       { role: 'system', content: feedbackPrompt },
-      { role: 'user', content: `Write the best solution for this assignment using only the concepts taught so far. Output only a fenced JavaScript code block.` }
+      { role: 'user', content: `Write the best solution for this assignment using only the concepts taught so far. First output a short "Differences" bullet list comparing the student's code to your solution, then output your solution in a single fenced JavaScript code block.` }
     ]
 
-    // Get AI response (refactored code only)
+    // Get AI response (differences list + reference code)
     const aiResponse = await callAI(messages, 1500, 0.3, 'llama-3.3-70b-versatile')
 
     res.json(createSuccessResponse({

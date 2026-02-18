@@ -176,23 +176,23 @@ const startServer = async () => {
   try {
     // Get a safe port (try preferred, find alternative if needed)
     const PORT = await getSafePort(PREFERRED_PORT, true)
-    
+
     const server = createServer(app)
-    
+
     server.listen(PORT, () => {
-  // Log server startup with structured logging
-  logInfo('Sara Learning Platform API Server started', {
-    port: PORT,
-    environment: process.env.NODE_ENV || 'development',
-    cors: process.env.NODE_ENV === 'production' ? 'production domains' : 'localhost development',
-    services: {
-      errorTracking: !!process.env.SENTRY_DSN,
-      redis: !!process.env.REDIS_URL,
-      database: !!process.env.SUPABASE_URL,
-      logging: 'winston',
-      caching: process.env.REDIS_URL ? 'redis' : 'memory'
-    }
-  })
+      // Log server startup with structured logging
+      logInfo('Sara Learning Platform API Server started', {
+        port: PORT,
+        environment: process.env.NODE_ENV || 'development',
+        cors: process.env.NODE_ENV === 'production' ? 'production domains' : 'localhost development',
+        services: {
+          errorTracking: !!process.env.SENTRY_DSN,
+          redis: !!process.env.REDIS_URL,
+          database: !!process.env.SUPABASE_URL,
+          logging: 'winston',
+          caching: process.env.REDIS_URL ? 'redis' : 'memory'
+        }
+      })
     })
 
     server.on('error', (error) => {
@@ -223,7 +223,7 @@ const startServer = async () => {
 
     process.on('SIGTERM', () => gracefulShutdown('SIGTERM'))
     process.on('SIGINT', () => gracefulShutdown('SIGINT'))
-    
+
   } catch (error) {
     logError('Failed to start server', { error: error.message })
     process.exit(1)

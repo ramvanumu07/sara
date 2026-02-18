@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react'
+import { copyToClipboard } from '../utils/copyToClipboard'
 
 /**
  * Shared play-phase editor: code panel (playground.js, Run, Copy, code area) + terminal output panel.
@@ -50,7 +51,7 @@ export default function PlayEditor({ code, onCodeChange, onRun, placeholder = '/
 
   const handleCopy = () => {
     if (!code.trim()) return
-    navigator.clipboard.writeText(code).catch(() => {})
+    copyToClipboard(code)
   }
 
   const handleKeyDown = (e) => {

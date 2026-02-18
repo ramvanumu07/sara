@@ -7,6 +7,7 @@ import SessionPlayground from '../components/SessionPlayground'
 import CodeExecutor from '../services/CodeExecutor'
 import { useToast } from '../hooks/useToast'
 import { ToastContainer } from '../components/Toast'
+import { copyToClipboard } from '../utils/copyToClipboard'
 import './Learn.css'
 import './Learn-responsive.css'
 
@@ -93,10 +94,12 @@ function renderTextWithBold(text, keyPrefix) {
 const MessageContent = ({ content, role }) => {
   const [copiedBlockId, setCopiedBlockId] = useState(null)
   const handleCopyCode = (code, blockId) => {
-    navigator.clipboard.writeText(code).then(() => {
-      setCopiedBlockId(blockId)
-      setTimeout(() => setCopiedBlockId(null), 2000)
-    }).catch(() => {})
+    copyToClipboard(code).then((ok) => {
+      if (ok) {
+        setCopiedBlockId(blockId)
+        setTimeout(() => setCopiedBlockId(null), 2000)
+      }
+    })
   }
 
   const renderContent = (text) => {
@@ -142,7 +145,7 @@ const MessageContent = ({ content, role }) => {
               {copiedBlockId === blockId ? (
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
               ) : (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
               )}
             </button>
             <div className="code-block" style={fencedBlockStyle}>
@@ -191,7 +194,7 @@ const MessageContent = ({ content, role }) => {
                         {copiedBlockId === blockId ? (
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
                         ) : (
-                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
                         )}
                       </button>
                       <div className="code-block" style={fencedBlockStyle}>
@@ -735,11 +738,7 @@ const Learn = () => {
   // Copy code to clipboard (replaces Reset in session editor)
   const handleCopyCode = async () => {
     if (!userCode.trim()) return
-    try {
-      await navigator.clipboard.writeText(userCode)
-    } catch (e) {
-      // Copy failed silently
-    }
+    await copyToClipboard(userCode)
   }
 
   // Run: execute code and show output in terminal. Clear Submit view (test results + AI review).
@@ -1970,19 +1969,19 @@ const Learn = () => {
                   <div
                     id="assignment-output"
                     className="assignment-review-panel"
-              style={{
-                flex: 1,
-                overflow: 'auto',
-                minHeight: 0,
-                backgroundColor: '#fafafa',
-                border: '1px solid #e5e7eb',
-                borderTop: 'none',
-                padding: '20px 24px',
-                fontSize: '0.9375rem',
-                lineHeight: 1.6,
-                color: '#374151',
-                fontFamily: 'var(--sara-font)'
-              }}
+                    style={{
+                      flex: 1,
+                      overflow: 'auto',
+                      minHeight: 0,
+                      backgroundColor: '#fafafa',
+                      border: '1px solid #e5e7eb',
+                      borderTop: 'none',
+                      padding: '20px 24px',
+                      fontSize: '0.9375rem',
+                      lineHeight: 1.6,
+                      color: '#374151',
+                      fontFamily: 'var(--sara-font)'
+                    }}
                   >
                     <div style={{ maxWidth: '720px', margin: '0 auto' }}>
                       {showReviewOnly ? (
